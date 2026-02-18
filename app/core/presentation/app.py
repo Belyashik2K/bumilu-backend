@@ -1,5 +1,3 @@
-import asyncio
-
 from fastapi import (
     FastAPI
 )
@@ -7,7 +5,7 @@ from fastapi.responses import ORJSONResponse
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core.infrastructure.config import AppConfig
-from app.core.presentation.api import router as api_router
+from app.core.presentation.api import api_router
 
 
 def create_app() -> FastAPI:
