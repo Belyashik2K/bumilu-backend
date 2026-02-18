@@ -1,6 +1,4 @@
-from fastapi import (
-    FastAPI
-)
+from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from starlette.middleware.cors import CORSMiddleware
 
@@ -18,7 +16,7 @@ def create_app() -> FastAPI:
         openapi_url=config.docs.openapi_url,
         docs_url=config.docs.swagger_url,
         redoc_url=config.docs.redoc_url,
-        default_response_class=ORJSONResponse
+        default_response_class=ORJSONResponse,
     )
 
     if config.cors.enabled:
