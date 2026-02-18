@@ -10,6 +10,4 @@ health_router = APIRouter(
 
 @health_router.get("")
 async def health_check() -> HealthCheckResponse:
-    return HealthCheckResponse(
-        status="ok"
-    )
+    return HealthCheckResponse(status="ok")
