@@ -1,1 +1,5 @@
-from .router import router
+from .router import v1_router
+
+__all__ = [
+    "v1_router",
+]
