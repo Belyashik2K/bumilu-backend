@@ -7,8 +7,6 @@ services:
     env_file: [ .env ]
     networks:
       - bumilu
-    ports:
-      - "${RUN__PORT:-8000}:${RUN__PORT:-8000}" # Remove after traefik is set up
 
 networks:
   bumilu:
