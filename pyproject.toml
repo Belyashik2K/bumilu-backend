@@ -22,6 +22,9 @@ dev = [
     "ruff>=0.15.1",
 ]
 
+[tool.uv]
+default-groups = []
+
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-ra -q"
