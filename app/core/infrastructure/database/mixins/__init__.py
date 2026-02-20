@@ -1,2 +1,6 @@
 from .pk_uuid import PKUUIDMixin
-from .timestamps import TimestampMixin
+from .timestamps import (
+    CreatedAtMixin,
+    TimestampMixin,
+    UpdatedAtMixin,
+)
