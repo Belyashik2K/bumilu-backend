@@ -20,7 +20,7 @@ from app.core.infrastructure.database.mixins import (
 )
 
 if TYPE_CHECKING:
-    from app.modules.users.infrastructure.database.models.users import UserModel
+    from app.modules.users.infrastructure.database.models import UserModel
 
 
 class InstallationModel(CreatedAtMixin, MetadataMixin, BaseModel):
