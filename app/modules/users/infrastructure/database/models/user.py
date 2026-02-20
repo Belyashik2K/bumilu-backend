@@ -19,8 +19,8 @@ from app.core.infrastructure.database.mixins import (
     PKUUIDMixin,
     TimestampMixin,
 )
-from app.core.utils import get_current_dt
-from app.modules.users.shared.enums import UserRoleEnum
+from app.core.shared.enums import UserRoleEnum
+from app.core.shared.utils import get_current_dt
 
 if TYPE_CHECKING:
     from app.modules.auth.infrastructure.database.models import (
