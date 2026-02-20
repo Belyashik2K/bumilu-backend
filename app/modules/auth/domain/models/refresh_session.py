@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Self
 
 from app.core.shared.domain.value_objects.id import (
+    DeviceIdVO,
     SessionIdVO,
     UserIdVO,
 )
@@ -16,6 +17,7 @@ from app.core.shared.utils import get_current_dt
 class RefreshSession:
     id: SessionIdVO
     user_id: UserIdVO
+    device_id: DeviceIdVO
     refresh_token_hash: str
     expires_at: datetime
     revoked_at: datetime | None = field(default=None)
