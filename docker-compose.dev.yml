@@ -1,4 +1,10 @@
 services:
+  postgres:
+    ports:
+      - "${DATABASE__PORT:-5432}:${DATABASE__PORT:-5432}"
+  redis:
+    ports:
+      - "${REDIS__PORT:-6379}:${REDIS__PORT:-6379}"
   api:
     volumes:
       - .:/app

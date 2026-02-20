@@ -7,6 +7,8 @@ docs:
   openapi_url: "/docs/openapi.json"
   redoc_url: "/docs/redoc"
   swagger_url: "/docs/swagger"
+database:
+  host: "postgres"
 cors:
   enabled: false
   allow_origins: [ "*" ]
