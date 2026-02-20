@@ -23,7 +23,10 @@ from app.core.utils import get_current_dt
 from app.modules.users.shared.enums import UserRoleEnum
 
 if TYPE_CHECKING:
-    from app.modules.auth.infrastructure.database.models import InstallationModel
+    from app.modules.auth.infrastructure.database.models import (
+        InstallationModel,
+        RefreshSessionModel,
+    )
 
 
 class UserModel(PKUUIDMixin, TimestampMixin, BaseModel):
@@ -45,4 +48,9 @@ class UserModel(PKUUIDMixin, TimestampMixin, BaseModel):
         "InstallationModel",
         back_populates="user",
         lazy="joined",
+    )
+    refresh_sessions: Mapped[list["RefreshSessionModel"]] = relationship(
+        "RefreshSessionModel",
+        back_populates="user",
+        cascade="all, delete-orphan",
     )
