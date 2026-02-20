@@ -13,6 +13,7 @@ dependencies = [
     "gunicorn>=25.0.3",
     "pydantic-settings[yaml]>=2.13.0",
     "sqlalchemy[postgresql-asyncpg]>=2.0.46",
+    "uuid6>=2025.0.1",
 ]
 
 [dependency-groups]
@@ -61,7 +62,8 @@ select = [
     "RUF", # ruff
 ]
 ignore = [
-    "E203" # black compatibility
+    "E203", # black compatibility
+    "RUF003" # russian language in docstrings
 ]
 
 fixable = ["ALL"]
