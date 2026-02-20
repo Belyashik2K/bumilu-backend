@@ -5,7 +5,9 @@ from dataclasses import (
 from datetime import datetime
 from typing import Self
 
-from app.core.shared.domain.value_objects.id import UserIdVO
+from app.core.shared.domain.value_objects.id import (
+    UserIdVO,
+)
 from app.core.shared.enums import UserRoleEnum
 from app.core.shared.utils import get_current_dt
 from app.modules.users.domain.value_objects import EmailVO

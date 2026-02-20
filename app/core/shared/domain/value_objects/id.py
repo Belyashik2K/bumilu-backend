@@ -26,4 +26,12 @@ class IdVO:
 
 
 @dataclass(frozen=True, slots=True)
+class SessionIdVO(IdVO): ...
+
+
+@dataclass(frozen=True, slots=True)
+class InstallationIdVO(IdVO): ...
+
+
+@dataclass(frozen=True, slots=True)
 class UserIdVO(IdVO): ...
