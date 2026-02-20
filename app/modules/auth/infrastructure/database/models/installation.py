@@ -14,12 +14,13 @@ from sqlalchemy.orm import (
 )
 
 from app.core.infrastructure.database import BaseModel
+from app.core.infrastructure.database.mixins.metadata import MetadataMixin
 
 if TYPE_CHECKING:
     from app.modules.users.infrastructure.database.models.users import UserModel
 
 
-class InstallationModel(BaseModel):
+class InstallationModel(MetadataMixin, BaseModel):
     __tablename__ = "installations"
 
     installation_id: Mapped[UUID] = mapped_column(_UUID, primary_key=True)
