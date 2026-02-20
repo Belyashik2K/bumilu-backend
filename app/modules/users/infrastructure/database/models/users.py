@@ -6,6 +6,7 @@ from typing import (
 
 from sqlalchemy import (
     Enum,
+    func,
 )
 from sqlalchemy.orm import (
     Mapped,
@@ -18,6 +19,7 @@ from app.core.infrastructure.database.mixins import (
     PKUUIDMixin,
     TimestampMixin,
 )
+from app.core.utils import get_current_dt
 from app.modules.users.shared.enums import UserRoleEnum
 
 if TYPE_CHECKING:
@@ -31,6 +33,11 @@ class UserModel(PKUUIDMixin, TimestampMixin, BaseModel):
     email_verified_at: Mapped[datetime | None] = mapped_column()
     role: Mapped[UserRoleEnum] = mapped_column(
         Enum(UserRoleEnum, name="user_role_enum")
+    )
+    last_seen_at: Mapped[datetime] = mapped_column(
+        default=get_current_dt,
+        server_default=func.now(),
+        index=True,
     )
 
     installation: Mapped[Optional["InstallationModel"]] = relationship(
