@@ -1,0 +1,41 @@
+from datetime import datetime
+from typing import TYPE_CHECKING
+from uuid import UUID
+
+from sqlalchemy import (
+    UUID as _UUID,
+)
+from sqlalchemy import (
+    ForeignKey,
+)
+from sqlalchemy.orm import (
+    Mapped,
+    mapped_column,
+    relationship,
+)
+
+from app.core.infrastructure.database import BaseModel
+from app.core.infrastructure.database.mixins import (
+    CreatedAtMixin,
+    PKUUIDMixin,
+)
+
+if TYPE_CHECKING:
+    from app.modules.users.infrastructure.database.models import UserModel
+
+
+class RefreshSessionModel(PKUUIDMixin, CreatedAtMixin, BaseModel):
+    __tablename__ = "refresh_sessions"
+
+    user_id: Mapped[UUID] = mapped_column(
+        _UUID, ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    refresh_token_hash: Mapped[str] = mapped_column(unique=True)
+    expires_at: Mapped[datetime] = mapped_column(index=True)
+    revoked_at: Mapped[datetime | None] = mapped_column(index=True)
+
+    user: Mapped["UserModel"] = relationship(
+        "UserModel",
+        back_populates="refresh_sessions",
+        lazy="joined",
+    )
