@@ -14,18 +14,21 @@ from sqlalchemy.orm import (
 )
 
 from app.core.infrastructure.database import BaseModel
-from app.core.infrastructure.database.mixins.metadata import MetadataMixin
+from app.core.infrastructure.database.mixins import (
+    CreatedAtMixin,
+    MetadataMixin,
+)
 
 if TYPE_CHECKING:
     from app.modules.users.infrastructure.database.models.users import UserModel
 
 
-class InstallationModel(MetadataMixin, BaseModel):
+class InstallationModel(CreatedAtMixin, MetadataMixin, BaseModel):
     __tablename__ = "installations"
 
     installation_id: Mapped[UUID] = mapped_column(_UUID, primary_key=True)
     user_id: Mapped[UUID] = mapped_column(
-        _UUID, ForeignKey("users.id", ondelete="CASCADE")
+        _UUID, ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
 
     user: Mapped["UserModel"] = relationship(
