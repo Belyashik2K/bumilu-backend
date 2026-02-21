@@ -26,8 +26,8 @@ if TYPE_CHECKING:
     from app.modules.users.infrastructure.database.models import UserModel
 
 
-class RefreshSessionModel(PKUUIDMixin, CreatedAtMixin, BaseModel):
-    __tablename__ = "refresh_sessions"
+class AuthSessionModel(PKUUIDMixin, CreatedAtMixin, BaseModel):
+    __tablename__ = "auth_sessions"
 
     user_id: Mapped[UUID] = mapped_column(
         _UUID, ForeignKey("users.id", ondelete="CASCADE"), index=True
@@ -41,18 +41,18 @@ class RefreshSessionModel(PKUUIDMixin, CreatedAtMixin, BaseModel):
 
     user: Mapped["UserModel"] = relationship(
         "UserModel",
-        back_populates="refresh_sessions",
+        back_populates="auth_sessions",
         lazy="joined",
     )
     device: Mapped["DeviceModel"] = relationship(
         "DeviceModel",
-        back_populates="refresh_session",
+        back_populates="auth_session",
         lazy="joined",
     )
 
     __table_args__ = (
         Index(
-            "ix_refresh_sessions_user_device_revoked_at",
+            "ix_auth_sessions_user_device_revoked_at",
             "user_id",
             "device_id",
             postgresql_where=revoked_at.isnot(None),

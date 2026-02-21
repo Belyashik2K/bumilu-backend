@@ -14,7 +14,7 @@ from app.core.shared.utils import get_current_dt
 
 
 @dataclass(slots=True, kw_only=True)
-class RefreshSession:
+class AuthSession:
     id: SessionIdVO
     user_id: UserIdVO
     device_id: DeviceIdVO
@@ -37,10 +37,20 @@ class RefreshSession:
             return True
         return False
 
+    def update_refresh_token(self, refresh_token_hash: str) -> None:
+        if self.revoked_at is not None:
+            raise ValueError("Cannot update refresh token of a revoked session.")
+        if self.expires_at <= get_current_dt():
+            raise ValueError("Cannot update refresh token of an expired session.")
+        if refresh_token_hash == self.refresh_token_hash:
+            return
+        self.refresh_token_hash = refresh_token_hash
+
     @classmethod
     def create(
         cls,
         user_id: UserIdVO,
+        device_id: DeviceIdVO,
         refresh_token_hash: str,
         expires_at: datetime,
     ) -> Self:
@@ -50,6 +60,7 @@ class RefreshSession:
         return cls(
             id=SessionIdVO.new(),
             user_id=user_id,
+            device_id=device_id,
             refresh_token_hash=refresh_token_hash,
             expires_at=expires_at,
         )
