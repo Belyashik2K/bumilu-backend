@@ -24,7 +24,7 @@ from app.core.infrastructure.database.mixins import (
 from app.core.shared.enums import DevicePlatformEnum
 
 if TYPE_CHECKING:
-    from app.modules.auth.infrastructure.database.models import RefreshSessionModel
+    from app.modules.auth.infrastructure.database.models import AuthSessionModel
 
 
 class DeviceModel(PKUUIDMixin, CreatedAtMixin, BaseModel):
@@ -42,7 +42,7 @@ class DeviceModel(PKUUIDMixin, CreatedAtMixin, BaseModel):
 
     last_seen_at: Mapped[datetime] = mapped_column(index=True)
 
-    refresh_session: Mapped["RefreshSessionModel"] = relationship(
+    auth_session: Mapped["AuthSessionModel"] = relationship(
         "RefreshSessionModel",
         back_populates="device",
         lazy="joined",

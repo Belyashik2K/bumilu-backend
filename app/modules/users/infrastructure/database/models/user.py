@@ -21,7 +21,7 @@ from app.core.shared.enums import UserRoleEnum
 
 if TYPE_CHECKING:
     from app.modules.auth.infrastructure.database.models import (
-        RefreshSessionModel,
+        AuthSessionModel,
     )
 
 
@@ -34,8 +34,9 @@ class UserModel(PKUUIDMixin, TimestampMixin, BaseModel):
         Enum(UserRoleEnum, name="user_role_enum")
     )
 
-    refresh_sessions: Mapped[list["RefreshSessionModel"]] = relationship(
+    auth_sessions: Mapped[list["AuthSessionModel"]] = relationship(
         "RefreshSessionModel",
         back_populates="user",
         cascade="all, delete-orphan",
+        lazy="selectin",
     )
