@@ -1,1 +1,1 @@
-from .base_model import BaseModel
+from .declarative_base import BaseModel
