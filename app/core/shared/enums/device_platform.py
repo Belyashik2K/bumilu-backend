@@ -1,5 +1,7 @@
-from enum import Enum
+from enum import (
+    StrEnum,
+)
 
 
-class DevicePlatformEnum(str, Enum):
+class DevicePlatformEnum(StrEnum):
     ANDROID = "android"
