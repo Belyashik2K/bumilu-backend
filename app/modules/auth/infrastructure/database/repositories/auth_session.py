@@ -21,7 +21,7 @@ class SQLAlchemyAuthSessionRepository(
     IAuthSessionRepository,
     SQLAlchemyBaseRepository[AuthSession, AuthSessionModel],
 ):
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession) -> None:
         super().__init__(session, AuthSessionModel)
 
     def _to_entity(self, data: AuthSessionModel) -> AuthSession:

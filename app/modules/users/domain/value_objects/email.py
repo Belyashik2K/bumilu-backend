@@ -26,6 +26,10 @@ class EmailVO:
         if not _BASIC_EMAIL_RE.match(email):
             raise ValueError("Invalid email format")
 
+    @classmethod
+    def from_string(cls, email: str) -> "EmailVO":
+        return cls(email)
+
     def __post_init__(self):
         email = self.value.strip().lower()
 
