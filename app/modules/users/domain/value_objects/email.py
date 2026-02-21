@@ -31,7 +31,7 @@ class EmailVO:
 
         self._validate_email_format(email)
 
-        local, domain = email.rsplit("@", 1)
+        _, domain = email.rsplit("@", 1)
         tld = domain.rsplit(".", 1)[-1]
 
         self._validate_tld(tld)
