@@ -1,7 +1,7 @@
 [project]
-name = "bumilu-backend"
+name = "bumilu-users-service"
 version = "0.1.0"
-description = "Backend for mobile ans web application BumiLu (不迷路), PAB project"
+description = "Users service for mobile ans web application BumiLu (不迷路), PAB project"
 readme = "README.md"
 authors = [
     { name = "Belyashik2K", email = "work@belyashik2k.ru" }
