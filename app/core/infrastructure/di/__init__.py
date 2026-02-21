@@ -1,1 +1,1 @@
-from .dishka_core_provider import CoreProvider
+from .core_provider import CoreProvider
