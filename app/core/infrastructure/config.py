@@ -33,6 +33,25 @@ class DatabaseConfig(BaseModel):
         return f"{self.type}://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
 
 
+class RedisConfig(BaseModel):
+    host: str
+    port: int
+    store: int
+    password: str
+
+    @property
+    def dsn(self) -> str:
+        return f"redis://:{self.password}@{self.host}:{self.port}/{self.store}"
+
+
+class JWTConfig(BaseModel):
+    secret_key: str
+    algorithm: str
+    issuer: str
+    access_token_expire_seconds: int
+    refresh_token_expire_seconds: int
+
+
 class CORSConfig(BaseModel):
     enabled: bool
     allow_origins: list[str]
@@ -56,6 +75,8 @@ class AppConfig(BaseSettings):
 
     docs: DocsConfig
     database: DatabaseConfig
+    redis: RedisConfig
+    jwt: JWTConfig
     cors: CORSConfig
     run: RunConfig
 
