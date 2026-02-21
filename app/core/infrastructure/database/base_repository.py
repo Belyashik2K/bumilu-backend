@@ -15,13 +15,10 @@ from app.core.infrastructure.database.mixins import PKUUIDMixin
 from app.core.shared.domain.value_objects.id import IdVO
 
 TEntity = TypeVar("TEntity")  # Entity
-TId = TypeVar("TId", bound=IdVO)  # Type of the primary key in the database model
 TModel = TypeVar("TModel", bound=PKUUIDMixin)  # SQLAlchemy model
 
 
-class SQLAlchemyBaseRepository(
-    IBaseRepository[TEntity, TId], Generic[TEntity, TId, TModel], ABC
-):
+class SQLAlchemyBaseRepository(IBaseRepository[TEntity], Generic[TEntity, TModel], ABC):
     def __init__(self, session: AsyncSession, model_class: type[TModel]):
         self.session = session
         self.model_class = model_class  # must be SQLAlchemy declarative model
@@ -32,7 +29,7 @@ class SQLAlchemyBaseRepository(
     @abstractmethod
     def _to_data(self, entity: TEntity) -> TModel: ...
 
-    async def _raw_get(self, _id: TId) -> TModel | None:
+    async def _raw_get(self, _id: IdVO) -> TModel | None:
         stmt = select(self.model_class).where(self.model_class.id == _id.value)
         result = await self.session.execute(stmt)
         data = result.scalar_one_or_none()
@@ -44,7 +41,7 @@ class SQLAlchemyBaseRepository(
         await self.session.flush()
         return self._to_entity(merged_data)
 
-    async def get_by_id(self, _id: TId) -> TEntity | None:
+    async def get_by_id(self, _id: IdVO) -> TEntity | None:
         if not (data := await self._raw_get(_id)):
             return None
         return self._to_entity(data)

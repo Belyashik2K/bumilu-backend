@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
-from uuid import UUID
 
 from sqlalchemy import (
     UUID as _UUID,
@@ -15,6 +14,7 @@ from sqlalchemy.orm import (
     mapped_column,
     relationship,
 )
+from uuid6 import UUID
 
 from app.core.infrastructure.database import BaseModel
 from app.core.infrastructure.database.mixins import (

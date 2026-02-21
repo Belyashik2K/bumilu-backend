@@ -1,10 +1,9 @@
-from uuid import UUID
-
 from sqlalchemy import UUID as _UUID
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
 )
+from uuid6 import UUID
 
 
 class PKUUIDMixin:
