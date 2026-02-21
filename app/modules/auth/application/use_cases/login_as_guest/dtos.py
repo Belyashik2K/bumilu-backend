@@ -10,9 +10,9 @@ from app.core.shared.enums import DevicePlatformEnum
 @dataclass(slots=True, kw_only=True, frozen=True)
 class LoginAsGuestInputDTO:
     device_id: DeviceIdVO
-    platform: DevicePlatformEnum
+    device_platform: DevicePlatformEnum
+    device_name: str | None = field(default=None)
     app_version: str
-    name: str | None = field(default=None)
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)

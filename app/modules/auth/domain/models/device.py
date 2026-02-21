@@ -45,6 +45,16 @@ class Device:
         self.update_app_version(app_version)
         self.touch()
 
+    def attach_guest_user(self, guest_user_id: UserIdVO) -> None:
+        if self.guest_user_id is not None and self.guest_user_id != guest_user_id:
+            raise ValueError("Device already attached to a different guest user.")
+        if self.guest_user_id == guest_user_id:
+            return
+        self.guest_user_id = guest_user_id
+
+    def has_guest_user(self) -> bool:
+        return self.guest_user_id is not None
+
     @classmethod
     def create(
         cls,
