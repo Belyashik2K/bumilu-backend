@@ -19,7 +19,6 @@ class User:
     email: EmailVO | None = field(default=None)
     email_verified_at: datetime | None = field(default=None)
     role: UserRoleEnum = field(default=UserRoleEnum.GUEST)
-    last_seen_at: datetime = field(default_factory=get_current_dt)
 
     @classmethod
     def create_guest(cls) -> Self:

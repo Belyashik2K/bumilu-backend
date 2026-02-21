@@ -33,7 +33,7 @@ class DeviceModel(PKUUIDMixin, CreatedAtMixin, BaseModel):
     platform: Mapped[DevicePlatformEnum] = mapped_column(
         Enum(DevicePlatformEnum, name="device_platform_enum")
     )
-    name: Mapped[str] = mapped_column(VARCHAR(255))
+    name: Mapped[str | None] = mapped_column(VARCHAR(255))
     app_version: Mapped[str] = mapped_column(VARCHAR(32))
 
     guest_user_id: Mapped[UUID | None] = mapped_column(
