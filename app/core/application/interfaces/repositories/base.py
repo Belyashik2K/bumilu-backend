@@ -7,13 +7,14 @@ from typing import (
     TypeVar,
 )
 
+from app.core.shared.domain.value_objects.id import IdVO
+
 TEntity = TypeVar("TEntity")
-TId = TypeVar("TId")
 
 
-class IBaseRepository(Generic[TEntity, TId], ABC):
+class IBaseRepository(Generic[TEntity], ABC):
     @abstractmethod
     async def save(self, entity: TEntity) -> TEntity: ...
 
     @abstractmethod
-    async def get_by_id(self, _id: TId) -> TEntity | None: ...
+    async def get_by_id(self, _id: IdVO) -> TEntity | None: ...
