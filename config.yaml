@@ -8,7 +8,13 @@ docs:
   redoc_url: "/docs/redoc"
   swagger_url: "/docs/swagger"
 database:
+  type: "postgresql+asyncpg"
   host: "postgres"
+  port: 5432
+  echo: false
+  echo_pool: false
+  pool_size: 10
+  max_overflow: 20
 cors:
   enabled: false
   allow_origins: [ "*" ]
