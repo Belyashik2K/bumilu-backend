@@ -1,4 +1,4 @@
+from .auth_session import AuthSessionModel
 from .device import DeviceModel
-from .refresh_session import RefreshSessionModel
 
-__all__ = ["DeviceModel", "RefreshSessionModel"]
+__all__ = ["DeviceModel", "AuthSessionModel"]

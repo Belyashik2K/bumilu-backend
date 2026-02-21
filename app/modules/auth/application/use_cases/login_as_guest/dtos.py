@@ -4,7 +4,10 @@ from dataclasses import (
 )
 
 from app.core.shared.domain.value_objects.id import DeviceIdVO
-from app.core.shared.enums import DevicePlatformEnum
+from app.core.shared.enums import (
+    DevicePlatformEnum,
+    UserRoleEnum,
+)
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -16,4 +19,19 @@ class LoginAsGuestInputDTO:
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
-class LoginAsGuestOutputDTO: ...
+class TokenInfoDTO:
+    token: str
+    expires_in: int
+
+
+@dataclass(slots=True, kw_only=True, frozen=True)
+class UserInfoDTO:
+    id: str
+    role: UserRoleEnum
+
+
+@dataclass(slots=True, kw_only=True, frozen=True)
+class LoginAsGuestOutputDTO:
+    access: TokenInfoDTO
+    refresh: TokenInfoDTO
+    user: UserInfoDTO
