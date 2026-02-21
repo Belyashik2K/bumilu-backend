@@ -1,13 +1,27 @@
+from contextlib import asynccontextmanager
+
+from dishka import make_async_container
+from dishka.integrations.fastapi import (
+    FastapiProvider,
+    setup_dishka,
+)
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core.infrastructure.config import AppConfig
+from app.core.infrastructure.di.core_provider import CoreProvider
 from app.core.presentation.api import api_router
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+    await app.state.dishka_container.close()  # type: ignore[attr-defined]
+
+
 def create_app() -> FastAPI:
-    config = AppConfig()  # type: ignore
+    config = AppConfig()  # type: ignore[call-arg]
 
     app = FastAPI(
         title=config.docs.title,
@@ -17,6 +31,7 @@ def create_app() -> FastAPI:
         docs_url=config.docs.swagger_url,
         redoc_url=config.docs.redoc_url,
         default_response_class=ORJSONResponse,
+        lifespan=lifespan,
     )
 
     if config.cors.enabled:
@@ -29,6 +44,10 @@ def create_app() -> FastAPI:
         )
 
     app.include_router(api_router)
+
+    container = make_async_container(CoreProvider(), FastapiProvider())
+    setup_dishka(container=container, app=app)
+
     return app
 
 
