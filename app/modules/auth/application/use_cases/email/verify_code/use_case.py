@@ -1,10 +1,14 @@
 from app.core.application.use_cases.base import IBaseUseCase
 from app.core.shared.domain.value_objects.id import DeviceIdVO
+from app.modules.auth.application.interfaces.hashers import IVerificationCodeHasher
 from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
 )
 from app.modules.auth.application.interfaces.repositories.device import (
     IDeviceRepository,
+)
+from app.modules.auth.application.interfaces.stores.email_login import (
+    IEmailLoginChallengeStore,
 )
 from app.modules.auth.application.services.auth_session import AuthSessionService
 from app.modules.auth.application.use_cases.email.verify_code import (
@@ -30,20 +34,27 @@ class VerifyEmailCodeAtLoginUseCase(
         device_repository: IDeviceRepository,
         auth_session_repository: IAuthSessionRepository,
         auth_session_service: AuthSessionService,
+        challenge_store: IEmailLoginChallengeStore,
+        code_hasher: IVerificationCodeHasher,
     ) -> None:
         self._user_repository = user_repository
         self._device_repository = device_repository
         self._auth_session_repository = auth_session_repository
         self._auth_session_service = auth_session_service
+        self._challenge_store = challenge_store
+        self._code_hasher = code_hasher
 
     async def __call__(
         self,
         input_data: VerifyEmailCodeAtLoginInputDTO,
     ) -> VerifyEmailCodeAtLoginOutputDTO:
         email = EmailVO(input_data.email)
-        code = input_data.code  # noqa: F841
+        code = input_data.code
 
-        # TODO: Implement actual verification code checking logic
+        code_hash = self._code_hasher.hash(email=email, code=code)
+        ok = await self._challenge_store.consume(email=email, code_hash=code_hash)
+        if not ok:
+            raise ValueError("Invalid code")
 
         user = await self._user_repository.get_by_email(email)
         if user is None:
@@ -54,7 +65,6 @@ class VerifyEmailCodeAtLoginUseCase(
 
         current_device = await self._device_repository.get_by_id(current_device_id)
         if current_device is None:
-            print("Creating new device with ID:", current_device_id)
             device = Device.create(
                 device_id=current_device_id,
                 platform=input_data.device_platform,

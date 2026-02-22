@@ -6,11 +6,18 @@ from dishka import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.infrastructure.config import AppConfig
+from app.modules.auth.application.interfaces.generators import (
+    IVerificationCodeGenerator,
+)
+from app.modules.auth.application.interfaces.generators.refresh_token import (
+    IRefreshTokenGenerator,
+)
+from app.modules.auth.application.interfaces.hashers import (
+    ITokenHasher,
+    IVerificationCodeHasher,
+)
 from app.modules.auth.application.interfaces.managers.access_token import (
     IAccessTokenManager,
-)
-from app.modules.auth.application.interfaces.refresh_token_generator import (
-    IRefreshTokenGenerator,
 )
 from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
@@ -18,7 +25,9 @@ from app.modules.auth.application.interfaces.repositories.auth_session import (
 from app.modules.auth.application.interfaces.repositories.device import (
     IDeviceRepository,
 )
-from app.modules.auth.application.interfaces.token_hasher import ITokenHasher
+from app.modules.auth.application.interfaces.stores.email_login import (
+    IEmailLoginChallengeStore,
+)
 from app.modules.auth.application.services.auth_session import AuthSessionService
 from app.modules.auth.application.use_cases.email.request_code import (
     RequestEmailCodeAtLoginUseCase,
@@ -37,6 +46,12 @@ from app.modules.auth.infrastructure.auth.access import (
 from app.modules.auth.infrastructure.auth.hashing import (
     HMACTokenHasher,
 )
+from app.modules.auth.infrastructure.auth.hashing.hmac_verification_code_hasher import (
+    HMACVerificationCodeHasher,
+)
+from app.modules.auth.infrastructure.auth.random_verification_code_generator import (
+    SecretsVerificationCodeGenerator,
+)
 from app.modules.auth.infrastructure.auth.refresh import (
     SecretsRefreshTokenGenerator,
 )
@@ -45,6 +60,9 @@ from app.modules.auth.infrastructure.database.repositories.auth_session import (
 )
 from app.modules.auth.infrastructure.database.repositories.device import (
     SQLAlchemyDeviceRepository,
+)
+from app.modules.auth.infrastructure.redis_email_challenge_store import (
+    RedisEmailLoginChallengeStore,
 )
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 
@@ -72,6 +90,35 @@ class AuthProvider(Provider):
     ) -> HMACTokenHasher:
         return HMACTokenHasher(
             secret=config.hmac.secret_key,
+        )
+
+    @provide(scope=Scope.APP, provides=IVerificationCodeHasher)
+    async def verification_code_hasher(
+        self,
+        config: AppConfig,
+    ) -> HMACVerificationCodeHasher:
+        return HMACVerificationCodeHasher(
+            secret=config.hmac.secret_key,
+        )
+
+    @provide(scope=Scope.APP, provides=IVerificationCodeGenerator)
+    async def verification_code_generator(self) -> SecretsVerificationCodeGenerator:
+        return SecretsVerificationCodeGenerator(
+            code_length=6,
+        )
+
+    @provide(scope=Scope.REQUEST, provides=IEmailLoginChallengeStore)
+    async def email_login_challenge_store(
+        self,
+        config: AppConfig,
+    ) -> RedisEmailLoginChallengeStore:
+        return RedisEmailLoginChallengeStore(
+            username=config.redis.username,
+            password=config.redis.password,
+            host=config.redis.host,
+            port=config.redis.port,
+            store=config.redis.store,
+            key_prefix="email_login_challenge",
         )
 
     @provide(scope=Scope.REQUEST, provides=IAuthSessionRepository)
@@ -150,8 +197,16 @@ class AuthProvider(Provider):
     @provide(scope=Scope.REQUEST)
     async def request_code_uc(
         self,
+        code_generator: IVerificationCodeGenerator,
+        code_hasher: IVerificationCodeHasher,
+        challenge_store: IEmailLoginChallengeStore,
     ) -> RequestEmailCodeAtLoginUseCase:
-        return RequestEmailCodeAtLoginUseCase()
+        return RequestEmailCodeAtLoginUseCase(
+            code_generator=code_generator,
+            code_hasher=code_hasher,
+            challenge_store=challenge_store,
+            ttl_seconds=300,
+        )
 
     @provide(scope=Scope.REQUEST)
     async def verify_code_uc(
@@ -160,10 +215,14 @@ class AuthProvider(Provider):
         user_repository: IUserRepository,
         device_repository: IDeviceRepository,
         auth_session_service: AuthSessionService,
+        challenge_store: IEmailLoginChallengeStore,
+        code_hasher: IVerificationCodeHasher,
     ) -> VerifyEmailCodeAtLoginUseCase:
         return VerifyEmailCodeAtLoginUseCase(
             auth_session_repository=auth_session_repository,
             user_repository=user_repository,
             device_repository=device_repository,
             auth_session_service=auth_session_service,
+            challenge_store=challenge_store,
+            code_hasher=code_hasher,
         )

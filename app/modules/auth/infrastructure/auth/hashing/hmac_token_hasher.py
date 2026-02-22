@@ -2,7 +2,7 @@ import base64
 import hashlib
 import hmac
 
-from app.modules.auth.application.interfaces.token_hasher import ITokenHasher
+from app.modules.auth.application.interfaces.hashers import ITokenHasher
 
 
 class HMACTokenHasher(ITokenHasher):

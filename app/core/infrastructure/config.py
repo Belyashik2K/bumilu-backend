@@ -34,6 +34,7 @@ class DatabaseConfig(BaseModel):
 
 
 class RedisConfig(BaseModel):
+    username: str | None = None
     host: str
     port: int
     store: int
