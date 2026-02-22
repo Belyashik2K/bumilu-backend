@@ -24,6 +24,9 @@ from app.modules.auth.application.use_cases.refresh_session.use_case import (
 from app.modules.auth.presentation.api.schemas.login import (
     LoginAsGuestRequestSchema,
     LoginAsGuestResponseSchema,
+    RequestEmailCodeAtLoginRequestSchema,
+    VerifyEmailCodeAtLoginRequestSchema,
+    VerifyEmailCodeAtLoginResponseSchema,
 )
 from app.modules.auth.presentation.api.schemas.logout import LogoutRequestSchema
 from app.modules.auth.presentation.api.schemas.refresh import (
@@ -57,6 +60,7 @@ async def login_as_guest(
 @auth_router.post("/email/request")
 async def request_email_code(
     uc: FromDishka[RequestEmailCodeAtLoginUseCase],
+    data: RequestEmailCodeAtLoginRequestSchema,
 ) -> None:
     raise NotImplementedError
 
@@ -65,7 +69,8 @@ async def request_email_code(
 @inject
 async def verify_email_login(
     uc: FromDishka[VerifyEmailCodeAtLoginUseCase],
-) -> None:
+    data: VerifyEmailCodeAtLoginRequestSchema,
+) -> VerifyEmailCodeAtLoginResponseSchema:
     raise NotImplementedError
 
 

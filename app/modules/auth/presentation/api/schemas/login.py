@@ -1,6 +1,7 @@
 from pydantic import (
     UUID7,
     BaseModel,
+    EmailStr,
     Field,
 )
 
@@ -9,6 +10,8 @@ from app.core.shared.enums import (
 )
 from app.modules.auth.presentation.api.schemas.common import (
     DEVICE_ID_EXAMPLE,
+    EMAIL_EXAMPLE,
+    VERIFICATION_CODE_EXAMPLE,
     SuccessfulLoginSchema,
 )
 
@@ -33,3 +36,23 @@ class LoginAsGuestRequestSchema(BaseModel):
 
 
 class LoginAsGuestResponseSchema(SuccessfulLoginSchema): ...
+
+
+class RequestEmailCodeAtLoginRequestSchema(BaseModel):
+    email: EmailStr = Field(
+        ..., description="User's email address.", examples=[EMAIL_EXAMPLE]
+    )
+
+
+class VerifyEmailCodeAtLoginRequestSchema(BaseModel):
+    email: EmailStr = Field(
+        ..., description="User's email address.", examples=[EMAIL_EXAMPLE]
+    )
+    code: str = Field(
+        ...,
+        description="Verification code sent to the user's email.",
+        examples=[VERIFICATION_CODE_EXAMPLE],
+    )
+
+
+class VerifyEmailCodeAtLoginResponseSchema(SuccessfulLoginSchema): ...

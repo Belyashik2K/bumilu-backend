@@ -8,6 +8,8 @@ from uuid6 import uuid7
 from app.core.shared.enums import UserRoleEnum
 
 DEVICE_ID_EXAMPLE = uuid7()
+EMAIL_EXAMPLE = "belyashik2k@bumilu.ru"
+VERIFICATION_CODE_EXAMPLE = "123456"
 TOKEN_EXAMPLE = "itsshowinglikeitstheendoftheworld"
 
 
