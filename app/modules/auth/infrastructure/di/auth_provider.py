@@ -20,6 +20,12 @@ from app.modules.auth.application.interfaces.repositories.device import (
 )
 from app.modules.auth.application.interfaces.token_hasher import ITokenHasher
 from app.modules.auth.application.services.auth_session import AuthSessionService
+from app.modules.auth.application.use_cases.email.request_code import (
+    RequestEmailCodeAtLoginUseCase,
+)
+from app.modules.auth.application.use_cases.email.verify_code import (
+    VerifyEmailCodeAtLoginUseCase,
+)
 from app.modules.auth.application.use_cases.guest.login import LoginAsGuestUseCase
 from app.modules.auth.application.use_cases.logout.use_case import LogoutUseCase
 from app.modules.auth.application.use_cases.refresh_session.use_case import (
@@ -138,5 +144,26 @@ class AuthProvider(Provider):
     ) -> LogoutUseCase:
         return LogoutUseCase(
             auth_session_repository=auth_session_repository,
+            auth_session_service=auth_session_service,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def request_code_uc(
+        self,
+    ) -> RequestEmailCodeAtLoginUseCase:
+        return RequestEmailCodeAtLoginUseCase()
+
+    @provide(scope=Scope.REQUEST)
+    async def verify_code_uc(
+        self,
+        auth_session_repository: IAuthSessionRepository,
+        user_repository: IUserRepository,
+        device_repository: IDeviceRepository,
+        auth_session_service: AuthSessionService,
+    ) -> VerifyEmailCodeAtLoginUseCase:
+        return VerifyEmailCodeAtLoginUseCase(
+            auth_session_repository=auth_session_repository,
+            user_repository=user_repository,
+            device_repository=device_repository,
             auth_session_service=auth_session_service,
         )
