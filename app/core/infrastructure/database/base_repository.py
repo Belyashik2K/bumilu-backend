@@ -35,7 +35,7 @@ class SQLAlchemyBaseRepository(IBaseRepository[TEntity], Generic[TEntity, TModel
         data = result.scalar_one_or_none()
         return data
 
-    async def save(self, entity: TEntity) -> TEntity:
+    async def save(self, entity: TEntity) -> TEntity:  # TODO: split into add and save
         data = self._to_data(entity)
         merged_data = await self.session.merge(data)
         await self.session.flush()

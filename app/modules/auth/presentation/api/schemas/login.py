@@ -50,7 +50,7 @@ class LoginAsGuestRequestSchema(BaseModel):
     device_name: str | None = Field(
         None,
         description="Name of the device.",
-        examples=["iPhone 16 Pro Max (iOS 17.4)"],
+        examples=["Pixel 9 Pro (Android 14)"],
     )
     app_version: str = Field(..., description="Version of the app.", examples=["1.0.0"])
 
