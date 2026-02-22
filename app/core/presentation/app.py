@@ -10,8 +10,10 @@ from fastapi.responses import ORJSONResponse
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core.infrastructure.config import AppConfig
-from app.core.infrastructure.di.core_provider import CoreProvider
+from app.core.infrastructure.di import CoreProvider
 from app.core.presentation.api import api_router
+from app.modules.auth.infrastructure.di import AuthProvider
+from app.modules.users.infrastructure.di import UserProvider
 
 
 @asynccontextmanager
@@ -45,7 +47,9 @@ def create_app() -> FastAPI:
 
     app.include_router(api_router)
 
-    container = make_async_container(CoreProvider(), FastapiProvider())
+    container = make_async_container(
+        CoreProvider(), UserProvider(), AuthProvider(), FastapiProvider()
+    )
     setup_dishka(container=container, app=app)
 
     return app

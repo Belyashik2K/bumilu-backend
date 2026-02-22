@@ -21,8 +21,8 @@ redis:
   store: 0
 jwt:
   issuer: "bumilu"
-  access_token_expire_seconds: 1800
-  refresh_token_expire_seconds: 2592000
+  access_token_ttl_sec: 1800
+  refresh_token_ttl_sec: 2592000
 cors:
   enabled: false
   allow_origins: [ "*" ]
