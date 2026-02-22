@@ -45,6 +45,16 @@ class RedisConfig(BaseModel):
         return f"redis://:{self.password}@{self.host}:{self.port}/{self.store}"
 
 
+class EmailConfig(BaseModel):
+    smtp_host: str
+    smtp_port: int
+    username: str
+    password: str
+    from_name: str
+    from_email: str
+    timeout: int
+
+
 class JWTConfig(BaseModel):
     secret_key: str
     algorithm: str
@@ -82,6 +92,7 @@ class AppConfig(BaseSettings):
     database: DatabaseConfig
     redis: RedisConfig
     jwt: JWTConfig
+    email: EmailConfig
     hmac: HMACConfig
     cors: CORSConfig
     run: RunConfig
