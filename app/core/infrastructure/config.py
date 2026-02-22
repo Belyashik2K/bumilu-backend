@@ -48,8 +48,8 @@ class JWTConfig(BaseModel):
     secret_key: str
     algorithm: str
     issuer: str
-    access_token_expire_seconds: int
-    refresh_token_expire_seconds: int
+    access_token_ttl_sec: int
+    refresh_token_ttl_sec: int
 
 
 class CORSConfig(BaseModel):
