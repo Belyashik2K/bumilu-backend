@@ -7,18 +7,28 @@ from app.modules.auth.application.use_cases.login_as_guest import (
     LoginAsGuestInputDTO,
     LoginAsGuestUseCase,
 )
+from app.modules.auth.application.use_cases.refresh_session import (
+    RefreshAuthSessionInputDTO,
+)
+from app.modules.auth.application.use_cases.refresh_session.use_case import (
+    RefreshAuthSessionUseCase,
+)
 from app.modules.auth.presentation.api.schemas.login import (
     LoginAsGuestRequestSchema,
     LoginAsGuestResponseSchema,
 )
+from app.modules.auth.presentation.api.schemas.refresh import (
+    RefreshAuthSessionRequestSchema,
+    RefreshAuthSessionResponseSchema,
+)
 
 auth_router = APIRouter(
-    prefix="/auth",
+    prefix="/auth/sessions",
     tags=["Auth"],
 )
 
 
-@auth_router.post("/login/guest")
+@auth_router.post("/guest")
 @inject
 async def login_as_guest(
     uc: FromDishka[LoginAsGuestUseCase],
@@ -35,19 +45,28 @@ async def login_as_guest(
     return LoginAsGuestResponseSchema.model_validate(result, from_attributes=True)
 
 
-@auth_router.post("/login/email/request")
+@auth_router.post("/email/request")
 async def request_email_code() -> None:
     raise NotImplementedError
 
 
-@auth_router.post("/login/email/verify")
+@auth_router.post("/email/verify")
 async def verify_email_login() -> None:
     raise NotImplementedError
 
 
 @auth_router.post("/refresh")
-async def refresh() -> None:
-    raise NotImplementedError
+@inject
+async def refresh(
+    uc: FromDishka[RefreshAuthSessionUseCase], data: RefreshAuthSessionRequestSchema
+) -> RefreshAuthSessionResponseSchema:
+    result = await uc(
+        RefreshAuthSessionInputDTO(
+            refresh_token=data.refresh_token,
+            device_id=data.device_id,
+        )
+    )
+    return RefreshAuthSessionResponseSchema.model_validate(result, from_attributes=True)
 
 
 @auth_router.post("/logout")

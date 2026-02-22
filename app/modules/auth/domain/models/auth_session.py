@@ -30,18 +30,12 @@ class AuthSession:
     def is_active(self) -> bool:
         return self.revoked_at is None and self.expires_at > get_current_dt()
 
-    def revoke_if_expired(self) -> bool:
-        now = get_current_dt()
-        if self.revoked_at is None and self.expires_at <= now:
-            self.revoked_at = now
-            return True
-        return False
-
-    def update_refresh_token(self, refresh_token_hash: str) -> None:
-        if self.revoked_at is not None:
-            raise ValueError("Cannot update refresh token of a revoked session.")
-        if self.expires_at <= get_current_dt():
-            raise ValueError("Cannot update refresh token of an expired session.")
+    def rotate(
+        self,
+        refresh_token_hash: str,
+    ) -> None:
+        if not self.is_active():
+            raise ValueError("Cannot rotate a revoked or expired session")
         if refresh_token_hash == self.refresh_token_hash:
             return
         self.refresh_token_hash = refresh_token_hash

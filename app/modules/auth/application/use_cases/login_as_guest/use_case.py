@@ -8,7 +8,7 @@ from app.modules.auth.application.use_cases.login_as_guest import (
     LoginAsGuestInputDTO,
     LoginAsGuestOutputDTO,
 )
-from app.modules.auth.application.use_cases.login_as_guest.dtos import (
+from app.modules.auth.application.use_cases.shared_dtos import (
     TokenInfoDTO,
     UserInfoDTO,
 )

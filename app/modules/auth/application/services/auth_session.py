@@ -63,6 +63,9 @@ class AuthSessionService:
         self._refresh_token_generator = refresh_token_generator
         self._token_hasher = token_hasher
 
+    def get_token_hash(self, token: str) -> str:
+        return self._token_hasher.hash(token)
+
     async def issue(
         self,
         *,
@@ -71,7 +74,7 @@ class AuthSessionService:
         role: UserRoleEnum,
     ) -> IssuedAuthTokens:
         token = self._refresh_token_generator.generate()
-        token_hash = self._token_hasher.hash(token)
+        token_hash = self.get_token_hash(token)
 
         await self._auth_session_repository.revoke_active_for_device(
             device_id=device_id
@@ -95,6 +98,32 @@ class AuthSessionService:
         return IssuedAuthTokens(
             access_token=access_token,
             refresh_token=token,
+            access_expires_in=self._access_ttl_seconds,
+            refresh_expires_in=self._refresh_ttl_seconds,
+        )
+
+    async def rotate(
+        self,
+        *,
+        session: AuthSession,
+        role: UserRoleEnum,
+    ) -> IssuedAuthTokens:
+        new_refresh_token = self._refresh_token_generator.generate()
+        new_refresh_token_hash = self.get_token_hash(new_refresh_token)
+
+        session.rotate(new_refresh_token_hash)
+        await self._auth_session_repository.save(session)
+
+        access_token = self._access_token_manager.issue(
+            user_id=session.user_id,
+            session_id=session.id,
+            role=role,
+            ttl=self._access_ttl_seconds,
+        )
+
+        return IssuedAuthTokens(
+            access_token=access_token,
+            refresh_token=new_refresh_token,
             access_expires_in=self._access_ttl_seconds,
             refresh_expires_in=self._refresh_ttl_seconds,
         )

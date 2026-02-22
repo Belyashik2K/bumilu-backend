@@ -21,11 +21,14 @@ from app.modules.auth.application.interfaces.repositories.device import (
 from app.modules.auth.application.interfaces.token_hasher import ITokenHasher
 from app.modules.auth.application.services.auth_session import AuthSessionService
 from app.modules.auth.application.use_cases.login_as_guest import LoginAsGuestUseCase
+from app.modules.auth.application.use_cases.refresh_session.use_case import (
+    RefreshAuthSessionUseCase,
+)
 from app.modules.auth.infrastructure.auth.access import (
     PyJWTAccessTokenManager,
 )
 from app.modules.auth.infrastructure.auth.hashing import (
-    PWDLibTokenHasher,
+    HMACTokenHasher,
 )
 from app.modules.auth.infrastructure.auth.refresh import (
     SecretsRefreshTokenGenerator,
@@ -56,8 +59,13 @@ class AuthProvider(Provider):
         return SecretsRefreshTokenGenerator()
 
     @provide(scope=Scope.APP, provides=ITokenHasher)
-    async def token_hasher(self) -> PWDLibTokenHasher:
-        return PWDLibTokenHasher()
+    async def token_hasher(
+        self,
+        config: AppConfig,
+    ) -> HMACTokenHasher:
+        return HMACTokenHasher(
+            secret=config.hmac.secret_key,
+        )
 
     @provide(scope=Scope.REQUEST, provides=IAuthSessionRepository)
     async def auth_session_repository(
@@ -103,5 +111,18 @@ class AuthProvider(Provider):
         return LoginAsGuestUseCase(
             user_repository=users,
             device_repository=devices,
+            auth_session_service=auth_session_service,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def refresh_session_uc(
+        self,
+        auth_sessions: IAuthSessionRepository,
+        users: IUserRepository,
+        auth_session_service: AuthSessionService,
+    ) -> RefreshAuthSessionUseCase:
+        return RefreshAuthSessionUseCase(
+            auth_session_repository=auth_sessions,
+            user_repository=users,
             auth_session_service=auth_session_service,
         )

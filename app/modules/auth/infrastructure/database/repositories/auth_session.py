@@ -1,5 +1,6 @@
 from sqlalchemy import (
     func,
+    select,
     update,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -58,3 +59,18 @@ class SQLAlchemyAuthSessionRepository(
         )
         await self.session.execute(stmt)
         await self.session.flush()
+
+    async def get_by_refresh_token_hash(
+        self,
+        refresh_token_hash: str,
+    ) -> AuthSession | None:
+        stmt = (
+            select(AuthSessionModel)
+            .where(AuthSessionModel.refresh_token_hash == refresh_token_hash)
+            .with_for_update()
+        )
+        result = await self.session.execute(stmt)
+        data = result.scalar_one_or_none()
+        if not data:
+            return None
+        return self._to_entity(data)
