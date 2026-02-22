@@ -1,0 +1,72 @@
+from app.core.application.use_cases.base import IBaseUseCase
+from app.core.shared.domain.value_objects.id import DeviceIdVO
+from app.modules.auth.application.interfaces.repositories.auth_session import (
+    IAuthSessionRepository,
+)
+from app.modules.auth.application.services.auth_session import AuthSessionService
+from app.modules.auth.application.use_cases.email.verify_code import (
+    VerifyEmailCodeAtLoginInputDTO,
+    VerifyEmailCodeAtLoginOutputDTO,
+)
+from app.modules.auth.application.use_cases.shared_dtos import (
+    TokenInfoDTO,
+    UserInfoDTO,
+)
+from app.modules.users.application.interfaces.repositories.user import IUserRepository
+from app.modules.users.domain.models.user import User
+from app.modules.users.domain.value_objects import EmailVO
+
+
+class VerifyEmailCodeAtLoginUseCase(
+    IBaseUseCase[VerifyEmailCodeAtLoginInputDTO, VerifyEmailCodeAtLoginOutputDTO]
+):
+    def __init__(
+        self,
+        user_repository: IUserRepository,
+        auth_session_repository: IAuthSessionRepository,
+        auth_session_service: AuthSessionService,
+    ) -> None:
+        self._user_repository = user_repository
+        self._auth_session_repository = auth_session_repository
+        self._auth_session_service = auth_session_service
+
+    async def __call__(
+        self,
+        input_data: VerifyEmailCodeAtLoginInputDTO,
+    ) -> VerifyEmailCodeAtLoginOutputDTO:
+        email = EmailVO(input_data.email)
+        code = input_data.code  # noqa: F841
+
+        # TODO: Implement actual verification code checking logic
+
+        user = await self._user_repository.get_by_email(email)
+        if user is None:
+            user = User.create_verified(email=email)
+            await self._user_repository.save(user)
+
+        current_device_id = DeviceIdVO(input_data.device_id)
+
+        await self._auth_session_repository.revoke_active_for_device(
+            device_id=current_device_id
+        )  # TODD: think about it, maybe remove it
+
+        tokens = await self._auth_session_service.issue(
+            user_id=user.id,
+            device_id=current_device_id,
+            role=user.role,
+        )
+
+        return VerifyEmailCodeAtLoginOutputDTO(
+            access=TokenInfoDTO(
+                token=tokens.access_token,
+                expires_in=tokens.access_expires_in,
+            ),
+            refresh=TokenInfoDTO(
+                token=tokens.refresh_token,
+                expires_in=tokens.refresh_expires_in,
+            ),
+            user=UserInfoDTO(
+                id=str(user.id),
+                role=user.role,
+            ),
+        )

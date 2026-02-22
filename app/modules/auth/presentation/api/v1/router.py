@@ -3,7 +3,13 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter
 from starlette import status
 
-from app.modules.auth.application.use_cases.login_as_guest import (
+from app.modules.auth.application.use_cases.email.request_code import (
+    RequestEmailCodeAtLoginUseCase,
+)
+from app.modules.auth.application.use_cases.email.verify_code import (
+    VerifyEmailCodeAtLoginUseCase,
+)
+from app.modules.auth.application.use_cases.guest.login import (
     LoginAsGuestInputDTO,
     LoginAsGuestUseCase,
 )
@@ -49,12 +55,17 @@ async def login_as_guest(
 
 
 @auth_router.post("/email/request")
-async def request_email_code() -> None:
+async def request_email_code(
+    uc: FromDishka[RequestEmailCodeAtLoginUseCase],
+) -> None:
     raise NotImplementedError
 
 
 @auth_router.post("/email/verify")
-async def verify_email_login() -> None:
+@inject
+async def verify_email_login(
+    uc: FromDishka[VerifyEmailCodeAtLoginUseCase],
+) -> None:
     raise NotImplementedError
 
 

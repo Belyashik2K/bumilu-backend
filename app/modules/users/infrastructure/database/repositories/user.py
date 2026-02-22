@@ -1,3 +1,4 @@
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.infrastructure.database import SQLAlchemyBaseRepository
@@ -29,3 +30,11 @@ class SQLAlchemyUserRepository(
             email_verified_at=entity.email_verified_at,
             role=entity.role,
         )
+
+    async def get_by_email(self, email: EmailVO) -> User | None:
+        stmt = select(UserModel).where(UserModel.email == email.value)
+        result = await self.session.execute(stmt)
+        user_data = result.scalar_one_or_none()
+        if user_data is None:
+            return None
+        return self._to_entity(user_data)
