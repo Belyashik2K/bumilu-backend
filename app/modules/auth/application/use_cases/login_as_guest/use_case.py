@@ -1,6 +1,9 @@
 from app.core.application.use_cases.base import IBaseUseCase
 from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.core.shared.enums import UserRoleEnum
+from app.modules.auth.application.interfaces.repositories.auth_session import (
+    IAuthSessionRepository,
+)
 from app.modules.auth.application.interfaces.repositories.device import (
     IDeviceRepository,
 )
@@ -28,10 +31,12 @@ class LoginAsGuestUseCase(
         self,
         user_repository: IUserRepository,
         device_repository: IDeviceRepository,
+        auth_session_repository: IAuthSessionRepository,
         auth_session_service: AuthSessionService,
     ) -> None:
         self._user_repository = user_repository
         self._device_repository = device_repository
+        self._auth_session_repository = auth_session_repository
         self._auth_session_service = auth_session_service
 
     async def __call__(self, input_data: LoginAsGuestInputDTO) -> LoginAsGuestOutputDTO:
@@ -54,6 +59,10 @@ class LoginAsGuestUseCase(
             device = await self._device_repository.save(device)
 
         assert device.guest_user_id is not None
+
+        await self._auth_session_repository.revoke_active_for_device(
+            device_id=device.id
+        )
 
         session = await self._auth_session_service.issue(
             user_id=device.guest_user_id,

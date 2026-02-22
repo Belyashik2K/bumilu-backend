@@ -76,10 +76,6 @@ class AuthSessionService:
         token = self._refresh_token_generator.generate()
         token_hash = self.get_token_hash(token)
 
-        await self._auth_session_repository.revoke_active_for_device(
-            device_id=device_id
-        )
-
         session = AuthSession.create(
             user_id=user_id,
             refresh_token_hash=token_hash,
