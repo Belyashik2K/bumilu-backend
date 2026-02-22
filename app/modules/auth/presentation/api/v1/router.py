@@ -2,7 +2,6 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter
 
-from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.modules.auth.application.use_cases.login_as_guest import (
     LoginAsGuestInputDTO,
     LoginAsGuestUseCase,
@@ -36,7 +35,7 @@ async def login_as_guest(
 ) -> LoginAsGuestResponseSchema:
     result = await uc(
         LoginAsGuestInputDTO(
-            device_id=DeviceIdVO.from_uuid(data.device_id),
+            device_id=data.device_id,
             device_platform=data.device_platform,
             device_name=data.device_name,
             app_version=data.app_version,

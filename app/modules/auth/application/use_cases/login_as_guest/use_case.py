@@ -1,4 +1,5 @@
 from app.core.application.use_cases.base import IBaseUseCase
+from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.core.shared.enums import UserRoleEnum
 from app.modules.auth.application.interfaces.repositories.device import (
     IDeviceRepository,
@@ -34,12 +35,13 @@ class LoginAsGuestUseCase(
         self._auth_session_service = auth_session_service
 
     async def __call__(self, input_data: LoginAsGuestInputDTO) -> LoginAsGuestOutputDTO:
-        device = await self._device_repository.get_by_id(input_data.device_id)
+        device_id = DeviceIdVO.from_uuid(input_data.device_id)
+        device = await self._device_repository.get_by_id(device_id)
 
         if device is None or not device.has_guest_user():
             if device is None:
                 device = Device.create(
-                    device_id=input_data.device_id,
+                    device_id=device_id,
                     platform=input_data.device_platform,
                     name=input_data.device_name,
                     app_version=input_data.app_version,
