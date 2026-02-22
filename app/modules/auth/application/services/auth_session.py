@@ -107,7 +107,7 @@ class AuthSessionService:
         new_refresh_token = self._refresh_token_generator.generate()
         new_refresh_token_hash = self.get_token_hash(new_refresh_token)
 
-        session.rotate(new_refresh_token_hash)
+        session.rotate(new_refresh_token_hash)  # TODO: extend expiration time
         await self._auth_session_repository.save(session)
 
         access_token = self._access_token_manager.issue(
@@ -123,3 +123,7 @@ class AuthSessionService:
             access_expires_in=self._access_ttl_seconds,
             refresh_expires_in=self._refresh_ttl_seconds,
         )
+
+    async def revoke(self, session: AuthSession) -> None:
+        session.revoke()
+        await self._auth_session_repository.save(session)
