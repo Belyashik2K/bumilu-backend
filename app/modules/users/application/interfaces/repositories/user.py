@@ -1,7 +1,13 @@
-from abc import ABC
+from abc import (
+    ABC,
+    abstractmethod,
+)
 
 from app.core.application.interfaces.repositories import IBaseRepository
 from app.modules.users.domain.models.user import User
+from app.modules.users.domain.value_objects import EmailVO
 
 
-class IUserRepository(IBaseRepository[User], ABC): ...
+class IUserRepository(IBaseRepository[User], ABC):
+    @abstractmethod
+    async def get_by_email(self, email: EmailVO) -> User | None: ...

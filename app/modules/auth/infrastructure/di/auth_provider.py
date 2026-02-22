@@ -20,7 +20,7 @@ from app.modules.auth.application.interfaces.repositories.device import (
 )
 from app.modules.auth.application.interfaces.token_hasher import ITokenHasher
 from app.modules.auth.application.services.auth_session import AuthSessionService
-from app.modules.auth.application.use_cases.login_as_guest import LoginAsGuestUseCase
+from app.modules.auth.application.use_cases.guest.login import LoginAsGuestUseCase
 from app.modules.auth.application.use_cases.logout.use_case import LogoutUseCase
 from app.modules.auth.application.use_cases.refresh_session.use_case import (
     RefreshAuthSessionUseCase,

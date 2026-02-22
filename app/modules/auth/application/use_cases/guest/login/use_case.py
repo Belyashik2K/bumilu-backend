@@ -8,7 +8,7 @@ from app.modules.auth.application.interfaces.repositories.device import (
     IDeviceRepository,
 )
 from app.modules.auth.application.services.auth_session import AuthSessionService
-from app.modules.auth.application.use_cases.login_as_guest import (
+from app.modules.auth.application.use_cases.guest.login import (
     LoginAsGuestInputDTO,
     LoginAsGuestOutputDTO,
 )
