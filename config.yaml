@@ -19,6 +19,12 @@ redis:
   host: "redis"
   port: 6379
   store: 0
+email:
+  smtp_host: "smtp.mail.selcloud.ru"
+  smtp_port: 1127
+  from_name: "BumiLu"
+  from_email: "no-reply@bumilu.ru"
+  timeout: 10
 jwt:
   issuer: "bumilu"
   access_token_ttl_sec: 1800

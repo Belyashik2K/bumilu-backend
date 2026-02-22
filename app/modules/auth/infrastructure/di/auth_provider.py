@@ -6,6 +6,7 @@ from dishka import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.infrastructure.config import AppConfig
+from app.modules.auth.application.interfaces.email_sender import IEmailSender
 from app.modules.auth.application.interfaces.generators import (
     IVerificationCodeGenerator,
 )
@@ -64,6 +65,7 @@ from app.modules.auth.infrastructure.database.repositories.device import (
 from app.modules.auth.infrastructure.redis_email_challenge_store import (
     RedisEmailLoginChallengeStore,
 )
+from app.modules.auth.infrastructure.smtplib_email_sender import SMTPLibEmailSender
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 
 
@@ -105,6 +107,21 @@ class AuthProvider(Provider):
     async def verification_code_generator(self) -> SecretsVerificationCodeGenerator:
         return SecretsVerificationCodeGenerator(
             code_length=6,
+        )
+
+    @provide(scope=Scope.APP, provides=IEmailSender)
+    async def email_sender(
+        self,
+        config: AppConfig,
+    ) -> IEmailSender:
+        return SMTPLibEmailSender(
+            host=config.email.smtp_host,
+            port=config.email.smtp_port,
+            login=config.email.username,
+            password=config.email.password,
+            from_author=config.email.from_name,
+            from_email=config.email.from_email,
+            timeout=config.email.timeout,
         )
 
     @provide(scope=Scope.REQUEST, provides=IEmailLoginChallengeStore)
@@ -200,11 +217,13 @@ class AuthProvider(Provider):
         code_generator: IVerificationCodeGenerator,
         code_hasher: IVerificationCodeHasher,
         challenge_store: IEmailLoginChallengeStore,
+        email_sender: IEmailSender,
     ) -> RequestEmailCodeAtLoginUseCase:
         return RequestEmailCodeAtLoginUseCase(
             code_generator=code_generator,
             code_hasher=code_hasher,
             challenge_store=challenge_store,
+            email_sender=email_sender,
             ttl_seconds=300,
         )
 

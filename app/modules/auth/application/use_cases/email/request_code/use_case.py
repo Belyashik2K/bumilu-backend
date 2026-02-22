@@ -1,4 +1,5 @@
 from app.core.application.use_cases.base import IBaseUseCase
+from app.modules.auth.application.interfaces.email_sender import IEmailSender
 from app.modules.auth.application.interfaces.generators import (
     IVerificationCodeGenerator,
 )
@@ -24,11 +25,13 @@ class RequestEmailCodeAtLoginUseCase(
         code_generator: IVerificationCodeGenerator,
         code_hasher: IVerificationCodeHasher,
         challenge_store: IEmailLoginChallengeStore,
+        email_sender: IEmailSender,
         ttl_seconds: int,
     ) -> None:
         self._code_generator = code_generator
         self._code_hasher = code_hasher
         self._challenge_store = challenge_store
+        self._email_sender = email_sender
         self._ttl_seconds = ttl_seconds
 
     async def __call__(
@@ -44,8 +47,10 @@ class RequestEmailCodeAtLoginUseCase(
             email=email, code_hash=code_hash, ttl_seconds=self._ttl_seconds
         )
 
-        print(
-            f"Verification code for {email.value}: {code} (hash: {code_hash})"
-        )  # In real application, send this code via email
+        await self._email_sender.send(
+            to=email,
+            subject="Your login code",
+            body=f"Your login code is: {code}",
+        )
 
         return RequestEmailCodeAtLoginOutputDTO()
