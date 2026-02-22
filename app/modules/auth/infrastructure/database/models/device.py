@@ -6,6 +6,7 @@ from sqlalchemy import (
 )
 from sqlalchemy import (
     VARCHAR,
+    DateTime,
     Enum,
     ForeignKey,
 )
@@ -40,10 +41,10 @@ class DeviceModel(PKUUIDMixin, CreatedAtMixin, BaseModel):
         _UUID, ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
 
-    last_seen_at: Mapped[datetime] = mapped_column(index=True)
+    last_seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
 
-    auth_session: Mapped["AuthSessionModel"] = relationship(
-        "RefreshSessionModel",
+    auth_sessions: Mapped[list["AuthSessionModel"]] = relationship(
+        "AuthSessionModel",
         back_populates="device",
-        lazy="joined",
+        lazy="raise",
     )

@@ -39,6 +39,7 @@ class LoginAsGuestUseCase(
         if device is None or not device.has_guest_user():
             if device is None:
                 device = Device.create(
+                    device_id=input_data.device_id,
                     platform=input_data.device_platform,
                     name=input_data.device_name,
                     app_version=input_data.app_version,
