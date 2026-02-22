@@ -4,6 +4,7 @@ from typing import (
 )
 
 from sqlalchemy import (
+    DateTime,
     Enum,
 )
 from sqlalchemy.orm import (
@@ -29,7 +30,7 @@ class UserModel(PKUUIDMixin, TimestampMixin, BaseModel):
     __tablename__ = "users"
 
     email: Mapped[str | None] = mapped_column(unique=True)
-    email_verified_at: Mapped[datetime | None] = mapped_column()
+    email_verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     role: Mapped[UserRoleEnum] = mapped_column(
         Enum(UserRoleEnum, name="user_role_enum")
     )
