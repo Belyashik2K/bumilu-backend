@@ -1,3 +1,8 @@
+from datetime import (
+    datetime,
+    timedelta,
+)
+
 import jwt
 
 from app.core.shared.domain.value_objects.id import (
@@ -22,6 +27,10 @@ class PyJWTAccessTokenManager(IAccessTokenManager):
         self._algorithm = algorithm
         self._issuer = issuer
 
+    @staticmethod
+    def _get_expiration_time(seconds: int) -> datetime:
+        return get_current_dt() + timedelta(seconds=seconds)
+
     def issue(
         self,
         user_id: UserIdVO,
@@ -33,7 +42,7 @@ class PyJWTAccessTokenManager(IAccessTokenManager):
             "type": "access",
             "sub": str(user_id),
             "iss": self._issuer,
-            "exp": ttl,
+            "exp": self._get_expiration_time(seconds=ttl),
             "iat": get_current_dt(),
             "session_id": str(session_id),
             "role": role.value,
