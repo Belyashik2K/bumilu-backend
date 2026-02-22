@@ -31,11 +31,11 @@ class PyJWTAccessTokenManager(IAccessTokenManager):
     ) -> str:
         payload = {
             "type": "access",
-            "sub": user_id.value,
+            "sub": str(user_id),
             "iss": self._issuer,
             "exp": ttl,
             "iat": get_current_dt(),
-            "session_id": session_id.value,
+            "session_id": str(session_id),
             "role": role.value,
         }
         token = jwt.encode(

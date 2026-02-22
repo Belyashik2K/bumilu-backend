@@ -59,13 +59,14 @@ class Device:
     def create(
         cls,
         *,
+        device_id: DeviceIdVO,
         platform: DevicePlatformEnum,
         app_version: str,
         guest_user_id: UserIdVO | None = None,
         name: str | None = None,
     ) -> Self:
         return cls(
-            id=DeviceIdVO.new(),
+            id=device_id,
             platform=platform,
             name=name,
             app_version=app_version,

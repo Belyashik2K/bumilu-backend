@@ -5,6 +5,7 @@ from sqlalchemy import (
     UUID as _UUID,
 )
 from sqlalchemy import (
+    DateTime,
     ForeignKey,
     Index,
 )
@@ -36,18 +37,20 @@ class AuthSessionModel(PKUUIDMixin, CreatedAtMixin, BaseModel):
         _UUID, ForeignKey("devices.id", ondelete="CASCADE"), index=True
     )
     refresh_token_hash: Mapped[str] = mapped_column(unique=True)
-    expires_at: Mapped[datetime] = mapped_column(index=True)
-    revoked_at: Mapped[datetime | None] = mapped_column(index=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    revoked_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), index=True
+    )
 
     user: Mapped["UserModel"] = relationship(
         "UserModel",
         back_populates="auth_sessions",
-        lazy="joined",
+        lazy="raise",
     )
     device: Mapped["DeviceModel"] = relationship(
         "DeviceModel",
-        back_populates="auth_session",
-        lazy="joined",
+        back_populates="auth_sessions",
+        lazy="raise",
     )
 
     __table_args__ = (

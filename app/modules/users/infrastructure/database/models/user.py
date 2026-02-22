@@ -35,8 +35,8 @@ class UserModel(PKUUIDMixin, TimestampMixin, BaseModel):
     )
 
     auth_sessions: Mapped[list["AuthSessionModel"]] = relationship(
-        "RefreshSessionModel",
+        "AuthSessionModel",
         back_populates="user",
         cascade="all, delete-orphan",
-        lazy="selectin",
+        lazy="raise",
     )

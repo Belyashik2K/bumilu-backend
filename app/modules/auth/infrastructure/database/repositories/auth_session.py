@@ -51,7 +51,7 @@ class SQLAlchemyAuthSessionRepository(
         stmt = (
             update(AuthSessionModel)
             .where(
-                AuthSessionModel.device_id == device_id,
+                AuthSessionModel.device_id == device_id.value,
                 AuthSessionModel.revoked_at.is_(None),
             )
             .values(revoked_at=func.now())

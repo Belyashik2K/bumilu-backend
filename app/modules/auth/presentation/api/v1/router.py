@@ -1,4 +1,16 @@
+from dishka import FromDishka
+from dishka.integrations.fastapi import inject
 from fastapi import APIRouter
+
+from app.core.shared.domain.value_objects.id import DeviceIdVO
+from app.modules.auth.application.use_cases.login_as_guest import (
+    LoginAsGuestInputDTO,
+    LoginAsGuestUseCase,
+)
+from app.modules.auth.presentation.api.schemas.login import (
+    LoginAsGuestRequestSchema,
+    LoginAsGuestResponseSchema,
+)
 
 auth_router = APIRouter(
     prefix="/auth",
@@ -7,8 +19,20 @@ auth_router = APIRouter(
 
 
 @auth_router.post("/login/guest")
-async def login_as_guest() -> None:
-    raise NotImplementedError
+@inject
+async def login_as_guest(
+    uc: FromDishka[LoginAsGuestUseCase],
+    data: LoginAsGuestRequestSchema,
+) -> LoginAsGuestResponseSchema:
+    result = await uc(
+        LoginAsGuestInputDTO(
+            device_id=DeviceIdVO.from_uuid(data.device_id),
+            device_platform=data.device_platform,
+            device_name=data.device_name,
+            app_version=data.app_version,
+        )
+    )
+    return LoginAsGuestResponseSchema.model_validate(result, from_attributes=True)
 
 
 @auth_router.post("/login/email/request")
