@@ -68,7 +68,8 @@ select = [
 ]
 ignore = [
     "E203", # black compatibility
-    "RUF003" # russian language in docstrings
+    "E501", # line length
+    "RUF003" # russian language in docstrings,
 ]
 
 fixable = ["ALL"]

@@ -52,6 +52,10 @@ class JWTConfig(BaseModel):
     refresh_token_ttl_sec: int
 
 
+class HMACConfig(BaseModel):
+    secret_key: str
+
+
 class CORSConfig(BaseModel):
     enabled: bool
     allow_origins: list[str]
@@ -77,6 +81,7 @@ class AppConfig(BaseSettings):
     database: DatabaseConfig
     redis: RedisConfig
     jwt: JWTConfig
+    hmac: HMACConfig
     cors: CORSConfig
     run: RunConfig
 

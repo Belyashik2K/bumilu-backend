@@ -1,1 +1,1 @@
-from .pwdlib_token_hasher import PWDLibTokenHasher
+from .hmac_token_hasher import HMACTokenHasher

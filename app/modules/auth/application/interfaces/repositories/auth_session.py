@@ -16,3 +16,9 @@ class IAuthSessionRepository(IBaseRepository[AuthSession], ABC):
         self,
         device_id: DeviceIdVO,
     ) -> None: ...
+
+    @abstractmethod
+    async def get_by_refresh_token_hash(
+        self,
+        refresh_token_hash: str,
+    ) -> AuthSession | None: ...
