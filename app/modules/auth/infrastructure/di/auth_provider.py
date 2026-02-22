@@ -21,6 +21,7 @@ from app.modules.auth.application.interfaces.repositories.device import (
 from app.modules.auth.application.interfaces.token_hasher import ITokenHasher
 from app.modules.auth.application.services.auth_session import AuthSessionService
 from app.modules.auth.application.use_cases.login_as_guest import LoginAsGuestUseCase
+from app.modules.auth.application.use_cases.logout.use_case import LogoutUseCase
 from app.modules.auth.application.use_cases.refresh_session.use_case import (
     RefreshAuthSessionUseCase,
 )
@@ -87,7 +88,7 @@ class AuthProvider(Provider):
     async def auth_session_service(
         self,
         config: AppConfig,
-        auth_sessions: IAuthSessionRepository,
+        auth_session_repository: IAuthSessionRepository,
         access_token_manager: IAccessTokenManager,
         refresh_token_generator: IRefreshTokenGenerator,
         token_hasher: ITokenHasher,
@@ -95,7 +96,7 @@ class AuthProvider(Provider):
         return AuthSessionService(
             access_ttl_seconds=config.jwt.access_token_ttl_sec,
             refresh_ttl_seconds=config.jwt.refresh_token_ttl_sec,
-            auth_session_repository=auth_sessions,
+            auth_session_repository=auth_session_repository,
             access_token_manager=access_token_manager,
             refresh_token_generator=refresh_token_generator,
             token_hasher=token_hasher,
@@ -104,25 +105,38 @@ class AuthProvider(Provider):
     @provide(scope=Scope.REQUEST)
     async def login_as_guest_uc(
         self,
-        users: IUserRepository,
-        devices: IDeviceRepository,
+        user_repository: IUserRepository,
+        device_repository: IDeviceRepository,
+        auth_service_repository: IAuthSessionRepository,
         auth_session_service: AuthSessionService,
     ) -> LoginAsGuestUseCase:
         return LoginAsGuestUseCase(
-            user_repository=users,
-            device_repository=devices,
+            user_repository=user_repository,
+            device_repository=device_repository,
+            auth_session_repository=auth_service_repository,
             auth_session_service=auth_session_service,
         )
 
     @provide(scope=Scope.REQUEST)
     async def refresh_session_uc(
         self,
-        auth_sessions: IAuthSessionRepository,
-        users: IUserRepository,
+        auth_session_repository: IAuthSessionRepository,
+        user_repository: IUserRepository,
         auth_session_service: AuthSessionService,
     ) -> RefreshAuthSessionUseCase:
         return RefreshAuthSessionUseCase(
-            auth_session_repository=auth_sessions,
-            user_repository=users,
+            auth_session_repository=auth_session_repository,
+            user_repository=user_repository,
+            auth_session_service=auth_session_service,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def logout_uc(
+        self,
+        auth_session_repository: IAuthSessionRepository,
+        auth_session_service: AuthSessionService,
+    ) -> LogoutUseCase:
+        return LogoutUseCase(
+            auth_session_repository=auth_session_repository,
             auth_session_service=auth_session_service,
         )

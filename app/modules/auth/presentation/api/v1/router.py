@@ -1,11 +1,14 @@
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter
+from starlette import status
 
 from app.modules.auth.application.use_cases.login_as_guest import (
     LoginAsGuestInputDTO,
     LoginAsGuestUseCase,
 )
+from app.modules.auth.application.use_cases.logout import LogoutInputDTO
+from app.modules.auth.application.use_cases.logout.use_case import LogoutUseCase
 from app.modules.auth.application.use_cases.refresh_session import (
     RefreshAuthSessionInputDTO,
 )
@@ -16,6 +19,7 @@ from app.modules.auth.presentation.api.schemas.login import (
     LoginAsGuestRequestSchema,
     LoginAsGuestResponseSchema,
 )
+from app.modules.auth.presentation.api.schemas.logout import LogoutRequestSchema
 from app.modules.auth.presentation.api.schemas.refresh import (
     RefreshAuthSessionRequestSchema,
     RefreshAuthSessionResponseSchema,
@@ -68,6 +72,15 @@ async def refresh(
     return RefreshAuthSessionResponseSchema.model_validate(result, from_attributes=True)
 
 
-@auth_router.post("/logout")
-async def logout() -> None:
-    raise NotImplementedError
+@auth_router.post(
+    "/logout",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+@inject
+async def logout(uc: FromDishka[LogoutUseCase], data: LogoutRequestSchema) -> None:
+    await uc(
+        LogoutInputDTO(
+            refresh_token=data.refresh_token,
+            device_id=data.device_id,
+        )
+    )
