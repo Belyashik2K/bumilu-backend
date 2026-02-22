@@ -1,4 +1,5 @@
 from app.core.application.use_cases.base import IBaseUseCase
+from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
 )
@@ -43,9 +44,9 @@ class RefreshAuthSessionUseCase(
         if session is None or not session.is_active():
             raise ValueError("Invalid refresh token")
 
-        if session.device_id != input_data.device_id:
-            # TODO: complete VO to compare
-            ...
+        current_device_id = DeviceIdVO.from_uuid(input_data.device_id)
+        if session.device_id != current_device_id:
+            raise ValueError("Refresh token does not belong to the specified device")
 
         user = await self._user_repository.get_by_id(session.user_id)
         if user is None:
