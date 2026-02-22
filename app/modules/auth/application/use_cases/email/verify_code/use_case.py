@@ -3,6 +3,9 @@ from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
 )
+from app.modules.auth.application.interfaces.repositories.device import (
+    IDeviceRepository,
+)
 from app.modules.auth.application.services.auth_session import AuthSessionService
 from app.modules.auth.application.use_cases.email.verify_code import (
     VerifyEmailCodeAtLoginInputDTO,
@@ -12,6 +15,7 @@ from app.modules.auth.application.use_cases.shared_dtos import (
     TokenInfoDTO,
     UserInfoDTO,
 )
+from app.modules.auth.domain.models.device import Device
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 from app.modules.users.domain.models.user import User
 from app.modules.users.domain.value_objects import EmailVO
@@ -23,10 +27,12 @@ class VerifyEmailCodeAtLoginUseCase(
     def __init__(
         self,
         user_repository: IUserRepository,
+        device_repository: IDeviceRepository,
         auth_session_repository: IAuthSessionRepository,
         auth_session_service: AuthSessionService,
     ) -> None:
         self._user_repository = user_repository
+        self._device_repository = device_repository
         self._auth_session_repository = auth_session_repository
         self._auth_session_service = auth_session_service
 
@@ -46,9 +52,20 @@ class VerifyEmailCodeAtLoginUseCase(
 
         current_device_id = DeviceIdVO(input_data.device_id)
 
-        await self._auth_session_repository.revoke_active_for_device(
-            device_id=current_device_id
-        )  # TODD: think about it, maybe remove it
+        current_device = await self._device_repository.get_by_id(current_device_id)
+        if current_device is None:
+            print("Creating new device with ID:", current_device_id)
+            device = Device.create(
+                device_id=current_device_id,
+                platform=input_data.device_platform,
+                name=input_data.device_name,
+                app_version=input_data.app_version,
+            )
+            await self._device_repository.save(device)
+        else:
+            await self._auth_session_repository.revoke_active_for_device(
+                device_id=current_device_id
+            )  # TODD: think about it, maybe remove it
 
         tokens = await self._auth_session_service.issue(
             user_id=user.id,

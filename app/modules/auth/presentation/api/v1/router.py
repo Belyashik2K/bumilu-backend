@@ -7,6 +7,7 @@ from app.modules.auth.application.use_cases.email.request_code import (
     RequestEmailCodeAtLoginUseCase,
 )
 from app.modules.auth.application.use_cases.email.verify_code import (
+    VerifyEmailCodeAtLoginInputDTO,
     VerifyEmailCodeAtLoginUseCase,
 )
 from app.modules.auth.application.use_cases.guest.login import (
@@ -58,6 +59,7 @@ async def login_as_guest(
 
 
 @auth_router.post("/email/request")
+@inject
 async def request_email_code(
     uc: FromDishka[RequestEmailCodeAtLoginUseCase],
     data: RequestEmailCodeAtLoginRequestSchema,
@@ -71,7 +73,19 @@ async def verify_email_login(
     uc: FromDishka[VerifyEmailCodeAtLoginUseCase],
     data: VerifyEmailCodeAtLoginRequestSchema,
 ) -> VerifyEmailCodeAtLoginResponseSchema:
-    raise NotImplementedError
+    result = await uc(
+        VerifyEmailCodeAtLoginInputDTO(
+            email=str(data.email),
+            code=data.code,
+            device_id=data.device_id,
+            device_platform=data.device_platform,
+            device_name=data.device_name,
+            app_version=data.app_version,
+        )
+    )
+    return VerifyEmailCodeAtLoginResponseSchema.model_validate(
+        result, from_attributes=True
+    )
 
 
 @auth_router.post("/refresh")
