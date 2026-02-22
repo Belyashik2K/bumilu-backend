@@ -9,16 +9,16 @@ from app.core.shared.domain.value_objects.id import (
 )
 from app.core.shared.enums import UserRoleEnum
 from app.core.shared.utils import get_current_dt
+from app.modules.auth.application.interfaces.generators import (
+    IRefreshTokenGenerator,
+)
+from app.modules.auth.application.interfaces.hashers import ITokenHasher
 from app.modules.auth.application.interfaces.managers.access_token import (
     IAccessTokenManager,
-)
-from app.modules.auth.application.interfaces.refresh_token_generator import (
-    IRefreshTokenGenerator,
 )
 from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
 )
-from app.modules.auth.application.interfaces.token_hasher import ITokenHasher
 from app.modules.auth.domain.models.auth_session import AuthSession
 
 

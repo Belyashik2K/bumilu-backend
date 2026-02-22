@@ -4,6 +4,7 @@ from fastapi import APIRouter
 from starlette import status
 
 from app.modules.auth.application.use_cases.email.request_code import (
+    RequestEmailCodeAtLoginInputDTO,
     RequestEmailCodeAtLoginUseCase,
 )
 from app.modules.auth.application.use_cases.email.verify_code import (
@@ -64,7 +65,7 @@ async def request_email_code(
     uc: FromDishka[RequestEmailCodeAtLoginUseCase],
     data: RequestEmailCodeAtLoginRequestSchema,
 ) -> None:
-    raise NotImplementedError
+    await uc(RequestEmailCodeAtLoginInputDTO(email=str(data.email)))
 
 
 @auth_router.post("/email/verify")

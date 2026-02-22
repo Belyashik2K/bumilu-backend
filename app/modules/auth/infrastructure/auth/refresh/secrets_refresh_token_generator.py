@@ -1,6 +1,6 @@
 import secrets
 
-from app.modules.auth.application.interfaces.refresh_token_generator import (
+from app.modules.auth.application.interfaces.generators import (
     IRefreshTokenGenerator,
 )
 
