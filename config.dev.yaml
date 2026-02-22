@@ -1,0 +1,8 @@
+database:
+  type: "postgresql+asyncpg"
+  host: "postgres"
+  port: 5432
+  echo: true
+  echo_pool: false
+  pool_size: 10
+  max_overflow: 20
