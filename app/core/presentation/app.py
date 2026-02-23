@@ -12,6 +12,7 @@ from starlette.middleware.cors import CORSMiddleware
 from app.core.di import CoreProvider
 from app.core.infrastructure.config import AppConfig
 from app.core.presentation.api import api_router
+from app.core.presentation.exceptions import set_exception_handlers
 from app.modules.auth.di import AuthProvider
 from app.modules.users.di import UserProvider
 
@@ -46,6 +47,8 @@ def create_app() -> FastAPI:
         )
 
     app.include_router(api_router)
+
+    set_exception_handlers(app, ORJSONResponse)
 
     container = make_async_container(
         CoreProvider(), UserProvider(), AuthProvider(), FastapiProvider()
