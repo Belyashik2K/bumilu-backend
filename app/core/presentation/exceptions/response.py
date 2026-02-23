@@ -15,8 +15,8 @@ class ErrorResponseSchema(BaseModel):
         description="A human-readable message describing the error.",
         examples=["I'm a teapot. You are a teapot. We are all teapots."],
     )
-    details: Mapping[str, Any] | None = Field(
-        None,
+    details: Mapping[str, Any] = Field(
+        {},
         description="Additional details about the error.",
         examples=[{"tea": "pot"}],
     )
