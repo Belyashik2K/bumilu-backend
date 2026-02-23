@@ -79,8 +79,9 @@ async def request_email_code(
     uc: FromDishka[RequestEmailCodeAtLoginUseCase],
     data: RequestEmailCodeAtLoginRequestSchema,
     headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
-) -> None:
+) -> dict:
     await uc(RequestEmailCodeAtLoginInputDTO(email=str(data.email)))
+    return {}
 
 
 @auth_router.post(
