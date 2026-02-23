@@ -24,9 +24,9 @@ class CoreProvider(Provider):
         return SQLAlchemyDatabaseHelper(
             dsn=config.database.dsn,
             echo=config.database.echo,
-            echo_pool=config.database.echo_pool,
-            pool_size=config.database.pool_size,
-            max_overflow=config.database.max_overflow,
+            echo_pool=config.database.pool.echo,
+            pool_size=config.database.pool.size,
+            max_overflow=config.database.pool.max_overflow,
         )
 
     @provide(scope=Scope.REQUEST)
