@@ -226,6 +226,7 @@ class AuthProvider(Provider):
             email_sender=email_sender,
             email_subject=config.auth.email.templates.otp.subject,
             email_body_template=config.auth.email.templates.otp.body,
+            resend_cooldown_seconds=config.auth.otp.resend_cooldown_sec,
             ttl_seconds=config.auth.otp.ttl_min * 60,
         )
 

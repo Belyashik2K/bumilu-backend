@@ -97,6 +97,7 @@ class OTPConfig(BaseModel):
     hash_secret_key: str
     length: int
     ttl_min: int
+    resend_cooldown_sec: int
 
 
 class OTPTemplateConfig(BaseModel):

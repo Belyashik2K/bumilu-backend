@@ -38,7 +38,7 @@ def map_app_exception_to_http(exc: BaseApplicationException) -> tuple[int, str]:
         ApplicationErrorCodeEnum.FORBIDDEN: (HTTP_403_FORBIDDEN, exc.message),
         ApplicationErrorCodeEnum.NOT_FOUND: (HTTP_404_NOT_FOUND, exc.message),
         ApplicationErrorCodeEnum.CONFLICT: (HTTP_409_CONFLICT, exc.message),
-        ApplicationErrorCodeEnum.TOO_MANY_REQUESTS: (
+        ApplicationErrorCodeEnum.RATE_LIMIT_EXCEEDED: (
             HTTP_429_TOO_MANY_REQUESTS,
             exc.message,
         ),
