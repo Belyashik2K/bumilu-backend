@@ -3,6 +3,7 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter
 from starlette import status
 
+from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.modules.auth.application.use_cases.email.request_code import (
     RequestEmailCodeAtLoginInputDTO,
     RequestEmailCodeAtLoginUseCase,
@@ -42,7 +43,7 @@ auth_router = APIRouter(
 )
 
 
-@auth_router.post("/guest")
+@auth_router.post("/guest", responses=generate_responses_for_endpoint())
 @inject
 async def login_as_guest(
     uc: FromDishka[LoginAsGuestUseCase],
@@ -59,7 +60,12 @@ async def login_as_guest(
     return LoginAsGuestResponseSchema.model_validate(result, from_attributes=True)
 
 
-@auth_router.post("/email/request")
+@auth_router.post(
+    "/email/request",
+    responses=generate_responses_for_endpoint(
+        status.HTTP_400_BAD_REQUEST,
+    ),
+)
 @inject
 async def request_email_code(
     uc: FromDishka[RequestEmailCodeAtLoginUseCase],
@@ -68,7 +74,12 @@ async def request_email_code(
     await uc(RequestEmailCodeAtLoginInputDTO(email=str(data.email)))
 
 
-@auth_router.post("/email/verify")
+@auth_router.post(
+    "/email/verify",
+    responses=generate_responses_for_endpoint(
+        status.HTTP_400_BAD_REQUEST,
+    ),
+)
 @inject
 async def verify_email_login(
     uc: FromDishka[VerifyEmailCodeAtLoginUseCase],
@@ -89,7 +100,12 @@ async def verify_email_login(
     )
 
 
-@auth_router.post("/refresh")
+@auth_router.post(
+    "/refresh",
+    responses=generate_responses_for_endpoint(
+        status.HTTP_401_UNAUTHORIZED,
+    ),
+)
 @inject
 async def refresh(
     uc: FromDishka[RefreshAuthSessionUseCase], data: RefreshAuthSessionRequestSchema
@@ -106,6 +122,7 @@ async def refresh(
 @auth_router.post(
     "/logout",
     status_code=status.HTTP_204_NO_CONTENT,
+    responses=generate_responses_for_endpoint(),
 )
 @inject
 async def logout(uc: FromDishka[LogoutUseCase], data: LogoutRequestSchema) -> None:
