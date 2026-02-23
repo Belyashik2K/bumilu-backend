@@ -41,31 +41,29 @@ from app.modules.auth.application.use_cases.logout.use_case import LogoutUseCase
 from app.modules.auth.application.use_cases.refresh_session.use_case import (
     RefreshAuthSessionUseCase,
 )
-from app.modules.auth.infrastructure.auth.access import (
-    PyJWTAccessTokenManager,
-)
-from app.modules.auth.infrastructure.auth.hashing import (
-    HMACTokenHasher,
-)
-from app.modules.auth.infrastructure.auth.hashing.hmac_verification_code_hasher import (
-    HMACVerificationCodeHasher,
-)
-from app.modules.auth.infrastructure.auth.random_verification_code_generator import (
-    SecretsVerificationCodeGenerator,
-)
-from app.modules.auth.infrastructure.auth.refresh import (
-    SecretsRefreshTokenGenerator,
-)
 from app.modules.auth.infrastructure.database.repositories.auth_session import (
     SQLAlchemyAuthSessionRepository,
 )
 from app.modules.auth.infrastructure.database.repositories.device import (
     SQLAlchemyDeviceRepository,
 )
-from app.modules.auth.infrastructure.redis_email_challenge_store import (
-    RedisEmailLoginChallengeStore,
+from app.modules.auth.infrastructure.generators.random_verification_code_generator import (
+    SecretsVerificationCodeGenerator,
+)
+from app.modules.auth.infrastructure.generators.secrets_refresh_token_generator import (
+    SecretsRefreshTokenGenerator,
+)
+from app.modules.auth.infrastructure.hashers.hmac_token_hasher import HMACTokenHasher
+from app.modules.auth.infrastructure.hashers.hmac_verification_code_hasher import (
+    HMACVerificationCodeHasher,
+)
+from app.modules.auth.infrastructure.managers.pyjwt_access_token_manager import (
+    PyJWTAccessTokenManager,
 )
 from app.modules.auth.infrastructure.smtplib_email_sender import SMTPLibEmailSender
+from app.modules.auth.infrastructure.stores.redis_email_challenge_store import (
+    RedisEmailLoginChallengeStore,
+)
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 
 
