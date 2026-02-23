@@ -6,3 +6,4 @@ from enum import (
 class DomainErrorCodeEnum(StrEnum):
     INVARIANT_VIOLATION = "invariant_violation"
     VALIDATION = "validation"
+    CONFLICT = "conflict"

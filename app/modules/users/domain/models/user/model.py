@@ -10,6 +10,11 @@ from app.core.shared.domain.value_objects.id import (
 )
 from app.core.shared.enums import UserRoleEnum
 from app.core.shared.utils import get_current_dt
+from app.modules.users.domain.models.user.exceptions import (
+    CannotVerifyEmailWithoutEmail,
+    UserEmailAlreadySet,
+    VerifiedUserCannotBeGuest,
+)
 from app.modules.users.domain.value_objects import EmailVO
 
 
@@ -29,7 +34,7 @@ class User:
         cls, *, email: EmailVO, role: UserRoleEnum = UserRoleEnum.USER
     ) -> Self:
         if role is UserRoleEnum.GUEST:
-            raise ValueError("Guest cannot be created as verified.")
+            raise VerifiedUserCannotBeGuest()
         now = get_current_dt()
         return cls(
             id=UserIdVO.new(),
@@ -40,13 +45,13 @@ class User:
 
     def attach_email(self, email: EmailVO) -> None:
         if self.email is not None and self.email != email:
-            raise ValueError("Email already set.")
+            raise UserEmailAlreadySet()
         self.email = email
         self.email_verified_at = None
 
     def verify_email(self) -> None:
         if self.email is None:
-            raise ValueError("Cannot verify email without email address.")
+            raise CannotVerifyEmailWithoutEmail()
         if self.email_verified_at is not None:
             return
         self.email_verified_at = get_current_dt()
