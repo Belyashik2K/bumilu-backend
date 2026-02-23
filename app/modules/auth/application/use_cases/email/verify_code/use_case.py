@@ -44,7 +44,7 @@ class VerifyEmailCodeAtLoginUseCase(
         self._challenge_store = challenge_store
         self._code_hasher = code_hasher
 
-    async def __call__(
+    async def execute(
         self,
         input_data: VerifyEmailCodeAtLoginInputDTO,
     ) -> VerifyEmailCodeAtLoginOutputDTO:

@@ -31,7 +31,7 @@ class RefreshAuthSessionUseCase(
         self._user_repository = user_repository
         self._auth_session_service = auth_session_service
 
-    async def __call__(
+    async def execute(
         self,
         input_data: RefreshAuthSessionInputDTO,
     ) -> RefreshAuthSessionOutputDTO:

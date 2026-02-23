@@ -38,7 +38,7 @@ class RequestEmailCodeAtLoginUseCase(
         self._email_body_template = email_body_template
         self._ttl_seconds = ttl_seconds
 
-    async def __call__(
+    async def execute(
         self,
         input_data: RequestEmailCodeAtLoginInputDTO,
     ) -> RequestEmailCodeAtLoginOutputDTO:
