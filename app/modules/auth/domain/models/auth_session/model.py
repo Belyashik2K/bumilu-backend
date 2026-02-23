@@ -11,6 +11,10 @@ from app.core.shared.domain.value_objects.id import (
     UserIdVO,
 )
 from app.core.shared.utils import get_current_dt
+from app.modules.auth.domain.models.auth_session.exceptions import (
+    CannotRotateInactiveSession,
+    SessionExpirationMustBeInFuture,
+)
 
 
 @dataclass(slots=True, kw_only=True)
@@ -35,7 +39,7 @@ class AuthSession:
         refresh_token_hash: str,
     ) -> None:
         if not self.is_active():
-            raise ValueError("Cannot rotate a revoked or expired session")
+            raise CannotRotateInactiveSession()
         if refresh_token_hash == self.refresh_token_hash:
             return
         self.refresh_token_hash = refresh_token_hash
@@ -48,8 +52,10 @@ class AuthSession:
         refresh_token_hash: str,
         expires_at: datetime,
     ) -> Self:
-        if expires_at <= get_current_dt():
-            raise ValueError("Expiration time must be in the future")
+        if (
+            expires_at <= get_current_dt()
+        ):  # TODO: Make domain undependent of current time by injecting a now
+            raise SessionExpirationMustBeInFuture(expires_at)
 
         return cls(
             id=SessionIdVO.new(),
