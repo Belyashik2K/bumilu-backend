@@ -9,10 +9,10 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from starlette.middleware.cors import CORSMiddleware
 
+from app.core.di import CoreProvider
 from app.core.infrastructure.config import AppConfig
-from app.core.infrastructure.di import CoreProvider
 from app.core.presentation.api import api_router
-from app.modules.auth.infrastructure.di import AuthProvider
+from app.modules.auth.di import AuthProvider
 from app.modules.users.infrastructure.di import UserProvider
 
 
