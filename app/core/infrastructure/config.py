@@ -6,48 +6,111 @@ from pydantic_settings import (
     YamlConfigSettingsSource,
 )
 
+# ======== DocsConfig ========
+
+
+class DocsURLsConfig(BaseModel):
+    openapi: str
+    redoc: str
+    swagger: str
+
 
 class DocsConfig(BaseModel):
     title: str
     description: str
     version: str
-    openapi_url: str
-    redoc_url: str
-    swagger_url: str
+    urls: DocsURLsConfig
+
+
+# ================================
+
+# ======== DatabaseConfig ========
+
+
+class DatabasePoolConfig(BaseModel):
+    echo: bool
+    size: int
+    max_overflow: int
 
 
 class DatabaseConfig(BaseModel):
-    type: str
+    driver: str
     user: str
     password: str
     host: str
     port: int
     name: str
     echo: bool
-    echo_pool: bool
-    pool_size: int
-    max_overflow: int
+    pool: DatabasePoolConfig
 
     @property
     def dsn(self) -> str:
-        return f"{self.type}://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
+        return f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
+
+
+# ================================
+
+# ======== RedisConfig ========
 
 
 class RedisConfig(BaseModel):
     username: str | None = None
     host: str
     port: int
-    store: int
+    db: int
     password: str
 
     @property
     def dsn(self) -> str:
-        return f"redis://:{self.password}@{self.host}:{self.port}/{self.store}"
+        return f"redis://:{self.password}@{self.host}:{self.port}/{self.db}"
 
 
-class EmailConfig(BaseModel):
-    smtp_host: str
-    smtp_port: int
+# ================================
+
+# ======== AuthConfig ========
+
+
+class SessionAccessConfig(BaseModel):
+    secret_key: str
+    algorithm: str
+    issuer: str
+    ttl_sec: int
+
+
+class SessionRefreshConfig(BaseModel):
+    hash_secret_key: str
+    length: int
+    ttl_sec: int
+
+
+class SessionTokensConfig(BaseModel):
+    access: SessionAccessConfig
+    refresh: SessionRefreshConfig
+
+
+class SessionConfig(BaseModel):
+    tokens: SessionTokensConfig
+
+
+class OTPConfig(BaseModel):
+    storage_key_prefix: str
+    hash_secret_key: str
+    length: int
+    ttl_min: int
+
+
+class OTPTemplateConfig(BaseModel):
+    subject: str
+    body: str
+
+
+class EmailTemplatesConfig(BaseModel):
+    otp: OTPTemplateConfig
+
+
+class EmailSMTPConfig(BaseModel):
+    host: str
+    port: int
     username: str
     password: str
     from_name: str
@@ -55,16 +118,18 @@ class EmailConfig(BaseModel):
     timeout: int
 
 
-class JWTConfig(BaseModel):
-    secret_key: str
-    algorithm: str
-    issuer: str
-    access_token_ttl_sec: int
-    refresh_token_ttl_sec: int
+class EmailConfig(BaseModel):
+    smtp: EmailSMTPConfig
+    templates: EmailTemplatesConfig
 
 
-class HMACConfig(BaseModel):
-    secret_key: str
+class AuthConfig(BaseModel):
+    session: SessionConfig
+    otp: OTPConfig
+    email: EmailConfig
+
+
+# ================================
 
 
 class CORSConfig(BaseModel):
@@ -75,7 +140,7 @@ class CORSConfig(BaseModel):
     allow_headers: list[str]
 
 
-class RunConfig(BaseModel):
+class ServerConfig(BaseModel):
     host: str
     port: int
 
@@ -91,11 +156,9 @@ class AppConfig(BaseSettings):
     docs: DocsConfig
     database: DatabaseConfig
     redis: RedisConfig
-    jwt: JWTConfig
-    email: EmailConfig
-    hmac: HMACConfig
+    auth: AuthConfig
     cors: CORSConfig
-    run: RunConfig
+    server: ServerConfig
 
     @classmethod
     def settings_customise_sources(

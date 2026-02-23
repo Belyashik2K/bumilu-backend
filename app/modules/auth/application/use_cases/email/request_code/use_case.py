@@ -26,12 +26,16 @@ class RequestEmailCodeAtLoginUseCase(
         code_hasher: IVerificationCodeHasher,
         challenge_store: IEmailLoginChallengeStore,
         email_sender: IEmailSender,
+        email_subject: str,
+        email_body_template: str,
         ttl_seconds: int,
     ) -> None:
         self._code_generator = code_generator
         self._code_hasher = code_hasher
         self._challenge_store = challenge_store
         self._email_sender = email_sender
+        self._email_subject = email_subject
+        self._email_body_template = email_body_template
         self._ttl_seconds = ttl_seconds
 
     async def __call__(
@@ -49,8 +53,10 @@ class RequestEmailCodeAtLoginUseCase(
 
         await self._email_sender.send(
             to=email,
-            subject="Your login code",
-            body=f"Your login code is: {code}",
+            subject=self._email_subject,
+            body=self._email_body_template.format(
+                code=code, ttl_min=self._ttl_seconds // 60
+            ),
         )
 
         return RequestEmailCodeAtLoginOutputDTO()

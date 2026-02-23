@@ -29,9 +29,9 @@ def create_app() -> FastAPI:
         title=config.docs.title,
         description=config.docs.description,
         version=config.docs.version,
-        openapi_url=config.docs.openapi_url,
-        docs_url=config.docs.swagger_url,
-        redoc_url=config.docs.redoc_url,
+        openapi_url=config.docs.urls.openapi,
+        docs_url=config.docs.urls.swagger,
+        redoc_url=config.docs.urls.redoc,
         default_response_class=ORJSONResponse,
         lifespan=lifespan,
     )

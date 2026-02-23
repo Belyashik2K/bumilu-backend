@@ -30,7 +30,7 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
         password: str | None = None,
         host: str,
         port: int,
-        store: int,
+        db: int,
         key_prefix: str,
     ) -> None:
         self._redis = Redis(
@@ -38,7 +38,7 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
             port=port,
             username=username,
             password=password,
-            db=store,
+            db=db,
         )
         self._key_prefix = key_prefix
 

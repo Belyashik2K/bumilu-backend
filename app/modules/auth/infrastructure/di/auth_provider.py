@@ -76,9 +76,9 @@ class AuthProvider(Provider):
         config: AppConfig,
     ) -> PyJWTAccessTokenManager:
         return PyJWTAccessTokenManager(
-            secret_key=config.jwt.secret_key,
-            algorithm=config.jwt.algorithm,
-            issuer=config.jwt.issuer,
+            secret_key=config.auth.session.tokens.access.secret_key,
+            algorithm=config.auth.session.tokens.access.algorithm,
+            issuer=config.auth.session.tokens.access.issuer,
         )
 
     @provide(scope=Scope.APP, provides=IRefreshTokenGenerator)
@@ -91,7 +91,7 @@ class AuthProvider(Provider):
         config: AppConfig,
     ) -> HMACTokenHasher:
         return HMACTokenHasher(
-            secret=config.hmac.secret_key,
+            secret=config.auth.session.tokens.refresh.hash_secret_key
         )
 
     @provide(scope=Scope.APP, provides=IVerificationCodeHasher)
@@ -99,14 +99,15 @@ class AuthProvider(Provider):
         self,
         config: AppConfig,
     ) -> HMACVerificationCodeHasher:
-        return HMACVerificationCodeHasher(
-            secret=config.hmac.secret_key,
-        )
+        return HMACVerificationCodeHasher(secret=config.auth.otp.hash_secret_key)
 
     @provide(scope=Scope.APP, provides=IVerificationCodeGenerator)
-    async def verification_code_generator(self) -> SecretsVerificationCodeGenerator:
+    async def verification_code_generator(
+        self,
+        config: AppConfig,
+    ) -> SecretsVerificationCodeGenerator:
         return SecretsVerificationCodeGenerator(
-            code_length=6,
+            code_length=config.auth.otp.length,
         )
 
     @provide(scope=Scope.APP, provides=IEmailSender)
@@ -115,13 +116,13 @@ class AuthProvider(Provider):
         config: AppConfig,
     ) -> IEmailSender:
         return SMTPLibEmailSender(
-            host=config.email.smtp_host,
-            port=config.email.smtp_port,
-            login=config.email.username,
-            password=config.email.password,
-            from_author=config.email.from_name,
-            from_email=config.email.from_email,
-            timeout=config.email.timeout,
+            host=config.auth.email.smtp.host,
+            port=config.auth.email.smtp.port,
+            login=config.auth.email.smtp.username,
+            password=config.auth.email.smtp.password,
+            from_author=config.auth.email.smtp.from_name,
+            from_email=config.auth.email.smtp.from_email,
+            timeout=config.auth.email.smtp.timeout,
         )
 
     @provide(scope=Scope.REQUEST, provides=IEmailLoginChallengeStore)
@@ -134,8 +135,8 @@ class AuthProvider(Provider):
             password=config.redis.password,
             host=config.redis.host,
             port=config.redis.port,
-            store=config.redis.store,
-            key_prefix="email_login_challenge",
+            db=config.redis.db,
+            key_prefix=config.auth.otp.storage_key_prefix,
         )
 
     @provide(scope=Scope.REQUEST, provides=IAuthSessionRepository)
@@ -164,8 +165,8 @@ class AuthProvider(Provider):
         token_hasher: ITokenHasher,
     ) -> AuthSessionService:
         return AuthSessionService(
-            access_ttl_seconds=config.jwt.access_token_ttl_sec,
-            refresh_ttl_seconds=config.jwt.refresh_token_ttl_sec,
+            access_ttl_seconds=config.auth.session.tokens.access.ttl_sec,
+            refresh_ttl_seconds=config.auth.session.tokens.refresh.ttl_sec,
             auth_session_repository=auth_session_repository,
             access_token_manager=access_token_manager,
             refresh_token_generator=refresh_token_generator,
@@ -214,6 +215,7 @@ class AuthProvider(Provider):
     @provide(scope=Scope.REQUEST)
     async def request_code_uc(
         self,
+        config: AppConfig,
         code_generator: IVerificationCodeGenerator,
         code_hasher: IVerificationCodeHasher,
         challenge_store: IEmailLoginChallengeStore,
@@ -224,7 +226,9 @@ class AuthProvider(Provider):
             code_hasher=code_hasher,
             challenge_store=challenge_store,
             email_sender=email_sender,
-            ttl_seconds=300,
+            email_subject=config.auth.email.templates.otp.subject,
+            email_body_template=config.auth.email.templates.otp.body,
+            ttl_seconds=config.auth.otp.ttl_min * 60,
         )
 
     @provide(scope=Scope.REQUEST)
