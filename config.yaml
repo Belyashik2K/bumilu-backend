@@ -44,7 +44,10 @@ auth:
     templates:
       otp:
         subject: "Your BumiLu verification code"
-        body: "Your verification code is: {code}. It will expire in {ttl_min} minutes."
+        body: >
+          Your verification code is: {code}.
+
+          It will expire in {ttl_min} minutes.
 cors:
   enabled: false
   allow_origins: [ "http://localhost:3000" ]
