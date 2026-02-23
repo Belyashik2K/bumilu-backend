@@ -47,7 +47,7 @@ from app.modules.auth.presentation.api.schemas.refresh import (
 
 auth_router = APIRouter(
     prefix="/auth/sessions",
-    tags=["Auth"],
+    tags=["Auth (mobile)"],
 )
 
 
@@ -78,6 +78,7 @@ async def login_as_guest(
 async def request_email_code(
     uc: FromDishka[RequestEmailCodeAtLoginUseCase],
     data: RequestEmailCodeAtLoginRequestSchema,
+    headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
 ) -> None:
     await uc(RequestEmailCodeAtLoginInputDTO(email=str(data.email)))
 
@@ -117,12 +118,14 @@ async def verify_email_login(
 )
 @inject
 async def refresh(
-    uc: FromDishka[RefreshAuthSessionUseCase], data: RefreshAuthSessionRequestSchema
+    uc: FromDishka[RefreshAuthSessionUseCase],
+    data: RefreshAuthSessionRequestSchema,
+    headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
 ) -> RefreshAuthSessionResponseSchema:
     result = await uc(
         RefreshAuthSessionInputDTO(
             refresh_token=data.refresh_token,
-            device_id=data.device_id,
+            device_id=headers.device_id,
         )
     )
     return RefreshAuthSessionResponseSchema.model_validate(result, from_attributes=True)
@@ -134,10 +137,14 @@ async def refresh(
     responses=generate_responses_for_endpoint(),
 )
 @inject
-async def logout(uc: FromDishka[LogoutUseCase], data: LogoutRequestSchema) -> None:
+async def logout(
+    uc: FromDishka[LogoutUseCase],
+    data: LogoutRequestSchema,
+    headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
+) -> None:
     await uc(
         LogoutInputDTO(
             refresh_token=data.refresh_token,
-            device_id=data.device_id,
+            device_id=headers.device_id,
         )
     )
