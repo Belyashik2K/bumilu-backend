@@ -1,14 +1,42 @@
 name: bumilu-users-service
-
 services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    env_file: [ .env ]
+    environment:
+      POSTGRES_USER: ${DATABASE__USER:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE__PASSWORD:-postgres}
+      POSTGRES_DB: ${DATABASE__NAME:-bumilu_users}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      interval: 1s
+      retries: 5
+    networks:
+      - bumilu
+  redis:
+    image: redis:8.6-alpine
+    restart: unless-stopped
+    env_file: [ .env ]
+    command: [ "redis-server", "--requirepass", "${REDIS__PASSWORD:-redis}" ]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 1s
+      retries: 5
+    networks:
+      - bumilu
   api:
     build: .
     restart: unless-stopped
     env_file: [ .env ]
     networks:
       - bumilu
-    ports:
-      - "${RUN__PORT:-8000}:${RUN__PORT:-8000}" # Remove after traefik is set up
-
 networks:
   bumilu:
+volumes:
+  postgres_data:
+  redis_data:

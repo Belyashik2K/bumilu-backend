@@ -1,24 +1,38 @@
 [project]
-name = "bumilu-backend"
+name = "bumilu-users-service"
 version = "0.1.0"
-description = "Backend for mobile ans web application BumiLu (不迷路), PAB project"
+description = "Users service for mobile ans web application BumiLu (不迷路), PAB project"
 readme = "README.md"
 authors = [
-    { name = "Belyashik2K", email = "lovelybelyashik@gmail.com" }
+    { name = "Belyashik2K", email = "work@belyashik2k.ru" }
 ]
 requires-python = ">=3.11"
 dependencies = [
-    "fastapi>=0.129.0",
-    "gunicorn>=25.0.3",
-    "uvicorn[standard]>=0.40.0",
+    "aiosmtplib>=5.1.0",
+    "alembic>=1.18.4",
+    "dishka>=1.8.0",
+    "fastapi[all]>=0.129.0",
+    "pre-commit>=4.5.1",
+    "pwdlib[argon2]>=0.3.0",
+    "pydantic-settings[yaml]>=2.13.0",
+    "pyjwt>=2.11.0",
+    "redis>=7.2.0",
+    "sqlalchemy[postgresql-asyncpg]>=2.0.46",
+    "uuid6>=2025.0.1",
 ]
 
 [dependency-groups]
 dev = [
     "httpx>=0.28.1",
+    "mypy>=1.19.1",
+    "pre-commit>=4.5.1",
     "pytest>=9.0.2",
     "pytest-asyncio>=1.3.0",
+    "ruff>=0.15.1",
 ]
+
+[tool.uv]
+default-groups = []
 
 [tool.pytest.ini_options]
 minversion = "7.0"
@@ -27,3 +41,45 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 pythonpath = ["."]
 asyncio_mode = "auto"
+
+[tool.ruff]
+src = ["app", "tests"]
+
+line-length = 88
+target-version = "py311"
+
+exclude = [
+    ".venv", "venv",
+    "dist", "build",
+    ".mypy_cache", ".pytest_cache",
+    ".ruff_cache", "migrations",
+]
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle
+    "F", # pyflakes
+    "W", # warnings
+    "I", # import sorting
+    "B", # bugbear
+    "UP", # pyupgrade
+    "SIM", # simplify
+    "C4", # comprehensions
+    "RUF", # ruff
+]
+ignore = [
+    "E203", # black compatibility
+    "E501", # line length
+    "RUF003", # russian language in docstrings,
+    "B008", # Do not perform function calls in argument defaults
+]
+
+fixable = ["ALL"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/__init__.py" = ["F401"] # Ignore unused imports in __init__.py files
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
