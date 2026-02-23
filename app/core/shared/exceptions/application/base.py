@@ -39,6 +39,15 @@ class ApplicationConflictException(BaseApplicationException):
         )
 
 
+class ApplicationUnauthorizedException(BaseApplicationException):
+    def __init__(self, message: str, details: Mapping[str, Any] | None = None) -> None:
+        super().__init__(
+            message=message,
+            code=ApplicationErrorCodeEnum.UNAUTHORIZED,
+            details=details,
+        )
+
+
 class ApplicationForbiddenException(BaseApplicationException):
     def __init__(self, message: str, details: Mapping[str, Any] | None = None) -> None:
         super().__init__(

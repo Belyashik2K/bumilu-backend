@@ -15,6 +15,9 @@ from app.modules.auth.application.use_cases.email.verify_code import (
     VerifyEmailCodeAtLoginInputDTO,
     VerifyEmailCodeAtLoginOutputDTO,
 )
+from app.modules.auth.application.use_cases.email.verify_code.exceptions import (
+    InvalidEmailVerificationCode,
+)
 from app.modules.auth.application.use_cases.shared_dtos import (
     TokenInfoDTO,
     UserInfoDTO,
@@ -54,7 +57,7 @@ class VerifyEmailCodeAtLoginUseCase(
         code_hash = self._code_hasher.hash(email=email, code=code)
         ok = await self._challenge_store.consume(email=email, code_hash=code_hash)
         if not ok:
-            raise ValueError("Invalid code")
+            raise InvalidEmailVerificationCode()
 
         user = await self._user_repository.get_by_email(email)
         if user is None:
