@@ -20,8 +20,8 @@ from app.core.shared.exceptions import (
 )
 
 
-def _safe_details(details: Mapping[str, Any] | None = None) -> Mapping[str, Any] | None:
-    return details
+def _safe_details(details: Mapping[str, Any]) -> Mapping[str, Any] | None:
+    return details or {}
 
 
 def _pydantic_422_details(exc: RequestValidationError) -> Mapping[str, Any]:
