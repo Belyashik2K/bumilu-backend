@@ -21,7 +21,7 @@ from app.core.shared.exceptions import (
 def _safe_details(details: Mapping[str, Any] | None = None) -> Mapping[str, Any] | None:
     if details is None:
         return None
-    return {k: str(v) for k, v in details.items()}
+    return details
 
 
 def _prepare_response(

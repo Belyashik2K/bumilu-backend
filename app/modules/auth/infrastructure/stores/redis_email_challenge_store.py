@@ -21,6 +21,27 @@ end
 return 0
 """
 
+_SAVE_WITH_RL_LUA: Final[str] = r"""
+local challenge_key = KEYS[1]
+local rl_key = KEYS[2]
+
+local code_hash = ARGV[1]
+local ttl_seconds = tonumber(ARGV[2])
+local min_interval_seconds = tonumber(ARGV[3])
+
+-- cooldown active?
+local exists = redis.call("EXISTS", rl_key)
+if exists == 1 then
+  local ttl = redis.call("TTL", rl_key)
+  if ttl < 0 then ttl = min_interval_seconds end
+  return ttl
+end
+
+redis.call("SET", challenge_key, code_hash, "EX", ttl_seconds)
+redis.call("SET", rl_key, "1", "EX", min_interval_seconds)
+return 0
+"""
+
 
 class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
     def __init__(
@@ -42,19 +63,11 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
         )
         self._key_prefix = key_prefix
 
+    def _rl_key(self, email: EmailVO) -> str:
+        return f"{self._key_prefix}:rl:{email!s}"
+
     def _key(self, email: EmailVO) -> str:
         return f"{self._key_prefix}:{email!s}"
-
-    async def save(self, *, email: EmailVO, code_hash: str, ttl_seconds: int) -> None:
-        await self._redis.set(self._key(email), code_hash, ex=ttl_seconds)
-
-    async def verify(self, *, email: EmailVO, code_hash: str) -> bool:
-        cur = await self._redis.get(self._key(email))
-        if cur is None:
-            return False
-        if isinstance(cur, bytes):
-            cur = cur.decode("utf-8")
-        return cur == code_hash
 
     async def consume(self, *, email: EmailVO, code_hash: str) -> bool:
         res = await self._redis.eval(  # type: ignore
@@ -64,3 +77,22 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
             code_hash,
         )
         return bool(res)
+
+    async def save_with_rate_limit(
+        self,
+        *,
+        email: EmailVO,
+        code_hash: str,
+        ttl_seconds: int,
+        min_interval_seconds: int,
+    ) -> int:
+        res = await self._redis.eval(  # type: ignore
+            _SAVE_WITH_RL_LUA,
+            2,
+            self._key(email),
+            self._rl_key(email),
+            code_hash,
+            str(ttl_seconds),
+            str(min_interval_seconds),
+        )
+        return max(int(res), 0)

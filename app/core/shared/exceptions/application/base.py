@@ -55,11 +55,11 @@ class ApplicationForbiddenException(BaseApplicationException):
         )
 
 
-class ApplicationTooManyRequestsException(BaseApplicationException):
+class ApplicationRateLimitExceededException(BaseApplicationException):
     def __init__(self, message: str, details: Mapping[str, Any] | None = None) -> None:
         super().__init__(
             message=message,
-            code=ApplicationErrorCodeEnum.TOO_MANY_REQUESTS,
+            code=ApplicationErrorCodeEnum.RATE_LIMIT_EXCEEDED,
             details=details,
         )
 
