@@ -1,6 +1,11 @@
+from typing import Annotated
+
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
-from fastapi import APIRouter
+from fastapi import (
+    APIRouter,
+    Depends,
+)
 from starlette import status
 
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
@@ -24,8 +29,11 @@ from app.modules.auth.application.use_cases.refresh_session import (
 from app.modules.auth.application.use_cases.refresh_session.use_case import (
     RefreshAuthSessionUseCase,
 )
+from app.modules.auth.presentation.api.schemas.device import (
+    DeviceInfoHeadersSchema,
+    get_device_info_headers,
+)
 from app.modules.auth.presentation.api.schemas.login import (
-    LoginAsGuestRequestSchema,
     LoginAsGuestResponseSchema,
     RequestEmailCodeAtLoginRequestSchema,
     VerifyEmailCodeAtLoginRequestSchema,
@@ -47,14 +55,14 @@ auth_router = APIRouter(
 @inject
 async def login_as_guest(
     uc: FromDishka[LoginAsGuestUseCase],
-    data: LoginAsGuestRequestSchema,
+    headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
 ) -> LoginAsGuestResponseSchema:
     result = await uc(
         LoginAsGuestInputDTO(
-            device_id=data.device_id,
-            device_platform=data.device_platform,
-            device_name=data.device_name,
-            app_version=data.app_version,
+            device_id=headers.device_id,
+            device_platform=headers.device_platform,
+            device_name=headers.device_name,
+            app_version=headers.app_version,
         )
     )
     return LoginAsGuestResponseSchema.model_validate(result, from_attributes=True)
@@ -84,15 +92,16 @@ async def request_email_code(
 async def verify_email_login(
     uc: FromDishka[VerifyEmailCodeAtLoginUseCase],
     data: VerifyEmailCodeAtLoginRequestSchema,
+    headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
 ) -> VerifyEmailCodeAtLoginResponseSchema:
     result = await uc(
         VerifyEmailCodeAtLoginInputDTO(
             email=str(data.email),
             code=data.code,
-            device_id=data.device_id,
-            device_platform=data.device_platform,
-            device_name=data.device_name,
-            app_version=data.app_version,
+            device_id=headers.device_id,
+            device_platform=headers.device_platform,
+            device_name=headers.device_name,
+            app_version=headers.app_version,
         )
     )
     return VerifyEmailCodeAtLoginResponseSchema.model_validate(

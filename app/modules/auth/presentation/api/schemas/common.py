@@ -5,11 +5,19 @@ from pydantic import (
 )
 from uuid6 import uuid7
 
-from app.core.shared.enums import UserRoleEnum
+from app.core.shared.enums import (
+    DevicePlatformEnum,
+    UserRoleEnum,
+)
 
 DEVICE_ID_EXAMPLE = uuid7()
+DEVICE_PLATFORM_EXAMPLE = DevicePlatformEnum.ANDROID
+DEVICE_NAME_EXAMPLE = "Pixel 9 Pro (Android 14)"
+APP_VERSION_EXAMPLE = "1.0.0"
+
 EMAIL_EXAMPLE = "belyashik2k@bumilu.ru"
 VERIFICATION_CODE_EXAMPLE = "123456"
+
 TOKEN_EXAMPLE = "itsshowinglikeitstheendoftheworld"
 
 
