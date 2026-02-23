@@ -8,6 +8,9 @@ from app.modules.auth.application.use_cases.refresh_session import (
     RefreshAuthSessionInputDTO,
     RefreshAuthSessionOutputDTO,
 )
+from app.modules.auth.application.use_cases.refresh_session.exceptions import (
+    InvalidRefreshToken,
+)
 from app.modules.auth.application.use_cases.shared_dtos import (
     TokenInfoDTO,
     UserInfoDTO,
@@ -42,15 +45,15 @@ class RefreshAuthSessionUseCase(
         )
 
         if session is None or not session.is_active():
-            raise ValueError("Invalid refresh token")
+            raise InvalidRefreshToken()
 
         current_device_id = DeviceIdVO.from_uuid(input_data.device_id)
         if session.device_id != current_device_id:
-            raise ValueError("Refresh token does not belong to the specified device")
+            raise InvalidRefreshToken()
 
         user = await self._user_repository.get_by_id(session.user_id)
         if user is None:
-            raise ValueError("User not found")
+            raise InvalidRefreshToken()
 
         new_tokens = await self._auth_session_service.rotate(
             session=session,
