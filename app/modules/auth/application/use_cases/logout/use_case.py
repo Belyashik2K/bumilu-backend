@@ -19,7 +19,7 @@ class LogoutUseCase(IBaseUseCase[LogoutInputDTO, LogoutOutputDTO]):
         self._auth_session_repository = auth_session_repository
         self._auth_session_service = auth_session_service
 
-    async def __call__(
+    async def execute(
         self,
         input_data: LogoutInputDTO,
     ) -> LogoutOutputDTO:

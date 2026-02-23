@@ -39,7 +39,7 @@ class LoginAsGuestUseCase(
         self._auth_session_repository = auth_session_repository
         self._auth_session_service = auth_session_service
 
-    async def __call__(self, input_data: LoginAsGuestInputDTO) -> LoginAsGuestOutputDTO:
+    async def execute(self, input_data: LoginAsGuestInputDTO) -> LoginAsGuestOutputDTO:
         device_id = DeviceIdVO.from_uuid(input_data.device_id)
         device = await self._device_repository.get_by_id(device_id)
 
