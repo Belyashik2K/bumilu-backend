@@ -13,7 +13,7 @@ from app.core.di import CoreProvider
 from app.core.infrastructure.config import AppConfig
 from app.core.presentation.api import api_router
 from app.modules.auth.di import AuthProvider
-from app.modules.users.infrastructure.di import UserProvider
+from app.modules.users.di import UserProvider
 
 
 @asynccontextmanager
