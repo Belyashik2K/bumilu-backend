@@ -11,6 +11,9 @@ from app.core.shared.domain.value_objects.id import (
 )
 from app.core.shared.enums import DevicePlatformEnum
 from app.core.shared.utils import get_current_dt
+from app.modules.auth.domain.models.device.exceptions import (
+    DeviceAlreadyAttachedToDifferentGuestUser,
+)
 
 
 @dataclass(slots=True, kw_only=True)
@@ -47,7 +50,7 @@ class Device:
 
     def attach_guest_user(self, guest_user_id: UserIdVO) -> None:
         if self.guest_user_id is not None and self.guest_user_id != guest_user_id:
-            raise ValueError("Device already attached to a different guest user.")
+            raise DeviceAlreadyAttachedToDifferentGuestUser()
         if self.guest_user_id == guest_user_id:
             return
         self.guest_user_id = guest_user_id
