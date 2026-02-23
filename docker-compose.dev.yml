@@ -1,10 +1,18 @@
 services:
+  postgres:
+    ports:
+      - "${DATABASE__PORT:-5432}:${DATABASE__PORT:-5432}"
+  redis:
+    ports:
+      - "${REDIS__PORT:-6379}:${REDIS__PORT:-6379}"
   api:
     volumes:
       - .:/app
     command: >
-      uv run uvicorn app.presentation.app:app
+      uv run uvicorn app.core.presentation.app:app
       --host ${RUN__HOST:-0.0.0.0}
       --port ${RUN__PORT:-8000}
       --reload
       --reload-dir /app
+    ports:
+      - "${RUN__PORT:-8000}:${RUN__PORT:-8000}"

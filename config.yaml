@@ -1,0 +1,60 @@
+docs:
+  title: "BumiLu users-service API"
+  description: >
+    This is the API documentation for the BumiLu users-service.
+    It provides endpoints for authentication, chat, favorites and reviews management.
+  version: "1.0.0"
+  urls:
+    openapi: "/docs/openapi.json"
+    redoc: "/docs/redoc"
+    swagger: "/docs/swagger"
+database:
+  driver: "postgresql+asyncpg"
+  host: "postgres"
+  port: 5432
+  echo: false
+  pool:
+    echo: false
+    size: 10
+    max_overflow: 20
+redis:
+  host: "redis"
+  port: 6379
+  db: 0
+auth:
+  session:
+    tokens:
+      access:
+        issuer: "bumilu"
+        ttl_sec: 1800
+      refresh:
+        length: 64
+        ttl_sec: 2592000
+  otp:
+    storage_key_prefix: "email_login_challenge"
+    length: 6
+    ttl_min: 5
+    resend_cooldown_sec: 60
+  email:
+    smtp:
+      host: "smtp.mail.selcloud.ru"
+      port: 1127
+      from_name: "BumiLu"
+      from_email: "no-reply@bumilu.ru"
+      timeout: 10
+    templates:
+      otp:
+        subject: "Your BumiLu verification code"
+        body: >
+          Your verification code is: {code}.
+
+          It will expire in {ttl_min} minutes.
+cors:
+  enabled: false
+  allow_origins: [ "http://localhost:3000" ]
+  allow_credentials: true
+  allow_methods: [ "*" ]
+  allow_headers: [ "*" ]
+server:
+  host: "0.0.0.0"
+  port: 8000

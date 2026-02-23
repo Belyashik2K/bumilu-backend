@@ -1,9 +1,0 @@
-services:
-  api:
-    command: >
-      uv run gunicorn app.presentation.app:app
-      -k uvicorn.workers.UvicornWorker
-      -w ${RUN__WORKERS:-2}
-      -b ${RUN__HOST:-0.0.0.0}:${RUN__PORT:-8000}
-      --timeout ${RUN__TIMEOUT:-120}
-      --graceful-timeout ${RUN__GRACEFUL_TIMEOUT:-60}

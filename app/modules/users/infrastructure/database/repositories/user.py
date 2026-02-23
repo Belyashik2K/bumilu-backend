@@ -1,0 +1,40 @@
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.infrastructure.database import SQLAlchemyBaseRepository
+from app.core.shared.domain.value_objects.id import UserIdVO
+from app.modules.users.application.interfaces.repositories.user import IUserRepository
+from app.modules.users.domain.models.user import User
+from app.modules.users.domain.value_objects import EmailVO
+from app.modules.users.infrastructure.database.models import UserModel
+
+
+class SQLAlchemyUserRepository(
+    IUserRepository, SQLAlchemyBaseRepository[User, UserModel]
+):
+    def __init__(self, session: AsyncSession) -> None:
+        super().__init__(session, UserModel)
+
+    def _to_entity(self, data: UserModel) -> User:
+        return User(
+            id=UserIdVO.from_uuid(data.id),
+            email=EmailVO.from_string(data.email) if data.email else None,
+            email_verified_at=data.email_verified_at,
+            role=data.role,
+        )
+
+    def _to_data(self, entity: User) -> UserModel:
+        return UserModel(
+            id=entity.id.value,
+            email=entity.email.value if entity.email else None,
+            email_verified_at=entity.email_verified_at,
+            role=entity.role,
+        )
+
+    async def get_by_email(self, email: EmailVO) -> User | None:
+        stmt = select(UserModel).where(UserModel.email == email.value)
+        result = await self.session.execute(stmt)
+        user_data = result.scalar_one_or_none()
+        if user_data is None:
+            return None
+        return self._to_entity(user_data)
