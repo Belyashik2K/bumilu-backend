@@ -1,7 +1,7 @@
 [project]
 name = "bumilu-users-service"
 version = "0.1.0"
-description = "Users service for mobile ans web application BumiLu (不迷路), PAB project"
+description = "Users service for mobile and web application BumiLu (不迷路), PAB project"
 readme = "README.md"
 authors = [
     { name = "Belyashik2K", email = "work@belyashik2k.ru" }
@@ -12,7 +12,6 @@ dependencies = [
     "alembic>=1.18.4",
     "dishka>=1.8.0",
     "fastapi[all]>=0.129.0",
-    "pre-commit>=4.5.1",
     "pwdlib[argon2]>=0.3.0",
     "pydantic-settings[yaml]>=2.13.0",
     "pyjwt>=2.11.0",
@@ -26,7 +25,7 @@ dev = [
     "httpx>=0.28.1",
     "mypy>=1.19.1",
     "pre-commit>=4.5.1",
-    "pytest>=9.0.2",
+    "pytest==9.0.0",
     "pytest-asyncio>=1.3.0",
     "ruff>=0.15.1",
 ]

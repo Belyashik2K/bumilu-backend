@@ -24,7 +24,7 @@ services:
     volumes:
       - redis_data:/data
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: [ "CMD", "redis-cli", "ping", "-a", "${REDIS__PASSWORD:-redis}" ]
       interval: 1s
       retries: 5
     networks:
