@@ -1,12 +1,13 @@
 from pydantic import (
-    UUID7,
     BaseModel,
     Field,
 )
 
 from app.core.shared.enums import (
     DevicePlatformEnum,
-    UserRoleEnum,
+)
+from app.modules.users.presentation.api.schemas.common import (
+    AuthenticatedUserInfoSchema,
 )
 
 DEVICE_ID_EXAMPLE = "019c95e5-f659-7698-a7dd-7738003a7d23"
@@ -14,25 +15,16 @@ DEVICE_PLATFORM_EXAMPLE = DevicePlatformEnum.ANDROID
 DEVICE_NAME_EXAMPLE = "Xiaomi 11T (Android 11)"
 APP_VERSION_EXAMPLE = "1.0.0"
 
-EMAIL_EXAMPLE = "belyashik2k@dev.bumilu.ru"
-VERIFICATION_CODE_EXAMPLE = "019840"
-
 TOKEN_EXAMPLE = "itsshowinglikeitstheendoftheworld"
-
-
-class AuthenticatedUserInfoSchema(BaseModel):
-    id: UUID7 = Field(
-        ..., description="Unique identifier for the user.", examples=[DEVICE_ID_EXAMPLE]
-    )
-    role: UserRoleEnum = Field(
-        ..., description="Role of the user.", examples=[UserRoleEnum.GUEST]
-    )
+TOKEN_EXPIRES_IN_EXAMPLE = 3600
 
 
 class TokenInfoSchema(BaseModel):
     token: str = Field(..., description="Token string.", examples=[TOKEN_EXAMPLE])
     expires_in: int = Field(
-        ..., description="Expiration time in seconds.", examples=[3600]
+        ...,
+        description="Expiration time in seconds.",
+        examples=[TOKEN_EXPIRES_IN_EXAMPLE],
     )
 
 
