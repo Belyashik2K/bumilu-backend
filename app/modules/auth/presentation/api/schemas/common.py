@@ -9,7 +9,7 @@ from app.core.shared.enums import (
     UserRoleEnum,
 )
 
-DEVICE_ID_EXAMPLE = "9af2a051-3c90-466b-98e7-a2da43f541b7"
+DEVICE_ID_EXAMPLE = "019c95e5-f659-7698-a7dd-7738003a7d23"
 DEVICE_PLATFORM_EXAMPLE = DevicePlatformEnum.ANDROID
 DEVICE_NAME_EXAMPLE = "Xiaomi 11T (Android 11)"
 APP_VERSION_EXAMPLE = "1.0.0"
