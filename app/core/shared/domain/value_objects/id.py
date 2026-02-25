@@ -2,7 +2,6 @@ from dataclasses import (
     dataclass,
 )
 from typing import (
-    Any,
     Self,
 )
 from uuid import UUID
@@ -26,9 +25,6 @@ class IdVO:
 
     def __str__(self) -> str:
         return str(self.value)
-
-    def __eq__(self, other: Any) -> bool:
-        return self.value == other.value
 
 
 @dataclass(frozen=True, slots=True)
