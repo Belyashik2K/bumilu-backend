@@ -1,18 +1,14 @@
-from dataclasses import dataclass
+from dataclasses import (
+    dataclass,
+)
 
-from app.core.shared.enums import UserRoleEnum
+from app.modules.users.application.use_cases.shared_dtos import UserInfoDTO
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
 class TokenInfoDTO:
     token: str
     expires_in: int
-
-
-@dataclass(slots=True, kw_only=True, frozen=True)
-class UserInfoDTO:
-    id: str
-    role: UserRoleEnum
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)

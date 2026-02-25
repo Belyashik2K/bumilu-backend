@@ -10,10 +10,11 @@ from app.core.shared.enums import (
 )
 from app.modules.auth.presentation.api.schemas.common import (
     DEVICE_ID_EXAMPLE,
-    EMAIL_EXAMPLE,
-    VERIFICATION_CODE_EXAMPLE,
     SuccessfulLoginSchema,
 )
+from app.modules.users.presentation.api.schemas.common import USER_EMAIL_EXAMPLE
+
+VERIFICATION_CODE_EXAMPLE = "123456"
 
 
 class LoginAsGuestRequestSchema(BaseModel):
@@ -40,13 +41,13 @@ class LoginAsGuestResponseSchema(SuccessfulLoginSchema): ...
 
 class RequestEmailCodeAtLoginRequestSchema(BaseModel):
     email: EmailStr = Field(
-        ..., description="User's email address.", examples=[EMAIL_EXAMPLE]
+        ..., description="User's email address.", examples=[USER_EMAIL_EXAMPLE]
     )
 
 
 class VerifyEmailCodeAtLoginRequestSchema(BaseModel):
     email: EmailStr = Field(
-        ..., description="User's email address.", examples=[EMAIL_EXAMPLE]
+        ..., description="User's email address.", examples=[USER_EMAIL_EXAMPLE]
     )
     code: str = Field(
         ...,

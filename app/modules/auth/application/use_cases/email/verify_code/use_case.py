@@ -97,6 +97,7 @@ class VerifyEmailCodeAtLoginUseCase(
             ),
             user=UserInfoDTO(
                 id=str(user.id),
+                email=str(user.email),
                 role=user.role,
             ),
         )
