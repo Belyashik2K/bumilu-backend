@@ -3,7 +3,6 @@ from pydantic import (
     BaseModel,
     Field,
 )
-from uuid6 import uuid7
 
 from app.core.shared.enums import (
     DevicePlatformEnum,
