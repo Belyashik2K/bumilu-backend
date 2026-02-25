@@ -6,13 +6,13 @@ from dishka.integrations.fastapi import (
     setup_dishka,
 )
 from fastapi import FastAPI
-from fastapi.responses import ORJSONResponse
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core.di import CoreProvider
 from app.core.infrastructure.config import AppConfig
 from app.core.presentation.api import api_router
 from app.core.presentation.exceptions import set_exception_handlers
+from app.core.presentation.middlewares.outer import SQLAlchemyTransactionMiddleware
 from app.modules.auth.di import AuthProvider
 from app.modules.users.di import UserProvider
 
@@ -33,10 +33,10 @@ def create_app() -> FastAPI:
         openapi_url=config.docs.urls.openapi,
         docs_url=config.docs.urls.swagger,
         redoc_url=config.docs.urls.redoc,
-        default_response_class=ORJSONResponse,
         lifespan=lifespan,
     )
 
+    app.add_middleware(SQLAlchemyTransactionMiddleware)
     if config.cors.enabled:
         app.add_middleware(
             CORSMiddleware,
@@ -48,7 +48,7 @@ def create_app() -> FastAPI:
 
     app.include_router(api_router)
 
-    set_exception_handlers(app, ORJSONResponse)
+    set_exception_handlers(app)
 
     container = make_async_container(
         CoreProvider(), UserProvider(), AuthProvider(), FastapiProvider()
