@@ -37,8 +37,6 @@ auth:
     resend_cooldown_sec: 60
   email:
     smtp:
-      host: "smtp.mail.selcloud.ru"
-      port: 1127
       from_name: "BumiLu"
       from_email: "no-reply@bumilu.ru"
       timeout: 10
