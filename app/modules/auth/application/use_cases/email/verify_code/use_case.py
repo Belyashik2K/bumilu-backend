@@ -78,7 +78,7 @@ class VerifyEmailCodeAtLoginUseCase(
         else:
             await self._auth_session_repository.revoke_active_for_device(
                 device_id=current_device_id
-            )  # TODD: think about it, maybe remove it
+            )  # TODO: think about it, maybe remove it
 
         tokens = await self._auth_session_service.issue(
             user_id=user.id,
