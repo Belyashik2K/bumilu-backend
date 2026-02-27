@@ -7,6 +7,8 @@ from dishka.integrations.fastapi import (
 )
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
+from starlette.requests import Request
+from starlette.responses import RedirectResponse
 
 from app.core.di import CoreProvider
 from app.core.infrastructure.config import AppConfig
@@ -36,6 +38,12 @@ def create_app() -> FastAPI:
         redoc_url=config.docs.urls.redoc,
         lifespan=lifespan,
     )
+
+    @app.get("/", include_in_schema=False)
+    async def redirect_to_docs(request: Request) -> RedirectResponse:
+        return RedirectResponse(
+            url=f"{request.url.scheme}://{request.url.netloc}{config.docs.urls.swagger}"
+        )
 
     app.add_middleware(SQLAlchemyTransactionMiddleware)
     app.add_middleware(AuthMiddleware)
