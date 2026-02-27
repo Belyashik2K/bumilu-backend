@@ -47,7 +47,8 @@ class GetAllReviewsForEntityUseCase(
                 )
 
         return GetAllReviewsForEntityOutputDTO(
-            entity_id=entity_id.value,
+            entity_id=input_data.entity_id,
+            entity_type=input_data.entity_type,
             items=[
                 ReviewInfoDTO(
                     review_id=review.id.value,

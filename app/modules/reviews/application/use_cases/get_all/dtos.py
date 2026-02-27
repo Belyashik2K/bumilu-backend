@@ -18,4 +18,5 @@ class GetAllReviewsForEntityInputDTO:
 @dataclass(frozen=True, slots=True, kw_only=True)
 class GetAllReviewsForEntityOutputDTO:
     entity_id: UUID
+    entity_type: ReviewEntityTypeEnum
     items: list[ReviewInfoDTO] = field(default_factory=list)
