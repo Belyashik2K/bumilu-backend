@@ -6,7 +6,7 @@ from app.modules.reviews.domain.value_objects.review_rating.exceptions import (
 )
 
 
-@dataclass(frozen=True, slots=True, kw_only=True)
+@dataclass(frozen=True, slots=True)
 class ReviewRatingVO:
     value: int
 
