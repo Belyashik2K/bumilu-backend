@@ -11,6 +11,7 @@ from app.modules.reviews.application.use_cases.delete import (
     DeleteReviewOutputDTO,
 )
 from app.modules.reviews.application.use_cases.shared.exceptions import (
+    ReviewNotFound,
     ReviewOwnershipViolation,
 )
 
@@ -27,11 +28,9 @@ class DeleteReviewUseCase(
     async def execute(self, input_data: DeleteReviewInputDTO) -> DeleteReviewOutputDTO:
         review_id = ReviewIdVO.from_uuid(input_data.review_id)
 
-        output_dto = DeleteReviewOutputDTO()
-
         review = await self._review_repository.get_by_id(review_id)
         if not review:
-            return output_dto
+            raise ReviewNotFound(review_id=review_id)
 
         actor_id = UserIdVO.from_uuid(input_data.actor_id)
         if review.author_id != actor_id:
