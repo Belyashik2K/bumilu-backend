@@ -7,6 +7,7 @@ from fastapi import (
     Depends,
 )
 from pydantic import UUID7
+from starlette import status
 
 from app.core.shared.constants import UNSET
 from app.modules.auth.presentation.api import security
@@ -15,6 +16,10 @@ from app.modules.auth.shared.context import Principal
 from app.modules.reviews.application.use_cases.create import (
     CreateReviewInputDTO,
     CreateReviewUseCase,
+)
+from app.modules.reviews.application.use_cases.delete import (
+    DeleteReviewInputDTO,
+    DeleteReviewUseCase,
 )
 from app.modules.reviews.application.use_cases.get_all import (
     GetAllReviewsForEntityInputDTO,
@@ -53,12 +58,23 @@ async def get_review_by_id(review_id: UUID7 = REVIEW_ID_PATH):
     raise NotImplementedError
 
 
-@reviews_router.delete("/reviews/{review_id}", dependencies=[Depends(security)])
+@reviews_router.delete(
+    "/reviews/{review_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(security)],
+)
 @inject
 async def delete_review_by_id(
+    uc: FromDishka[DeleteReviewUseCase],
+    principal: Annotated[Principal, Depends(get_principal)],
     review_id: UUID7 = REVIEW_ID_PATH,
-):
-    raise NotImplementedError
+) -> None:
+    await uc(
+        DeleteReviewInputDTO(
+            review_id=review_id,
+            actor_id=principal.id.value,
+        )
+    )
 
 
 @reviews_router.patch("/reviews/{review_id}", dependencies=[Depends(security)])
@@ -70,9 +86,6 @@ async def update_review_by_id(
     review_id: UUID7 = REVIEW_ID_PATH,
 ) -> UpdateReviewResponseSchema:
     data_dump = data.model_dump(exclude_unset=True)
-
-    print(data_dump)
-
     result = await uc(
         UpdateReviewInputDTO(
             review_id=review_id,

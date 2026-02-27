@@ -10,6 +10,7 @@ from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
 from app.modules.reviews.application.use_cases.create import CreateReviewUseCase
+from app.modules.reviews.application.use_cases.delete import DeleteReviewUseCase
 from app.modules.reviews.application.use_cases.get_all import (
     GetAllReviewsForEntityUseCase,
 )
@@ -64,5 +65,14 @@ class ReviewProvider(Provider):
         review_repository: IReviewRepository,
     ) -> UpdateReviewUseCase:
         return UpdateReviewUseCase(
+            review_repository=review_repository,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def delete_review_uc(
+        self,
+        review_repository: IReviewRepository,
+    ) -> DeleteReviewUseCase:
+        return DeleteReviewUseCase(
             review_repository=review_repository,
         )
