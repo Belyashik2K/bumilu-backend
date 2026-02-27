@@ -9,6 +9,7 @@ from app.modules.reviews.application.interfaces.entity_resolver import IEntityRe
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
+from app.modules.reviews.application.use_cases.create import CreateReviewUseCase
 from app.modules.reviews.application.use_cases.get_all import (
     GetAllReviewsForEntityUseCase,
 )
@@ -41,6 +42,17 @@ class ReviewProvider(Provider):
         entity_resolver: IEntityResolver,
     ) -> GetAllReviewsForEntityUseCase:
         return GetAllReviewsForEntityUseCase(
+            review_repository=review_repository,
+            entity_resolver=entity_resolver,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def create_review_uc(
+        self,
+        review_repository: IReviewRepository,
+        entity_resolver: IEntityResolver,
+    ) -> CreateReviewUseCase:
+        return CreateReviewUseCase(
             review_repository=review_repository,
             entity_resolver=entity_resolver,
         )

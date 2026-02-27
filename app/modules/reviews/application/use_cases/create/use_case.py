@@ -13,6 +13,9 @@ from app.modules.reviews.application.use_cases.create import (
     CreateReviewInputDTO,
     CreateReviewOutputDTO,
 )
+from app.modules.reviews.application.use_cases.create.exceptions import (
+    ReviewAlreadyExists,
+)
 from app.modules.reviews.application.use_cases.shared.exceptions import EntityNotFound
 from app.modules.reviews.domain.models.review import Review
 from app.modules.reviews.domain.value_objects import (
@@ -43,7 +46,7 @@ class CreateReviewUseCase(
             author_id=author_id,
         )
         if current_review is not None:
-            raise Exception("Review already exists")
+            raise ReviewAlreadyExists(entity_type=input_data.entity_type)
 
         exists = await self._entity_resolver.resolve(
             entity_type=input_data.entity_type,
