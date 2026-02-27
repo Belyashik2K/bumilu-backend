@@ -12,7 +12,7 @@ MINIMUM_REVIEW_TEXT_LENGTH: Final[int] = 10
 MAXIMUM_REVIEW_TEXT_LENGTH: Final[int] = 1000
 
 
-@dataclass(frozen=True, slots=True, kw_only=True)
+@dataclass(frozen=True, slots=True)
 class ReviewTextVO:
     value: str | None
 
