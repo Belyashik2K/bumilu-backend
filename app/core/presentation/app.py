@@ -7,6 +7,8 @@ from dishka.integrations.fastapi import (
 )
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
+from starlette.requests import Request
+from starlette.responses import RedirectResponse
 
 from app.core.di import CoreProvider
 from app.core.infrastructure.config import AppConfig
@@ -15,6 +17,7 @@ from app.core.presentation.exceptions import set_exception_handlers
 from app.core.presentation.middlewares.outer import SQLAlchemyTransactionMiddleware
 from app.modules.auth.di import AuthProvider
 from app.modules.auth.presentation.api.middlewares.auth import AuthMiddleware
+from app.modules.reviews.di import ReviewProvider
 from app.modules.users.di import UserProvider
 
 
@@ -37,6 +40,12 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
+    @app.get("/", include_in_schema=False)
+    async def redirect_to_docs(request: Request) -> RedirectResponse:
+        return RedirectResponse(
+            url=f"{request.url.scheme}://{request.url.netloc}{config.docs.urls.swagger}"
+        )
+
     app.add_middleware(SQLAlchemyTransactionMiddleware)
     app.add_middleware(AuthMiddleware)
     if config.cors.enabled:
@@ -53,7 +62,11 @@ def create_app() -> FastAPI:
     set_exception_handlers(app)
 
     container = make_async_container(
-        CoreProvider(), UserProvider(), AuthProvider(), FastapiProvider()
+        CoreProvider(),
+        UserProvider(),
+        AuthProvider(),
+        ReviewProvider(),
+        FastapiProvider(),
     )
     setup_dishka(container=container, app=app)
 
