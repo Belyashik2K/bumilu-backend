@@ -62,6 +62,8 @@ class CreateReviewUseCase(
 
         return CreateReviewOutputDTO(
             review_id=review.id.value,
+            entity_type=review.entity_type,
+            entity_id=review.entity_id.value,
             author_id=review.author_id.value,
             text=review.text.value,
             rating=review.rating.value,
