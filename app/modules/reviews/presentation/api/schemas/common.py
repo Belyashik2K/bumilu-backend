@@ -32,7 +32,17 @@ RATING_FIELD = Field(
 REVIEW_ID_PATH = Path(
     ...,
     description="ID of the review",
-    examples=[REVIEW_ID_EXAMPLE],
+    example=REVIEW_ID_EXAMPLE,
+)
+ENTITY_TYPE_PATH = Path(
+    ...,
+    description="Type of the entity the review is for",
+    example=ENTITY_TYPE_EXAMPLE,
+)
+ENTITY_ID_PATH = Path(
+    ...,
+    description="ID of the entity the review is for",
+    example=ENTITY_ID_EXAMPLE,
 )
 
 
