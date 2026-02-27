@@ -22,6 +22,13 @@ class IReviewRepository(IBaseRepository[Review], ABC):
     ) -> Review | None: ...
 
     @abstractmethod
+    async def get_all_by_entity(
+        self,
+        entity_type: ReviewEntityTypeEnum,
+        entity_id: IdVO,
+    ) -> list[Review]: ...
+
+    @abstractmethod
     async def delete(
         self,
         review: Review,
