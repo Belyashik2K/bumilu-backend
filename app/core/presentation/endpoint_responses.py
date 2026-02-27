@@ -32,6 +32,7 @@ mapped_code_to_exception = {
 }
 
 DEFAULT = [
+    status.HTTP_400_BAD_REQUEST,
     status.HTTP_422_UNPROCESSABLE_ENTITY,
     status.HTTP_429_TOO_MANY_REQUESTS,
     status.HTTP_500_INTERNAL_SERVER_ERROR,
