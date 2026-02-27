@@ -5,7 +5,6 @@ from dishka.integrations.fastapi import inject
 from fastapi import (
     APIRouter,
     Depends,
-    Path,
 )
 from pydantic import UUID7
 
@@ -20,46 +19,55 @@ from app.modules.reviews.application.use_cases.get_all import (
     GetAllReviewsForEntityInputDTO,
     GetAllReviewsForEntityUseCase,
 )
-from app.modules.reviews.presentation.api.v1.routes.schemas.create import (
+from app.modules.reviews.presentation.api.schemas.common import REVIEW_ID_PATH
+from app.modules.reviews.presentation.api.schemas.create import (
     CreateReviewRequestSchema,
     CreateReviewResponseSchema,
 )
-from app.modules.reviews.presentation.api.v1.routes.schemas.get import (
+from app.modules.reviews.presentation.api.schemas.get import (
     GetAllReviewsForEntityResponseSchema,
 )
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
-places_reviews_router = APIRouter(
-    prefix="/places/{place_id}/reviews",
-    tags=["Places Reviews"],
-)
-
-PLACE_ID_EXAMPLE = "019c95e5-f659-7698-a7dd-7738003a7d23"
-PLACE_ID_PATH = Path(
-    ...,
-    description="ID of the place",
-    example=PLACE_ID_EXAMPLE,
+reviews_router = APIRouter(
+    tags=["Reviews"],
 )
 
 
-@places_reviews_router.get("")
+@reviews_router.get("/reviews/{review_id}", dependencies=[Depends(security)])
+async def get_review_by_id(review_id: UUID7 = REVIEW_ID_PATH):
+    raise NotImplementedError
+
+
+@reviews_router.delete("/reviews/{review_id}", dependencies=[Depends(security)])
+async def delete_review_by_id(
+    review_id: UUID7 = REVIEW_ID_PATH,
+):
+    raise NotImplementedError
+
+
+@reviews_router.patch("/reviews/{review_id}", dependencies=[Depends(security)])
+async def update_review_by_id(review_id: UUID7 = REVIEW_ID_PATH):
+    raise NotImplementedError
+
+
+@reviews_router.get("/{entity_type}/{entity_id}/reviews")
 @inject
-async def get_reviews_for_place(
+async def get_reviews_for_entity(
     uc: FromDishka[GetAllReviewsForEntityUseCase],
-    place_id: UUID7 = PLACE_ID_PATH,
+    entity_type: ReviewEntityTypeEnum,
+    entity_id: UUID7,
 ) -> GetAllReviewsForEntityResponseSchema:
     result = await uc(
-        GetAllReviewsForEntityInputDTO(
-            entity_id=place_id, entity_type=ReviewEntityTypeEnum.PLACE
-        )
+        GetAllReviewsForEntityInputDTO(entity_id=entity_id, entity_type=entity_type)
     )
     return GetAllReviewsForEntityResponseSchema.model_validate(
         result, from_attributes=True
     )
 
 
-@places_reviews_router.post(
-    "",
+@reviews_router.post(
+    "/{entity_type}/{entity_id}/reviews",
     dependencies=[Depends(security)],
 )
 @inject
@@ -67,13 +75,14 @@ async def create_review_for_place(
     uc: FromDishka[CreateReviewUseCase],
     data: CreateReviewRequestSchema,
     principal: Annotated[Principal, Depends(get_principal)],
-    place_id: UUID7 = PLACE_ID_PATH,
+    entity_type: ReviewEntityTypeEnum,
+    entity_id: UUID7,
 ) -> CreateReviewResponseSchema:
     result = await uc(
         CreateReviewInputDTO(
             author_id=principal.id.value,
-            entity_type=ReviewEntityTypeEnum.PLACE,
-            entity_id=place_id,
+            entity_type=entity_type,
+            entity_id=entity_id,
             text=data.text,
             rating=data.rating,
         )

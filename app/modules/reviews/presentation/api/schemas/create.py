@@ -2,7 +2,7 @@ from pydantic import (
     BaseModel,
 )
 
-from app.modules.reviews.presentation.api.v1.routes.schemas.common import (
+from app.modules.reviews.presentation.api.schemas.common import (
     RATING_FIELD,
     TEXT_FIELD,
     ReviewInfoSchema,
