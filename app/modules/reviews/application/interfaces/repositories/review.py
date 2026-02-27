@@ -20,3 +20,9 @@ class IReviewRepository(IBaseRepository[Review], ABC):
         entity_id: IdVO,
         author_id: UserIdVO,
     ) -> Review | None: ...
+
+    @abstractmethod
+    async def delete(
+        self,
+        review: Review,
+    ) -> None: ...

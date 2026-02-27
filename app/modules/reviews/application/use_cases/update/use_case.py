@@ -26,25 +26,25 @@ class UpdateReviewUseCase(IBaseUseCase[UpdateReviewInputDTO, UpdateReviewOutputD
 
     async def execute(
         self,
-        input_dto: UpdateReviewInputDTO,
+        input_data: UpdateReviewInputDTO,
     ) -> UpdateReviewOutputDTO:
-        review_id = ReviewIdVO.from_uuid(input_dto.review_id)
+        review_id = ReviewIdVO.from_uuid(input_data.review_id)
         review = await self._review_repository.get_by_id(review_id)
         if review is None:
             raise Exception("Review not found")  # TODO: Custom exception
 
-        actor_id = UserIdVO.from_uuid(input_dto.actor_id)
+        actor_id = UserIdVO.from_uuid(input_data.actor_id)
         if review.author_id != actor_id:
             raise Exception("Unauthorized")  # TODO: Custom exception
 
         new_rating = (
-            ReviewRatingVO(input_dto.rating)
-            if not isinstance(input_dto.rating, UnsetType)
+            ReviewRatingVO(input_data.rating)
+            if not isinstance(input_data.rating, UnsetType)
             else review.rating
         )
         new_text = (
-            ReviewTextVO(input_dto.text)
-            if not isinstance(input_dto.text, UnsetType)
+            ReviewTextVO(input_data.text)
+            if not isinstance(input_data.text, UnsetType)
             else review.text
         )
 

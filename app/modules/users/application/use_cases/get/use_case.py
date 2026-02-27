@@ -22,9 +22,9 @@ class GetUserUseCase(
 
     async def execute(
         self,
-        input_dto: GetUserInputDTO,
+        input_data: GetUserInputDTO,
     ) -> GetUserOutputDTO:
-        user_id = UserIdVO.from_uuid(input_dto.id)
+        user_id = UserIdVO.from_uuid(input_data.id)
 
         user = await self._user_repository.get_by_id(user_id)
         if not user:
