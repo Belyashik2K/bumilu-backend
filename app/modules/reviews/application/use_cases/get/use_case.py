@@ -7,6 +7,7 @@ from app.modules.reviews.application.use_cases.get.dtos import (
     GetReviewInputDTO,
     GetReviewOutputDTO,
 )
+from app.modules.reviews.application.use_cases.shared.exceptions import ReviewNotFound
 
 
 class GetReviewUseCase(
@@ -29,7 +30,7 @@ class GetReviewUseCase(
 
         review = await self._review_repository.get_by_id(review_id)
         if not review:
-            raise Exception("Review not found")  # TODO: Custom exception
+            raise ReviewNotFound(review_id=review_id)
 
         return GetReviewOutputDTO(
             review_id=review.id.value,
