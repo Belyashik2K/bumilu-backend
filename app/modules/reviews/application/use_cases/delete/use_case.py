@@ -37,6 +37,6 @@ class DeleteReviewUseCase(
         if review.author_id != actor_id:
             raise ReviewOwnershipViolation()
 
-        await self._review_repository.delete(review)
+        await self._review_repository.delete_by_id(review_id)
 
         return DeleteReviewOutputDTO()

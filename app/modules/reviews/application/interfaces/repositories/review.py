@@ -6,6 +6,7 @@ from abc import (
 from app.core.application.interfaces.repositories import IBaseRepository
 from app.core.shared.domain.value_objects.id import (
     IdVO,
+    ReviewIdVO,
     UserIdVO,
 )
 from app.modules.reviews.domain.models.review import Review
@@ -29,7 +30,7 @@ class IReviewRepository(IBaseRepository[Review], ABC):
     ) -> list[Review]: ...
 
     @abstractmethod
-    async def delete(
+    async def delete_by_id(
         self,
-        review: Review,
+        review_id: ReviewIdVO,
     ) -> None: ...
