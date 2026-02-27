@@ -13,6 +13,7 @@ from app.modules.reviews.application.use_cases.create import (
     CreateReviewInputDTO,
     CreateReviewOutputDTO,
 )
+from app.modules.reviews.application.use_cases.shared.exceptions import EntityNotFound
 from app.modules.reviews.domain.models.review import Review
 from app.modules.reviews.domain.value_objects import (
     ReviewRatingVO,
@@ -36,13 +37,6 @@ class CreateReviewUseCase(
         entity_id = IdVO.from_uuid(input_data.entity_id)
         author_id = UserIdVO.from_uuid(input_data.author_id)
 
-        exists = await self._entity_resolver.resolve(
-            entity_type=input_data.entity_type,
-            entity_id=entity_id,
-        )
-        if not exists:
-            raise Exception("Entity not found")
-
         current_review = await self._review_repository.get_by_entity_and_author(
             entity_type=input_data.entity_type,
             entity_id=entity_id,
@@ -50,6 +44,16 @@ class CreateReviewUseCase(
         )
         if current_review is not None:
             raise Exception("Review already exists")
+
+        exists = await self._entity_resolver.resolve(
+            entity_type=input_data.entity_type,
+            entity_id=entity_id,
+        )
+        if not exists:
+            raise EntityNotFound(
+                entity_type=input_data.entity_type,
+                entity_id=entity_id,
+            )
 
         review = Review.create(
             author_id=author_id,

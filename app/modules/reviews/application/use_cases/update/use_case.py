@@ -7,6 +7,10 @@ from app.core.shared.domain.value_objects.id import (
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
+from app.modules.reviews.application.use_cases.shared.exceptions import (
+    ReviewNotFound,
+    ReviewOwnershipViolation,
+)
 from app.modules.reviews.application.use_cases.update import (
     UpdateReviewInputDTO,
     UpdateReviewOutputDTO,
@@ -31,11 +35,11 @@ class UpdateReviewUseCase(IBaseUseCase[UpdateReviewInputDTO, UpdateReviewOutputD
         review_id = ReviewIdVO.from_uuid(input_data.review_id)
         review = await self._review_repository.get_by_id(review_id)
         if review is None:
-            raise Exception("Review not found")  # TODO: Custom exception
+            raise ReviewNotFound(review_id=review_id)
 
         actor_id = UserIdVO.from_uuid(input_data.actor_id)
         if review.author_id != actor_id:
-            raise Exception("Unauthorized")  # TODO: Custom exception
+            raise ReviewOwnershipViolation()
 
         new_rating = (
             ReviewRatingVO(input_data.rating)
