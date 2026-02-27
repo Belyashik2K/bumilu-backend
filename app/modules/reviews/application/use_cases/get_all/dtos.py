@@ -9,13 +9,13 @@ from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class CreateReviewInputDTO:
+class GetAllReviewsForEntityInputDTO:
     entity_id: UUID
     entity_type: ReviewEntityTypeEnum
-    author_id: UUID
-    text: str | None = field(default=None)
-    rating: int
+    filters: None = field(default=None)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class CreateReviewOutputDTO(ReviewInfoDTO): ...
+class GetAllReviewsForEntityOutputDTO:
+    entity_id: UUID
+    items: list[ReviewInfoDTO] = field(default_factory=list)
