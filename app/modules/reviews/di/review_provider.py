@@ -13,6 +13,7 @@ from app.modules.reviews.application.use_cases.create import CreateReviewUseCase
 from app.modules.reviews.application.use_cases.get_all import (
     GetAllReviewsForEntityUseCase,
 )
+from app.modules.reviews.application.use_cases.update import UpdateReviewUseCase
 from app.modules.reviews.infrastructure.database.repositories.review import (
     SQLAlchemyReviewRepository,
 )
@@ -55,4 +56,13 @@ class ReviewProvider(Provider):
         return CreateReviewUseCase(
             review_repository=review_repository,
             entity_resolver=entity_resolver,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def update_review_uc(
+        self,
+        review_repository: IReviewRepository,
+    ) -> UpdateReviewUseCase:
+        return UpdateReviewUseCase(
+            review_repository=review_repository,
         )

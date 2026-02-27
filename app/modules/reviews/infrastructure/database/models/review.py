@@ -23,14 +23,6 @@ from app.core.infrastructure.database.mixins import (
 )
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
-# class Review:
-#     id: ReviewIdVO
-#     author_id: UserIdVO
-#     entity_type: ReviewEntityTypeEnum
-#     entity_id: IdVO
-#     text: ReviewTextVO
-#     rating: ReviewRatingVO
-
 
 class ReviewModel(PKUUIDMixin, TimestampMixin, BaseModel):
     __tablename__ = "reviews"

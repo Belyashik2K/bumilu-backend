@@ -70,8 +70,8 @@ class PyJWTAccessTokenManager(IAccessTokenManager):
             raise ValueError("Invalid token type")
 
         return TokenInfoDTO(
-            user_id=UserIdVO(payload["sub"]),
-            session_id=SessionIdVO(payload["session_id"]),
+            user_id=UserIdVO.from_str(payload["sub"]),
+            session_id=SessionIdVO.from_str(payload["session_id"]),
             role=UserRoleEnum(payload["role"]),
             issued_at=payload["iat"],
             expires_at=payload["exp"],
