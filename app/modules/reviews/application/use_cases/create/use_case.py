@@ -41,7 +41,7 @@ class CreateReviewUseCase(
             author_id=author_id,
         )
         if current_review is not None:
-            raise Exception("You already have a review for this entity")
+            raise Exception("Review already exists")
 
         review = Review.create(
             author_id=author_id,
