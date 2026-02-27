@@ -1,1 +1,1 @@
-from .routes import places_reviews_router
+from .router import reviews_router

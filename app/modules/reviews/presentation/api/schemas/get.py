@@ -8,7 +8,7 @@ from pydantic import (
     Field,
 )
 
-from app.modules.reviews.presentation.api.v1.routes.schemas.common import (
+from app.modules.reviews.presentation.api.schemas.common import (
     ENTITY_ID_EXAMPLE,
     ReviewInfoSchema,
 )
