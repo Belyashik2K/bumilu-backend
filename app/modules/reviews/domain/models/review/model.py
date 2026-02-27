@@ -42,10 +42,10 @@ class Review:
 
     def update(
         self,
-        text: ReviewTextVO | None = None,
         rating: ReviewRatingVO | None = None,
+        text: ReviewTextVO | None = None,
     ) -> None:
-        if text is not None and text != self.text:
-            self.text = text
         if rating is not None and rating != self.rating:
             self.rating = rating
+        if text is not None and text != self.text:
+            self.text = text

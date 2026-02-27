@@ -53,5 +53,7 @@ class CreateReviewUseCase(
         await self._review_repository.save(review)
 
         return CreateReviewOutputDTO(
-            id=review.id.value,
+            review_id=review.id.value,
+            text=review.text.value,
+            rating=review.rating.value,
         )
