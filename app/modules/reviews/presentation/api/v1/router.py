@@ -9,6 +9,7 @@ from fastapi import (
 from pydantic import UUID7
 from starlette import status
 
+from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.core.shared.constants import UNSET
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.deps import get_principal
@@ -57,7 +58,12 @@ reviews_router = APIRouter(
 )
 
 
-@reviews_router.get("/reviews/{review_id}", dependencies=[Depends(security)])
+@reviews_router.get(
+    "/reviews/{review_id}",
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND,
+    ),
+)
 @inject
 async def get_review_by_id(
     uc: FromDishka[GetReviewUseCase],
@@ -74,6 +80,10 @@ async def get_review_by_id(
 @reviews_router.delete(
     "/reviews/{review_id}",
     status_code=status.HTTP_204_NO_CONTENT,
+    responses=generate_responses_for_endpoint(
+        status.HTTP_403_FORBIDDEN,
+        status.HTTP_404_NOT_FOUND,
+    ),
     dependencies=[Depends(security)],
 )
 @inject
@@ -90,7 +100,14 @@ async def delete_review_by_id(
     )
 
 
-@reviews_router.patch("/reviews/{review_id}", dependencies=[Depends(security)])
+@reviews_router.patch(
+    "/reviews/{review_id}",
+    responses=generate_responses_for_endpoint(
+        status.HTTP_403_FORBIDDEN,
+        status.HTTP_404_NOT_FOUND,
+    ),
+    dependencies=[Depends(security)],
+)
 @inject
 async def update_review_by_id(
     uc: FromDishka[UpdateReviewUseCase],
@@ -110,7 +127,12 @@ async def update_review_by_id(
     return UpdateReviewResponseSchema.model_validate(result, from_attributes=True)
 
 
-@reviews_router.get("/{entity_type}/{entity_id}/reviews")
+@reviews_router.get(
+    "/{entity_type}/{entity_id}/reviews",
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND,
+    ),
+)
 @inject
 async def get_reviews_for_entity(
     uc: FromDishka[GetAllReviewsForEntityUseCase],
@@ -127,6 +149,7 @@ async def get_reviews_for_entity(
 
 @reviews_router.post(
     "/{entity_type}/{entity_id}/reviews",
+    status_code=status.HTTP_201_CREATED,
     dependencies=[Depends(security)],
 )
 @inject

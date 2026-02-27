@@ -70,9 +70,7 @@ async def login_as_guest(
 
 @auth_router.post(
     "/email/request",
-    responses=generate_responses_for_endpoint(
-        status.HTTP_400_BAD_REQUEST,
-    ),
+    responses=generate_responses_for_endpoint(),
 )
 @inject
 async def request_email_code(
@@ -86,9 +84,7 @@ async def request_email_code(
 
 @auth_router.post(
     "/email/verify",
-    responses=generate_responses_for_endpoint(
-        status.HTTP_400_BAD_REQUEST,
-    ),
+    responses=generate_responses_for_endpoint(),
 )
 @inject
 async def verify_email_login(
