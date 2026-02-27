@@ -5,6 +5,7 @@ from dishka.integrations.fastapi import inject
 from fastapi import (
     APIRouter,
     Depends,
+    Path,
 )
 from pydantic import UUID7
 
@@ -33,12 +34,19 @@ places_reviews_router = APIRouter(
     tags=["Places Reviews"],
 )
 
+PLACE_ID_EXAMPLE = "019c95e5-f659-7698-a7dd-7738003a7d23"
+PLACE_ID_PATH = Path(
+    ...,
+    description="ID of the place",
+    example=PLACE_ID_EXAMPLE,
+)
+
 
 @places_reviews_router.get("")
 @inject
 async def get_reviews_for_place(
-    place_id: UUID7,
     uc: FromDishka[GetAllReviewsForEntityUseCase],
+    place_id: UUID7 = PLACE_ID_PATH,
 ) -> GetAllReviewsForEntityResponseSchema:
     result = await uc(
         GetAllReviewsForEntityInputDTO(
@@ -59,12 +67,13 @@ async def create_review_for_place(
     uc: FromDishka[CreateReviewUseCase],
     data: CreateReviewRequestSchema,
     principal: Annotated[Principal, Depends(get_principal)],
+    place_id: UUID7 = PLACE_ID_PATH,
 ) -> CreateReviewResponseSchema:
     result = await uc(
         CreateReviewInputDTO(
             author_id=principal.id.value,
-            entity_id=data.entity_id,
             entity_type=ReviewEntityTypeEnum.PLACE,
+            entity_id=place_id,
             text=data.text,
             rating=data.rating,
         )

@@ -1,3 +1,4 @@
+from fastapi import Path
 from pydantic import (
     UUID7,
     BaseModel,
@@ -26,6 +27,12 @@ RATING_FIELD = Field(
     examples=[REVIEW_RATING_EXAMPLE],
     ge=1,
     le=5,
+)
+
+REVIEW_ID_PATH = Path(
+    ...,
+    description="ID of the review",
+    examples=[REVIEW_ID_EXAMPLE],
 )
 
 
