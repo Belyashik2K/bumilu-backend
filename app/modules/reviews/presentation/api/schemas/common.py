@@ -15,7 +15,7 @@ REVIEW_TEXT_EXAMPLE = "idk how to describe this place, but... sorry, i have no t
 REVIEW_RATING_EXAMPLE = 5
 
 TEXT_FIELD = Field(
-    default=None,
+    ...,
     description="Text of the review",
     examples=[REVIEW_TEXT_EXAMPLE],
     min_length=10,
@@ -46,10 +46,15 @@ ENTITY_ID_PATH = Path(
 )
 
 
-class ReviewInfoSchema(BaseModel):
+class BaseReviewInfoSchema(BaseModel):
     review_id: UUID7 = Field(
         ..., description="ID of the review", examples=[REVIEW_ID_EXAMPLE]
     )
+    text: str | None = TEXT_FIELD
+    rating: int = RATING_FIELD
+
+
+class ReviewInfoSchema(BaseReviewInfoSchema):
     entity_id: UUID7 = Field(
         ...,
         description="ID of the entity the review is for",
@@ -63,5 +68,3 @@ class ReviewInfoSchema(BaseModel):
     author_id: UUID7 = Field(
         ..., description="ID of the review's author", examples=[AUTHOR_ID_EXAMPLE]
     )
-    text: str | None = TEXT_FIELD
-    rating: int = RATING_FIELD

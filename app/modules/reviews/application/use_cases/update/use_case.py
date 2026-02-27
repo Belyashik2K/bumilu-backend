@@ -39,6 +39,10 @@ class UpdateReviewUseCase(IBaseUseCase[UpdateReviewInputDTO, UpdateReviewOutputD
 
         actor_id = UserIdVO.from_uuid(input_data.actor_id)
         if review.author_id != actor_id:
+            print(f"Review author id: {review.author_id}, actor id: {actor_id}")
+            print(type(review.author_id.value), repr(review.author_id.value))
+            print(type(actor_id.value), repr(actor_id.value))
+            print(review.author_id.value == actor_id.value)
             raise ReviewOwnershipViolation()
 
         new_rating = (
