@@ -17,6 +17,7 @@ from app.core.presentation.exceptions import set_exception_handlers
 from app.core.presentation.middlewares.outer import SQLAlchemyTransactionMiddleware
 from app.modules.auth.di import AuthProvider
 from app.modules.auth.presentation.api.middlewares.auth import AuthMiddleware
+from app.modules.reviews.di import ReviewProvider
 from app.modules.users.di import UserProvider
 
 
@@ -61,7 +62,11 @@ def create_app() -> FastAPI:
     set_exception_handlers(app)
 
     container = make_async_container(
-        CoreProvider(), UserProvider(), AuthProvider(), FastapiProvider()
+        CoreProvider(),
+        UserProvider(),
+        AuthProvider(),
+        ReviewProvider(),
+        FastapiProvider(),
     )
     setup_dishka(container=container, app=app)
 
