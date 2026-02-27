@@ -21,6 +21,10 @@ from app.modules.reviews.application.use_cases.delete import (
     DeleteReviewInputDTO,
     DeleteReviewUseCase,
 )
+from app.modules.reviews.application.use_cases.get import (
+    GetReviewInputDTO,
+    GetReviewUseCase,
+)
 from app.modules.reviews.application.use_cases.get_all import (
     GetAllReviewsForEntityInputDTO,
     GetAllReviewsForEntityUseCase,
@@ -33,6 +37,7 @@ from app.modules.reviews.presentation.api.schemas.common import (
     ENTITY_ID_PATH,
     ENTITY_TYPE_PATH,
     REVIEW_ID_PATH,
+    ReviewInfoSchema,
 )
 from app.modules.reviews.presentation.api.schemas.create import (
     CreateReviewRequestSchema,
@@ -54,8 +59,16 @@ reviews_router = APIRouter(
 
 @reviews_router.get("/reviews/{review_id}", dependencies=[Depends(security)])
 @inject
-async def get_review_by_id(review_id: UUID7 = REVIEW_ID_PATH):
-    raise NotImplementedError
+async def get_review_by_id(
+    uc: FromDishka[GetReviewUseCase],
+    review_id: UUID7 = REVIEW_ID_PATH,
+) -> ReviewInfoSchema:
+    result = await uc(
+        GetReviewInputDTO(
+            review_id=review_id,
+        )
+    )
+    return ReviewInfoSchema.model_validate(result, from_attributes=True)
 
 
 @reviews_router.delete(
