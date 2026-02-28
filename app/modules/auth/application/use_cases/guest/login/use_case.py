@@ -81,6 +81,7 @@ class LoginAsGuestUseCase(
             ),
             user=UserInfoDTO(
                 id=str(device.guest_user_id),
+                email=None,
                 role=UserRoleEnum.GUEST,
             ),
         )
