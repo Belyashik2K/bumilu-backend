@@ -57,7 +57,9 @@ from app.modules.reviews.presentation.api.schemas.update import (
     UpdateReviewRequestSchema,
     UpdateReviewResponseSchema,
 )
-from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
+from app.modules.reviews.shared.enums import (
+    ReviewEntityPathEnum,
+)
 
 reviews_router = APIRouter(
     tags=["Reviews"],
@@ -186,12 +188,14 @@ async def update_review_by_id(
 async def get_reviews_for_entity(
     uc: FromDishka[GetAllReviewsForEntityUseCase],
     principal: Annotated[Principal, Depends(get_principal)],
-    entity_type: ReviewEntityTypeEnum = ENTITY_TYPE_PATH,
+    entity_type: ReviewEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> GetAllReviewsForEntityResponseSchema:
     result = await uc(
         GetAllReviewsForEntityInputDTO(
-            actor_id=principal.id.value, entity_id=entity_id, entity_type=entity_type
+            actor_id=principal.id.value,
+            entity_id=entity_id,
+            entity_type=entity_type.domain_name,
         )
     )
     return GetAllReviewsForEntityResponseSchema.model_validate(
@@ -208,13 +212,13 @@ async def create_review_for_entity(
     uc: FromDishka[CreateReviewUseCase],
     data: CreateReviewRequestSchema,
     principal: Annotated[Principal, Depends(get_principal)],
-    entity_type: ReviewEntityTypeEnum = ENTITY_TYPE_PATH,
+    entity_type: ReviewEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> CreateReviewResponseSchema:
     result = await uc(
         CreateReviewInputDTO(
             author_id=principal.id.value,
-            entity_type=entity_type,
+            entity_type=entity_type.domain_name,
             entity_id=entity_id,
             text=data.text,
             rating=data.rating,
