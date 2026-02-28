@@ -171,7 +171,7 @@ class AppConfig(BaseSettings):
         file_secret_settings: PydanticBaseSettingsSource,
     ) -> tuple[PydanticBaseSettingsSource, ...]:
         return (
-            YamlConfigSettingsSource(settings_cls),
+            YamlConfigSettingsSource(settings_cls, deep_merge=True),
             env_settings,
             dotenv_settings,
             file_secret_settings,

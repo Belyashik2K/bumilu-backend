@@ -1,9 +1,2 @@
 database:
-  driver: "postgresql+asyncpg"
-  host: "postgres"
-  port: 5432
   echo: true
-  pool:
-    echo: false
-    size: 10
-    max_overflow: 20
