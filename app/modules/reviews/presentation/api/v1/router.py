@@ -55,6 +55,7 @@ from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
 reviews_router = APIRouter(
     tags=["Reviews"],
+    dependencies=[Depends(security)],
 )
 
 
@@ -62,7 +63,9 @@ reviews_router = APIRouter(
     "/users/{user_id}/reviews",
     responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
 )
-async def get_reviews_by_user_id() -> None:
+async def get_reviews_by_user_id(
+    user_id: UUID7, principal: Annotated[Principal, Depends(get_principal)]
+) -> None:
     raise NotImplementedError("Maybe later, maybe never.")
 
 
@@ -70,7 +73,9 @@ async def get_reviews_by_user_id() -> None:
     "/users/me/reviews",
     responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
 )
-async def get_my_reviews() -> None:
+async def get_my_reviews(
+    principal: Annotated[Principal, Depends(get_principal)],
+) -> None:
     raise NotImplementedError("Maybe later, maybe never.")
 
 
@@ -83,6 +88,7 @@ async def get_my_reviews() -> None:
 @inject
 async def get_review_by_id(
     uc: FromDishka[GetReviewUseCase],
+    principal: Annotated[Principal, Depends(get_principal)],
     review_id: UUID7 = REVIEW_ID_PATH,
 ) -> ReviewInfoSchema:
     result = await uc(
@@ -99,7 +105,6 @@ async def get_review_by_id(
     responses=generate_responses_for_endpoint(
         status.HTTP_404_NOT_FOUND,
     ),
-    dependencies=[Depends(security)],
 )
 @inject
 async def delete_review_by_id(
@@ -120,7 +125,6 @@ async def delete_review_by_id(
     responses=generate_responses_for_endpoint(
         status.HTTP_404_NOT_FOUND,
     ),
-    dependencies=[Depends(security)],
 )
 @inject
 async def update_review_by_id(
@@ -150,11 +154,14 @@ async def update_review_by_id(
 @inject
 async def get_reviews_for_entity(
     uc: FromDishka[GetAllReviewsForEntityUseCase],
+    principal: Annotated[Principal, Depends(get_principal)],
     entity_type: ReviewEntityTypeEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> GetAllReviewsForEntityResponseSchema:
     result = await uc(
-        GetAllReviewsForEntityInputDTO(entity_id=entity_id, entity_type=entity_type)
+        GetAllReviewsForEntityInputDTO(
+            actor_id=principal.id.value, entity_id=entity_id, entity_type=entity_type
+        )
     )
     return GetAllReviewsForEntityResponseSchema.model_validate(
         result, from_attributes=True
@@ -164,7 +171,6 @@ async def get_reviews_for_entity(
 @reviews_router.post(
     "/{entity_type}/{entity_id}/reviews",
     status_code=status.HTTP_201_CREATED,
-    dependencies=[Depends(security)],
 )
 @inject
 async def create_review_for_entity(

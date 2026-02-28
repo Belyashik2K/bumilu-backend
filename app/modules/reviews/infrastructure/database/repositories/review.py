@@ -23,8 +23,7 @@ from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
 
 class SQLAlchemyReviewRepository(
-    IReviewRepository,
-    SQLAlchemyBaseRepository[Review, ReviewModel],
+    IReviewRepository, SQLAlchemyBaseRepository[Review, ReviewModel]
 ):
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(session, ReviewModel)
@@ -65,6 +64,22 @@ class SQLAlchemyReviewRepository(
         if review_model is None:
             return None
         return self._to_entity(review_model)
+
+    async def get_all_by_entity_excluding_author(
+        self,
+        entity_type: ReviewEntityTypeEnum,
+        entity_id: IdVO,
+        author_id: UserIdVO | None,
+    ) -> list[Review]:
+        stmt = select(ReviewModel).where(
+            ReviewModel.entity_type == entity_type,
+            ReviewModel.entity_id == entity_id.value,
+        )
+        if author_id is not None:
+            stmt = stmt.where(ReviewModel.author_id != author_id.value)
+        result = await self.session.execute(stmt)
+        review_models = result.scalars().all()
+        return [self._to_entity(review_model) for review_model in review_models]
 
     async def get_all_by_entity(
         self,

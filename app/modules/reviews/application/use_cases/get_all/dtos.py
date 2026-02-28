@@ -10,6 +10,7 @@ from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class GetAllReviewsForEntityInputDTO:
+    actor_id: UUID
     entity_id: UUID
     entity_type: ReviewEntityTypeEnum
     filters: None = field(default=None)
@@ -19,4 +20,5 @@ class GetAllReviewsForEntityInputDTO:
 class GetAllReviewsForEntityOutputDTO:
     entity_id: UUID
     entity_type: ReviewEntityTypeEnum
+    actor_review: ReviewInfoDTO | None = field(default=None)
     items: list[ReviewInfoDTO] = field(default_factory=list)
