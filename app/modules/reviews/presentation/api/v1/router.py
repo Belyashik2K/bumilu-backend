@@ -26,7 +26,11 @@ from app.modules.reviews.application.use_cases.get import (
     GetReviewInputDTO,
     GetReviewUseCase,
 )
-from app.modules.reviews.application.use_cases.get_all import (
+from app.modules.reviews.application.use_cases.get_all_by_user import (
+    GetAllReviewsByUserInputDTO,
+    GetAllReviewsByUserUseCase,
+)
+from app.modules.reviews.application.use_cases.get_all_for_entity import (
     GetAllReviewsForEntityInputDTO,
     GetAllReviewsForEntityUseCase,
 )
@@ -45,6 +49,7 @@ from app.modules.reviews.presentation.api.schemas.create import (
     CreateReviewResponseSchema,
 )
 from app.modules.reviews.presentation.api.schemas.get import (
+    GetAllReviewsByUserResponseSchema,
     GetAllReviewsForEntityResponseSchema,
 )
 from app.modules.reviews.presentation.api.schemas.update import (
@@ -60,23 +65,48 @@ reviews_router = APIRouter(
 
 
 @reviews_router.get(
-    "/users/{user_id}/reviews",
-    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+    "/users/me/reviews",
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND,
+    ),
 )
-async def get_reviews_by_user_id(
-    user_id: UUID7, principal: Annotated[Principal, Depends(get_principal)]
-) -> None:
-    raise NotImplementedError("Maybe later, maybe never.")
+@inject
+async def get_my_reviews(
+    uc: FromDishka[GetAllReviewsByUserUseCase],
+    principal: Annotated[Principal, Depends(get_principal)],
+) -> GetAllReviewsByUserResponseSchema:
+    result = await uc(
+        GetAllReviewsByUserInputDTO(
+            user_id=principal.id.value,
+            actor_id=principal.id.value,
+        )
+    )
+    return GetAllReviewsByUserResponseSchema.model_validate(
+        result, from_attributes=True
+    )
 
 
 @reviews_router.get(
-    "/users/me/reviews",
-    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+    "/users/{user_id}/reviews",
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND,
+    ),
 )
-async def get_my_reviews(
+@inject
+async def get_reviews_by_user_id(
+    user_id: UUID7,
+    uc: FromDishka[GetAllReviewsByUserUseCase],
     principal: Annotated[Principal, Depends(get_principal)],
-) -> None:
-    raise NotImplementedError("Maybe later, maybe never.")
+) -> GetAllReviewsByUserResponseSchema:
+    result = await uc(
+        GetAllReviewsByUserInputDTO(
+            user_id=user_id,
+            actor_id=principal.id.value,
+        )
+    )
+    return GetAllReviewsByUserResponseSchema.model_validate(
+        result, from_attributes=True
+    )
 
 
 @reviews_router.get(

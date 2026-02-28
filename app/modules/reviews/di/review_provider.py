@@ -12,7 +12,10 @@ from app.modules.reviews.application.interfaces.repositories.review import (
 from app.modules.reviews.application.use_cases.create import CreateReviewUseCase
 from app.modules.reviews.application.use_cases.delete import DeleteReviewUseCase
 from app.modules.reviews.application.use_cases.get import GetReviewUseCase
-from app.modules.reviews.application.use_cases.get_all import (
+from app.modules.reviews.application.use_cases.get_all_by_user import (
+    GetAllReviewsByUserUseCase,
+)
+from app.modules.reviews.application.use_cases.get_all_for_entity import (
     GetAllReviewsForEntityUseCase,
 )
 from app.modules.reviews.application.use_cases.update import UpdateReviewUseCase
@@ -20,6 +23,7 @@ from app.modules.reviews.infrastructure.database.repositories.review import (
     SQLAlchemyReviewRepository,
 )
 from app.modules.reviews.infrastructure.entity_resolver import EntityResolver
+from app.modules.users.application.interfaces.repositories.user import IUserRepository
 
 
 class ReviewProvider(Provider):
@@ -85,4 +89,15 @@ class ReviewProvider(Provider):
     ) -> GetReviewUseCase:
         return GetReviewUseCase(
             review_repository=review_repository,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def get_all_reviews_by_user_uc(
+        self,
+        review_repository: IReviewRepository,
+        user_repository: IUserRepository,
+    ) -> GetAllReviewsByUserUseCase:
+        return GetAllReviewsByUserUseCase(
+            review_repository=review_repository,
+            user_repository=user_repository,
         )

@@ -81,6 +81,17 @@ class SQLAlchemyReviewRepository(
         review_models = result.scalars().all()
         return [self._to_entity(review_model) for review_model in review_models]
 
+    async def get_all_by_author(
+        self,
+        author_id: UserIdVO,
+    ) -> list[Review]:
+        stmt = select(ReviewModel).where(
+            ReviewModel.author_id == author_id.value,
+        )
+        result = await self.session.execute(stmt)
+        review_models = result.scalars().all()
+        return [self._to_entity(review_model) for review_model in review_models]
+
     async def get_all_by_entity(
         self,
         entity_type: ReviewEntityTypeEnum,
