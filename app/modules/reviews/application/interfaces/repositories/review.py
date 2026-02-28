@@ -23,6 +23,14 @@ class IReviewRepository(IBaseRepository[Review], ABC):
     ) -> Review | None: ...
 
     @abstractmethod
+    async def get_all_by_entity_excluding_author(
+        self,
+        entity_type: ReviewEntityTypeEnum,
+        entity_id: IdVO,
+        author_id: UserIdVO | None,
+    ) -> list[Review]: ...
+
+    @abstractmethod
     async def get_all_by_entity(
         self,
         entity_type: ReviewEntityTypeEnum,
