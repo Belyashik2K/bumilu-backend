@@ -109,9 +109,7 @@ async def verify_email_login(
 
 @auth_router.post(
     "/refresh",
-    responses=generate_responses_for_endpoint(
-        status.HTTP_401_UNAUTHORIZED,
-    ),
+    responses=generate_responses_for_endpoint(),
 )
 @inject
 async def refresh(

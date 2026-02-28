@@ -25,6 +25,10 @@ mapped_code_to_exception = {
         ErrorResponseSchema,
         "Internal server error occurred",
     ),
+    status.HTTP_501_NOT_IMPLEMENTED: (
+        ErrorResponseSchema,
+        "I'll work on it, promise!",
+    ),
     status.HTTP_503_SERVICE_UNAVAILABLE: (
         ErrorResponseSchema,
         "Service is currently unavailable",
@@ -33,6 +37,8 @@ mapped_code_to_exception = {
 
 DEFAULT = [
     status.HTTP_400_BAD_REQUEST,
+    status.HTTP_401_UNAUTHORIZED,
+    status.HTTP_403_FORBIDDEN,
     status.HTTP_422_UNPROCESSABLE_ENTITY,
     status.HTTP_429_TOO_MANY_REQUESTS,
     status.HTTP_500_INTERNAL_SERVER_ERROR,
