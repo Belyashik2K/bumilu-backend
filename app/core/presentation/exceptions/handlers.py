@@ -92,6 +92,16 @@ def set_exception_handlers(app: FastAPI):
             details=exc.details,
         )
 
+    @app.exception_handler(NotImplementedError)
+    async def not_implemented_exception_handler(
+        request: Request, exc: NotImplementedError
+    ) -> JSONResponse:
+        return _prepare_response(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+            message="This functionality is not implemented yet.",
+            details={"error": str(exc)},
+        )
+
     @app.exception_handler(Exception)
     async def fallback_handler(request: Request, exc: Exception) -> JSONResponse:
         return _prepare_response(

@@ -59,6 +59,22 @@ reviews_router = APIRouter(
 
 
 @reviews_router.get(
+    "/users/{user_id}/reviews",
+    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+)
+async def get_reviews_by_user_id() -> None:
+    raise NotImplementedError("Maybe later, maybe never.")
+
+
+@reviews_router.get(
+    "/users/me/reviews",
+    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+)
+async def get_my_reviews() -> None:
+    raise NotImplementedError("Maybe later, maybe never.")
+
+
+@reviews_router.get(
     "/reviews/{review_id}",
     responses=generate_responses_for_endpoint(
         status.HTTP_404_NOT_FOUND,
@@ -81,7 +97,6 @@ async def get_review_by_id(
     "/reviews/{review_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     responses=generate_responses_for_endpoint(
-        status.HTTP_403_FORBIDDEN,
         status.HTTP_404_NOT_FOUND,
     ),
     dependencies=[Depends(security)],
@@ -103,7 +118,6 @@ async def delete_review_by_id(
 @reviews_router.patch(
     "/reviews/{review_id}",
     responses=generate_responses_for_endpoint(
-        status.HTTP_403_FORBIDDEN,
         status.HTTP_404_NOT_FOUND,
     ),
     dependencies=[Depends(security)],
