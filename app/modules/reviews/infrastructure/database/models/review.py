@@ -28,7 +28,9 @@ class ReviewModel(PKUUIDMixin, TimestampMixin, BaseModel):
     __tablename__ = "reviews"
 
     author_id: Mapped[UUID] = mapped_column(
-        _UUID, ForeignKey("users.id", ondelete="CASCADE"), index=True
+        _UUID,
+        ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"),
+        index=True,
     )
     entity_type: Mapped[ReviewEntityTypeEnum] = mapped_column(
         Enum(ReviewEntityTypeEnum, name="review_entity_type_enum"),
