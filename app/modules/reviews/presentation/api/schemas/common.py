@@ -45,6 +45,11 @@ ENTITY_ID_PATH = Path(
     description="ID of the entity the review is for",
     example=ENTITY_ID_EXAMPLE,
 )
+USER_ID_PATH = Path(
+    ...,
+    description="ID of the user (author) for which reviews are fetched",
+    example=AUTHOR_ID_EXAMPLE,
+)
 
 
 class BaseReviewInfoSchema(BaseModel):

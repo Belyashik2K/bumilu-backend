@@ -42,6 +42,7 @@ from app.modules.reviews.presentation.api.schemas.common import (
     ENTITY_ID_PATH,
     ENTITY_TYPE_PATH,
     REVIEW_ID_PATH,
+    USER_ID_PATH,
     ReviewInfoSchema,
 )
 from app.modules.reviews.presentation.api.schemas.create import (
@@ -94,9 +95,9 @@ async def get_my_reviews(
 )
 @inject
 async def get_reviews_by_user_id(
-    user_id: UUID7,
     uc: FromDishka[GetAllReviewsByUserUseCase],
     principal: Annotated[Principal, Depends(get_principal)],
+    user_id: UUID7 = USER_ID_PATH,
 ) -> GetAllReviewsByUserResponseSchema:
     result = await uc(
         GetAllReviewsByUserInputDTO(
