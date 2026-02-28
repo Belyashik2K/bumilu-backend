@@ -1,1 +1,4 @@
-from .review_entity import ReviewEntityTypeEnum
+from .review_entity import (
+    ReviewEntityPathEnum,
+    ReviewEntityTypeEnum,
+)

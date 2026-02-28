@@ -5,12 +5,16 @@ from pydantic import (
     Field,
 )
 
-from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
+from app.modules.reviews.shared.enums import (
+    ReviewEntityPathEnum,
+    ReviewEntityTypeEnum,
+)
 from app.modules.users.presentation.api.schemas.common import USER_ID_EXAMPLE
 
 REVIEW_ID_EXAMPLE = "019caaaa-0000-7000-a000-000000000003"
 ENTITY_ID_EXAMPLE = "019caaaa-0000-7000-a000-000000000004"
 ENTITY_TYPE_EXAMPLE = ReviewEntityTypeEnum.PLACE
+ENTITY_TYPE_PATH_EXAMPLE = ReviewEntityPathEnum.PLACES
 AUTHOR_ID_EXAMPLE = USER_ID_EXAMPLE
 REVIEW_TEXT_EXAMPLE = "idk how to describe this place, but... sorry, i have no time."
 REVIEW_RATING_EXAMPLE = 5
@@ -38,7 +42,7 @@ REVIEW_ID_PATH = Path(
 ENTITY_TYPE_PATH = Path(
     ...,
     description="Type of the entity the review is for",
-    example=ENTITY_TYPE_EXAMPLE,
+    example=ENTITY_TYPE_PATH_EXAMPLE,
 )
 ENTITY_ID_PATH = Path(
     ...,
