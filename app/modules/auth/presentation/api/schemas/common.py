@@ -10,7 +10,7 @@ from app.modules.users.presentation.api.schemas.common import (
     AuthenticatedUserInfoSchema,
 )
 
-DEVICE_ID_EXAMPLE = "019c95e5-f659-7698-a7dd-7738003a7d23"
+DEVICE_ID_EXAMPLE = "019caaaa-0000-7000-a000-000000000001"
 DEVICE_PLATFORM_EXAMPLE = DevicePlatformEnum.ANDROID
 DEVICE_NAME_EXAMPLE = "Xiaomi 11T (Android 11)"
 APP_VERSION_EXAMPLE = "1.0.0"

@@ -6,11 +6,12 @@ from pydantic import (
 )
 
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
+from app.modules.users.presentation.api.schemas.common import USER_ID_EXAMPLE
 
-REVIEW_ID_EXAMPLE = "019c95e5-f659-7698-a7dd-7738003a7d23"
-ENTITY_ID_EXAMPLE = "019c95e5-f659-7698-a7dd-7738003a7d23"
+REVIEW_ID_EXAMPLE = "019caaaa-0000-7000-a000-000000000003"
+ENTITY_ID_EXAMPLE = "019caaaa-0000-7000-a000-000000000004"
 ENTITY_TYPE_EXAMPLE = ReviewEntityTypeEnum.PLACE
-AUTHOR_ID_EXAMPLE = "019c95e5-f659-7698-a7dd-7738003a7d23"
+AUTHOR_ID_EXAMPLE = USER_ID_EXAMPLE
 REVIEW_TEXT_EXAMPLE = "idk how to describe this place, but... sorry, i have no time."
 REVIEW_RATING_EXAMPLE = 5
 
