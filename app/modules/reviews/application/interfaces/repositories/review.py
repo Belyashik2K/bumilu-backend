@@ -38,6 +38,12 @@ class IReviewRepository(IBaseRepository[Review], ABC):
     ) -> list[Review]: ...
 
     @abstractmethod
+    async def get_all_by_author(
+        self,
+        author_id: UserIdVO,
+    ) -> list[Review]: ...
+
+    @abstractmethod
     async def delete_by_id(
         self,
         review_id: ReviewIdVO,

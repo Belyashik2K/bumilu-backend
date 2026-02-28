@@ -7,7 +7,7 @@ from app.modules.reviews.application.interfaces.entity_resolver import IEntityRe
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
-from app.modules.reviews.application.use_cases.get_all import (
+from app.modules.reviews.application.use_cases.get_all_for_entity import (
     GetAllReviewsForEntityInputDTO,
     GetAllReviewsForEntityOutputDTO,
 )

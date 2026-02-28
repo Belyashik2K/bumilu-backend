@@ -43,6 +43,21 @@ class ReviewInfoSchemaWithoutEntity(ReviewInfoSchema):
     entity_type: ReviewEntityTypeEnum = Field(exclude=True)
 
 
+class ReviewInfoSchemaWithAuthor(ReviewInfoSchema):
+    author_id: UUID7 = Field(exclude=True)
+
+
+class GetAllReviewsByUserResponseSchema(BaseModel):
+    user_id: UUID7 = Field(
+        ...,
+        description="ID of the user (author) for which reviews are fetched",
+        examples=[AUTHOR_ID_EXAMPLE],
+    )
+    items: list[ReviewInfoSchemaWithAuthor] = Field(
+        ..., description="List of reviews left by the user (author) fetched"
+    )
+
+
 class GetAllReviewsForEntityResponseSchema(BaseModel):
     entity_id: UUID7 = Field(
         ...,
