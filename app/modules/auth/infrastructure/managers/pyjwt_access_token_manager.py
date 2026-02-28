@@ -13,6 +13,7 @@ from app.core.shared.enums import UserRoleEnum
 from app.core.shared.utils import get_current_dt
 from app.modules.auth.application.interfaces.managers.access_token import (
     IAccessTokenManager,
+    TokenInfoDTO,
 )
 
 
@@ -53,3 +54,25 @@ class PyJWTAccessTokenManager(IAccessTokenManager):
             algorithm=self._algorithm,
         )
         return token
+
+    def validate_and_decode(self, token: str) -> TokenInfoDTO:
+        try:
+            payload = jwt.decode(
+                jwt=token,
+                key=self._secret_key,
+                algorithms=[self._algorithm],
+                issuer=self._issuer,
+            )
+        except jwt.PyJWTError as e:
+            raise ValueError("Invalid token") from e
+
+        if payload.get("type") != "access":
+            raise ValueError("Invalid token type")
+
+        return TokenInfoDTO(
+            user_id=UserIdVO.from_str(payload["sub"]),
+            session_id=SessionIdVO.from_str(payload["session_id"]),
+            role=UserRoleEnum(payload["role"]),
+            issued_at=payload["iat"],
+            expires_at=payload["exp"],
+        )

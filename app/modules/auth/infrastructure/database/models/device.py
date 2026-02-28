@@ -38,7 +38,9 @@ class DeviceModel(PKUUIDMixin, CreatedAtMixin, BaseModel):
     app_version: Mapped[str] = mapped_column(VARCHAR(32))
 
     guest_user_id: Mapped[UUID | None] = mapped_column(
-        _UUID, ForeignKey("users.id", ondelete="SET NULL"), index=True
+        _UUID,
+        ForeignKey("users.id", ondelete="SET NULL", onupdate="CASCADE"),
+        index=True,
     )
 
     last_seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)

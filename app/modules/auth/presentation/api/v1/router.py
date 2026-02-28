@@ -70,24 +70,21 @@ async def login_as_guest(
 
 @auth_router.post(
     "/email/request",
-    responses=generate_responses_for_endpoint(
-        status.HTTP_400_BAD_REQUEST,
-    ),
+    responses=generate_responses_for_endpoint(),
 )
 @inject
 async def request_email_code(
     uc: FromDishka[RequestEmailCodeAtLoginUseCase],
     data: RequestEmailCodeAtLoginRequestSchema,
     headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
-) -> None:
+) -> dict:
     await uc(RequestEmailCodeAtLoginInputDTO(email=str(data.email)))
+    return {}
 
 
 @auth_router.post(
     "/email/verify",
-    responses=generate_responses_for_endpoint(
-        status.HTTP_400_BAD_REQUEST,
-    ),
+    responses=generate_responses_for_endpoint(),
 )
 @inject
 async def verify_email_login(
@@ -112,9 +109,7 @@ async def verify_email_login(
 
 @auth_router.post(
     "/refresh",
-    responses=generate_responses_for_endpoint(
-        status.HTTP_401_UNAUTHORIZED,
-    ),
+    responses=generate_responses_for_endpoint(),
 )
 @inject
 async def refresh(

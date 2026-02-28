@@ -34,14 +34,8 @@ class CoreProvider(Provider):
         self,
         database_helper: SQLAlchemyDatabaseHelper,
     ) -> AsyncIterator[AsyncSession]:
-        async with (
-            database_helper.session_factory() as session
-        ):  # TODO: Make UOW properly
-            try:
-                yield session
-                await session.commit()
-            except Exception:
-                await session.rollback()
-                raise
-            finally:
-                await session.close()
+        session = database_helper.session_factory()
+        try:
+            yield session
+        finally:
+            await session.close()

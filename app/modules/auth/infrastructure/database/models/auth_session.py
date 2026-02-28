@@ -31,10 +31,14 @@ class AuthSessionModel(PKUUIDMixin, CreatedAtMixin, BaseModel):
     __tablename__ = "auth_sessions"
 
     user_id: Mapped[UUID] = mapped_column(
-        _UUID, ForeignKey("users.id", ondelete="CASCADE"), index=True
+        _UUID,
+        ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"),
+        index=True,
     )
     device_id: Mapped[UUID] = mapped_column(
-        _UUID, ForeignKey("devices.id", ondelete="CASCADE"), index=True
+        _UUID,
+        ForeignKey("devices.id", ondelete="CASCADE", onupdate="CASCADE"),
+        index=True,
     )
     refresh_token_hash: Mapped[str] = mapped_column(unique=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
