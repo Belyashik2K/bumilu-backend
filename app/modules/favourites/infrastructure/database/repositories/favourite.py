@@ -1,4 +1,7 @@
-from sqlalchemy import select
+from sqlalchemy import (
+    delete,
+    select,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.shared.domain.value_objects.id import (
@@ -41,13 +44,21 @@ class SQLAlchemyFavouriteRepository(IFavouriteRepository):
     ) -> None:
         data = self._to_data(favourite)
         await self.session.merge(data)
+        await self.session.flush()
 
     async def remove_if_exists(
         self,
         favourite: Favourite,
     ) -> None:
-        data = self._to_data(favourite)
-        await self.session.delete(data)
+        stmt = delete(
+            FavouriteModel,
+        ).where(
+            FavouriteModel.user_id == favourite.user_id.value,
+            FavouriteModel.entity_type == favourite.entity_type,
+            FavouriteModel.entity_id == favourite.entity_id.value,
+        )
+        await self.session.execute(stmt)
+        await self.session.flush()
 
     async def get_all_by_user_id(
         self,
