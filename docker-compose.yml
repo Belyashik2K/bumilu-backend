@@ -29,6 +29,19 @@ services:
       retries: 5
     networks:
       - bumilu
+  migrations:
+    build: .
+    restart: "no"
+    env_file: [ .env ]
+    command: >
+      uv run alembic upgrade head
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - bumilu
   api:
     build: .
     restart: unless-stopped
