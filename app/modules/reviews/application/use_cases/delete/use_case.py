@@ -28,7 +28,9 @@ class DeleteReviewUseCase(
     async def execute(self, input_data: DeleteReviewInputDTO) -> DeleteReviewOutputDTO:
         review_id = ReviewIdVO.from_uuid(input_data.review_id)
 
-        review = await self._review_repository.get_by_id(review_id)
+        review = await self._review_repository.get_by_id(
+            review_id
+        )  # TODO: idempotent delete
         if not review:
             raise ReviewNotFound(review_id=review_id)
 
