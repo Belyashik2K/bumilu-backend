@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from app.core.infrastructure.database import BaseModel
 from app.modules.auth.infrastructure.database.models import *  # noqa: F401
+from app.modules.favourites.infrastructure.database.models import *  # noqa: F401
 from app.modules.reviews.infrastructure.database.models import *  # noqa: F401
 from app.modules.users.infrastructure.database.models import *  # noqa: F401
 
