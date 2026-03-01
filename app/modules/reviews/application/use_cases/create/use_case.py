@@ -5,7 +5,9 @@ from app.core.shared.domain.value_objects.id import (
     IdVO,
     UserIdVO,
 )
-from app.modules.reviews.application.interfaces.entity_resolver import IEntityResolver
+from app.modules.reviews.application.interfaces.entity_resolver import (
+    IReviewEntityResolver,
+)
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
@@ -31,7 +33,9 @@ class CreateReviewUseCase(
     ]
 ):
     def __init__(
-        self, review_repository: IReviewRepository, entity_resolver: IEntityResolver
+        self,
+        review_repository: IReviewRepository,
+        entity_resolver: IReviewEntityResolver,
     ) -> None:
         self._review_repository = review_repository
         self._entity_resolver = entity_resolver

@@ -5,7 +5,9 @@ from dishka import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.reviews.application.interfaces.entity_resolver import IEntityResolver
+from app.modules.reviews.application.interfaces.entity_resolver import (
+    IReviewEntityResolver,
+)
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
@@ -22,16 +24,18 @@ from app.modules.reviews.application.use_cases.update import UpdateReviewUseCase
 from app.modules.reviews.infrastructure.database.repositories.review import (
     SQLAlchemyReviewRepository,
 )
-from app.modules.reviews.infrastructure.entity_resolver import EntityResolver
+from app.modules.reviews.infrastructure.entity_resolver import (
+    ReviewEntityResolver,
+)
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 
 
 class ReviewProvider(Provider):
-    @provide(scope=Scope.APP, provides=IEntityResolver)
+    @provide(scope=Scope.APP, provides=IReviewEntityResolver)
     async def review_entity_resolver(
         self,
-    ) -> EntityResolver:
-        return EntityResolver()
+    ) -> ReviewEntityResolver:
+        return ReviewEntityResolver()
 
     @provide(scope=Scope.REQUEST, provides=IReviewRepository)
     async def review_repository(
@@ -46,7 +50,7 @@ class ReviewProvider(Provider):
     async def get_all_reviews_for_entity_uc(
         self,
         review_repository: IReviewRepository,
-        entity_resolver: IEntityResolver,
+        entity_resolver: IReviewEntityResolver,
     ) -> GetAllReviewsForEntityUseCase:
         return GetAllReviewsForEntityUseCase(
             review_repository=review_repository,
@@ -57,7 +61,7 @@ class ReviewProvider(Provider):
     async def create_review_uc(
         self,
         review_repository: IReviewRepository,
-        entity_resolver: IEntityResolver,
+        entity_resolver: IReviewEntityResolver,
     ) -> CreateReviewUseCase:
         return CreateReviewUseCase(
             review_repository=review_repository,
