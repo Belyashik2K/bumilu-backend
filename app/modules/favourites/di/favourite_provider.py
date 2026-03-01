@@ -15,6 +15,9 @@ from app.modules.favourites.application.use_cases.add import AddToFavouritesUseC
 from app.modules.favourites.application.use_cases.get_all_by_user import (
     GetAllFavouritesByUserUseCase,
 )
+from app.modules.favourites.application.use_cases.remove import (
+    RemoveFromFavouritesUseCase,
+)
 from app.modules.favourites.infrastructure.database.repositories.favourite import (
     SQLAlchemyFavouriteRepository,
 )
@@ -67,11 +70,7 @@ class FavouriteProvider(Provider):
     async def remove_from_favourites_uc(
         self,
         favourite_repository: IFavouriteRepository,
-        user_repository: IUserRepository,
-        entity_resolver: IFavouriteEntityResolver,
-    ) -> AddToFavouritesUseCase:
-        return AddToFavouritesUseCase(
+    ) -> RemoveFromFavouritesUseCase:
+        return RemoveFromFavouritesUseCase(
             favourite_repository=favourite_repository,
-            user_repository=user_repository,
-            entity_resolver=entity_resolver,
         )
