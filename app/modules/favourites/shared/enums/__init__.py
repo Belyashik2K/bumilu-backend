@@ -1,0 +1,1 @@
+from .favourite_entity import FavouriteEntityTypeEnum
