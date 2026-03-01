@@ -12,7 +12,9 @@ from app.modules.reviews.shared.enums import (
 from app.modules.users.presentation.api.schemas.common import USER_ID_EXAMPLE
 
 REVIEW_ID_EXAMPLE = "019caaaa-0000-7000-a000-000000000003"
-ENTITY_ID_EXAMPLE = "019caaaa-0000-7000-a000-000000000004"
+ENTITY_ID_EXAMPLE = (
+    "019caaaa-0000-7000-a000-000000000004"  # TODO: Move to shared core constants
+)
 ENTITY_TYPE_EXAMPLE = ReviewEntityTypeEnum.PLACE
 ENTITY_TYPE_PATH_EXAMPLE = ReviewEntityPathEnum.PLACES
 AUTHOR_ID_EXAMPLE = USER_ID_EXAMPLE

@@ -5,13 +5,13 @@ from abc import (
 
 from app.core.application.interfaces.entity_resolver import IEntityResolver
 from app.core.shared.domain.value_objects.id import IdVO
-from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
+from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
 
 
-class IReviewEntityResolver(IEntityResolver, ABC):
+class IFavouriteEntityResolver(IEntityResolver, ABC):
     @abstractmethod
     async def resolve(
         self,
-        entity_type: ReviewEntityTypeEnum,
+        entity_type: FavouriteEntityTypeEnum,
         entity_id: IdVO,
     ) -> bool: ...
