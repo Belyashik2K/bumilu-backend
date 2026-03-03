@@ -150,11 +150,6 @@ class CORSConfig(BaseModel):
     allow_headers: list[str]
 
 
-class ServerConfig(BaseModel):
-    host: str
-    port: int
-
-
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(
         yaml_file=("config.yaml", "config.dev.yaml"),
@@ -169,7 +164,6 @@ class AppConfig(BaseSettings):
     redis: RedisConfig
     auth: AuthConfig
     cors: CORSConfig
-    server: ServerConfig
 
     @classmethod
     def settings_customise_sources(
