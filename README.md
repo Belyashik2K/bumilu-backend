@@ -1,6 +1,10 @@
 # BumiLu-users-service
 Users service for mobile ans web application BumiLu (不迷路), PAB project
 
+Доки доступны на:
+1. http://localhost:8000/docs/swagger - Swagger
+2. http://localhost:8000/docs/redoc - ReDoc
+
 ### Установка
 ### 1. Клонирование
 ```bash
@@ -31,4 +35,3 @@ AUTH__EMAIL__SMTP__PASSWORD="CnB9aYuOgDrWwcbsd0"
 docker-compose -f docker-compose.dev.yml -f docker-compose.yml up --build
 ```
 _Если есть IDE от Jetbrains: можно запустить через конфигурацию_ `[DEV] Run service`
-
