@@ -17,7 +17,6 @@ def setup_logging(
         root.removeHandler(handler)
 
     handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(logging.Formatter(format, datefmt))
     handler.setFormatter(ExtraFormatter(format, datefmt))
     handler.addFilter(RequestIdFilter())
 
