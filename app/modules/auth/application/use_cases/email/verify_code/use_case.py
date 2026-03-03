@@ -1,5 +1,8 @@
+import logging
+
 from app.core.application.use_cases.base import IBaseUseCase
 from app.core.shared.domain.value_objects.id import DeviceIdVO
+from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.interfaces.hashers import IVerificationCodeHasher
 from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
@@ -26,6 +29,8 @@ from app.modules.auth.domain.models.device import Device
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 from app.modules.users.domain.models.user import User
 from app.modules.users.domain.value_objects import EmailVO
+
+logger = logging.getLogger(__name__)
 
 
 class VerifyEmailCodeAtLoginUseCase(
@@ -57,12 +62,26 @@ class VerifyEmailCodeAtLoginUseCase(
         code_hash = self._code_hasher.hash(email=email, code=code)
         ok = await self._challenge_store.consume(email=email, code_hash=code_hash)
         if not ok:
+            logger.info(
+                "email_login_code_invalid",
+                extra=prepare_extras(
+                    email=email.fingerprint,
+                    device_id=input_data.device_id,
+                ),
+            )
             raise InvalidEmailVerificationCode()
 
         user = await self._user_repository.get_by_email(email)
         if user is None:
             user = User.create_verified(email=email)
             await self._user_repository.save(user)
+            logger.info(
+                "user_created_via_email_login",
+                extra=prepare_extras(
+                    user_id=str(user.id),
+                    email=email.fingerprint,
+                ),
+            )
 
         current_device_id = DeviceIdVO(input_data.device_id)
 
@@ -75,10 +94,23 @@ class VerifyEmailCodeAtLoginUseCase(
                 app_version=input_data.app_version,
             )
             await self._device_repository.save(device)
+            logger.info(
+                "device_registered",
+                extra=prepare_extras(
+                    device_id=current_device_id,
+                    platform=input_data.device_platform,
+                    name=input_data.device_name,
+                    app_version=input_data.app_version,
+                ),
+            )
         else:
             await self._auth_session_repository.revoke_active_for_device(
                 device_id=current_device_id
             )  # TODO: think about it, maybe remove it
+            logger.info(
+                "auth_sessions_revoked_for_device",
+                extra=prepare_extras(device_id=current_device_id),
+            )
 
         tokens = await self._auth_session_service.issue(
             user_id=user.id,

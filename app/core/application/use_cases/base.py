@@ -46,13 +46,13 @@ class IBaseUseCase(Generic[InputDTO, OutputDTO], ABC):
         try:
             return await self.execute(input_data)
         except (BaseDomainException, BaseApplicationException) as e:
-            details = getattr(e, "details", {})
+            details = e.details or {}
             logger.info(
                 "usecase_expected_error", extra=_get_extras(uc_name, error=e, **details)
             )
             raise
         except BaseInfrastructureException as e:
-            context = getattr(e, "context", {})
+            context = e.context or {}
             logger.exception(
                 "usecase_infrastructure_error",
                 extra=_get_extras(uc_name, error=e, **context),
