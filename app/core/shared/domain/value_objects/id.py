@@ -15,13 +15,6 @@ from uuid6 import (
 class IdVO:
     value: UUID
 
-    def __post_init__(self) -> None:
-        if not isinstance(self.value, UUID):
-            print(
-                f"Invalid type for IdVO.value: expected UUID, got {type(self.value)!r}"
-            )
-            raise TypeError(f"IdVO.value must be UUID, got {type(self.value)!r}")
-
     @classmethod
     def new(cls) -> Self:
         return cls(uuid7())

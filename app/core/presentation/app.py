@@ -43,9 +43,7 @@ def create_app() -> FastAPI:
 
     @app.get("/", include_in_schema=False)
     async def redirect_to_docs(request: Request) -> RedirectResponse:
-        return RedirectResponse(
-            url=f"{request.url.scheme}://{request.url.netloc}{config.docs.urls.swagger}"
-        )
+        return RedirectResponse(url=config.docs.urls.swagger)
 
     app.add_middleware(SQLAlchemyTransactionMiddleware)
     app.add_middleware(AuthMiddleware)
