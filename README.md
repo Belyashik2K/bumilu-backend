@@ -28,7 +28,7 @@ AUTH__EMAIL__SMTP__PASSWORD="REDACTED_SMTP_PASSWORD"
 ```
 ### 3. Запуск
 ```bash
-docker-compose -f docker-compose.dev.yml -f docker-compose.dev.yml up --build
+docker-compose -f docker-compose.dev.yml -f docker-compose.yml up --build
 ```
 _Если есть IDE от Jetbrains: можно запустить через конфигурацию_ `[DEV] Run service`
 
