@@ -97,10 +97,10 @@ class VerifyEmailCodeAtLoginUseCase(
             logger.info(
                 "device_registered",
                 extra=prepare_extras(
-                    device_id=current_device_id,
-                    platform=input_data.device_platform,
-                    name=input_data.device_name,
-                    app_version=input_data.app_version,
+                    device_id=device.id,
+                    device_platform=device.platform,
+                    device_name=device.name,
+                    app_version=device.app_version,
                 ),
             )
         else:
