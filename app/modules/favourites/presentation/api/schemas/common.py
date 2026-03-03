@@ -15,7 +15,7 @@ from app.modules.reviews.presentation.api.schemas.common import (
 from app.modules.users.presentation.api.schemas.common import USER_ID_EXAMPLE
 
 ENTITY_TYPE_EXAMPLE = FavouriteEntityTypeEnum.PLACE
-ENTITY_TYPE_PATH_EXAMPLE = FavouriteEntityPathEnum.PLACE
+ENTITY_TYPE_PATH_EXAMPLE = FavouriteEntityPathEnum.PLACES
 
 ENTITY_TYPE_PATH = Path(
     ...,
