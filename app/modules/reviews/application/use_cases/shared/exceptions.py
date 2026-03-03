@@ -21,7 +21,7 @@ class ReviewOwnershipViolation(ApplicationForbiddenException):
         )
 
 
-class EntityNotFound(ApplicationNotFoundException):
+class ReviewEntityNotFound(ApplicationNotFoundException):
     def __init__(self, entity_type: ReviewEntityTypeEnum, entity_id: IdVO) -> None:
         super().__init__(
             message=f"{entity_type.capitalize()} with id {entity_id} not found"

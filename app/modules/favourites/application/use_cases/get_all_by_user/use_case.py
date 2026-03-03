@@ -3,11 +3,11 @@ from app.core.shared.domain.value_objects.id import UserIdVO
 from app.modules.favourites.application.interfaces.repositories.favourite import (
     IFavouriteRepository,
 )
-from app.modules.favourites.application.use_cases.common_dtos import FavouriteItemDTO
 from app.modules.favourites.application.use_cases.get_all_by_user import (
     GetAllFavouritesByUserInputDTO,
     GetAllFavouritesByUserOutputDTO,
 )
+from app.modules.favourites.application.use_cases.shared.dtos import FavouriteItemDTO
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 from app.modules.users.application.use_cases.get.exceptions import UserNotFound
 
