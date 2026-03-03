@@ -49,8 +49,10 @@ class IBaseUseCase(Generic[InputDTO, OutputDTO], ABC):
             logger.info("usecase_expected_error", extra=_get_extras(uc_name, error=e))
             raise
         except BaseInfrastructureException as e:
+            context = e.context or {}
             logger.exception(
-                "usecase_infrastructure_error", extra=_get_extras(uc_name, error=e)
+                "usecase_infrastructure_error",
+                extra=_get_extras(uc_name, error=e, **context),
             )
             raise ApplicationServiceUnavailableException() from e
         except Exception as e:
