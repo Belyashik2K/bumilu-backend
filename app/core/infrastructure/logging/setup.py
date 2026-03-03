@@ -3,16 +3,12 @@ import sys
 
 from app.core.infrastructure.logging.context import RequestIdFilter
 
-LOG_FORMAT = (
-    "%(asctime)s | "
-    "%(levelname)-8s | "
-    "%(request_id)s | "
-    "%(name)s:%(lineno)d - "
-    "%(message)s"
-)
 
-
-def setup_logging(level: str) -> None:
+def setup_logging(
+    level: str,
+    format: str,
+    datefmt: str,
+) -> None:
     root = logging.getLogger()
     root.setLevel(level)
 
@@ -20,7 +16,7 @@ def setup_logging(level: str) -> None:
         root.removeHandler(handler)
 
     handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(logging.Formatter(LOG_FORMAT, "%d.%m.%Y at %H:%M:%S"))
+    handler.setFormatter(logging.Formatter(format, datefmt))
     handler.addFilter(RequestIdFilter())
 
     root.addHandler(handler)
