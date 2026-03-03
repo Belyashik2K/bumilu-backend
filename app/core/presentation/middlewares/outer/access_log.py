@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Awaitable, Callable
+from collections.abc import (
+    Awaitable,
+    Callable,
+)
 from contextvars import Token
 from dataclasses import (
     dataclass,
@@ -151,11 +154,8 @@ def _should_skip_path(path: str) -> bool:
 
 
 def _make_access_extras(scope: dict[str, Any], state: AccessState) -> dict[str, Any]:
-    rid = request_id_ctx.get() or "-"
-
     return {
         "event": "http_access",
-        "request_id": rid,
         "method": scope.get("method") or "-",
         "path": _get_path(scope),
         "full_url": _build_full_url(scope),
