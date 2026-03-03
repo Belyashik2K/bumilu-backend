@@ -69,7 +69,7 @@ select = [
 ignore = [
     "E203", # black compatibility
     "E501", # line length
-    "RUF001", # slavic characters (eg. "e, ё) in docstrings,
+    "RUF001", # slavic characters (eg. "e, ё") in docstrings,
     "RUF003", # russian language in docstrings,
     "B008", # Do not perform function calls in argument defaults
 ]
