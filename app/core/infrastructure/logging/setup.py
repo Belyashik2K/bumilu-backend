@@ -12,7 +12,7 @@ LOG_FORMAT = (
 )
 
 
-def setup_logging(level: str = "INFO") -> None:
+def setup_logging(level: str) -> None:
     root = logging.getLogger()
     root.setLevel(level)
 
