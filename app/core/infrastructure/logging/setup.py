@@ -29,3 +29,5 @@ def setup_logging(level: str = "INFO") -> None:
         logger = logging.getLogger(name)
         logger.handlers = []
         logger.propagate = True
+
+    root.info("Logging is configured with level: %s", level)

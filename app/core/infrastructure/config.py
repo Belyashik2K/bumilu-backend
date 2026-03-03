@@ -6,6 +6,13 @@ from pydantic_settings import (
     YamlConfigSettingsSource,
 )
 
+# ======== LoggingConfig ========
+
+
+class LoggingConfig(BaseModel):
+    level: str
+
+
 # ======== DocsConfig ========
 
 
@@ -154,6 +161,7 @@ class AppConfig(BaseSettings):
         extra="ignore",
     )
 
+    logging: LoggingConfig
     docs: DocsConfig
     database: DatabaseConfig
     redis: RedisConfig
