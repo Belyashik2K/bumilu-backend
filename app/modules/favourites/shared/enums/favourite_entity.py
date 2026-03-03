@@ -6,7 +6,7 @@ class FavouriteEntityTypeEnum(StrEnum):
 
 
 class FavouriteEntityPathEnum(StrEnum):
-    PLACE = "places"
+    PLACES = "places"
 
     @property
     def domain_name(self) -> FavouriteEntityTypeEnum:
