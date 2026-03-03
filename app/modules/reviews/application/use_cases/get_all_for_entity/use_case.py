@@ -14,7 +14,9 @@ from app.modules.reviews.application.use_cases.get_all_for_entity import (
     GetAllReviewsForEntityOutputDTO,
 )
 from app.modules.reviews.application.use_cases.shared.dtos import ReviewInfoDTO
-from app.modules.reviews.application.use_cases.shared.exceptions import EntityNotFound
+from app.modules.reviews.application.use_cases.shared.exceptions import (
+    ReviewEntityNotFound,
+)
 
 
 class GetAllReviewsForEntityUseCase(
@@ -61,7 +63,7 @@ class GetAllReviewsForEntityUseCase(
                 entity_id=entity_id,
             )
             if not exists:
-                raise EntityNotFound(
+                raise ReviewEntityNotFound(
                     entity_type=input_data.entity_type, entity_id=entity_id
                 )
 

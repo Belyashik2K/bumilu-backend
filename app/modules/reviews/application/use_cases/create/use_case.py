@@ -18,7 +18,9 @@ from app.modules.reviews.application.use_cases.create import (
 from app.modules.reviews.application.use_cases.create.exceptions import (
     ReviewAlreadyExists,
 )
-from app.modules.reviews.application.use_cases.shared.exceptions import EntityNotFound
+from app.modules.reviews.application.use_cases.shared.exceptions import (
+    ReviewEntityNotFound,
+)
 from app.modules.reviews.domain.models.review import Review
 from app.modules.reviews.domain.value_objects import (
     ReviewRatingVO,
@@ -57,7 +59,7 @@ class CreateReviewUseCase(
             entity_id=entity_id,
         )
         if not exists:
-            raise EntityNotFound(
+            raise ReviewEntityNotFound(
                 entity_type=input_data.entity_type,
                 entity_id=entity_id,
             )

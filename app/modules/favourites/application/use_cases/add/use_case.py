@@ -13,8 +13,10 @@ from app.modules.favourites.application.use_cases.add import (
     AddToFavouritesInputDTO,
     AddToFavouritesOutputDTO,
 )
+from app.modules.favourites.application.use_cases.shared.exceptions import (
+    FavouriteEntityNotFound,
+)
 from app.modules.favourites.domain.models.favourite import Favourite
-from app.modules.reviews.application.use_cases.shared.exceptions import EntityNotFound
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 from app.modules.users.application.use_cases.get.exceptions import UserNotFound
 
@@ -45,13 +47,13 @@ class AddToFavouritesUseCase(
         if not user:
             raise UserNotFound(user_id=user_id)
 
-        favourite_entity = self._entity_resolver.resolve(
+        favourite_entity = await self._entity_resolver.resolve(
             entity_type=input_data.entity_type,
             entity_id=entity_id,
         )
         if not favourite_entity:
-            raise EntityNotFound(
-                entity_type=input_data.entity_type,  # type: ignore
+            raise FavouriteEntityNotFound(
+                entity_type=input_data.entity_type,
                 entity_id=entity_id,
             )
 
