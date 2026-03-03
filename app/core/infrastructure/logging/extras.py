@@ -23,6 +23,7 @@ RESERVED = {
     "process",
     "asctime",
     "request_id",
+    "message",
 }
 
 
