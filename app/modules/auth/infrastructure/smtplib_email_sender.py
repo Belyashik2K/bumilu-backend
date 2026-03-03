@@ -1,18 +1,31 @@
 import logging
 import ssl
+from collections.abc import Mapping
 from email.message import EmailMessage
 from email.utils import formataddr
+from typing import (
+    Any,
+)
 
 from aiosmtplib import (
     SMTP,
     SMTPException,
 )
 
+from app.core.shared.exceptions import BaseInfrastructureException
 from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.interfaces.email_sender import IEmailSender
 from app.modules.users.domain.value_objects import EmailVO
 
 logger = logging.getLogger(__name__)
+
+
+class EmailDeliveryFailed(BaseInfrastructureException):
+    def __init__(self, context: Mapping[str, Any] | None = None) -> None:
+        super().__init__(
+            message="Failed to deliver email",
+            context=context,
+        )
 
 
 class SMTPLibEmailSender(IEmailSender):
@@ -36,14 +49,18 @@ class SMTPLibEmailSender(IEmailSender):
 
         self._tls_context = ssl.create_default_context()
 
-    def _get_extras(
+    def _get_context(
         self,
         to: EmailVO,
         *,
-        error: Exception | None = None,
+        error_type: str | None = None,
     ) -> dict:
         return prepare_extras(
-            to=to.fingerprint, host=self.host, port=self.port, error=error
+            provider="smtp",
+            to=to.fingerprint,
+            host=self.host,
+            port=self.port,
+            error_type=error_type,
         )
 
     async def send(self, to: EmailVO, subject: str, body: str) -> None:
@@ -67,18 +84,15 @@ class SMTPLibEmailSender(IEmailSender):
             await smtp.send_message(message)
             logger.debug(
                 "email_login_smtp_sent",
-                extra=self._get_extras(to),
+                extra=self._get_context(to),
             )
-        except SMTPException:
-            logger.exception(
-                "email_login_smtp_sending_failed", extra=self._get_extras(to)
-            )
-            raise
+        except SMTPException as e:
+            raise EmailDeliveryFailed(context=self._get_context(to=to)) from e
         finally:
             try:
                 await smtp.quit()
             except Exception as e:
-                logger.warning(
-                    "email_login_smtp_quit_failed", extra=self._get_extras(to, error=e)
+                logger.debug(
+                    "email_login_smtp_quit_failed",
+                    extra=self._get_context(to, error_type=type(e).__name__),
                 )
-                pass

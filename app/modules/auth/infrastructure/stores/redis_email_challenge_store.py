@@ -1,9 +1,14 @@
 import logging
-from typing import Final
+from collections.abc import Mapping
+from typing import (
+    Any,
+    Final,
+)
 
 from redis import RedisError
 from redis.asyncio import Redis
 
+from app.core.shared.exceptions import BaseInfrastructureException
 from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.interfaces.stores.email_login import (
     IEmailLoginChallengeStore,
@@ -48,6 +53,14 @@ return 0
 logger = logging.getLogger(__name__)
 
 
+class ChallengeStoreUnavailable(BaseInfrastructureException):
+    def __init__(self, context: Mapping[str, Any] | None = None) -> None:
+        super().__init__(
+            message="Challenge store is unavailable",
+            context=context,
+        )
+
+
 class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
     def __init__(
         self,
@@ -59,6 +72,9 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
         db: int,
         key_prefix: str,
     ) -> None:
+        self._host = host
+        self._port = port
+        self._db = db
         self._redis = Redis(
             host=host,
             port=port,
@@ -67,6 +83,17 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
             db=db,
         )
         self._key_prefix = key_prefix
+
+    def _get_context(
+        self,
+        email: EmailVO,
+    ) -> dict:
+        return prepare_extras(
+            email=email.fingerprint,
+            host=self._host,
+            port=self._port,
+            db=self._db,
+        )
 
     def _rl_key(self, email: EmailVO) -> str:
         return f"{self._key_prefix}:rl:{email!s}"
@@ -86,12 +113,8 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
                 "email_login_challenge_store_consume_result",
                 extra=prepare_extras(email=email.fingerprint, success=bool(res)),
             )
-        except RedisError:
-            logger.exception(
-                "email_login_challenge_store_consume_failed",
-                extra=prepare_extras(email=email.fingerprint),
-            )
-            raise
+        except RedisError as e:
+            raise ChallengeStoreUnavailable(context=self._get_context(email)) from e
         return bool(res)
 
     async def save_with_rate_limit(
@@ -121,9 +144,5 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
                 ),
             )
             return max(int(res), 0)
-        except RedisError:
-            logger.exception(
-                "email_login_challenge_store_save_failed",
-                extra=prepare_extras(email=email.fingerprint),
-            )
-            raise
+        except RedisError as e:
+            raise ChallengeStoreUnavailable(context=self._get_context(email)) from e
