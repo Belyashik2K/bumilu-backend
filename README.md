@@ -6,6 +6,7 @@ Users service for mobile ans web application BumiLu (不迷路), PAB project
 ```bash
 git clone https://github.com/BumiLuDev/users-service.git
 cd users-service
+git checkout dev
 ```
 ### 2. Создание .env
 ```bash
