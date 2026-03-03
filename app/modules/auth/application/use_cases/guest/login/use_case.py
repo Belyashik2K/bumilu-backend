@@ -1,6 +1,9 @@
+import logging
+
 from app.core.application.use_cases.base import IBaseUseCase
 from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.core.shared.enums import UserRoleEnum
+from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
 )
@@ -19,6 +22,8 @@ from app.modules.auth.application.use_cases.shared_dtos import (
 from app.modules.auth.domain.models.device import Device
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 from app.modules.users.domain.models.user import User
+
+logger = logging.getLogger(__name__)
 
 
 class LoginAsGuestUseCase(
@@ -51,17 +56,36 @@ class LoginAsGuestUseCase(
                     name=input_data.device_name,
                     app_version=input_data.app_version,
                 )
+                device = await self._device_repository.save(device)
+                logger.info(
+                    "device_registered",
+                    extra=prepare_extras(
+                        device_id=device_id,
+                        platform=input_data.device_platform,
+                        name=input_data.device_name,
+                        app_version=input_data.app_version,
+                    ),
+                )
 
             guest_user = User.create_guest()
             device.attach_guest_user(guest_user.id)
-
             await self._user_repository.save(guest_user)
-            device = await self._device_repository.save(device)
+            logger.info(
+                "user_created_via_guest_login",
+                extra=prepare_extras(
+                    user_id=str(guest_user.id),
+                    device_id=str(device.id),
+                ),
+            )
 
         assert device.guest_user_id is not None
 
         await self._auth_session_repository.revoke_active_for_device(
             device_id=device.id
+        )
+        logger.info(
+            "auth_sessions_revoked_for_device",
+            extra=prepare_extras(device_id=device.id),
         )
 
         session = await self._auth_session_service.issue(
