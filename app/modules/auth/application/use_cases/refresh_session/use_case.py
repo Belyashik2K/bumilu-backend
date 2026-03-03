@@ -71,7 +71,7 @@ class RefreshAuthSessionUseCase(
             ),
             user=UserInfoDTO(
                 id=str(user.id),
-                email=str(user.email),
+                email=str(user.email) if user.email is not None else None,
                 role=user.role,
             ),
         )

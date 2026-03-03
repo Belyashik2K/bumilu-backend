@@ -1,3 +1,4 @@
+import logging
 from dataclasses import (
     dataclass,
 )
@@ -8,7 +9,10 @@ from app.core.shared.domain.value_objects.id import (
     UserIdVO,
 )
 from app.core.shared.enums import UserRoleEnum
-from app.core.shared.utils import get_current_dt
+from app.core.shared.utils import (
+    get_current_dt,
+    prepare_extras,
+)
 from app.modules.auth.application.interfaces.generators import (
     IRefreshTokenGenerator,
 )
@@ -20,6 +24,8 @@ from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
 )
 from app.modules.auth.domain.models.auth_session import AuthSession
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -91,6 +97,17 @@ class AuthSessionService:
             ttl=self._access_ttl_seconds,
         )
 
+        logger.info(
+            "auth_session_issued",
+            extra=prepare_extras(
+                user_id=str(user_id),
+                device_id=str(device_id),
+                session_id=str(session.id),
+                access_ttl_s=self._access_ttl_seconds,
+                refresh_ttl_s=self._refresh_ttl_seconds,
+            ),
+        )
+
         return IssuedAuthTokens(
             access_token=access_token,
             refresh_token=token,
@@ -117,6 +134,15 @@ class AuthSessionService:
             ttl=self._access_ttl_seconds,
         )
 
+        logger.info(
+            "auth_session_rotated",
+            extra=prepare_extras(
+                user_id=str(session.user_id),
+                device_id=str(session.device_id),
+                session_id=str(session.id),
+            ),
+        )
+
         return IssuedAuthTokens(
             access_token=access_token,
             refresh_token=new_refresh_token,
@@ -126,4 +152,14 @@ class AuthSessionService:
 
     async def revoke(self, session: AuthSession) -> None:
         session.revoke()
+
+        logger.info(
+            "auth_session_revoked",
+            extra=prepare_extras(
+                user_id=str(session.user_id),
+                device_id=str(session.device_id),
+                session_id=str(session.id),
+            ),
+        )
+
         await self._auth_session_repository.save(session)
