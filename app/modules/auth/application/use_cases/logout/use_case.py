@@ -1,5 +1,8 @@
+import logging
+
 from app.core.application.use_cases.base import IBaseUseCase
 from app.core.shared.domain.value_objects.id import DeviceIdVO
+from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
 )
@@ -8,6 +11,8 @@ from app.modules.auth.application.use_cases.logout import (
     LogoutInputDTO,
     LogoutOutputDTO,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class LogoutUseCase(IBaseUseCase[LogoutInputDTO, LogoutOutputDTO]):
@@ -30,10 +35,25 @@ class LogoutUseCase(IBaseUseCase[LogoutInputDTO, LogoutOutputDTO]):
             token_hash
         )
         if session is None or not session.is_active():
+            logger.info(
+                "logout_invalid_session",
+                extra=prepare_extras(
+                    device_id=input_data.device_id,
+                    reason="not_found_or_inactive",
+                ),
+            )
             return output
 
         current_device_id = DeviceIdVO.from_uuid(input_data.device_id)
         if session.device_id != current_device_id:
+            logger.warning(
+                "logout_invalid_session",
+                extra=prepare_extras(
+                    device_id=input_data.device_id,
+                    session_id=str(session.id),
+                    reason="device_mismatch",
+                ),
+            )
             return output
 
         await self._auth_session_service.revoke(session=session)
