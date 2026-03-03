@@ -2,6 +2,7 @@ import logging
 import sys
 
 from app.core.infrastructure.logging.context import RequestIdFilter
+from app.core.infrastructure.logging.extras import ExtraFormatter
 
 
 def setup_logging(
@@ -17,6 +18,7 @@ def setup_logging(
 
     handler = logging.StreamHandler(sys.stdout)
     handler.setFormatter(logging.Formatter(format, datefmt))
+    handler.setFormatter(ExtraFormatter(format, datefmt))
     handler.addFilter(RequestIdFilter())
 
     root.addHandler(handler)
