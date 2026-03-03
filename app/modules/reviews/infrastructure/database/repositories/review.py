@@ -5,6 +5,9 @@ from sqlalchemy import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.infrastructure.database import SQLAlchemyBaseRepository
+from app.core.infrastructure.database.exception_catcher import (
+    sqlalchemy_exception_catcher,
+)
 from app.core.shared.domain.value_objects.id import (
     IdVO,
     ReviewIdVO,
@@ -48,6 +51,7 @@ class SQLAlchemyReviewRepository(
             rating=review.rating.value,
         )
 
+    @sqlalchemy_exception_catcher
     async def get_by_entity_and_author(
         self,
         entity_type: ReviewEntityTypeEnum,
@@ -65,6 +69,7 @@ class SQLAlchemyReviewRepository(
             return None
         return self._to_entity(review_model)
 
+    @sqlalchemy_exception_catcher
     async def get_all_by_entity_excluding_author(
         self,
         entity_type: ReviewEntityTypeEnum,
@@ -81,6 +86,7 @@ class SQLAlchemyReviewRepository(
         review_models = result.scalars().all()
         return [self._to_entity(review_model) for review_model in review_models]
 
+    @sqlalchemy_exception_catcher
     async def get_all_by_author(
         self,
         author_id: UserIdVO,
@@ -92,6 +98,7 @@ class SQLAlchemyReviewRepository(
         review_models = result.scalars().all()
         return [self._to_entity(review_model) for review_model in review_models]
 
+    @sqlalchemy_exception_catcher
     async def get_all_by_entity(
         self,
         entity_type: ReviewEntityTypeEnum,
@@ -105,6 +112,7 @@ class SQLAlchemyReviewRepository(
         review_models = result.scalars().all()
         return [self._to_entity(review_model) for review_model in review_models]
 
+    @sqlalchemy_exception_catcher
     async def delete_by_id(self, review_id: ReviewIdVO) -> None:
         stmt = delete(ReviewModel).where(
             ReviewModel.id == review_id.value,

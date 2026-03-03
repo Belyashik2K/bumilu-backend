@@ -4,6 +4,9 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.infrastructure.database.exception_catcher import (
+    sqlalchemy_exception_catcher,
+)
 from app.core.shared.domain.value_objects.id import (
     IdVO,
     UserIdVO,
@@ -38,6 +41,7 @@ class SQLAlchemyFavouriteRepository(IFavouriteRepository):
             entity_id=entity.entity_id.value,
         )
 
+    @sqlalchemy_exception_catcher
     async def add_if_not_exists(
         self,
         favourite: Favourite,
@@ -46,6 +50,7 @@ class SQLAlchemyFavouriteRepository(IFavouriteRepository):
         await self.session.merge(data)
         await self.session.flush()
 
+    @sqlalchemy_exception_catcher
     async def remove_if_exists(
         self,
         favourite: Favourite,
@@ -60,6 +65,7 @@ class SQLAlchemyFavouriteRepository(IFavouriteRepository):
         await self.session.execute(stmt)
         await self.session.flush()
 
+    @sqlalchemy_exception_catcher
     async def get_all_by_user_id(
         self,
         user_id: UserIdVO,
