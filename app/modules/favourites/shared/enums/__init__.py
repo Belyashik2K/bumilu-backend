@@ -1,1 +1,4 @@
-from .favourite_entity import FavouriteEntityTypeEnum
+from .favourite_entity import (
+    FavouriteEntityPathEnum,
+    FavouriteEntityTypeEnum,
+)
