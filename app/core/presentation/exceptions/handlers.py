@@ -88,7 +88,6 @@ def set_exception_handlers(app: FastAPI):
     async def app_exception_handler(
         request: Request, exc: BaseApplicationException
     ) -> JSONResponse:
-        logger.error("An unexpected error occurred", exc_info=exc)
         status_code, public_message = map_app_exception_to_http(exc)
         return _prepare_response(
             status_code=status_code,
