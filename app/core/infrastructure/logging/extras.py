@@ -24,6 +24,7 @@ RESERVED = {
     "asctime",
     "request_id",
     "message",
+    "color_message",
 }
 
 
