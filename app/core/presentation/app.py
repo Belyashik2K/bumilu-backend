@@ -35,6 +35,8 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     config = AppConfig()  # type: ignore[call-arg]
 
+    setup_logging(config.logging.level)
+
     app = FastAPI(
         title=config.docs.title,
         description=config.docs.description,
@@ -78,5 +80,4 @@ def create_app() -> FastAPI:
     return app
 
 
-setup_logging()
 app = create_app()
