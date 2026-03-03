@@ -40,6 +40,7 @@ class GetAllFavouritesByUserUseCase(
         )
 
         return GetAllFavouritesByUserOutputDTO(
+            user_id=user_id.value,
             items=[
                 FavouriteItemDTO(
                     entity_id=favourite.entity_id.value,
