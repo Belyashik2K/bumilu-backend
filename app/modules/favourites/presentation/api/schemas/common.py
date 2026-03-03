@@ -5,15 +5,15 @@ from pydantic import (
     Field,
 )
 
-from app.modules.favourites.shared.enums.favourite_entity import (
+from app.modules.favourites.shared.enums import (
     FavouriteEntityPathEnum,
     FavouriteEntityTypeEnum,
 )
-from app.modules.reviews.presentation.api.schemas.common import (
-    ENTITY_ID_EXAMPLE,
-)
 from app.modules.users.presentation.api.schemas.common import USER_ID_EXAMPLE
 
+ENTITY_ID_EXAMPLE = (
+    "019caaaa-0000-7000-a000-000000000004"  # TODO: Move to shared core constants
+)
 ENTITY_TYPE_EXAMPLE = FavouriteEntityTypeEnum.PLACE
 ENTITY_TYPE_PATH_EXAMPLE = FavouriteEntityPathEnum.PLACES
 
