@@ -11,6 +11,8 @@ from pydantic_settings import (
 
 class LoggingConfig(BaseModel):
     level: str
+    format: str
+    datetime_format: str
 
 
 # ======== DocsConfig ========
