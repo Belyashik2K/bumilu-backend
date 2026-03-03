@@ -2,6 +2,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.infrastructure.database import SQLAlchemyBaseRepository
+from app.core.infrastructure.database.exception_catcher import (
+    sqlalchemy_exception_catcher,
+)
 from app.core.shared.domain.value_objects.id import UserIdVO
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 from app.modules.users.domain.models.user import User
@@ -31,6 +34,7 @@ class SQLAlchemyUserRepository(
             role=entity.role,
         )
 
+    @sqlalchemy_exception_catcher
     async def get_by_email(self, email: EmailVO) -> User | None:
         stmt = select(UserModel).where(UserModel.email == email.value)
         result = await self.session.execute(stmt)

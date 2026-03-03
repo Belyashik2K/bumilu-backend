@@ -11,6 +11,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.application.interfaces.repositories import IBaseRepository
+from app.core.infrastructure.database.exception_catcher import (
+    sqlalchemy_exception_catcher,
+)
 from app.core.infrastructure.database.mixins import PKUUIDMixin
 from app.core.shared.domain.value_objects.id import IdVO
 
@@ -35,12 +38,14 @@ class SQLAlchemyBaseRepository(IBaseRepository[TEntity], Generic[TEntity, TModel
         data = result.scalar_one_or_none()
         return data
 
+    @sqlalchemy_exception_catcher
     async def save(self, entity: TEntity) -> TEntity:  # TODO: split into add and save
         data = self._to_data(entity)
         merged_data = await self.session.merge(data)
         await self.session.flush()
         return self._to_entity(merged_data)
 
+    @sqlalchemy_exception_catcher
     async def get_by_id(self, _id: IdVO) -> TEntity | None:
         if not (data := await self._raw_get(_id)):
             return None
