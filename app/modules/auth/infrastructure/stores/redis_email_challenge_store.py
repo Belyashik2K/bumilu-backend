@@ -1,7 +1,10 @@
+import logging
 from typing import Final
 
+from redis import RedisError
 from redis.asyncio import Redis
 
+from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.interfaces.stores.email_login import (
     IEmailLoginChallengeStore,
 )
@@ -42,6 +45,8 @@ redis.call("SET", rl_key, "1", "EX", min_interval_seconds)
 return 0
 """
 
+logger = logging.getLogger(__name__)
+
 
 class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
     def __init__(
@@ -70,12 +75,23 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
         return f"{self._key_prefix}:{email!s}"
 
     async def consume(self, *, email: EmailVO, code_hash: str) -> bool:
-        res = await self._redis.eval(  # type: ignore
-            _CONSUME_LUA,
-            1,
-            self._key(email),
-            code_hash,
-        )
+        try:
+            res = await self._redis.eval(  # type: ignore
+                _CONSUME_LUA,
+                1,
+                self._key(email),
+                code_hash,
+            )
+            logger.debug(
+                "email_login_challenge_store_consume_result",
+                extra=prepare_extras(email=email.fingerprint, success=bool(res)),
+            )
+        except RedisError:
+            logger.exception(
+                "email_login_challenge_store_consume_failed",
+                extra=prepare_extras(email=email.fingerprint),
+            )
+            raise
         return bool(res)
 
     async def save_with_rate_limit(
@@ -86,13 +102,28 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
         ttl_seconds: int,
         min_interval_seconds: int,
     ) -> int:
-        res = await self._redis.eval(  # type: ignore
-            _SAVE_WITH_RL_LUA,
-            2,
-            self._key(email),
-            self._rl_key(email),
-            code_hash,
-            str(ttl_seconds),
-            str(min_interval_seconds),
-        )
-        return max(int(res), 0)
+        try:
+            res = await self._redis.eval(  # type: ignore
+                _SAVE_WITH_RL_LUA,
+                2,
+                self._key(email),
+                self._rl_key(email),
+                code_hash,
+                str(ttl_seconds),
+                str(min_interval_seconds),
+            )
+            logger.debug(
+                "email_login_challenge_store_save_result",
+                extra=prepare_extras(
+                    email=email.fingerprint,
+                    ttl_seconds=ttl_seconds,
+                    min_interval_seconds=min_interval_seconds,
+                ),
+            )
+            return max(int(res), 0)
+        except RedisError:
+            logger.exception(
+                "email_login_challenge_store_save_failed",
+                extra=prepare_extras(email=email.fingerprint),
+            )
+            raise

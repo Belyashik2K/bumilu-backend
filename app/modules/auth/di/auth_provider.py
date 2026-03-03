@@ -123,7 +123,7 @@ class AuthProvider(Provider):
             timeout=config.auth.email.smtp.timeout,
         )
 
-    @provide(scope=Scope.REQUEST, provides=IEmailLoginChallengeStore)
+    @provide(scope=Scope.APP, provides=IEmailLoginChallengeStore)
     async def email_login_challenge_store(
         self,
         config: AppConfig,
