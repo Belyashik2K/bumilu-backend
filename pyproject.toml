@@ -12,6 +12,7 @@ dependencies = [
     "alembic>=1.18.4",
     "dishka>=1.8.0",
     "fastapi[all]>=0.129.0",
+    "loguru>=0.7.3",
     "pwdlib[argon2]>=0.3.0",
     "pydantic-settings[yaml]>=2.13.0",
     "pyjwt>=2.11.0",

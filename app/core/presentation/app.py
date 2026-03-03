@@ -12,9 +12,13 @@ from starlette.responses import RedirectResponse
 
 from app.core.di import CoreProvider
 from app.core.infrastructure.config import AppConfig
+from app.core.infrastructure.logging import setup_logging
 from app.core.presentation.api import api_router
 from app.core.presentation.exceptions import set_exception_handlers
-from app.core.presentation.middlewares.outer import SQLAlchemyTransactionMiddleware
+from app.core.presentation.middlewares.outer import (
+    RequestIdMiddleware,
+    SQLAlchemyTransactionMiddleware,
+)
 from app.modules.auth.di import AuthProvider
 from app.modules.auth.presentation.api.middlewares.auth import AuthMiddleware
 from app.modules.favourites.di import FavouriteProvider
@@ -45,6 +49,7 @@ def create_app() -> FastAPI:
     async def redirect_to_docs(request: Request) -> RedirectResponse:
         return RedirectResponse(url=config.docs.urls.swagger)
 
+    app.add_middleware(RequestIdMiddleware)
     app.add_middleware(SQLAlchemyTransactionMiddleware)
     app.add_middleware(AuthMiddleware)
     if config.cors.enabled:
@@ -73,4 +78,5 @@ def create_app() -> FastAPI:
     return app
 
 
+setup_logging()
 app = create_app()
