@@ -22,7 +22,7 @@ def setup_logging(
 
     root.addHandler(handler)
 
-    for name in ("uvicorn", "uvicorn.error", "uvicorn.access", "fastapi"):
+    for name in ("uvicorn", "uvicorn.error", "fastapi"):
         logger = logging.getLogger(name)
         logger.handlers = []
         logger.propagate = True

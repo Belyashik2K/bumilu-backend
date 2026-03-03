@@ -16,7 +16,7 @@ from app.core.infrastructure.logging import setup_logging
 from app.core.presentation.api import api_router
 from app.core.presentation.exceptions import set_exception_handlers
 from app.core.presentation.middlewares.outer import (
-    RequestIdMiddleware,
+    AccessLogMiddleware,
     SQLAlchemyTransactionMiddleware,
 )
 from app.modules.auth.di import AuthProvider
@@ -55,9 +55,9 @@ def create_app() -> FastAPI:
     async def redirect_to_docs(request: Request) -> RedirectResponse:
         return RedirectResponse(url=config.docs.urls.swagger)
 
-    app.add_middleware(RequestIdMiddleware)
     app.add_middleware(SQLAlchemyTransactionMiddleware)
     app.add_middleware(AuthMiddleware)
+    app.add_middleware(AccessLogMiddleware)
     if config.cors.enabled:
         app.add_middleware(
             CORSMiddleware,

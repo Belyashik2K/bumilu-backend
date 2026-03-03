@@ -1,2 +1,2 @@
-from .request_id import RequestIdMiddleware
+from .access_log import AccessLogMiddleware
 from .tx import SQLAlchemyTransactionMiddleware
