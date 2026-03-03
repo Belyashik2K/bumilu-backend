@@ -47,7 +47,7 @@ class IBaseUseCase(Generic[InputDTO, OutputDTO], ABC):
             return await self.execute(input_data)
         except (BaseDomainException, BaseApplicationException) as e:
             details = e.details or {}
-            logger.info(
+            logger.debug(
                 "usecase_expected_error", extra=_get_extras(uc_name, error=e, **details)
             )
             raise
