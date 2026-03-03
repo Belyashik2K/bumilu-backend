@@ -36,6 +36,18 @@ class EmailVO:
     def from_string(cls, email: str) -> "EmailVO":
         return cls(email)
 
+    @property
+    def fingerprint(self) -> str:
+        email_id_part, domain_part = self.value.split("@", 1)
+        email_id_part_length = len(email_id_part)
+        if email_id_part_length <= 2:
+            masked_email_id_part = email_id_part[0] + "*" * (email_id_part_length - 1)
+        else:
+            masked_email_id_part = (
+                email_id_part[0] + "*" * (email_id_part_length - 2) + email_id_part[-1]
+            )
+        return masked_email_id_part + "@" + domain_part
+
     def __post_init__(self):
         email = self.value.strip().lower()
 

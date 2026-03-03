@@ -26,7 +26,7 @@ from app.core.shared.exceptions import (
 logger = logging.getLogger(__name__)
 
 
-def _safe_details(details: Mapping[str, Any] | None) -> Mapping[str, Any] | None:
+def _safe_details(details: Mapping[str, Any] | None) -> Mapping[str, Any]:
     return details or {}
 
 

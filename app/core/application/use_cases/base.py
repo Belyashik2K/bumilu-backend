@@ -8,7 +8,6 @@ from typing import (
     TypeVar,
 )
 
-from app.core.infrastructure.logging import prepare_extras
 from app.core.shared.exceptions import (
     BaseApplicationException,
     BaseDomainException,
@@ -19,6 +18,7 @@ from app.core.shared.exceptions.application.base import (
     ApplicationUnexpectedException,
 )
 from app.core.shared.utils import (
+    prepare_extras,
     start_timer,
     stop_timer,
 )
