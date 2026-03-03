@@ -15,4 +15,5 @@ class GetAllFavouritesByUserInputDTO:
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class GetAllFavouritesByUserOutputDTO:
+    user_id: UUID
     items: list[FavouriteItemDTO] = field(default_factory=list)

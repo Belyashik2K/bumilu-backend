@@ -206,6 +206,9 @@ async def get_reviews_for_entity(
 @reviews_router.post(
     "/{entity_type}/{entity_id}/reviews",
     status_code=status.HTTP_201_CREATED,
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND, status.HTTP_409_CONFLICT
+    ),
 )
 @inject
 async def create_review_for_entity(
