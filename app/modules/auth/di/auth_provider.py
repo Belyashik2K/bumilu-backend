@@ -47,11 +47,11 @@ from app.modules.auth.infrastructure.database.repositories.auth_session import (
 from app.modules.auth.infrastructure.database.repositories.device import (
     SQLAlchemyDeviceRepository,
 )
-from app.modules.auth.infrastructure.generators.random_verification_code_generator import (
-    SecretsVerificationCodeGenerator,
-)
 from app.modules.auth.infrastructure.generators.secrets_refresh_token_generator import (
     SecretsRefreshTokenGenerator,
+)
+from app.modules.auth.infrastructure.generators.secrets_verification_code_generator import (
+    SecretsVerificationCodeGenerator,
 )
 from app.modules.auth.infrastructure.hashers.hmac_token_hasher import HMACTokenHasher
 from app.modules.auth.infrastructure.hashers.hmac_verification_code_hasher import (
