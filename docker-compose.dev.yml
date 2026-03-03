@@ -14,5 +14,6 @@ services:
       --port ${RUN__PORT:-8000}
       --reload
       --reload-dir /app
+      --no-access-log
     ports:
       - "${RUN__PORT:-8000}:${RUN__PORT:-8000}"

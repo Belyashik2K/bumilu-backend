@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Mapping
 from typing import (
     Any,
@@ -22,8 +23,10 @@ from app.core.shared.exceptions import (
     BaseDomainException,
 )
 
+logger = logging.getLogger(__name__)
 
-def _safe_details(details: Mapping[str, Any] | None) -> Mapping[str, Any] | None:
+
+def _safe_details(details: Mapping[str, Any] | None) -> Mapping[str, Any]:
     return details or {}
 
 
@@ -104,6 +107,7 @@ def set_exception_handlers(app: FastAPI):
 
     @app.exception_handler(Exception)
     async def fallback_handler(request: Request, exc: Exception) -> JSONResponse:
+        logger.error("An unexpected error occurred", exc_info=exc)
         return _prepare_response(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
             message="An unexpected error occurred. Please try again later.",

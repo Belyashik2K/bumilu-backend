@@ -1,4 +1,7 @@
+import logging
+
 from app.core.application.use_cases.base import IBaseUseCase
+from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.interfaces.email_sender import IEmailSender
 from app.modules.auth.application.interfaces.generators import (
     IVerificationCodeGenerator,
@@ -15,6 +18,8 @@ from app.modules.auth.application.use_cases.email.request_code.exceptions import
     VerificationCodeRequestedTooEarly,
 )
 from app.modules.users.domain.value_objects import EmailVO
+
+logger = logging.getLogger(__name__)
 
 
 class RequestEmailCodeAtLoginUseCase(
@@ -59,6 +64,12 @@ class RequestEmailCodeAtLoginUseCase(
             min_interval_seconds=self._resend_cooldown_seconds,
         )
         if retry_after > 0:
+            logger.warning(
+                "email_login_code_request_rate_limited",
+                extra=prepare_extras(
+                    email=email.fingerprint, retry_after_seconds=retry_after
+                ),
+            )
             raise VerificationCodeRequestedTooEarly(retry_after_seconds=retry_after)
 
         await self._email_sender.send(
