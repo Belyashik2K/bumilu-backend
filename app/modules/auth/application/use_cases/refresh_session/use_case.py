@@ -1,5 +1,8 @@
+import logging
+
 from app.core.application.use_cases.base import IBaseUseCase
 from app.core.shared.domain.value_objects.id import DeviceIdVO
+from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
 )
@@ -16,6 +19,8 @@ from app.modules.auth.application.use_cases.shared_dtos import (
     UserInfoDTO,
 )
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
+
+logger = logging.getLogger(__name__)
 
 
 class RefreshAuthSessionUseCase(
@@ -45,14 +50,37 @@ class RefreshAuthSessionUseCase(
         )
 
         if session is None or not session.is_active():
+            logger.info(
+                "refresh_invalid_session",
+                extra=prepare_extras(
+                    device_id=input_data.device_id,
+                    reason="not_found_or_inactive",
+                ),
+            )
             raise InvalidRefreshToken()
 
         current_device_id = DeviceIdVO.from_uuid(input_data.device_id)
         if session.device_id != current_device_id:
+            logger.warning(
+                "refresh_invalid_session",
+                extra=prepare_extras(
+                    device_id=input_data.device_id,
+                    session_id=str(session.id),
+                    reason="device_mismatch",
+                ),
+            )
             raise InvalidRefreshToken()
 
         user = await self._user_repository.get_by_id(session.user_id)
         if user is None:
+            logger.warning(
+                "refresh_user_not_found",
+                extra=prepare_extras(
+                    user_id=str(session.user_id),
+                    session_id=str(session.id),
+                    device_id=input_data.device_id,
+                ),
+            )
             raise InvalidRefreshToken()
 
         new_tokens = await self._auth_session_service.rotate(
@@ -71,7 +99,7 @@ class RefreshAuthSessionUseCase(
             ),
             user=UserInfoDTO(
                 id=str(user.id),
-                email=str(user.email),
+                email=str(user.email) if user.email is not None else None,
                 role=user.role,
             ),
         )

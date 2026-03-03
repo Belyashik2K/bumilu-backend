@@ -3,7 +3,9 @@ from app.core.shared.domain.value_objects.id import (
     IdVO,
     UserIdVO,
 )
-from app.modules.reviews.application.interfaces.entity_resolver import IEntityResolver
+from app.modules.reviews.application.interfaces.entity_resolver import (
+    IReviewEntityResolver,
+)
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
@@ -12,7 +14,9 @@ from app.modules.reviews.application.use_cases.get_all_for_entity import (
     GetAllReviewsForEntityOutputDTO,
 )
 from app.modules.reviews.application.use_cases.shared.dtos import ReviewInfoDTO
-from app.modules.reviews.application.use_cases.shared.exceptions import EntityNotFound
+from app.modules.reviews.application.use_cases.shared.exceptions import (
+    ReviewEntityNotFound,
+)
 
 
 class GetAllReviewsForEntityUseCase(
@@ -22,7 +26,9 @@ class GetAllReviewsForEntityUseCase(
     ]
 ):
     def __init__(
-        self, review_repository: IReviewRepository, entity_resolver: IEntityResolver
+        self,
+        review_repository: IReviewRepository,
+        entity_resolver: IReviewEntityResolver,
     ) -> None:
         self._review_repository = review_repository
         self._entity_resolver = entity_resolver
@@ -57,7 +63,7 @@ class GetAllReviewsForEntityUseCase(
                 entity_id=entity_id,
             )
             if not exists:
-                raise EntityNotFound(
+                raise ReviewEntityNotFound(
                     entity_type=input_data.entity_type, entity_id=entity_id
                 )
 

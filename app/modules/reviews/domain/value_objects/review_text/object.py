@@ -26,7 +26,9 @@ class ReviewTextVO:
         if self.value.strip() == "":
             raise ReviewTextCannotBeEmpty()
 
-        review_text_length = len(self.value)
+        prepared_value = self.value.strip()
+
+        review_text_length = len(prepared_value)
         if review_text_length < MINIMUM_REVIEW_TEXT_LENGTH:
             raise ReviewTextTooShort(MINIMUM_REVIEW_TEXT_LENGTH)
         if review_text_length > MAXIMUM_REVIEW_TEXT_LENGTH:

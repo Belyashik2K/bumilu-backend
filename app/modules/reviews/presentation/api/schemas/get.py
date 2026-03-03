@@ -1,7 +1,3 @@
-#
-# class GetAllReviewsForEntityOutputDTO:
-#     entity_id: UUID
-#     items: list[ReviewInfoDTO] = field(default_factory=list)
 from pydantic import (
     UUID7,
     BaseModel,

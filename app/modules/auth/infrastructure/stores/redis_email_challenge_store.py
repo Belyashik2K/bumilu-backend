@@ -1,7 +1,15 @@
-from typing import Final
+import logging
+from collections.abc import Mapping
+from typing import (
+    Any,
+    Final,
+)
 
+from redis import RedisError
 from redis.asyncio import Redis
 
+from app.core.shared.exceptions import BaseInfrastructureException
+from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.interfaces.stores.email_login import (
     IEmailLoginChallengeStore,
 )
@@ -42,6 +50,16 @@ redis.call("SET", rl_key, "1", "EX", min_interval_seconds)
 return 0
 """
 
+logger = logging.getLogger(__name__)
+
+
+class ChallengeStoreUnavailable(BaseInfrastructureException):
+    def __init__(self, context: Mapping[str, Any] | None = None) -> None:
+        super().__init__(
+            message="Challenge store is unavailable",
+            context=context,
+        )
+
 
 class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
     def __init__(
@@ -54,6 +72,9 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
         db: int,
         key_prefix: str,
     ) -> None:
+        self._host = host
+        self._port = port
+        self._db = db
         self._redis = Redis(
             host=host,
             port=port,
@@ -63,6 +84,17 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
         )
         self._key_prefix = key_prefix
 
+    def _get_context(
+        self,
+        email: EmailVO,
+    ) -> dict:
+        return prepare_extras(
+            email=email.fingerprint,
+            host=self._host,
+            port=self._port,
+            db=self._db,
+        )
+
     def _rl_key(self, email: EmailVO) -> str:
         return f"{self._key_prefix}:rl:{email!s}"
 
@@ -70,12 +102,19 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
         return f"{self._key_prefix}:{email!s}"
 
     async def consume(self, *, email: EmailVO, code_hash: str) -> bool:
-        res = await self._redis.eval(  # type: ignore
-            _CONSUME_LUA,
-            1,
-            self._key(email),
-            code_hash,
-        )
+        try:
+            res = await self._redis.eval(  # type: ignore
+                _CONSUME_LUA,
+                1,
+                self._key(email),
+                code_hash,
+            )
+            logger.debug(
+                "email_login_challenge_store_consume_result",
+                extra=prepare_extras(email=email.fingerprint, success=bool(res)),
+            )
+        except RedisError as e:
+            raise ChallengeStoreUnavailable(context=self._get_context(email)) from e
         return bool(res)
 
     async def save_with_rate_limit(
@@ -86,13 +125,24 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
         ttl_seconds: int,
         min_interval_seconds: int,
     ) -> int:
-        res = await self._redis.eval(  # type: ignore
-            _SAVE_WITH_RL_LUA,
-            2,
-            self._key(email),
-            self._rl_key(email),
-            code_hash,
-            str(ttl_seconds),
-            str(min_interval_seconds),
-        )
-        return max(int(res), 0)
+        try:
+            res = await self._redis.eval(  # type: ignore
+                _SAVE_WITH_RL_LUA,
+                2,
+                self._key(email),
+                self._rl_key(email),
+                code_hash,
+                str(ttl_seconds),
+                str(min_interval_seconds),
+            )
+            logger.debug(
+                "email_login_challenge_store_save_result",
+                extra=prepare_extras(
+                    email=email.fingerprint,
+                    ttl_seconds=ttl_seconds,
+                    min_interval_seconds=min_interval_seconds,
+                ),
+            )
+            return max(int(res), 0)
+        except RedisError as e:
+            raise ChallengeStoreUnavailable(context=self._get_context(email)) from e

@@ -6,6 +6,9 @@ from sqlalchemy import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.infrastructure.database import SQLAlchemyBaseRepository
+from app.core.infrastructure.database.exception_catcher import (
+    sqlalchemy_exception_catcher,
+)
 from app.core.shared.domain.value_objects.id import (
     DeviceIdVO,
     SessionIdVO,
@@ -45,6 +48,7 @@ class SQLAlchemyAuthSessionRepository(
             revoked_at=entity.revoked_at,
         )
 
+    @sqlalchemy_exception_catcher
     async def revoke_active_for_device(
         self,
         device_id: DeviceIdVO,
@@ -60,6 +64,7 @@ class SQLAlchemyAuthSessionRepository(
         await self.session.execute(stmt)
         await self.session.flush()
 
+    @sqlalchemy_exception_catcher
     async def get_by_refresh_token_hash(
         self,
         refresh_token_hash: str,
