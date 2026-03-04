@@ -19,3 +19,5 @@ COPY pyproject.toml uv.lock* /app/
 RUN uv sync --no-dev --frozen
 
 COPY . /app
+
+ENTRYPOINT ["uv", "run"]

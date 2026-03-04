@@ -1,19 +1,19 @@
 services:
   postgres:
     ports:
-      - "${DATABASE__PORT:-5432}:${DATABASE__PORT:-5432}"
+      - "${DATABASE__PORT}:5432"
   redis:
     ports:
-      - "${REDIS__PORT:-6379}:${REDIS__PORT:-6379}"
+      - "${REDIS__PORT}:6379"
   api:
     volumes:
       - .:/app
     command: >
-      uv run uvicorn app.core.presentation.app:app
-      --host ${RUN__HOST:-0.0.0.0}
-      --port ${RUN__PORT:-8000}
+      uvicorn app.core.presentation.app:app
+      --host ${SERVER__HOST}
+      --port ${SERVER__PORT}
       --reload
       --reload-dir /app
       --no-access-log
     ports:
-      - "${RUN__PORT:-8000}:${RUN__PORT:-8000}"
+      - "${SERVER__PORT}:${SERVER__PORT}"

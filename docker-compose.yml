@@ -5,9 +5,9 @@ services:
     restart: unless-stopped
     env_file: [ .env ]
     environment:
-      POSTGRES_USER: ${DATABASE__USER:-postgres}
-      POSTGRES_PASSWORD: ${DATABASE__PASSWORD:-postgres}
-      POSTGRES_DB: ${DATABASE__NAME:-bumilu_users}
+      POSTGRES_USER: ${DATABASE__USER}
+      POSTGRES_PASSWORD: ${DATABASE__PASSWORD}
+      POSTGRES_DB: ${DATABASE__NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -20,11 +20,11 @@ services:
     image: redis:8.6-alpine
     restart: unless-stopped
     env_file: [ .env ]
-    command: [ "redis-server", "--requirepass", "${REDIS__PASSWORD:-redis}" ]
+    command: [ "redis-server", "--requirepass", "${REDIS__PASSWORD}" ]
     volumes:
       - redis_data:/data
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping", "-a", "${REDIS__PASSWORD:-redis}" ]
+      test: [ "CMD", "redis-cli", "ping", "-a", "${REDIS__PASSWORD}" ]
       interval: 1s
       retries: 5
     networks:
@@ -33,8 +33,7 @@ services:
     build: .
     restart: "no"
     env_file: [ .env ]
-    command: >
-      uv run alembic upgrade head
+    command: [ "alembic", "upgrade", "head" ]
     depends_on:
       postgres:
         condition: service_healthy
@@ -44,8 +43,6 @@ services:
     build: .
     restart: unless-stopped
     env_file: [ .env ]
-    networks:
-      - bumilu
     depends_on:
       postgres:
         condition: service_healthy
@@ -53,6 +50,8 @@ services:
         condition: service_healthy
       migrations:
         condition: service_completed_successfully
+    networks:
+      - bumilu
 networks:
   bumilu:
 volumes:
