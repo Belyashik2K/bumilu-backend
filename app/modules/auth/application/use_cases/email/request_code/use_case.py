@@ -74,7 +74,7 @@ class RequestEmailCodeAtLoginUseCase(
 
         await self._email_sender.send(
             to=email,
-            subject=self._email_subject,
+            subject=self._email_subject.format(code=code),
             body=self._email_body_template.format(
                 code=code, ttl_min=self._ttl_seconds // 60
             ),
