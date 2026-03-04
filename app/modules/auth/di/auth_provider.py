@@ -3,6 +3,7 @@ from dishka import (
     Scope,
     provide,
 )
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.infrastructure.config import AppConfig
@@ -125,15 +126,10 @@ class AuthProvider(Provider):
 
     @provide(scope=Scope.APP, provides=IEmailLoginChallengeStore)
     async def email_login_challenge_store(
-        self,
-        config: AppConfig,
+        self, config: AppConfig, redis: Redis
     ) -> RedisEmailLoginChallengeStore:
         return RedisEmailLoginChallengeStore(
-            username=config.redis.username,
-            password=config.redis.password,
-            host=config.redis.host,
-            port=config.redis.port,
-            db=config.redis.db,
+            redis=redis,
             key_prefix=config.auth.otp.storage_key_prefix,
         )
 

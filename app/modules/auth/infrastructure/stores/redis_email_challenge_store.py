@@ -65,23 +65,10 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
     def __init__(
         self,
         *,
-        username: str | None = None,
-        password: str | None = None,
-        host: str,
-        port: int,
-        db: int,
+        redis: Redis,
         key_prefix: str,
     ) -> None:
-        self._host = host
-        self._port = port
-        self._db = db
-        self._redis = Redis(
-            host=host,
-            port=port,
-            username=username,
-            password=password,
-            db=db,
-        )
+        self._redis = redis
         self._key_prefix = key_prefix
 
     def _get_context(
@@ -90,9 +77,7 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
     ) -> dict:
         return prepare_extras(
             email=email.fingerprint,
-            host=self._host,
-            port=self._port,
-            db=self._db,
+            redis_client=repr(self._redis),
         )
 
     def _rl_key(self, email: EmailVO) -> str:
