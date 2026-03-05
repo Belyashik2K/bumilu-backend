@@ -82,3 +82,6 @@ fixable = ["ALL"]
 quote-style = "double"
 indent-style = "space"
 line-ending = "auto"
+
+[tool.mypy]
+disable_error_code = ["prop-decorator"]

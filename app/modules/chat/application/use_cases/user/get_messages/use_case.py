@@ -42,6 +42,8 @@ class GetUserActiveChatMessagesUseCase(
                     author_id=message.author_id.value if message.author_id else None,
                     author_type=message.author_type,
                     text=message.text.value,
+                    latitude=message.location.latitude if message.location else None,
+                    longitude=message.location.longitude if message.location else None,
                 )
                 for message in messages
             ],
