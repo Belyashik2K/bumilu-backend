@@ -1,6 +1,7 @@
-from abc import ABC
-
-from mypy.metastore import abstractmethod
+from abc import (
+    ABC,
+    abstractmethod,
+)
 
 from app.core.application.interfaces.repositories import IBaseRepository
 from app.core.shared.domain.value_objects.id import (
