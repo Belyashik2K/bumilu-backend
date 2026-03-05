@@ -59,13 +59,13 @@ class SubmitUserMessageUseCase(
                 location=location,
                 now=now,
             )
-            await self._chat_repository.save(chat)
 
         message = chat.reply_as_user(
             text=MessageTextVO(input_data.text),
             location=location,
             now=now,
         )
+        await self._chat_repository.save(chat)
         await self._chat_message_repository.save(message)
 
         return SubmitUserMessageOutputDTO(
