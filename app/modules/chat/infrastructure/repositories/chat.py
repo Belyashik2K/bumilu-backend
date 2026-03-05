@@ -76,8 +76,12 @@ class SQLAlchemyChatRepository(
         return ChatIdVO.from_uuid(chat_id)
 
     async def get_pending_chats(self) -> list[Chat]:
-        stmt = select(ChatModel).where(
-            ChatModel.status == ChatStatusEnum.WAITING_FOR_AI,
+        stmt = (
+            select(ChatModel)
+            .where(
+                ChatModel.status == ChatStatusEnum.WAITING_FOR_AI,
+            )
+            .with_for_update(skip_locked=True)
         )
         result = await self.session.execute(stmt)
         chat_models = result.scalars().all()
