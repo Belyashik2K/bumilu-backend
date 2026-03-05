@@ -19,14 +19,14 @@ class LocationVO:
     longitude: float
 
     def __post_init__(self) -> None:
-        if not (-90 <= self.latitude <= 90):
+        if not self.latitude or not (-90 <= self.latitude <= 90):
             raise InvalidLatitude(
                 latitude=self.latitude,
                 min_value=MINIMUM_LATITUDE,
                 max_value=MAXIMUM_LATITUDE,
             )
 
-        if not (-180 <= self.longitude <= 180):
+        if not self.longitude or not (-180 <= self.longitude <= 180):
             raise InvalidLongitude(
                 longitude=self.longitude,
                 min_value=MINIMUM_LONGITUDE,

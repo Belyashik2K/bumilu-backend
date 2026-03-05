@@ -14,7 +14,7 @@ MINIMUM_MESSAGE_LENGTH: Final[int] = 1
 MAXIMUM_MESSAGE_LENGTH: Final[int] = 1000
 
 
-@dataclass(frozen=True, slots=True, kw_only=True)
+@dataclass(frozen=True, slots=True)
 class MessageTextVO:
     value: str
 
