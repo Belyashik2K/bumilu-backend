@@ -8,7 +8,7 @@ from app.modules.chat.domain.value_objects.message_text.exceptions import (
     MessageTextTooShort,
 )
 
-MAXIMUM_PREVIEW_LENGTH: Final[int] = 32
+MAXIMUM_PREVIEW_LENGTH: Final[int] = 29
 
 MINIMUM_MESSAGE_LENGTH: Final[int] = 1
 MAXIMUM_MESSAGE_LENGTH: Final[int] = 1000
@@ -37,4 +37,4 @@ class MessageTextVO:
     def preview(self) -> str:
         if len(self.value) <= MAXIMUM_PREVIEW_LENGTH:
             return self.value
-        return f"{self.value[:32]}..."
+        return f"{self.value[:MAXIMUM_PREVIEW_LENGTH]}..."

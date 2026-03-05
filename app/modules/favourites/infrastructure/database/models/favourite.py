@@ -7,6 +7,7 @@ from sqlalchemy import (
     Enum,
     Index,
     PrimaryKeyConstraint,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import (
     Mapped,
@@ -30,6 +31,7 @@ class FavouriteModel(CreatedAtMixin, BaseModel):
 
     __table_args__ = (
         PrimaryKeyConstraint("user_id", "entity_type", "entity_id"),
+        UniqueConstraint("entity_type", "entity_id", "user_id"),
         Index(
             "idx_favourites_entity",
             "entity_type",
