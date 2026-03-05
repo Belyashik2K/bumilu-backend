@@ -20,12 +20,12 @@ class ProcessPendingChatsUseCase(
         chat_repository: IChatRepository,
         chat_message_repository: IChatMessageRepository,
         chat_responder: IChatResponder,
-        confidence_threshold: float,
+        confidence_score_threshold: float,
     ) -> None:
         self._chat_repository = chat_repository
         self._chat_message_repository = chat_message_repository
         self._chat_responder = chat_responder
-        self._confidence_threshold = confidence_threshold
+        self._confidence_score_threshold = confidence_score_threshold
 
     async def execute(
         self, input_data: ProcessPendingChatsInputDTO
@@ -52,7 +52,7 @@ class ProcessPendingChatsUseCase(
                 await self._chat_repository.save(chat)
                 continue
 
-            if result.confidence_score < self._confidence_threshold:
+            if result.confidence_score < self._confidence_score_threshold:
                 chat.escalate_to_admin(now=now)
             else:
                 message_text = MessageTextVO(result.reply)

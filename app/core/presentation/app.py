@@ -21,6 +21,7 @@ from app.core.presentation.middlewares.outer import (
 )
 from app.modules.auth.di import AuthProvider
 from app.modules.auth.presentation.api.middlewares.auth import AuthMiddleware
+from app.modules.chat.di import ChatProvider
 from app.modules.favourites.di import FavouriteProvider
 from app.modules.reviews.di import ReviewProvider
 from app.modules.users.di import UserProvider
@@ -77,6 +78,7 @@ def create_app() -> FastAPI:
         AuthProvider(),
         ReviewProvider(),
         FavouriteProvider(),
+        ChatProvider(),
         FastapiProvider(),
     )
     setup_dishka(container=container, app=app)
