@@ -70,6 +70,7 @@ class LoginAsGuestUseCase(
             guest_user = User.create_guest()
             device.attach_guest_user(guest_user.id)
             await self._user_repository.save(guest_user)
+            await self._device_repository.save(device)
             logger.info(
                 "user_created_via_guest_login",
                 extra=prepare_extras(
