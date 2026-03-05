@@ -42,16 +42,22 @@ class ProcessPendingChatsUseCase(
         )
 
         for chat in pending_chats:
-            result = await self._chat_responder.generate_reply(
-                chat, pending_chat_messages[chat.id]
-            )
+            now = get_current_dt()
+            try:
+                result = await self._chat_responder.generate_reply(
+                    chat, pending_chat_messages.get(chat.id, [])
+                )
+            except Exception:  # TODO: add specific exception for chat responder errors
+                chat.escalate_to_admin(now=now)
+                await self._chat_repository.save(chat)
+                continue
 
             if result.confidence < self._confidence_threshold:
-                chat.escalate_to_admin()
+                chat.escalate_to_admin(now=now)
             else:
-                now = get_current_dt()
                 message_text = MessageTextVO(result.reply)
-                chat.reply_as_ai(text=message_text, now=now)
+                reply = chat.reply_as_ai(text=message_text, now=now)
+                await self._chat_message_repository.save(reply)
 
             await self._chat_repository.save(chat)
 
