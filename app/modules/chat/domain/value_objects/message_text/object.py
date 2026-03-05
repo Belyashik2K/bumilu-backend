@@ -37,4 +37,4 @@ class MessageTextVO:
     def preview(self) -> str:
         if len(self.value) <= MAXIMUM_PREVIEW_LENGTH:
             return self.value
-        return f"{self.value[:MAXIMUM_PREVIEW_LENGTH]}..."
+        return f"{self.value[:MAXIMUM_PREVIEW_LENGTH].strip()}..."
