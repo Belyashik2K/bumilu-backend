@@ -36,7 +36,7 @@ class SubmitUserMessageUseCase(
         self, input_data: SubmitUserMessageInputDTO
     ) -> SubmitUserMessageOutputDTO:
         user_id = UserIdVO.from_uuid(input_data.user_id)
-        chat = await self._chat_repository.get_active_chat_by_user_id(user_id)
+        chat = await self._chat_repository.find_active_chat(user_id)
         now = get_current_dt()
 
         location: LocationVO | None = None
