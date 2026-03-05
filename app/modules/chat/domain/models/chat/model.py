@@ -25,7 +25,7 @@ class Chat:
     user_id: UserIdVO
     language: LanguageEnum
     status: ChatStatusEnum
-    last_location: LocationVO
+    last_location: LocationVO | None = field(default=None)
     last_message_preview: MessageTextVO | None = field(default=None)
     last_activity_at: datetime
 
@@ -34,7 +34,7 @@ class Chat:
         cls,
         user_id: UserIdVO,
         language: LanguageEnum,
-        location: LocationVO,
+        location: LocationVO | None,
         now: datetime,
     ) -> Self:
         return cls(
@@ -71,6 +71,7 @@ class Chat:
         location: LocationVO | None,
         now: datetime,
     ) -> ChatMessage:
+        self.status = ChatStatusEnum.WAITING_FOR_AI
         return self._add_message(
             author_id=self.user_id,
             author_type=AuthorTypeEnum.USER,
@@ -85,6 +86,7 @@ class Chat:
         text: MessageTextVO,
         now: datetime,
     ) -> ChatMessage:
+        self.status = ChatStatusEnum.ACTIVE
         return self._add_message(
             author_id=author_id,
             author_type=AuthorTypeEnum.ADMIN,
@@ -98,6 +100,7 @@ class Chat:
         text: MessageTextVO,
         now: datetime,
     ) -> ChatMessage:
+        self.status = ChatStatusEnum.ACTIVE
         return self._add_message(
             author_id=None,
             author_type=AuthorTypeEnum.AI,

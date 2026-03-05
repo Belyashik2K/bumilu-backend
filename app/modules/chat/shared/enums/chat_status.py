@@ -3,5 +3,6 @@ from enum import StrEnum
 
 class ChatStatusEnum(StrEnum):
     ACTIVE = "active"
-    NEEDS_HUMAN = "needs_human"
+    WAITING_FOR_AI = "waiting_for_ai"
+    ESCALATED = "escalated"
     CLOSED = "closed"
