@@ -32,7 +32,7 @@ class SQLAlchemyChatRepository(
             last_location_longitude=entity.last_location.longitude
             if entity.last_location
             else None,
-            last_message_preview=entity.last_message_preview.value
+            last_message_preview=entity.last_message_preview.preview
             if entity.last_message_preview
             else None,
             last_activity_at=entity.last_activity_at,
