@@ -109,5 +109,9 @@ class Chat:
             now=now,
         )
 
-    def escalate_to_admin(self) -> None:
+    def escalate_to_admin(
+        self,
+        now: datetime,
+    ) -> None:
         self.status = ChatStatusEnum.ESCALATED_TO_ADMIN
+        self.last_activity_at = now
