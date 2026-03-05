@@ -1,5 +1,8 @@
 from dataclasses import dataclass
-from typing import Final
+from typing import (
+    Final,
+    Self,
+)
 
 from app.modules.chat.domain.value_objects.location.exceptions import (
     InvalidLatitude,
@@ -32,3 +35,11 @@ class LocationVO:
                 min_value=MINIMUM_LONGITUDE,
                 max_value=MAXIMUM_LONGITUDE,
             )
+
+    @classmethod
+    def from_coordinates(
+        cls, latitude: float | None, longitude: float | None
+    ) -> Self | None:
+        if latitude is None or longitude is None:
+            return None
+        return cls(latitude=latitude, longitude=longitude)
