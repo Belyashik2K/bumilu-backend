@@ -13,7 +13,7 @@ from app.modules.chat.domain.models.chat_message import ChatMessage
 @dataclass(frozen=True, slots=True, kw_only=True)
 class ChatResponderResult:
     reply: str
-    confidence: float
+    confidence_score: float
 
 
 class IChatResponder(ABC):

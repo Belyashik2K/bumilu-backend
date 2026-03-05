@@ -52,7 +52,7 @@ class ProcessPendingChatsUseCase(
                 await self._chat_repository.save(chat)
                 continue
 
-            if result.confidence < self._confidence_threshold:
+            if result.confidence_score < self._confidence_threshold:
                 chat.escalate_to_admin(now=now)
             else:
                 message_text = MessageTextVO(result.reply)
