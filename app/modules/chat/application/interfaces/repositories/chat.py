@@ -16,3 +16,6 @@ class IChatRepository(IBaseRepository[Chat], ABC):
 
     @abstractmethod
     async def get_active_chat_id(self, user_id: UserIdVO) -> ChatIdVO | None: ...
+
+    @abstractmethod
+    async def get_pending_chats(self) -> list[Chat]: ...

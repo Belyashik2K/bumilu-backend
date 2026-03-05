@@ -108,3 +108,6 @@ class Chat:
             location=None,
             now=now,
         )
+
+    def escalate_to_admin(self) -> None:
+        self.status = ChatStatusEnum.ESCALATED_TO_ADMIN
