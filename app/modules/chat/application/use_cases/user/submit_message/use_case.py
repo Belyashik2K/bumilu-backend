@@ -41,7 +41,7 @@ class SubmitUserMessageUseCase(
 
         location: LocationVO | None = None
         if input_data.longitude and input_data.latitude:
-            location = LocationVO(
+            location = LocationVO.from_coordinates(
                 latitude=input_data.latitude,
                 longitude=input_data.longitude,
             )
