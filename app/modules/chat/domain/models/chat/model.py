@@ -86,6 +86,9 @@ class Chat:
         text: MessageTextVO,
         now: datetime,
     ) -> ChatMessage:
+        if self.status != ChatStatusEnum.ESCALATED_TO_ADMIN:
+            raise ValueError("Chat must be escalated to admin to reply as admin")
+
         self.status = ChatStatusEnum.ACTIVE
         return self._add_message(
             author_id=author_id,
