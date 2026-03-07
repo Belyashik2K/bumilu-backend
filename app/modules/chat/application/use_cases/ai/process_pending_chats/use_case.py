@@ -58,6 +58,7 @@ class ProcessPendingChatsUseCase(
                 message_text = MessageTextVO(result.reply)
                 reply = chat.reply_as_ai(text=message_text, now=now)
                 await self._chat_message_repository.save(reply)
+                print(f"Replied to chat {chat.id} with message {reply.id}")
 
             await self._chat_repository.save(chat)
 

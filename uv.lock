@@ -74,6 +74,19 @@ wheels = [
 ]
 
 [[package]]
+name = "apscheduler-dishka"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "apscheduler" },
+    { name = "dishka" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/75/13/49deaab37b974667289596b88d2ebc688e71fae2dd988411e59c8af39fdb/apscheduler_dishka-1.0.0.tar.gz", hash = "sha256:ac2939867636b3264c65f2dbdc054fc69b71f6bc87760300c2952698824633f9", size = 11562, upload-time = "2026-03-07T12:12:02.151Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/06/2b/b6dc5b6745fce425c9ac59cfe746e9f1e69b9c8d7bb07f6813b9df402cca/apscheduler_dishka-1.0.0-py3-none-any.whl", hash = "sha256:f2e03a4afec923e2c959f0645571088b8d14a39b673c28c510714d2b7289973b", size = 9086, upload-time = "2026-03-07T12:12:01.051Z" },
+]
+
+[[package]]
 name = "async-timeout"
 version = "5.0.1"
 source = { registry = "https://pypi.org/simple" }
@@ -138,6 +151,7 @@ dependencies = [
     { name = "aiosmtplib" },
     { name = "alembic" },
     { name = "apscheduler" },
+    { name = "apscheduler-dishka" },
     { name = "dishka" },
     { name = "fastapi", extra = ["all"] },
     { name = "pydantic-settings", extra = ["yaml"] },
@@ -162,6 +176,7 @@ requires-dist = [
     { name = "aiosmtplib", specifier = ">=5.1.0" },
     { name = "alembic", specifier = ">=1.18.4" },
     { name = "apscheduler", specifier = ">=3.11.2" },
+    { name = "apscheduler-dishka", specifier = ">=1.0.0" },
     { name = "dishka", specifier = ">=1.8.0" },
     { name = "fastapi", extras = ["all"], specifier = ">=0.129.0" },
     { name = "pydantic-settings", extras = ["yaml"], specifier = ">=2.13.0" },

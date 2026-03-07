@@ -1,9 +1,20 @@
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from typing import (
+    Any,
+)
 
-from dishka import make_async_container
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler_dishka import setup_dishka as setup_dishka_scheduler
+from dishka import (
+    AsyncContainer,
+    make_async_container,
+)
 from dishka.integrations.fastapi import (
     FastapiProvider,
-    setup_dishka,
+)
+from dishka.integrations.fastapi import (
+    setup_dishka as setup_dishka_fastapi,
 )
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
@@ -22,15 +33,24 @@ from app.core.presentation.middlewares.outer import (
 from app.modules.auth.di import AuthProvider
 from app.modules.auth.presentation.api.middlewares.auth import AuthMiddleware
 from app.modules.chat.di import ChatProvider
+from app.modules.chat.infrastructure.apscheduler_jobs import register_chat_jobs
 from app.modules.favourites.di import FavouriteProvider
 from app.modules.reviews.di import ReviewProvider
 from app.modules.users.di import UserProvider
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
-    yield
-    await app.state.dishka_container.close()  # type: ignore[attr-defined]
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, Any]:
+    container: AsyncContainer = app.state.dishka_container  # type: ignore[attr-defined]
+    scheduler = await container.get(AsyncIOScheduler)
+    setup_dishka_scheduler(container=container, scheduler=scheduler)
+    register_chat_jobs(scheduler)
+    scheduler.start()
+    try:
+        yield
+    finally:
+        scheduler.shutdown()
+        await container.close()
 
 
 def create_app() -> FastAPI:
@@ -81,7 +101,7 @@ def create_app() -> FastAPI:
         ChatProvider(),
         FastapiProvider(),
     )
-    setup_dishka(container=container, app=app)
+    setup_dishka_fastapi(container=container, app=app)
 
     return app
 
