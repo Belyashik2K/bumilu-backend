@@ -10,6 +10,7 @@ from app.core.shared.domain.value_objects.id import (
     UserIdVO,
 )
 from app.core.shared.enums import LanguageEnum
+from app.modules.chat.domain.models.chat.exceptions import ChatNotEscalatedToAdmin
 from app.modules.chat.domain.models.chat_message.model import ChatMessage
 from app.modules.chat.domain.value_objects.location import LocationVO
 from app.modules.chat.domain.value_objects.message_text import MessageTextVO
@@ -87,9 +88,7 @@ class Chat:
         now: datetime,
     ) -> ChatMessage:
         if self.status != ChatStatusEnum.ESCALATED_TO_ADMIN:
-            raise ValueError("Chat must be escalated to admin to reply as admin")
-
-        self.status = ChatStatusEnum.ACTIVE
+            raise ChatNotEscalatedToAdmin(chat_id=self.id)
         return self._add_message(
             author_id=author_id,
             author_type=AuthorTypeEnum.ADMIN,
