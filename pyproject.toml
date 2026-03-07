@@ -10,6 +10,7 @@ requires-python = ">=3.11"
 dependencies = [
     "aiosmtplib>=5.1.0",
     "alembic>=1.18.4",
+    "apscheduler>=3.11.2",
     "dishka>=1.8.0",
     "fastapi[all]>=0.129.0",
     "pydantic-settings[yaml]>=2.13.0",
