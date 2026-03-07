@@ -11,6 +11,7 @@ dependencies = [
     "aiosmtplib>=5.1.0",
     "alembic>=1.18.4",
     "apscheduler>=3.11.2",
+    "apscheduler-dishka>=1.0.0",
     "dishka>=1.8.0",
     "fastapi[all]>=0.129.0",
     "pydantic-settings[yaml]>=2.13.0",
@@ -86,3 +87,7 @@ line-ending = "auto"
 
 [tool.mypy]
 disable_error_code = ["prop-decorator"]
+
+[[tool.mypy.overrides]]
+module = "apscheduler.*"
+ignore_missing_imports = true

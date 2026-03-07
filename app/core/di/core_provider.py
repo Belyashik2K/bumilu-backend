@@ -1,5 +1,6 @@
 from collections.abc import AsyncIterator
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dishka import (
     Provider,
     Scope,
@@ -43,6 +44,10 @@ class CoreProvider(Provider):
             db=config.redis.db,
         )
 
+    @provide(scope=Scope.APP)
+    async def scheduler(self) -> AsyncIOScheduler:
+        return AsyncIOScheduler()
+
     @provide(scope=Scope.REQUEST)
     async def database_session(
         self,
@@ -51,5 +56,7 @@ class CoreProvider(Provider):
         session = database_helper.session_factory()
         try:
             yield session
-        finally:
-            await session.close()
+            await session.commit()
+        except Exception:
+            await session.rollback()  # TODO: uow in UC
+            raise
