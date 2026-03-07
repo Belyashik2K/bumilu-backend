@@ -182,7 +182,7 @@ class AIAssistantConfig(BaseModel):
 
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(
-        yaml_file=("config.yaml", "config.dev.yaml", "ai-assistant.config.yaml"),
+        yaml_file=("config.yaml", "config.dev.yaml", "ai-assistant-config.yaml"),
         env_file=(".env", ".env.dev"),
         env_nested_delimiter="__",
         extra="ignore",
