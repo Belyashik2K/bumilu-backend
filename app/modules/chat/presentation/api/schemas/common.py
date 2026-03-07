@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from fastapi import Path
 from pydantic import (
     UUID7,
     BaseModel,
@@ -19,6 +20,12 @@ MESSAGE_ID_EXAMPLE = "019caaaa-0000-7000-a00b-000000001984"
 LAST_ACTIVITY_AT_EXAMPLE = "2026-03-05T04:30:00Z"
 
 MESSAGE_TEXT_EXAMPLE = "Где Семьянов пьёт кофе?"
+
+CHAT_ID_PATH = Path(
+    ...,
+    description="The unique identifier of the chat.",
+    examples=[CHAT_ID_EXAMPLE],
+)
 
 
 class LocationSchema(BaseModel):
