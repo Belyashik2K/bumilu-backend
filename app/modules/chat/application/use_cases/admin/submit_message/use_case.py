@@ -43,7 +43,7 @@ class SubmitAdminMessageUseCase(
         if not chat:
             raise ChatNotFound(chat_id=chat_id)
 
-        # Now we believe that only admins can call this use case,
+        # We believe that only admins can call this use case,
         # but later we might want to add a check here to ensure that the actor is indeed an admin.
         message = chat.reply_as_admin(author_id=author_id, text=text, now=now)
 
