@@ -64,6 +64,7 @@ class Chat:
         )
         self.last_message_preview = text
         self.last_activity_at = now
+        self.last_location = location or self.last_location
         return message
 
     def reply_as_user(
