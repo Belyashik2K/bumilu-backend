@@ -7,7 +7,9 @@ from fastapi import (
 from pydantic import UUID7
 
 from app.modules.auth.presentation.api import security
-from app.modules.auth.presentation.api.v1.deps import get_principal
+from app.modules.auth.presentation.api.v1.deps import (
+    get_admin_principal,
+)
 from app.modules.auth.shared.context import Principal
 from app.modules.chat.application.use_cases.admin.submit_message import (
     SubmitAdminMessageInputDTO,
@@ -29,7 +31,7 @@ admin_chat_router = APIRouter(
 async def reply_to_chat_as_admin(
     uc: FromDishka[SubmitAdminMessageUseCase],
     data: SubmitAdminMessageRequestSchema,
-    principal: Principal = Depends(get_principal),
+    principal: Principal = Depends(get_admin_principal),
     chat_id: UUID7 = CHAT_ID_PATH,
 ) -> SubmitAdminMessageResponseSchema:
     result = await uc(
