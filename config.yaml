@@ -49,6 +49,8 @@ auth:
         subject: "{code} — Your BumiLu verification code"
         body: >
           Your verification code is: {code}.
+openrouter:
+  api_base_url: "https://openrouter.ai/api/v1"
 cors:
   enabled: false
   allow_origins: [ "http://localhost:3000" ]

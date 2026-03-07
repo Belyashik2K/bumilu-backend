@@ -5,6 +5,7 @@ from dishka import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.infrastructure.config import AppConfig
 from app.modules.chat.application.interfaces.chat_responder import IChatResponder
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.application.interfaces.repositories.chat_message import (
@@ -25,18 +26,28 @@ from app.modules.chat.application.use_cases.user.get_messages import (
 from app.modules.chat.application.use_cases.user.submit_message import (
     SubmitUserMessageUseCase,
 )
+from app.modules.chat.infrastructure.chat_responders.openrouter import (
+    OpenRouterChatResponder,
+)
 from app.modules.chat.infrastructure.repositories.chat import SQLAlchemyChatRepository
 from app.modules.chat.infrastructure.repositories.chat_message import (
     SQLAlchemyChatMessageRepository,
 )
-from app.modules.chat.infrastructure.simple_chat_responder import SimpleChatResponder
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 
 
 class ChatProvider(Provider):
     @provide(scope=Scope.APP, provides=IChatResponder)
-    def chat_responder(self) -> SimpleChatResponder:
-        return SimpleChatResponder()
+    def chat_responder(
+        self,
+        config: AppConfig,
+    ) -> OpenRouterChatResponder:
+        return OpenRouterChatResponder(
+            api_key=config.openrouter.api_key,
+            api_base_url=config.openrouter.api_base_url,
+            model=config.ai_assistant.model,
+            system_prompt=config.ai_assistant.system_prompt,
+        )
 
     @provide(scope=Scope.REQUEST, provides=IChatRepository)
     async def chat_repository(
@@ -92,6 +103,7 @@ class ChatProvider(Provider):
     @provide(scope=Scope.REQUEST)
     async def process_pending_chats_uc(
         self,
+        config: AppConfig,
         chat_repository: IChatRepository,
         chat_message_repository: IChatMessageRepository,
         chat_responder: IChatResponder,
@@ -100,7 +112,7 @@ class ChatProvider(Provider):
             chat_repository=chat_repository,
             chat_message_repository=chat_message_repository,
             chat_responder=chat_responder,
-            confidence_score_threshold=0.5,  # TODO: transfer to config
+            confidence_score_threshold=config.ai_assistant.confidence_score_threshold,
         )
 
     @provide(scope=Scope.REQUEST)

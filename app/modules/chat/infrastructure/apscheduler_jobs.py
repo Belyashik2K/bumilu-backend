@@ -18,7 +18,7 @@ async def process_pending_chats(uc: FromDishka[ProcessPendingChatsUseCase]) -> N
 def register_chat_jobs(scheduler: AsyncIOScheduler) -> None:
     scheduler.add_job(
         process_pending_chats,
-        trigger=IntervalTrigger(seconds=5),
+        trigger=IntervalTrigger(seconds=1),
         id="process_pending_chats",
         replace_existing=True,
         next_run_time=get_current_dt(),

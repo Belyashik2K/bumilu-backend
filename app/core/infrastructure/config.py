@@ -141,6 +141,8 @@ class AuthConfig(BaseModel):
 
 # ================================
 
+# ======== CORSConfig ========
+
 
 class CORSConfig(BaseModel):
     enabled: bool
@@ -150,9 +152,37 @@ class CORSConfig(BaseModel):
     allow_headers: list[str]
 
 
+# ================================
+
+
+# ======== OpenRouterConfig ========
+
+
+class OpenRouterConfig(BaseModel):
+    api_key: str
+    api_base_url: str
+
+
+# ================================
+
+
+# ======== AI Assistant Config ========
+
+
+class AIAssistantConfig(BaseModel):
+    model: str
+    system_prompt: str
+    confidence_score_threshold: float
+
+
+# ================================
+
+# ======== AppConfig ========
+
+
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(
-        yaml_file=("config.yaml", "config.dev.yaml"),
+        yaml_file=("config.yaml", "config.dev.yaml", "ai-assistant.config.yaml"),
         env_file=(".env", ".env.dev"),
         env_nested_delimiter="__",
         extra="ignore",
@@ -164,6 +194,8 @@ class AppConfig(BaseSettings):
     redis: RedisConfig
     auth: AuthConfig
     cors: CORSConfig
+    openrouter: OpenRouterConfig
+    ai_assistant: AIAssistantConfig
 
     @classmethod
     def settings_customise_sources(
@@ -181,3 +213,6 @@ class AppConfig(BaseSettings):
             file_secret_settings,
             init_settings,
         )
+
+
+# ================================
