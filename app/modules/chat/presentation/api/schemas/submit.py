@@ -37,3 +37,21 @@ class SubmitUserMessageResponseSchema(BaseModel):
         description="The unique identifier of the message that was sent.",
         examples=[MESSAGE_ID_EXAMPLE],
     )
+
+
+class SubmitAdminMessageRequestSchema(BaseModel):
+    text: str = Field(
+        ...,
+        description="The text of the message to be sent by the admin to the chat.",
+        examples=[MESSAGE_TEXT_EXAMPLE],
+        min_length=1,
+        max_length=1000,
+    )
+
+
+class SubmitAdminMessageResponseSchema(BaseModel):
+    message_id: UUID7 = Field(
+        ...,
+        description="The unique identifier of the message that was sent.",
+        examples=[MESSAGE_ID_EXAMPLE],
+    )

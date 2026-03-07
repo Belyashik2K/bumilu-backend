@@ -72,7 +72,8 @@ class Chat:
         location: LocationVO | None,
         now: datetime,
     ) -> ChatMessage:
-        self.status = ChatStatusEnum.WAITING_FOR_AI
+        if not self.is_escalated():
+            self.status = ChatStatusEnum.WAITING_FOR_AI
         return self._add_message(
             author_id=self.user_id,
             author_type=AuthorTypeEnum.USER,
@@ -87,7 +88,7 @@ class Chat:
         text: MessageTextVO,
         now: datetime,
     ) -> ChatMessage:
-        if self.status != ChatStatusEnum.ESCALATED_TO_ADMIN:
+        if not self.is_escalated():
             raise ChatNotEscalatedToAdmin(chat_id=self.id)
         return self._add_message(
             author_id=author_id,
@@ -117,3 +118,6 @@ class Chat:
     ) -> None:
         self.status = ChatStatusEnum.ESCALATED_TO_ADMIN
         self.last_activity_at = now
+
+    def is_escalated(self) -> bool:
+        return self.status == ChatStatusEnum.ESCALATED_TO_ADMIN

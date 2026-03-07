@@ -10,6 +10,9 @@ from app.modules.chat.application.interfaces.repositories.chat import IChatRepos
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
 )
+from app.modules.chat.application.use_cases.admin.submit_message import (
+    SubmitAdminMessageUseCase,
+)
 from app.modules.chat.application.use_cases.ai.process_pending_chats import (
     ProcessPendingChatsUseCase,
 )
@@ -98,4 +101,15 @@ class ChatProvider(Provider):
             chat_message_repository=chat_message_repository,
             chat_responder=chat_responder,
             confidence_score_threshold=0.5,  # TODO: transfer to config
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def submit_admin_reply_uc(
+        self,
+        chat_repository: IChatRepository,
+        chat_message_repository: IChatMessageRepository,
+    ) -> SubmitAdminMessageUseCase:
+        return SubmitAdminMessageUseCase(
+            chat_repository=chat_repository,
+            chat_message_repository=chat_message_repository,
         )

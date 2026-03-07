@@ -33,10 +33,10 @@ from app.modules.chat.presentation.api.schemas.submit import (
     SubmitUserMessageResponseSchema,
 )
 
-chat_router = APIRouter(tags=["Chat"], dependencies=[Depends(security)])
+user_chat_router = APIRouter(tags=["Chat"], dependencies=[Depends(security)])
 
 
-@chat_router.post(
+@user_chat_router.post(
     "/users/me/chat",
     responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
 )
@@ -57,7 +57,7 @@ async def submit_user_message(
     return SubmitUserMessageResponseSchema.model_validate(result, from_attributes=True)
 
 
-@chat_router.get(
+@user_chat_router.get(
     "/users/me/chat",
     responses=generate_responses_for_endpoint(),
 )
@@ -74,7 +74,7 @@ async def get_current_user_chat(
     return GetChatInfoResponseSchema.model_validate(result, from_attributes=True)
 
 
-@chat_router.get(
+@user_chat_router.get(
     "/users/me/chat/messages",
     responses=generate_responses_for_endpoint(),
 )
