@@ -1,50 +1,44 @@
 from app.core.application.queries import IQueryHandler
-from app.core.shared.domain.value_objects.id import UserIdVO
-from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
-from app.modules.chat.application.interfaces.repositories.chat_message import (
-    IChatMessageRepository,
-)
+from app.core.shared.application.queries.pagination import OffsetPagination
+from app.modules.chat.application.queries.readers.chat import IChatReader
+from app.modules.chat.application.queries.readers.chat_message import IChatMessageReader
 from app.modules.chat.application.queries.user.get_messages.query import (
     GetUserActiveChatMessagesQuery,
     GetUserActiveChatMessagesQueryResult,
 )
-from app.modules.chat.application.shared.dtos import ChatMessageInfoDTO
 
 
 class GetUserActiveChatMessagesQueryHandler(
     IQueryHandler[
         GetUserActiveChatMessagesQuery,
-        GetUserActiveChatMessagesQueryResult,
+        GetUserActiveChatMessagesQueryResult | None,
     ]
 ):
     def __init__(
         self,
-        chat_repository: IChatRepository,
-        chat_message_repository: IChatMessageRepository,
+        chat_reader: IChatReader,
+        chat_message_reader: IChatMessageReader,
     ) -> None:
-        self._chat_repository = chat_repository
-        self._chat_message_repository = chat_message_repository
+        self._chat_reader = chat_reader
+        self._chat_message_reader = chat_message_reader
 
     async def handle(
-        self, input_data: GetUserActiveChatMessagesQuery
-    ) -> GetUserActiveChatMessagesQueryResult:
-        user_id = UserIdVO.from_uuid(input_data.user_id)
-        chat_id = await self._chat_repository.get_active_chat_id(user_id)
-        if not chat_id:
-            return GetUserActiveChatMessagesQueryResult()
+        self, query: GetUserActiveChatMessagesQuery
+    ) -> GetUserActiveChatMessagesQueryResult | None:
+        chat = await self._chat_reader.get_active_chat_by_user_id(query.user_id)
+        if chat is None:
+            return None
 
-        messages = await self._chat_message_repository.get_chat_messages(chat_id)
+        messages_page = await self._chat_message_reader.list_messages_by_chat_id(
+            chat.id, limit=query.limit, offset=query.offset
+        )
+
         return GetUserActiveChatMessagesQueryResult(
-            chat_id=chat_id.value,
-            messages=[
-                ChatMessageInfoDTO(
-                    id=message.id.value,
-                    author_id=message.author_id.value if message.author_id else None,
-                    author_type=message.author_type,
-                    text=message.text.value,
-                    latitude=message.location.latitude if message.location else None,
-                    longitude=message.location.longitude if message.location else None,
-                )
-                for message in messages
-            ],
+            chat_id=chat.id,
+            messages=messages_page.items,
+            pagination=OffsetPagination.create(
+                limit=query.limit,
+                offset=query.offset,
+                total=messages_page.total,
+            ),
         )

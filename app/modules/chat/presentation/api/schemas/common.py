@@ -5,10 +5,8 @@ from pydantic import (
     UUID7,
     BaseModel,
     Field,
-    computed_field,
 )
 
-from app.core.shared.enums import LanguageEnum
 from app.modules.chat.shared.enums import (
     AuthorTypeEnum,
     ChatStatusEnum,
@@ -26,6 +24,19 @@ CHAT_ID_PATH = Path(
     description="The unique identifier of the chat.",
     examples=[CHAT_ID_EXAMPLE],
 )
+
+
+class AuthorSchema(BaseModel):
+    id: UUID7 | None = Field(
+        None,
+        description="The unique identifier of the message author.",
+        examples=[USER_ID_EXAMPLE],
+    )
+    type: AuthorTypeEnum = Field(
+        ...,
+        description="The type of the message author.",
+        examples=[AuthorTypeEnum.USER],
+    )
 
 
 class LocationSchema(BaseModel):
@@ -51,20 +62,10 @@ class ChatInfoSchema(BaseModel):
         description="The unique identifier of the chat.",
         examples=[CHAT_ID_EXAMPLE],
     )
-    user_id: UUID7 = Field(
-        ...,
-        description="The unique identifier of the user associated with the chat.",
-        examples=[USER_ID_EXAMPLE],
-    )
     status: ChatStatusEnum = Field(
         ...,
         description="The current status of the chat.",
         examples=[ChatStatusEnum.ACTIVE],
-    )
-    language: LanguageEnum = Field(
-        ...,
-        description="The language used in the chat.",
-        examples=[LanguageEnum.EN],
     )
     last_activity_at: datetime = Field(
         ...,
@@ -79,15 +80,9 @@ class ChatMessageSchema(BaseModel):
         description="The unique identifier of the chat message.",
         examples=[MESSAGE_ID_EXAMPLE],
     )
-    author_type: AuthorTypeEnum = Field(
+    author: AuthorSchema = Field(
         ...,
-        description="The type of the message author (e.g., 'user' or 'bot').",
-        examples=[AuthorTypeEnum.USER],
-    )
-    author_id: UUID7 | None = Field(
-        None,
-        description="The unique identifier of the message author (if applicable).",
-        examples=[USER_ID_EXAMPLE],
+        description="The author of the chat message.",
     )
     text: str = Field(
         ...,
@@ -96,12 +91,7 @@ class ChatMessageSchema(BaseModel):
         min_length=1,
         max_length=1000,
     )
-    latitude: float | None = Field(default=None, exclude=True)
-    longitude: float | None = Field(default=None, exclude=True)
-
-    @computed_field
-    @property
-    def location(self) -> LocationSchema | None:
-        if self.latitude is None or self.longitude is None:
-            return None
-        return LocationSchema(latitude=self.latitude, longitude=self.longitude)
+    location: LocationSchema | None = Field(
+        None,
+        description="The geographical location associated with the message.",
+    )

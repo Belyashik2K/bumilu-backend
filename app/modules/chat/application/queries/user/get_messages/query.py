@@ -4,15 +4,19 @@ from dataclasses import (
 )
 from uuid import UUID
 
-from app.modules.chat.application.shared.dtos import ChatMessageInfoDTO
+from app.core.shared.application.queries.pagination import OffsetPagination
+from app.modules.chat.application.queries.shared.views import ChatMessageView
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class GetUserActiveChatMessagesQuery:
     user_id: UUID
+    limit: int = field(default=20)
+    offset: int = field(default=0)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class GetUserActiveChatMessagesQueryResult:
     chat_id: UUID | None = field(default=None)
-    messages: list[ChatMessageInfoDTO] = field(default_factory=list)
+    messages: list[ChatMessageView] = field(default_factory=list)
+    pagination: OffsetPagination | None = field(default=None)

@@ -4,6 +4,7 @@ from pydantic import (
     Field,
 )
 
+from app.core.shared.presentation.schemas.pagination import OffsetPaginationSchema
 from app.modules.chat.presentation.api.schemas.common import (
     CHAT_ID_EXAMPLE,
     ChatInfoSchema,
@@ -11,11 +12,7 @@ from app.modules.chat.presentation.api.schemas.common import (
 )
 
 
-class GetChatInfoResponseSchema(BaseModel):
-    active_chat: ChatInfoSchema | None = Field(
-        None,
-        description="The active chat for the user, if it exists. If the user has no active chat, this field will be null.",
-    )
+class GetChatInfoResponseSchema(ChatInfoSchema): ...
 
 
 class GetChatMessagesResponseSchema(BaseModel):
@@ -27,4 +24,8 @@ class GetChatMessagesResponseSchema(BaseModel):
     messages: list[ChatMessageSchema] = Field(
         ...,
         description="A list of messages in the user's active chat.",
+    )
+    pagination: OffsetPaginationSchema = Field(
+        ...,
+        description="Pagination information for the retrieved messages.",
     )
