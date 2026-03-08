@@ -5,18 +5,20 @@ from dishka import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.favourites.application.commands.add import (
+    AddToFavouritesCommandHandler,
+)
+from app.modules.favourites.application.commands.remove import (
+    RemoveFromFavouritesUseCase,
+)
 from app.modules.favourites.application.interfaces.entity_resolver import (
     IFavouriteEntityResolver,
 )
 from app.modules.favourites.application.interfaces.repositories.favourite import (
     IFavouriteRepository,
 )
-from app.modules.favourites.application.use_cases.add import AddToFavouritesUseCase
-from app.modules.favourites.application.use_cases.get_all_by_user import (
+from app.modules.favourites.application.queries.get_all_by_user import (
     GetAllFavouritesByUserUseCase,
-)
-from app.modules.favourites.application.use_cases.remove import (
-    RemoveFromFavouritesUseCase,
 )
 from app.modules.favourites.infrastructure.database.repositories.favourite import (
     SQLAlchemyFavouriteRepository,
@@ -54,13 +56,13 @@ class FavouriteProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def add_to_favourites_uc(
+    async def add_to_favourites_handler(
         self,
         favourite_repository: IFavouriteRepository,
         user_repository: IUserRepository,
         entity_resolver: IFavouriteEntityResolver,
-    ) -> AddToFavouritesUseCase:
-        return AddToFavouritesUseCase(
+    ) -> AddToFavouritesCommandHandler:
+        return AddToFavouritesCommandHandler(
             favourite_repository=favourite_repository,
             user_repository=user_repository,
             entity_resolver=entity_resolver,

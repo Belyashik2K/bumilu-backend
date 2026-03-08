@@ -5,11 +5,7 @@ from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class AddToFavouritesInputDTO:
+class AddToFavouritesCommand:
     user_id: UUID
     entity_type: FavouriteEntityTypeEnum
     entity_id: UUID
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class AddToFavouritesOutputDTO: ...

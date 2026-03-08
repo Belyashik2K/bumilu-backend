@@ -3,12 +3,12 @@ from app.core.shared.domain.value_objects.id import (
     IdVO,
     UserIdVO,
 )
-from app.modules.favourites.application.interfaces.repositories.favourite import (
-    IFavouriteRepository,
-)
-from app.modules.favourites.application.use_cases.remove import (
+from app.modules.favourites.application.commands.remove import (
     RemoveFromFavouritesInputDTO,
     RemoveFromFavouritesOutputDTO,
+)
+from app.modules.favourites.application.interfaces.repositories.favourite import (
+    IFavouriteRepository,
 )
 from app.modules.favourites.domain.models.favourite import Favourite
 
