@@ -9,7 +9,7 @@ from app.modules.favourites.application.commands.add import (
     AddToFavouritesCommandHandler,
 )
 from app.modules.favourites.application.commands.remove import (
-    RemoveFromFavouritesUseCase,
+    RemoveFromFavouritesCommandHandler,
 )
 from app.modules.favourites.application.interfaces.entity_resolver import (
     IFavouriteEntityResolver,
@@ -69,10 +69,10 @@ class FavouriteProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def remove_from_favourites_uc(
+    async def remove_from_favourites_handler(
         self,
         favourite_repository: IFavouriteRepository,
-    ) -> RemoveFromFavouritesUseCase:
-        return RemoveFromFavouritesUseCase(
+    ) -> RemoveFromFavouritesCommandHandler:
+        return RemoveFromFavouritesCommandHandler(
             favourite_repository=favourite_repository,
         )

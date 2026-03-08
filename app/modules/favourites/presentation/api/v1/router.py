@@ -18,8 +18,8 @@ from app.modules.favourites.application.commands.add import (
     AddToFavouritesCommandHandler,
 )
 from app.modules.favourites.application.commands.remove import (
-    RemoveFromFavouritesInputDTO,
-    RemoveFromFavouritesUseCase,
+    RemoveFromFavouritesCommand,
+    RemoveFromFavouritesCommandHandler,
 )
 from app.modules.favourites.application.queries.get_all_by_user import (
     GetAllFavouritesByUserInputDTO,
@@ -118,13 +118,13 @@ async def add_to_favourites(
 )
 @inject
 async def remove_from_favourites(
-    uc: FromDishka[RemoveFromFavouritesUseCase],
+    handler: FromDishka[RemoveFromFavouritesCommandHandler],
     principal: Annotated[Principal, Depends(get_principal)],
     entity_type: FavouriteEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> None:
-    await uc(
-        RemoveFromFavouritesInputDTO(
+    await handler(
+        RemoveFromFavouritesCommand(
             user_id=principal.id.value,
             entity_type=entity_type.domain_name,
             entity_id=entity_id,
