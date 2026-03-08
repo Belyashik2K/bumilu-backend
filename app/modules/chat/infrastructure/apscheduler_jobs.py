@@ -33,18 +33,14 @@ def register_chat_jobs(
     now = get_current_dt()
     scheduler.add_job(
         process_pending_chats,
-        trigger=IntervalTrigger(
-            seconds=config.chat.ai_assistant.polling_interval_seconds
-        ),
+        trigger=IntervalTrigger(seconds=config.chat.ai_assistant.polling_interval_sec),
         id="process_pending_chats",
         replace_existing=True,
         next_run_time=now,
     )
     scheduler.add_job(
         close_inactive_chats,
-        trigger=IntervalTrigger(
-            seconds=config.chat.inactivity.polling_interval_seconds
-        ),
+        trigger=IntervalTrigger(seconds=config.chat.inactivity.polling_interval_sec),
         id="close_inactive_chats",
         replace_existing=True,
         next_run_time=now,

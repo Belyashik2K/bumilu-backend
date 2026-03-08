@@ -135,5 +135,5 @@ class ChatProvider(Provider):
     ) -> CloseInactiveChatsCommandHandler:
         return CloseInactiveChatsCommandHandler(
             chat_repository=chat_repository,
-            inactivity_threshold_minutes=config.chat.inactivity.threshold_minutes,
+            inactivity_threshold_minutes=config.chat.inactivity.threshold_min,
         )

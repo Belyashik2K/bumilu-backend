@@ -167,12 +167,12 @@ class AIAssistantConfig(BaseModel):
     openrouter: OpenRouterConfig
     system_prompt: str
     confidence_score_threshold: float
-    polling_interval_seconds: int
+    polling_interval_sec: int
 
 
 class ChatInactivityConfig(BaseModel):
-    threshold_minutes: int
-    polling_interval_seconds: int
+    threshold_min: int
+    polling_interval_sec: int
 
 
 class ChatConfig(BaseModel):
