@@ -1,25 +1,25 @@
-from app.core.application.use_cases.base import IBaseUseCase
+from app.core.application.commands import ICommandHandlerWithResult
 from app.core.shared.domain.value_objects.id import (
     ChatIdVO,
     UserIdVO,
 )
 from app.core.shared.utils import get_current_dt
+from app.modules.chat.application.commands.admin.submit_message import (
+    SubmitAdminMessageCommand,
+    SubmitAdminMessageCommandResult,
+)
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
 )
-from app.modules.chat.application.use_cases.admin.submit_message import (
-    SubmitAdminMessageInputDTO,
-    SubmitAdminMessageOutputDTO,
-)
-from app.modules.chat.application.use_cases.shared.exceptions import ChatNotFound
+from app.modules.chat.application.shared.exceptions import ChatNotFound
 from app.modules.chat.domain.value_objects.message_text import MessageTextVO
 
 
-class SubmitAdminMessageUseCase(
-    IBaseUseCase[
-        SubmitAdminMessageInputDTO,
-        SubmitAdminMessageOutputDTO,
+class SubmitAdminMessageCommandHandler(
+    ICommandHandlerWithResult[
+        SubmitAdminMessageCommand,
+        SubmitAdminMessageCommandResult,
     ]
 ):
     def __init__(
@@ -30,13 +30,13 @@ class SubmitAdminMessageUseCase(
         self._chat_repository = chat_repository
         self._chat_message_repository = chat_message_repository
 
-    async def execute(
+    async def handle(
         self,
-        input_data: SubmitAdminMessageInputDTO,
-    ) -> SubmitAdminMessageOutputDTO:
-        author_id = UserIdVO.from_uuid(input_data.actor_id)
-        chat_id = ChatIdVO.from_uuid(input_data.chat_id)
-        text = MessageTextVO(input_data.text)
+        command: SubmitAdminMessageCommand,
+    ) -> SubmitAdminMessageCommandResult:
+        author_id = UserIdVO.from_uuid(command.actor_id)
+        chat_id = ChatIdVO.from_uuid(command.chat_id)
+        text = MessageTextVO(command.text)
         now = get_current_dt()
 
         chat = await self._chat_repository.get_by_id(chat_id)
@@ -50,6 +50,6 @@ class SubmitAdminMessageUseCase(
         await self._chat_repository.save(chat)
         await self._chat_message_repository.save(message)
 
-        return SubmitAdminMessageOutputDTO(
+        return SubmitAdminMessageCommandResult(
             message_id=message.id.value,
         )

@@ -3,11 +3,11 @@ from app.core.application.use_cases.base import (
 )
 from app.core.shared.domain.value_objects.id import UserIdVO
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
-from app.modules.chat.application.use_cases.shared.dtos import ChatInfoDTO
-from app.modules.chat.application.use_cases.user.get_info import (
+from app.modules.chat.application.queries.user.get_info import (
     GetUserActiveChatInfoInputDTO,
     GetUserActiveChatInfoOutputDTO,
 )
+from app.modules.chat.application.shared.dtos import ChatInfoDTO
 
 
 class GetUserActiveChatInfoUseCase(

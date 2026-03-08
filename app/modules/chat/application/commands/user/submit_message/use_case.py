@@ -4,13 +4,13 @@ from app.core.application.use_cases.base import (
 from app.core.shared.domain.value_objects.id import UserIdVO
 from app.core.shared.enums import LanguageEnum
 from app.core.shared.utils import get_current_dt
+from app.modules.chat.application.commands.user.submit_message import (
+    SubmitUserMessageInputDTO,
+    SubmitUserMessageOutputDTO,
+)
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
-)
-from app.modules.chat.application.use_cases.user.submit_message import (
-    SubmitUserMessageInputDTO,
-    SubmitUserMessageOutputDTO,
 )
 from app.modules.chat.domain.models.chat import Chat
 from app.modules.chat.domain.value_objects.location import LocationVO
