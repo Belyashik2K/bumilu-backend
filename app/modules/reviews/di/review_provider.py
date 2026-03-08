@@ -6,7 +6,7 @@ from dishka import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.reviews.application.commands.create import CreateReviewCommandHandler
-from app.modules.reviews.application.commands.delete import DeleteReviewUseCase
+from app.modules.reviews.application.commands.delete import DeleteReviewCommandHandler
 from app.modules.reviews.application.commands.update import UpdateReviewUseCase
 from app.modules.reviews.application.interfaces.entity_resolver import (
     IReviewEntityResolver,
@@ -78,11 +78,11 @@ class ReviewProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def delete_review_uc(
+    async def delete_review_handler(
         self,
         review_repository: IReviewRepository,
-    ) -> DeleteReviewUseCase:
-        return DeleteReviewUseCase(
+    ) -> DeleteReviewCommandHandler:
+        return DeleteReviewCommandHandler(
             review_repository=review_repository,
         )
 
