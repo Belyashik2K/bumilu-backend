@@ -9,6 +9,9 @@ from app.core.infrastructure.config import AppConfig
 from app.modules.chat.application.commands.admin import (
     SubmitAdminMessageCommandHandler,
 )
+from app.modules.chat.application.commands.admin.close_chat import (
+    CloseChatAsAdminCommandHandler,
+)
 from app.modules.chat.application.commands.cron import (
     CloseInactiveChatsCommandHandler,
     ProcessPendingChatsCommandHandler,
@@ -159,3 +162,10 @@ class ChatProvider(Provider):
             chat_repository=chat_repository,
             inactivity_threshold_minutes=config.chat.inactivity.threshold_min,
         )
+
+    @provide(scope=Scope.REQUEST)
+    async def close_chat_as_admin_handler(
+        self,
+        chat_repository: IChatRepository,
+    ) -> CloseChatAsAdminCommandHandler:
+        return CloseChatAsAdminCommandHandler(chat_repository=chat_repository)

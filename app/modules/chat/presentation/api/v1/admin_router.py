@@ -17,6 +17,10 @@ from app.modules.chat.application.commands.admin import (
     SubmitAdminMessageCommand,
     SubmitAdminMessageCommandHandler,
 )
+from app.modules.chat.application.commands.admin.close_chat import (
+    CloseChatAsAdminCommand,
+    CloseChatAsAdminCommandHandler,
+)
 from app.modules.chat.presentation.api.schemas.common import CHAT_ID_PATH
 from app.modules.chat.presentation.api.schemas.submit import (
     SubmitAdminMessageRequestSchema,
@@ -60,8 +64,13 @@ async def get_chat_messages(chat_id: UUID7 = CHAT_ID_PATH) -> None:
     responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
 )
 @inject
-async def close_chat_as_admin(chat_id: UUID7 = CHAT_ID_PATH) -> None:
-    raise NotImplementedError("This endpoint is not implemented yet.")
+async def close_chat_as_admin(
+    handler: FromDishka[CloseChatAsAdminCommandHandler],
+    principal: Principal = Depends(get_admin_principal),
+    chat_id: UUID7 = CHAT_ID_PATH,
+) -> None:
+    await handler(CloseChatAsAdminCommand(actor_id=principal.id.value, chat_id=chat_id))
+    return None
 
 
 @admin_chat_router.post("/{chat_id}/reply")

@@ -133,6 +133,14 @@ class Chat:
         reason: ChatCloseReasonEnum,
         now: datetime,
     ) -> None:
+        if self.status == ChatStatusEnum.CLOSED:
+            return
+        if (
+            self.status != ChatStatusEnum.ESCALATED_TO_ADMIN
+            and reason == ChatCloseReasonEnum.BY_ADMIN
+        ):
+            raise ChatNotEscalatedToAdmin(chat_id=self.id)
+
         self.status = ChatStatusEnum.CLOSED
         self.close_reason = reason
         self.closed_at = self.last_activity_at = now
