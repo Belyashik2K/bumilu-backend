@@ -1,5 +1,10 @@
 from datetime import datetime
+from typing import Annotated
 
+from fastapi import (
+    Depends,
+    Query,
+)
 from pydantic import (
     UUID7,
     BaseModel,
@@ -89,3 +94,18 @@ class AdminChatInfoSchema(AdminChatPreviewSchema):
         None,
         description="The reason why the chat was closed, if applicable. This can provide context for the closure of the chat, such as whether it was resolved, escalated, or closed for other reasons.",
     )
+
+
+def get_admin_chat_filters(
+    status: Annotated[
+        ChatStatusEnum | None,
+        Query(
+            description="Filter chats by their status. If not provided, chats of all statuses will be returned.",
+            examples=[ChatStatusEnum.ESCALATED_TO_ADMIN],
+        ),
+    ] = None,
+) -> AdminChatFilterSchema:
+    return AdminChatFilterSchema(status=status)
+
+
+AdminChatFiltersDep = Annotated[AdminChatFilterSchema, Depends(get_admin_chat_filters)]

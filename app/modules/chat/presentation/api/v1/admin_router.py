@@ -13,7 +13,7 @@ from starlette import status
 
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.core.shared.presentation.schemas.pagination import (
-    PaginationQueryAsDependency,
+    OffsetPaginationDep,
 )
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.deps import (
@@ -45,7 +45,7 @@ from app.modules.chat.application.queries.admin.get_chat_messages.query import (
     GetAdminChatMessagesQuery,
 )
 from app.modules.chat.presentation.api.schemas.admin.get import (
-    AdminChatFilterSchema,
+    AdminChatFiltersDep,
     AdminChatInfoSchema,
     AdminChatListResponseSchema,
 )
@@ -71,8 +71,8 @@ admin_chat_router = APIRouter(
 async def get_chats_list(
     handler: FromDishka[GetAdminChatListQueryHandler],
     principal: Annotated[Principal, Depends(get_admin_principal)],
-    filters: Annotated[AdminChatFilterSchema, Depends()],
-    pagination: PaginationQueryAsDependency,
+    filters: AdminChatFiltersDep,
+    pagination: OffsetPaginationDep,
 ) -> AdminChatListResponseSchema:
     result = await handler(
         GetAdminChatListQuery(
@@ -112,7 +112,7 @@ async def get_chat_info(
 async def get_chat_messages(
     handler: FromDishka[GetAdminChatMessagesQueryHandler],
     principal: Annotated[Principal, Depends(get_admin_principal)],
-    pagination: PaginationQueryAsDependency,
+    pagination: OffsetPaginationDep,
     chat_id: UUID7 = CHAT_ID_PATH,
 ) -> GetChatMessagesResponseSchema:
     result = await handler(

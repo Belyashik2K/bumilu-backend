@@ -62,5 +62,24 @@ class OffsetPaginationSchema(BaseModel):
     )
 
 
-PaginationQuery = Annotated[OffsetPaginationQuery, Query()]
-PaginationQueryAsDependency = Annotated[OffsetPaginationQuery, Depends()]
+def get_offset_pagination(
+    limit: Annotated[
+        int,
+        Query(
+            ge=MINIMUM_LIMIT,
+            le=MAXIMUM_LIMIT,
+            description="Number of items to return",
+        ),
+    ] = DEFAULT_LIMIT,
+    offset: Annotated[
+        int,
+        Query(
+            ge=MINIMUM_OFFSET,
+            description="Number of items to skip",
+        ),
+    ] = DEFAULT_OFFSET,
+) -> OffsetPaginationQuery:
+    return OffsetPaginationQuery(limit=limit, offset=offset)
+
+
+OffsetPaginationDep = Annotated[OffsetPaginationQuery, Depends(get_offset_pagination)]

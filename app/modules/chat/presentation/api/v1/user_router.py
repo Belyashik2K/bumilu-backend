@@ -10,7 +10,7 @@ from starlette import status
 
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.core.shared.presentation.schemas.pagination import (
-    PaginationQuery,
+    OffsetPaginationDep,
 )
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.deps import get_principal
@@ -87,7 +87,7 @@ async def get_current_user_chat(
 async def get_current_user_chat_messages(
     handler: FromDishka[GetUserActiveChatMessagesQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
-    pagination: PaginationQuery,
+    pagination: OffsetPaginationDep,
 ) -> GetChatMessagesResponseSchema | dict:
     result = await handler(
         GetUserActiveChatMessagesQuery(
