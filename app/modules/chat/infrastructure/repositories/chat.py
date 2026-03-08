@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -36,6 +38,8 @@ class SQLAlchemyChatRepository(
             if entity.last_message_preview
             else None,
             last_activity_at=entity.last_activity_at,
+            closed_at=entity.closed_at,
+            close_reason=entity.close_reason,
         )
 
     def _to_entity(self, data: ChatModel) -> Chat:
@@ -51,6 +55,8 @@ class SQLAlchemyChatRepository(
             if data.last_message_preview
             else None,
             last_activity_at=data.last_activity_at,
+            closed_at=data.closed_at,
+            close_reason=data.close_reason,
         )
 
     async def find_active_chat(self, user_id: UserIdVO) -> Chat | None:
@@ -82,6 +88,15 @@ class SQLAlchemyChatRepository(
                 ChatModel.status == ChatStatusEnum.WAITING_FOR_AI,
             )
             .with_for_update(skip_locked=True)
+        )
+        result = await self.session.execute(stmt)
+        chat_models = result.scalars().all()
+        return [self._to_entity(chat_model) for chat_model in chat_models]
+
+    async def get_inactive_open_chats(self, threshold: datetime) -> list[Chat]:
+        stmt = select(ChatModel).where(
+            ChatModel.status == ChatStatusEnum.ACTIVE,
+            ChatModel.last_activity_at < threshold,
         )
         result = await self.session.execute(stmt)
         chat_models = result.scalars().all()
