@@ -11,6 +11,7 @@ from uuid import UUID
 from app.modules.chat.shared.enums import ChatStatusEnum
 
 if TYPE_CHECKING:
+    from app.modules.chat.application.queries.admin.get_chat.view import AdminChatView
     from app.modules.chat.application.queries.admin.get_chat_list.view import (
         AdminChatListPage,
     )
@@ -22,6 +23,11 @@ class IChatReader(ABC):
     async def get_active_chat_by_user_id(
         self, user_id: UUID
     ) -> Optional["UserChatView"]: ...
+
+    @abstractmethod
+    async def get_admin_chat_by_id(
+        self, chat_id: UUID
+    ) -> Optional["AdminChatView"]: ...
 
     @abstractmethod
     async def list_admin_chats(

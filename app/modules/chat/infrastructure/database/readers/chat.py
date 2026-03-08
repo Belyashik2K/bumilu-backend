@@ -7,6 +7,7 @@ from sqlalchemy import (
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
+from app.modules.chat.application.queries.admin.get_chat.view import AdminChatView
 from app.modules.chat.application.queries.admin.get_chat_list.view import (
     AdminChatListPage,
     AdminChatPreviewView,
@@ -34,6 +35,19 @@ class SQLAlchemyChatReader(IChatReader):
         if not row:
             return None
         return UserChatView(
+            id=row.id, status=row.status, last_activity_at=row.last_activity_at
+        )
+
+    async def get_admin_chat_by_id(self, chat_id: UUID) -> AdminChatView | None:
+        stmt = select(ChatModel.id, ChatModel.status, ChatModel.last_activity_at).where(
+            ChatModel.id == chat_id
+        )
+
+        result = await self._session.execute(stmt)
+        row = result.first()
+        if not row:
+            return None
+        return AdminChatView(
             id=row.id, status=row.status, last_activity_at=row.last_activity_at
         )
 
