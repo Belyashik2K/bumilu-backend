@@ -43,8 +43,9 @@ from app.modules.users.di import UserProvider
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, Any]:
     container: AsyncContainer = app.state.dishka_container  # type: ignore[attr-defined]
     scheduler = await container.get(AsyncIOScheduler)
+    config = await container.get(AppConfig)
     setup_dishka_scheduler(container=container, scheduler=scheduler)
-    register_chat_jobs(scheduler)
+    register_chat_jobs(scheduler, config.ai_assistant.polling_interval_seconds)
     scheduler.start()
     try:
         yield

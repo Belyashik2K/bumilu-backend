@@ -15,10 +15,13 @@ async def process_pending_chats(
     await command(EmptyCommand())
 
 
-def register_chat_jobs(scheduler: AsyncIOScheduler) -> None:
+def register_chat_jobs(
+    scheduler: AsyncIOScheduler,
+    polling_interval_seconds: int,
+) -> None:
     scheduler.add_job(
         process_pending_chats,
-        trigger=IntervalTrigger(seconds=1),
+        trigger=IntervalTrigger(seconds=polling_interval_seconds),
         id="process_pending_chats",
         replace_existing=True,
         next_run_time=get_current_dt(),
