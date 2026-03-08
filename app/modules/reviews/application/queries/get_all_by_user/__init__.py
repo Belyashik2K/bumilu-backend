@@ -1,5 +1,5 @@
-from .dtos import (
-    GetAllReviewsByUserInputDTO,
-    GetAllReviewsByUserOutputDTO,
+from .handler import GetAllReviewsByUserQueryHandler
+from .query import (
+    GetAllReviewsByUserQuery,
+    GetAllReviewsByUserQueryResult,
 )
-from .use_case import GetAllReviewsByUserUseCase
