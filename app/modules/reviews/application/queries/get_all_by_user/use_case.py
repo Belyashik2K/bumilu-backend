@@ -3,11 +3,11 @@ from app.core.shared.domain.value_objects.id import UserIdVO
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
-from app.modules.reviews.application.use_cases.get_all_by_user import (
+from app.modules.reviews.application.queries.get_all_by_user import (
     GetAllReviewsByUserInputDTO,
     GetAllReviewsByUserOutputDTO,
 )
-from app.modules.reviews.application.use_cases.shared.dtos import ReviewInfoDTO
+from app.modules.reviews.application.shared.dtos import ReviewInfoDTO
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 from app.modules.users.application.use_cases.get.exceptions import UserNotFound
 

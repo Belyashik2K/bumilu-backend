@@ -9,12 +9,12 @@ from app.modules.reviews.application.interfaces.entity_resolver import (
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
-from app.modules.reviews.application.use_cases.get_all_for_entity import (
+from app.modules.reviews.application.queries.get_all_for_entity import (
     GetAllReviewsForEntityInputDTO,
     GetAllReviewsForEntityOutputDTO,
 )
-from app.modules.reviews.application.use_cases.shared.dtos import ReviewInfoDTO
-from app.modules.reviews.application.use_cases.shared.exceptions import (
+from app.modules.reviews.application.shared.dtos import ReviewInfoDTO
+from app.modules.reviews.application.shared.exceptions import (
     ReviewEntityNotFound,
 )
 

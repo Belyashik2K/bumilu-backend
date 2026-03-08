@@ -5,22 +5,22 @@ from dishka import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.reviews.application.commands.create import CreateReviewCommandHandler
+from app.modules.reviews.application.commands.delete import DeleteReviewUseCase
+from app.modules.reviews.application.commands.update import UpdateReviewUseCase
 from app.modules.reviews.application.interfaces.entity_resolver import (
     IReviewEntityResolver,
 )
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
-from app.modules.reviews.application.use_cases.create import CreateReviewUseCase
-from app.modules.reviews.application.use_cases.delete import DeleteReviewUseCase
-from app.modules.reviews.application.use_cases.get import GetReviewUseCase
-from app.modules.reviews.application.use_cases.get_all_by_user import (
+from app.modules.reviews.application.queries.get import GetReviewUseCase
+from app.modules.reviews.application.queries.get_all_by_user import (
     GetAllReviewsByUserUseCase,
 )
-from app.modules.reviews.application.use_cases.get_all_for_entity import (
+from app.modules.reviews.application.queries.get_all_for_entity import (
     GetAllReviewsForEntityUseCase,
 )
-from app.modules.reviews.application.use_cases.update import UpdateReviewUseCase
 from app.modules.reviews.infrastructure.database.repositories.review import (
     SQLAlchemyReviewRepository,
 )
@@ -58,12 +58,12 @@ class ReviewProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def create_review_uc(
+    async def create_review_handler(
         self,
         review_repository: IReviewRepository,
         entity_resolver: IReviewEntityResolver,
-    ) -> CreateReviewUseCase:
-        return CreateReviewUseCase(
+    ) -> CreateReviewCommandHandler:
+        return CreateReviewCommandHandler(
             review_repository=review_repository,
             entity_resolver=entity_resolver,
         )

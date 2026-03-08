@@ -4,7 +4,7 @@ from dataclasses import (
 )
 from uuid import UUID
 
-from app.modules.reviews.application.use_cases.shared.dtos import ReviewInfoDTO
+from app.modules.reviews.application.shared.dtos import ReviewInfoDTO
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
 
