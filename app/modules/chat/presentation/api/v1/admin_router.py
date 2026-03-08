@@ -34,11 +34,20 @@ from app.modules.chat.application.queries.admin.get_chat_list.handler import (
 from app.modules.chat.application.queries.admin.get_chat_list.query import (
     GetAdminChatListQuery,
 )
+from app.modules.chat.application.queries.admin.get_chat_messages.handler import (
+    GetAdminChatMessagesQueryHandler,
+)
+from app.modules.chat.application.queries.admin.get_chat_messages.query import (
+    GetAdminChatMessagesQuery,
+)
 from app.modules.chat.presentation.api.schemas.admin.get import (
     AdminChatFilterSchema,
     AdminChatListResponseSchema,
 )
 from app.modules.chat.presentation.api.schemas.common import CHAT_ID_PATH
+from app.modules.chat.presentation.api.schemas.user.get import (
+    GetChatMessagesResponseSchema,
+)
 from app.modules.chat.presentation.api.schemas.user.submit import (
     SubmitAdminMessageRequestSchema,
     SubmitAdminMessageResponseSchema,
@@ -85,8 +94,21 @@ async def get_chat_info(chat_id: UUID7 = CHAT_ID_PATH) -> None:
     responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
 )
 @inject
-async def get_chat_messages(chat_id: UUID7 = CHAT_ID_PATH) -> None:
-    raise NotImplementedError("This endpoint is not implemented yet.")
+async def get_chat_messages(
+    handler: FromDishka[GetAdminChatMessagesQueryHandler],
+    principal: Annotated[Principal, Depends(get_admin_principal)],
+    pagination: PaginationQueryAsDependency,
+    chat_id: UUID7 = CHAT_ID_PATH,
+) -> GetChatMessagesResponseSchema:
+    result = await handler(
+        GetAdminChatMessagesQuery(
+            actor_id=principal.id.value,
+            limit=pagination.limit,
+            offset=pagination.offset,
+            chat_id=chat_id,
+        )
+    )
+    return GetChatMessagesResponseSchema.model_validate(result, from_attributes=True)
 
 
 @admin_chat_router.post(
