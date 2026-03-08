@@ -2,6 +2,7 @@ import asyncio
 import os
 from logging.config import fileConfig
 
+import alembic_postgresql_enum  # noqa: F401
 from alembic import context
 from dotenv import load_dotenv
 from sqlalchemy import pool

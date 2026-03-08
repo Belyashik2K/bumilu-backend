@@ -10,6 +10,7 @@ requires-python = ">=3.11"
 dependencies = [
     "aiosmtplib>=5.1.0",
     "alembic>=1.18.4",
+    "alembic-postgresql-enum>=1.10.0",
     "apscheduler>=3.11.2",
     "apscheduler-dishka>=1.0.0",
     "dishka>=1.8.0",
