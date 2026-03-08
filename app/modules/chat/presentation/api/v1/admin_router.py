@@ -5,7 +5,9 @@ from fastapi import (
     Depends,
 )
 from pydantic import UUID7
+from starlette import status
 
+from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.deps import (
     get_admin_principal,
@@ -24,6 +26,42 @@ from app.modules.chat.presentation.api.schemas.submit import (
 admin_chat_router = APIRouter(
     prefix="/admin/chats", tags=["Admin Chats"], dependencies=[Depends(security)]
 )
+
+
+@admin_chat_router.get(
+    "",
+    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+)
+@inject
+async def get_chats_list() -> None:
+    raise NotImplementedError("This endpoint is not implemented yet.")
+
+
+@admin_chat_router.get(
+    "/{chat_id}",
+    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+)
+@inject
+async def get_chat_info(chat_id: UUID7 = CHAT_ID_PATH) -> None:
+    raise NotImplementedError("This endpoint is not implemented yet.")
+
+
+@admin_chat_router.get(
+    "/{chat_id}/messages",
+    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+)
+@inject
+async def get_chat_messages(chat_id: UUID7 = CHAT_ID_PATH) -> None:
+    raise NotImplementedError("This endpoint is not implemented yet.")
+
+
+@admin_chat_router.post(
+    "/{chat_id}/close",
+    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+)
+@inject
+async def close_chat_as_admin(chat_id: UUID7 = CHAT_ID_PATH) -> None:
+    raise NotImplementedError("This endpoint is not implemented yet.")
 
 
 @admin_chat_router.post("/{chat_id}/reply")
