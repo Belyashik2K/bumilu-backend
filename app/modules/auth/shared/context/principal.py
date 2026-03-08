@@ -12,3 +12,6 @@ class Principal:
     id: UserIdVO
     session_id: SessionIdVO
     role: UserRoleEnum
+
+    def is_admin(self) -> bool:
+        return self.role == UserRoleEnum.ADMIN

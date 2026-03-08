@@ -1,0 +1,43 @@
+from app.core.application.queries import IQueryHandler
+from app.core.shared.application.queries.pagination import OffsetPagination
+from app.modules.chat.application.queries.admin.get_chat_messages.query import (
+    GetAdminChatMessagesQuery,
+    GetAdminChatMessagesQueryResult,
+)
+from app.modules.chat.application.queries.readers.chat import IChatReader
+from app.modules.chat.application.queries.readers.chat_message import IChatMessageReader
+from app.modules.chat.application.shared.exceptions import ChatNotFound
+
+
+class GetAdminChatMessagesQueryHandler(
+    IQueryHandler[GetAdminChatMessagesQuery, GetAdminChatMessagesQueryResult],
+):
+    def __init__(
+        self,
+        chat_reader: IChatReader,
+        chat_message_reader: IChatMessageReader,
+    ) -> None:
+        self._chat_reader = chat_reader
+        self._chat_message_reader = chat_message_reader
+
+    async def handle(
+        self, query: GetAdminChatMessagesQuery
+    ) -> GetAdminChatMessagesQueryResult:
+        chat = await self._chat_reader.get_admin_chat_by_id(query.chat_id)
+        if chat is None:
+            # TODO: use proper exception handling
+            raise ChatNotFound(chat_id=query.chat_id)  # type: ignore
+
+        messages = await self._chat_message_reader.list_messages_by_chat_id(
+            chat.id, limit=query.limit, offset=query.offset
+        )
+
+        return GetAdminChatMessagesQueryResult(
+            chat_id=chat.id,
+            messages=messages.items,
+            pagination=OffsetPagination.create(
+                limit=query.limit,
+                offset=query.offset,
+                total=messages.total,
+            ),
+        )

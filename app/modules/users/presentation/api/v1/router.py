@@ -12,9 +12,9 @@ from app.core.presentation.endpoint_responses import generate_responses_for_endp
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.deps import get_principal
 from app.modules.auth.shared.context import Principal
-from app.modules.users.application.use_cases.get import (
-    GetUserInputDTO,
-    GetUserUseCase,
+from app.modules.users.application.queries.get import (
+    GetUserQuery,
+    GetUserQueryHandler,
 )
 from app.modules.users.presentation.api.schemas.common import (
     AuthenticatedUserInfoSchema,
@@ -30,11 +30,11 @@ users_router = APIRouter(
 )
 @inject
 async def get_current_user(
-    uc: FromDishka[GetUserUseCase],
+    handler: FromDishka[GetUserQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
 ) -> AuthenticatedUserInfoSchema:
-    result = await uc.execute(
-        GetUserInputDTO(
+    result = await handler(
+        GetUserQuery(
             id=principal.id.value,
         )
     )

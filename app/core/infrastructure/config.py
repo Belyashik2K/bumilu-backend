@@ -141,6 +141,8 @@ class AuthConfig(BaseModel):
 
 # ================================
 
+# ======== CORSConfig ========
+
 
 class CORSConfig(BaseModel):
     enabled: bool
@@ -150,14 +152,42 @@ class CORSConfig(BaseModel):
     allow_headers: list[str]
 
 
-class ServerConfig(BaseModel):
-    host: str
-    port: int
+# ================================
+
+# ========= ChatConfig ========
+
+
+class OpenRouterConfig(BaseModel):
+    api_key: str
+    api_base_url: str
+    model: str
+
+
+class AIAssistantConfig(BaseModel):
+    openrouter: OpenRouterConfig
+    system_prompt: str
+    confidence_score_threshold: float
+    polling_interval_sec: int
+
+
+class ChatInactivityConfig(BaseModel):
+    threshold_min: int
+    polling_interval_sec: int
+
+
+class ChatConfig(BaseModel):
+    ai_assistant: AIAssistantConfig
+    inactivity: ChatInactivityConfig
+
+
+# ================================
+
+# ======== AppConfig ========
 
 
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(
-        yaml_file=("config.yaml", "config.dev.yaml"),
+        yaml_file=("config.yaml", "config.dev.yaml", "ai-assistant-config.yaml"),
         env_file=(".env", ".env.dev"),
         env_nested_delimiter="__",
         extra="ignore",
@@ -169,7 +199,7 @@ class AppConfig(BaseSettings):
     redis: RedisConfig
     auth: AuthConfig
     cors: CORSConfig
-    server: ServerConfig
+    chat: ChatConfig
 
     @classmethod
     def settings_customise_sources(
@@ -187,3 +217,6 @@ class AppConfig(BaseSettings):
             file_secret_settings,
             init_settings,
         )
+
+
+# ================================

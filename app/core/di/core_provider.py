@@ -1,12 +1,15 @@
 from collections.abc import AsyncIterator
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dishka import (
     Provider,
     Scope,
     provide,
 )
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.infrastructure.apscheduler_logger import create_apscheduler_logger
 from app.core.infrastructure.config import AppConfig
 from app.core.infrastructure.database.helper import SQLAlchemyDatabaseHelper
 
@@ -29,6 +32,23 @@ class CoreProvider(Provider):
             max_overflow=config.database.pool.max_overflow,
         )
 
+    @provide(scope=Scope.APP)
+    async def redis_client(
+        self,
+        config: AppConfig,
+    ) -> Redis:
+        return Redis(
+            username=config.redis.username,
+            password=config.redis.password,
+            host=config.redis.host,
+            port=config.redis.port,
+            db=config.redis.db,
+        )
+
+    @provide(scope=Scope.APP)
+    async def scheduler(self) -> AsyncIOScheduler:
+        return create_apscheduler_logger()
+
     @provide(scope=Scope.REQUEST)
     async def database_session(
         self,
@@ -37,5 +57,7 @@ class CoreProvider(Provider):
         session = database_helper.session_factory()
         try:
             yield session
-        finally:
-            await session.close()
+            await session.commit()
+        except Exception:
+            await session.rollback()  # TODO: uow in UC
+            raise
