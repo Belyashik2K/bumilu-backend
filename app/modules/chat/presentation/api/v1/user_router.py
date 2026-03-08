@@ -5,10 +5,12 @@ from dishka.integrations.fastapi import inject
 from fastapi import (
     APIRouter,
     Depends,
+    Query,
 )
 from starlette import status
 
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
+from app.core.shared.presentation.schemas.pagination import OffsetPaginationQuery
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.deps import get_principal
 from app.modules.auth.shared.context import Principal
@@ -17,10 +19,10 @@ from app.modules.chat.application.commands.user import (
     SubmitUserMessageCommandHandler,
 )
 from app.modules.chat.application.queries.user import (
-    GetUserActiveChatInfoQuery,
-    GetUserActiveChatInfoQueryHandler,
     GetUserActiveChatMessagesQuery,
     GetUserActiveChatMessagesQueryHandler,
+    GetUserActiveChatQuery,
+    GetUserActiveChatQueryHandler,
 )
 from app.modules.chat.presentation.api.schemas.get import (
     GetChatInfoResponseSchema,
@@ -61,29 +63,41 @@ async def submit_user_message(
 )
 @inject
 async def get_current_user_chat(
-    handler: FromDishka[GetUserActiveChatInfoQueryHandler],
+    handler: FromDishka[GetUserActiveChatQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
-) -> GetChatInfoResponseSchema:
+) -> GetChatInfoResponseSchema | dict:
     result = await handler(
-        GetUserActiveChatInfoQuery(
+        GetUserActiveChatQuery(
             user_id=principal.id.value,
         )
     )
-    return GetChatInfoResponseSchema.model_validate(result, from_attributes=True)
+    return (
+        GetChatInfoResponseSchema.model_validate(result, from_attributes=True)
+        if result
+        else {}
+    )
 
 
 @user_chat_router.get(
     "/users/me/chat/messages",
     responses=generate_responses_for_endpoint(),
+    response_model_exclude_none=True,
 )
 @inject
 async def get_current_user_chat_messages(
     handler: FromDishka[GetUserActiveChatMessagesQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
-) -> GetChatMessagesResponseSchema:
+    pagination: Annotated[OffsetPaginationQuery, Query()],
+) -> GetChatMessagesResponseSchema | dict:
     result = await handler(
         GetUserActiveChatMessagesQuery(
             user_id=principal.id.value,
+            limit=pagination.limit,
+            offset=pagination.offset,
         )
     )
-    return GetChatMessagesResponseSchema.model_validate(result, from_attributes=True)
+    return (
+        GetChatMessagesResponseSchema.model_validate(result, from_attributes=True)
+        if result
+        else {}
+    )

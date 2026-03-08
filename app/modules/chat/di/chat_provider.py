@@ -23,15 +23,23 @@ from app.modules.chat.application.interfaces.repositories.chat import IChatRepos
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
 )
+from app.modules.chat.application.queries.readers.chat import IChatReader
+from app.modules.chat.application.queries.readers.chat_message import IChatMessageReader
 from app.modules.chat.application.queries.user import (
-    GetUserActiveChatInfoQueryHandler,
     GetUserActiveChatMessagesQueryHandler,
+    GetUserActiveChatQueryHandler,
 )
 from app.modules.chat.infrastructure.chat_responders.openrouter import (
     OpenRouterChatResponder,
 )
-from app.modules.chat.infrastructure.repositories.chat import SQLAlchemyChatRepository
-from app.modules.chat.infrastructure.repositories.chat_message import (
+from app.modules.chat.infrastructure.database.readers.chat import SQLAlchemyChatReader
+from app.modules.chat.infrastructure.database.readers.chat_message import (
+    SQLAlchemyChatMessageReader,
+)
+from app.modules.chat.infrastructure.database.repositories.chat import (
+    SQLAlchemyChatRepository,
+)
+from app.modules.chat.infrastructure.database.repositories.chat_message import (
     SQLAlchemyChatMessageRepository,
 )
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
@@ -59,6 +67,15 @@ class ChatProvider(Provider):
             session=session,
         )
 
+    @provide(scope=Scope.REQUEST, provides=IChatReader)
+    async def chat_reader(
+        self,
+        session: AsyncSession,
+    ) -> SQLAlchemyChatReader:
+        return SQLAlchemyChatReader(
+            session=session,
+        )
+
     @provide(scope=Scope.REQUEST, provides=IChatMessageRepository)
     async def chat_message_repository(
         self,
@@ -68,24 +85,31 @@ class ChatProvider(Provider):
             session=session,
         )
 
+    @provide(scope=Scope.REQUEST, provides=IChatMessageReader)
+    async def chat_message_reader(
+        self,
+        session: AsyncSession,
+    ) -> SQLAlchemyChatMessageReader:
+        return SQLAlchemyChatMessageReader(
+            session=session,
+        )
+
     @provide(scope=Scope.REQUEST)
     async def get_user_active_chat_info_handler(
         self,
-        chat_repository: IChatRepository,
-    ) -> GetUserActiveChatInfoQueryHandler:
-        return GetUserActiveChatInfoQueryHandler(
-            chat_repository=chat_repository,
+        chat_reader: IChatReader,
+    ) -> GetUserActiveChatQueryHandler:
+        return GetUserActiveChatQueryHandler(
+            chat_reader=chat_reader,
         )
 
     @provide(scope=Scope.REQUEST)
     async def get_user_active_chat_messages_handler(
-        self,
-        chat_repository: IChatRepository,
-        chat_message_repository: IChatMessageRepository,
+        self, chat_reader: IChatReader, chat_message_reader: IChatMessageReader
     ) -> GetUserActiveChatMessagesQueryHandler:
         return GetUserActiveChatMessagesQueryHandler(
-            chat_repository=chat_repository,
-            chat_message_repository=chat_message_repository,
+            chat_reader=chat_reader,
+            chat_message_reader=chat_message_reader,
         )
 
     @provide(scope=Scope.REQUEST)
