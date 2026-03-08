@@ -5,11 +5,11 @@ from dataclasses import (
 from uuid import UUID
 
 from app.core.shared.enums import DevicePlatformEnum
-from app.modules.auth.application.use_cases.shared_dtos import IssuedTokensDTO
+from app.modules.auth.application.commands.shared_dtos import IssuedTokensDTO
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class VerifyEmailCodeAtLoginInputDTO:
+class VerifyEmailCodeAtLoginCommand:
     email: str
     code: str
     device_id: UUID
@@ -20,4 +20,4 @@ class VerifyEmailCodeAtLoginInputDTO:
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class VerifyEmailCodeAtLoginOutputDTO(IssuedTokensDTO): ...
+class VerifyEmailCodeAtLoginCommandResult(IssuedTokensDTO): ...

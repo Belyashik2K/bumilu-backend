@@ -7,6 +7,17 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.infrastructure.config import AppConfig
+from app.modules.auth.application.commands.email.request_code import (
+    RequestEmailCodeAtLoginCommandHandler,
+)
+from app.modules.auth.application.commands.email.verify_code import (
+    VerifyEmailCodeAtLoginCommandHandler,
+)
+from app.modules.auth.application.commands.guest.login import LoginAsGuestUseCase
+from app.modules.auth.application.commands.logout.use_case import LogoutUseCase
+from app.modules.auth.application.commands.refresh_session.use_case import (
+    RefreshAuthSessionUseCase,
+)
 from app.modules.auth.application.interfaces.email_sender import IEmailSender
 from app.modules.auth.application.interfaces.generators import (
     IVerificationCodeGenerator,
@@ -31,17 +42,6 @@ from app.modules.auth.application.interfaces.stores.email_login import (
     IEmailLoginChallengeStore,
 )
 from app.modules.auth.application.services.auth_session import AuthSessionService
-from app.modules.auth.application.use_cases.email.request_code import (
-    RequestEmailCodeAtLoginUseCase,
-)
-from app.modules.auth.application.use_cases.email.verify_code import (
-    VerifyEmailCodeAtLoginUseCase,
-)
-from app.modules.auth.application.use_cases.guest.login import LoginAsGuestUseCase
-from app.modules.auth.application.use_cases.logout.use_case import LogoutUseCase
-from app.modules.auth.application.use_cases.refresh_session.use_case import (
-    RefreshAuthSessionUseCase,
-)
 from app.modules.auth.infrastructure.database.repositories.auth_session import (
     SQLAlchemyAuthSessionRepository,
 )
@@ -207,15 +207,15 @@ class AuthProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def request_code_uc(
+    async def request_email_code_at_login_handler(
         self,
         config: AppConfig,
         code_generator: IVerificationCodeGenerator,
         code_hasher: IVerificationCodeHasher,
         challenge_store: IEmailLoginChallengeStore,
         email_sender: IEmailSender,
-    ) -> RequestEmailCodeAtLoginUseCase:
-        return RequestEmailCodeAtLoginUseCase(
+    ) -> RequestEmailCodeAtLoginCommandHandler:
+        return RequestEmailCodeAtLoginCommandHandler(
             code_generator=code_generator,
             code_hasher=code_hasher,
             challenge_store=challenge_store,
@@ -227,7 +227,7 @@ class AuthProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def verify_code_uc(
+    async def verify_email_code_at_login_handler(
         self,
         auth_session_repository: IAuthSessionRepository,
         user_repository: IUserRepository,
@@ -235,8 +235,8 @@ class AuthProvider(Provider):
         auth_session_service: AuthSessionService,
         challenge_store: IEmailLoginChallengeStore,
         code_hasher: IVerificationCodeHasher,
-    ) -> VerifyEmailCodeAtLoginUseCase:
-        return VerifyEmailCodeAtLoginUseCase(
+    ) -> VerifyEmailCodeAtLoginCommandHandler:
+        return VerifyEmailCodeAtLoginCommandHandler(
             auth_session_repository=auth_session_repository,
             user_repository=user_repository,
             device_repository=device_repository,

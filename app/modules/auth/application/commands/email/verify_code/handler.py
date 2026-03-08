@@ -1,8 +1,19 @@
 import logging
 
-from app.core.application.use_cases.base import IBaseUseCase
+from app.core.application.commands import ICommandHandlerWithResult
 from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.core.shared.utils import prepare_extras
+from app.modules.auth.application.commands.email.verify_code import (
+    VerifyEmailCodeAtLoginCommand,
+    VerifyEmailCodeAtLoginCommandResult,
+)
+from app.modules.auth.application.commands.email.verify_code.exceptions import (
+    InvalidEmailVerificationCode,
+)
+from app.modules.auth.application.commands.shared_dtos import (
+    TokenInfoDTO,
+    UserInfoDTO,
+)
 from app.modules.auth.application.interfaces.hashers import IVerificationCodeHasher
 from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
@@ -14,17 +25,6 @@ from app.modules.auth.application.interfaces.stores.email_login import (
     IEmailLoginChallengeStore,
 )
 from app.modules.auth.application.services.auth_session import AuthSessionService
-from app.modules.auth.application.use_cases.email.verify_code import (
-    VerifyEmailCodeAtLoginInputDTO,
-    VerifyEmailCodeAtLoginOutputDTO,
-)
-from app.modules.auth.application.use_cases.email.verify_code.exceptions import (
-    InvalidEmailVerificationCode,
-)
-from app.modules.auth.application.use_cases.shared_dtos import (
-    TokenInfoDTO,
-    UserInfoDTO,
-)
 from app.modules.auth.domain.models.device import Device
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 from app.modules.users.domain.models.user import User
@@ -33,8 +33,11 @@ from app.modules.users.domain.value_objects import EmailVO
 logger = logging.getLogger(__name__)
 
 
-class VerifyEmailCodeAtLoginUseCase(
-    IBaseUseCase[VerifyEmailCodeAtLoginInputDTO, VerifyEmailCodeAtLoginOutputDTO]
+class VerifyEmailCodeAtLoginCommandHandler(
+    ICommandHandlerWithResult[
+        VerifyEmailCodeAtLoginCommand,
+        VerifyEmailCodeAtLoginCommandResult,
+    ]
 ):
     def __init__(
         self,
@@ -52,12 +55,12 @@ class VerifyEmailCodeAtLoginUseCase(
         self._challenge_store = challenge_store
         self._code_hasher = code_hasher
 
-    async def execute(
+    async def handle(
         self,
-        input_data: VerifyEmailCodeAtLoginInputDTO,
-    ) -> VerifyEmailCodeAtLoginOutputDTO:
-        email = EmailVO(input_data.email)
-        code = input_data.code
+        command: VerifyEmailCodeAtLoginCommand,
+    ) -> VerifyEmailCodeAtLoginCommandResult:
+        email = EmailVO(command.email)
+        code = command.code
 
         code_hash = self._code_hasher.hash(email=email, code=code)
         ok = await self._challenge_store.consume(email=email, code_hash=code_hash)
@@ -66,7 +69,7 @@ class VerifyEmailCodeAtLoginUseCase(
                 "email_login_code_invalid",
                 extra=prepare_extras(
                     email=email.fingerprint,
-                    device_id=input_data.device_id,
+                    device_id=command.device_id,
                 ),
             )
             raise InvalidEmailVerificationCode()
@@ -83,15 +86,15 @@ class VerifyEmailCodeAtLoginUseCase(
                 ),
             )
 
-        current_device_id = DeviceIdVO(input_data.device_id)
+        current_device_id = DeviceIdVO(command.device_id)
 
         current_device = await self._device_repository.get_by_id(current_device_id)
         if current_device is None:
             device = Device.create(
                 device_id=current_device_id,
-                platform=input_data.device_platform,
-                name=input_data.device_name,
-                app_version=input_data.app_version,
+                platform=command.device_platform,
+                name=command.device_name,
+                app_version=command.app_version,
             )
             await self._device_repository.save(device)
             logger.info(
@@ -118,7 +121,7 @@ class VerifyEmailCodeAtLoginUseCase(
             role=user.role,
         )
 
-        return VerifyEmailCodeAtLoginOutputDTO(
+        return VerifyEmailCodeAtLoginCommandResult(
             access=TokenInfoDTO(
                 token=tokens.access_token,
                 expires_in=tokens.access_expires_in,

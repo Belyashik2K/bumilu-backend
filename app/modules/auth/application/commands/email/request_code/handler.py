@@ -1,7 +1,15 @@
 import logging
 
-from app.core.application.use_cases.base import IBaseUseCase
+from app.core.application.commands import (
+    ICommandHandler,
+)
 from app.core.shared.utils import prepare_extras
+from app.modules.auth.application.commands.email.request_code.command import (
+    RequestEmailCodeAtLoginCommand,
+)
+from app.modules.auth.application.commands.email.request_code.exceptions import (
+    VerificationCodeRequestedTooEarly,
+)
 from app.modules.auth.application.interfaces.email_sender import IEmailSender
 from app.modules.auth.application.interfaces.generators import (
     IVerificationCodeGenerator,
@@ -10,23 +18,13 @@ from app.modules.auth.application.interfaces.hashers import IVerificationCodeHas
 from app.modules.auth.application.interfaces.stores.email_login import (
     IEmailLoginChallengeStore,
 )
-from app.modules.auth.application.use_cases.email.request_code import (
-    RequestEmailCodeAtLoginInputDTO,
-    RequestEmailCodeAtLoginOutputDTO,
-)
-from app.modules.auth.application.use_cases.email.request_code.exceptions import (
-    VerificationCodeRequestedTooEarly,
-)
 from app.modules.users.domain.value_objects import EmailVO
 
 logger = logging.getLogger(__name__)
 
 
-class RequestEmailCodeAtLoginUseCase(
-    IBaseUseCase[
-        RequestEmailCodeAtLoginInputDTO,
-        RequestEmailCodeAtLoginOutputDTO,
-    ]
+class RequestEmailCodeAtLoginCommandHandler(
+    ICommandHandler[RequestEmailCodeAtLoginCommand]
 ):
     def __init__(
         self,
@@ -48,11 +46,11 @@ class RequestEmailCodeAtLoginUseCase(
         self._resend_cooldown_seconds = resend_cooldown_seconds
         self._ttl_seconds = ttl_seconds
 
-    async def execute(
+    async def handle(
         self,
-        input_data: RequestEmailCodeAtLoginInputDTO,
-    ) -> RequestEmailCodeAtLoginOutputDTO:
-        email = EmailVO(input_data.email)
+        command: RequestEmailCodeAtLoginCommand,
+    ) -> None:
+        email = EmailVO(command.email)
 
         code = self._code_generator.generate()
         code_hash = self._code_hasher.hash(email=email, code=code)
@@ -79,5 +77,3 @@ class RequestEmailCodeAtLoginUseCase(
                 code=code, ttl_min=self._ttl_seconds // 60
             ),
         )
-
-        return RequestEmailCodeAtLoginOutputDTO()

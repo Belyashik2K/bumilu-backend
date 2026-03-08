@@ -13,7 +13,7 @@ from app.core.application.base_handler import (
 
 class IQueryHandler(Generic[QueryDTO, ResultDTO], BaseHandler, ABC):
     async def __call__(self, query: QueryDTO) -> ResultDTO:
-        return await self._run_with_observability(query, self.handle)
+        return await self._run_with_observability(request=query, func=self.handle)
 
     @abstractmethod
     async def handle(self, query: QueryDTO) -> ResultDTO: ...

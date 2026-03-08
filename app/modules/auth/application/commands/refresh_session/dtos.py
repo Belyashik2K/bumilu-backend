@@ -3,7 +3,7 @@ from dataclasses import (
 )
 from uuid import UUID
 
-from app.modules.auth.application.use_cases.shared_dtos import IssuedTokensDTO
+from app.modules.auth.application.commands.shared_dtos import IssuedTokensDTO
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
