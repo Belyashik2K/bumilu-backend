@@ -27,8 +27,8 @@ from app.modules.reviews.application.commands.update import (
     UpdateReviewCommandHandler,
 )
 from app.modules.reviews.application.queries.get import (
-    GetReviewInputDTO,
-    GetReviewUseCase,
+    GetReviewQuery,
+    GetReviewQueryHandler,
 )
 from app.modules.reviews.application.queries.get_all_by_user import (
     GetAllReviewsByUserInputDTO,
@@ -120,12 +120,12 @@ async def get_reviews_by_user_id(
 )
 @inject
 async def get_review_by_id(
-    uc: FromDishka[GetReviewUseCase],
+    uc: FromDishka[GetReviewQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
     review_id: UUID7 = REVIEW_ID_PATH,
 ) -> ReviewInfoSchema:
     result = await uc(
-        GetReviewInputDTO(
+        GetReviewQuery(
             review_id=review_id,
         )
     )
