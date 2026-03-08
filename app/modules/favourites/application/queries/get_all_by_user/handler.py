@@ -9,7 +9,7 @@ from app.modules.favourites.application.queries.get_all_by_user.query import (
 )
 from app.modules.favourites.application.shared.dtos import FavouriteItemDTO
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
-from app.modules.users.application.use_cases.get.exceptions import UserNotFound
+from app.modules.users.application.queries.get.exceptions import UserNotFound
 
 
 class GetAllFavouritesByUserQueryHandler(

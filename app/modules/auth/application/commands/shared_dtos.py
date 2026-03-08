@@ -2,7 +2,7 @@ from dataclasses import (
     dataclass,
 )
 
-from app.modules.users.application.use_cases.shared_dtos import UserInfoDTO
+from app.modules.users.application.queries.shared_dtos import UserInfoDTO
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)

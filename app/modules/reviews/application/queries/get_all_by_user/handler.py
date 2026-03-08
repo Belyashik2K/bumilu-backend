@@ -9,7 +9,7 @@ from app.modules.reviews.application.queries.get_all_by_user import (
 )
 from app.modules.reviews.application.shared.dtos import ReviewInfoDTO
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
-from app.modules.users.application.use_cases.get.exceptions import UserNotFound
+from app.modules.users.application.queries.get.exceptions import UserNotFound
 
 
 class GetAllReviewsByUserQueryHandler(
