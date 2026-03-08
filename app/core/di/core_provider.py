@@ -9,6 +9,7 @@ from dishka import (
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.infrastructure.apscheduler_logger import create_apscheduler_logger
 from app.core.infrastructure.config import AppConfig
 from app.core.infrastructure.database.helper import SQLAlchemyDatabaseHelper
 
@@ -46,7 +47,7 @@ class CoreProvider(Provider):
 
     @provide(scope=Scope.APP)
     async def scheduler(self) -> AsyncIOScheduler:
-        return AsyncIOScheduler()
+        return create_apscheduler_logger()
 
     @provide(scope=Scope.REQUEST)
     async def database_session(
