@@ -8,10 +8,10 @@ from app.modules.chat.application.shared.dtos import ChatInfoDTO
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetUserActiveChatInfoInputDTO:
+class GetUserActiveChatInfoQuery:
     user_id: UUID
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetUserActiveChatInfoOutputDTO:
+class GetUserActiveChatInfoQueryResult:
     active_chat: ChatInfoDTO | None = field(default=None)

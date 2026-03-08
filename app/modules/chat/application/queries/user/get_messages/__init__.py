@@ -1,5 +1,5 @@
-from .dtos import (
-    GetUserActiveChatMessagesInputDTO,
-    GetUserActiveChatMessagesOutputDTO,
+from .handler import GetUserActiveChatMessagesQueryHandler
+from .query import (
+    GetUserActiveChatMessagesQuery,
+    GetUserActiveChatMessagesQueryResult,
 )
-from .use_case import GetUserActiveChatMessagesUseCase

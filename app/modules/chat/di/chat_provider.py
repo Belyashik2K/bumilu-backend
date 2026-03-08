@@ -20,11 +20,9 @@ from app.modules.chat.application.interfaces.repositories.chat import IChatRepos
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
 )
-from app.modules.chat.application.queries.user.get_info import (
-    GetUserActiveChatInfoUseCase,
-)
-from app.modules.chat.application.queries.user.get_messages import (
-    GetUserActiveChatMessagesUseCase,
+from app.modules.chat.application.queries.user import (
+    GetUserActiveChatInfoQueryHandler,
+    GetUserActiveChatMessagesQueryHandler,
 )
 from app.modules.chat.infrastructure.chat_responders.openrouter import (
     OpenRouterChatResponder,
@@ -68,21 +66,21 @@ class ChatProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def get_user_active_chat_info_uc(
+    async def get_user_active_chat_info_handler(
         self,
         chat_repository: IChatRepository,
-    ) -> GetUserActiveChatInfoUseCase:
-        return GetUserActiveChatInfoUseCase(
+    ) -> GetUserActiveChatInfoQueryHandler:
+        return GetUserActiveChatInfoQueryHandler(
             chat_repository=chat_repository,
         )
 
     @provide(scope=Scope.REQUEST)
-    async def get_user_active_chat_messages_uc(
+    async def get_user_active_chat_messages_handler(
         self,
         chat_repository: IChatRepository,
         chat_message_repository: IChatMessageRepository,
-    ) -> GetUserActiveChatMessagesUseCase:
-        return GetUserActiveChatMessagesUseCase(
+    ) -> GetUserActiveChatMessagesQueryHandler:
+        return GetUserActiveChatMessagesQueryHandler(
             chat_repository=chat_repository,
             chat_message_repository=chat_message_repository,
         )
