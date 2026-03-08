@@ -36,3 +36,10 @@ class AdminChatFilterSchema(BaseModel):
 class AdminChatListResponseSchema(BaseModel):
     chats: list[AdminChatPreviewSchema]
     pagination: OffsetPaginationSchema
+
+
+class AdminChatInfoSchema(AdminChatPreviewSchema):
+    last_message_preview: str | None = Field(None, exclude=True)
+    created_at: datetime
+    closed_at: datetime | None = None
+    close_reason: str | None = None

@@ -24,6 +24,9 @@ from app.modules.chat.application.interfaces.repositories.chat import IChatRepos
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
 )
+from app.modules.chat.application.queries.admin.get_chat.handler import (
+    GetAdminChatQueryHandler,
+)
 from app.modules.chat.application.queries.admin.get_chat_list.handler import (
     GetAdminChatListQueryHandler,
 )
@@ -182,6 +185,13 @@ class ChatProvider(Provider):
         chat_reader: IChatReader,
     ) -> GetAdminChatListQueryHandler:
         return GetAdminChatListQueryHandler(chat_reader=chat_reader)
+
+    @provide(scope=Scope.REQUEST)
+    async def get_admin_chat_handler(
+        self,
+        chat_reader: IChatReader,
+    ) -> GetAdminChatQueryHandler:
+        return GetAdminChatQueryHandler(chat_reader=chat_reader)
 
     @provide(scope=Scope.REQUEST)
     async def get_admin_chat_messages_handler(
