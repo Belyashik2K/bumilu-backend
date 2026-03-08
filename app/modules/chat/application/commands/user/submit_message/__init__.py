@@ -1,5 +1,5 @@
-from .dtos import (
-    SubmitUserMessageInputDTO,
-    SubmitUserMessageOutputDTO,
+from .command import (
+    SubmitUserMessageCommand,
+    SubmitUserMessageCommandResult,
 )
-from .use_case import SubmitUserMessageUseCase
+from .handler import SubmitUserMessageCommandHandler

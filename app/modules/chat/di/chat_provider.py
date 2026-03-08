@@ -13,7 +13,7 @@ from app.modules.chat.application.commands.ai import (
     ProcessPendingChatsCommandHandler,
 )
 from app.modules.chat.application.commands.user.submit_message import (
-    SubmitUserMessageUseCase,
+    SubmitUserMessageCommandHandler,
 )
 from app.modules.chat.application.interfaces.chat_responder import IChatResponder
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
@@ -88,13 +88,13 @@ class ChatProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def submit_user_message_uc(
+    async def submit_user_message_handler(
         self,
         user_repository: IUserRepository,
         chat_repository: IChatRepository,
         chat_message_repository: IChatMessageRepository,
-    ) -> SubmitUserMessageUseCase:
-        return SubmitUserMessageUseCase(
+    ) -> SubmitUserMessageCommandHandler:
+        return SubmitUserMessageCommandHandler(
             user_repository=user_repository,
             chat_repository=chat_repository,
             chat_message_repository=chat_message_repository,
