@@ -3,16 +3,16 @@ from apscheduler.triggers.interval import IntervalTrigger
 from apscheduler_dishka import inject
 from dishka import FromDishka
 
+from app.core.application.commands import EmptyCommand
 from app.core.shared.utils import get_current_dt
-from app.modules.chat.application.commands.ai.process_pending_chats import (
-    ProcessPendingChatsInputDTO,
-    ProcessPendingChatsUseCase,
-)
+from app.modules.chat.application.commands.ai import ProcessPendingChatsCommandHandler
 
 
 @inject
-async def process_pending_chats(uc: FromDishka[ProcessPendingChatsUseCase]) -> None:
-    await uc(ProcessPendingChatsInputDTO())
+async def process_pending_chats(
+    command: FromDishka[ProcessPendingChatsCommandHandler],
+) -> None:
+    await command(EmptyCommand())
 
 
 def register_chat_jobs(scheduler: AsyncIOScheduler) -> None:
