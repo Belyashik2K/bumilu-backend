@@ -1,1 +1,2 @@
+from .close_inactive_chats import CloseInactiveChatsCommandHandler
 from .process_pending_chats import ProcessPendingChatsCommandHandler
