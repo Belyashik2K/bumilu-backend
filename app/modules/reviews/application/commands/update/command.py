@@ -11,7 +11,7 @@ from app.core.shared.constants import (
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class UpdateReviewInputDTO:
+class UpdateReviewCommand:
     actor_id: UUID
     review_id: UUID
     text: str | None | UnsetType = field(default=UNSET)
@@ -19,7 +19,7 @@ class UpdateReviewInputDTO:
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class UpdateReviewOutputDTO:
+class UpdateReviewCommandResult:
     review_id: UUID
     text: str | None = field(default=None)
     rating: int

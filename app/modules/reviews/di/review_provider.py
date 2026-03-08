@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.reviews.application.commands.create import CreateReviewCommandHandler
 from app.modules.reviews.application.commands.delete import DeleteReviewCommandHandler
-from app.modules.reviews.application.commands.update import UpdateReviewUseCase
+from app.modules.reviews.application.commands.update import UpdateReviewCommandHandler
 from app.modules.reviews.application.interfaces.entity_resolver import (
     IReviewEntityResolver,
 )
@@ -69,11 +69,11 @@ class ReviewProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def update_review_uc(
+    async def update_review_handler(
         self,
         review_repository: IReviewRepository,
-    ) -> UpdateReviewUseCase:
-        return UpdateReviewUseCase(
+    ) -> UpdateReviewCommandHandler:
+        return UpdateReviewCommandHandler(
             review_repository=review_repository,
         )
 

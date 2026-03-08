@@ -1,5 +1,5 @@
-from .dtos import (
-    UpdateReviewInputDTO,
-    UpdateReviewOutputDTO,
+from .command import (
+    UpdateReviewCommand,
+    UpdateReviewCommandResult,
 )
-from .use_case import UpdateReviewUseCase
+from .handler import UpdateReviewCommandHandler
