@@ -14,29 +14,29 @@ from app.core.shared.constants import UNSET
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.deps import get_principal
 from app.modules.auth.shared.context import Principal
-from app.modules.reviews.application.use_cases.create import (
-    CreateReviewInputDTO,
-    CreateReviewUseCase,
+from app.modules.reviews.application.commands.create import (
+    CreateReviewCommand,
+    CreateReviewCommandHandler,
 )
-from app.modules.reviews.application.use_cases.delete import (
-    DeleteReviewInputDTO,
-    DeleteReviewUseCase,
+from app.modules.reviews.application.commands.delete import (
+    DeleteReviewCommand,
+    DeleteReviewCommandHandler,
 )
-from app.modules.reviews.application.use_cases.get import (
-    GetReviewInputDTO,
-    GetReviewUseCase,
+from app.modules.reviews.application.commands.update import (
+    UpdateReviewCommand,
+    UpdateReviewCommandHandler,
 )
-from app.modules.reviews.application.use_cases.get_all_by_user import (
-    GetAllReviewsByUserInputDTO,
-    GetAllReviewsByUserUseCase,
+from app.modules.reviews.application.queries.get import (
+    GetReviewQuery,
+    GetReviewQueryHandler,
 )
-from app.modules.reviews.application.use_cases.get_all_for_entity import (
-    GetAllReviewsForEntityInputDTO,
-    GetAllReviewsForEntityUseCase,
+from app.modules.reviews.application.queries.get_all_by_user import (
+    GetAllReviewsByUserQuery,
+    GetAllReviewsByUserQueryHandler,
 )
-from app.modules.reviews.application.use_cases.update import (
-    UpdateReviewInputDTO,
-    UpdateReviewUseCase,
+from app.modules.reviews.application.queries.get_all_for_entity import (
+    GetAllReviewsForEntityQuery,
+    GetAllReviewsForEntityQueryHandler,
 )
 from app.modules.reviews.presentation.api.schemas.common import (
     ENTITY_ID_PATH,
@@ -75,11 +75,11 @@ reviews_router = APIRouter(
 )
 @inject
 async def get_my_reviews(
-    uc: FromDishka[GetAllReviewsByUserUseCase],
+    handler: FromDishka[GetAllReviewsByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
 ) -> GetAllReviewsByUserResponseSchema:
-    result = await uc(
-        GetAllReviewsByUserInputDTO(
+    result = await handler(
+        GetAllReviewsByUserQuery(
             user_id=principal.id.value,
             actor_id=principal.id.value,
         )
@@ -97,12 +97,12 @@ async def get_my_reviews(
 )
 @inject
 async def get_reviews_by_user_id(
-    uc: FromDishka[GetAllReviewsByUserUseCase],
+    handler: FromDishka[GetAllReviewsByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
     user_id: UUID7 = USER_ID_PATH,
 ) -> GetAllReviewsByUserResponseSchema:
-    result = await uc(
-        GetAllReviewsByUserInputDTO(
+    result = await handler(
+        GetAllReviewsByUserQuery(
             user_id=user_id,
             actor_id=principal.id.value,
         )
@@ -120,12 +120,12 @@ async def get_reviews_by_user_id(
 )
 @inject
 async def get_review_by_id(
-    uc: FromDishka[GetReviewUseCase],
+    handler: FromDishka[GetReviewQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
     review_id: UUID7 = REVIEW_ID_PATH,
 ) -> ReviewInfoSchema:
-    result = await uc(
-        GetReviewInputDTO(
+    result = await handler(
+        GetReviewQuery(
             review_id=review_id,
         )
     )
@@ -141,12 +141,12 @@ async def get_review_by_id(
 )
 @inject
 async def delete_review_by_id(
-    uc: FromDishka[DeleteReviewUseCase],
+    handler: FromDishka[DeleteReviewCommandHandler],
     principal: Annotated[Principal, Depends(get_principal)],
     review_id: UUID7 = REVIEW_ID_PATH,
 ) -> None:
-    await uc(
-        DeleteReviewInputDTO(
+    await handler(
+        DeleteReviewCommand(
             review_id=review_id,
             actor_id=principal.id.value,
         )
@@ -161,14 +161,14 @@ async def delete_review_by_id(
 )
 @inject
 async def update_review_by_id(
-    uc: FromDishka[UpdateReviewUseCase],
+    handler: FromDishka[UpdateReviewCommandHandler],
     data: UpdateReviewRequestSchema,
     principal: Annotated[Principal, Depends(get_principal)],
     review_id: UUID7 = REVIEW_ID_PATH,
 ) -> UpdateReviewResponseSchema:
     data_dump = data.model_dump(exclude_unset=True)
-    result = await uc(
-        UpdateReviewInputDTO(
+    result = await handler(
+        UpdateReviewCommand(
             review_id=review_id,
             actor_id=principal.id.value,
             text=data_dump.get("text", UNSET),
@@ -186,13 +186,13 @@ async def update_review_by_id(
 )
 @inject
 async def get_reviews_for_entity(
-    uc: FromDishka[GetAllReviewsForEntityUseCase],
+    handler: FromDishka[GetAllReviewsForEntityQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
     entity_type: ReviewEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> GetAllReviewsForEntityResponseSchema:
-    result = await uc(
-        GetAllReviewsForEntityInputDTO(
+    result = await handler(
+        GetAllReviewsForEntityQuery(
             actor_id=principal.id.value,
             entity_id=entity_id,
             entity_type=entity_type.domain_name,
@@ -206,17 +206,20 @@ async def get_reviews_for_entity(
 @reviews_router.post(
     "/{entity_type}/{entity_id}/reviews",
     status_code=status.HTTP_201_CREATED,
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND, status.HTTP_409_CONFLICT
+    ),
 )
 @inject
 async def create_review_for_entity(
-    uc: FromDishka[CreateReviewUseCase],
+    handler: FromDishka[CreateReviewCommandHandler],
     data: CreateReviewRequestSchema,
     principal: Annotated[Principal, Depends(get_principal)],
     entity_type: ReviewEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> CreateReviewResponseSchema:
-    result = await uc(
-        CreateReviewInputDTO(
+    result = await handler(
+        CreateReviewCommand(
             author_id=principal.id.value,
             entity_type=entity_type.domain_name,
             entity_id=entity_id,
