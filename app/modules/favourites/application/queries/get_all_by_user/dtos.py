@@ -4,7 +4,7 @@ from dataclasses import (
 )
 from uuid import UUID
 
-from app.modules.favourites.application.use_cases.shared.dtos import FavouriteItemDTO
+from app.modules.favourites.application.shared.dtos import FavouriteItemDTO
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

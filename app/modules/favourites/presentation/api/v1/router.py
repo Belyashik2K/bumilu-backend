@@ -13,17 +13,17 @@ from app.core.presentation.endpoint_responses import generate_responses_for_endp
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.deps import get_principal
 from app.modules.auth.shared.context import Principal
-from app.modules.favourites.application.use_cases.add import (
-    AddToFavouritesInputDTO,
-    AddToFavouritesUseCase,
+from app.modules.favourites.application.commands.add import (
+    AddToFavouritesCommand,
+    AddToFavouritesCommandHandler,
 )
-from app.modules.favourites.application.use_cases.get_all_by_user import (
-    GetAllFavouritesByUserInputDTO,
-    GetAllFavouritesByUserUseCase,
-)
-from app.modules.favourites.application.use_cases.remove import (
+from app.modules.favourites.application.commands.remove import (
     RemoveFromFavouritesInputDTO,
     RemoveFromFavouritesUseCase,
+)
+from app.modules.favourites.application.queries.get_all_by_user import (
+    GetAllFavouritesByUserInputDTO,
+    GetAllFavouritesByUserUseCase,
 )
 from app.modules.favourites.presentation.api.schemas.common import (
     ENTITY_ID_PATH,
@@ -95,13 +95,13 @@ async def get_favourites_by_user_id(
 )
 @inject
 async def add_to_favourites(
-    uc: FromDishka[AddToFavouritesUseCase],
+    handler: FromDishka[AddToFavouritesCommandHandler],
     principal: Annotated[Principal, Depends(get_principal)],
     entity_type: FavouriteEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> None:
-    await uc(
-        AddToFavouritesInputDTO(
+    await handler(
+        AddToFavouritesCommand(
             user_id=principal.id.value,
             entity_type=entity_type.domain_name,
             entity_id=entity_id,
