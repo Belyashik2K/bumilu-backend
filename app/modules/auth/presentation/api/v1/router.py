@@ -24,10 +24,8 @@ from app.modules.auth.application.commands.logout import (
     LogoutCommandHandler,
 )
 from app.modules.auth.application.commands.refresh_session import (
-    RefreshAuthSessionInputDTO,
-)
-from app.modules.auth.application.commands.refresh_session.use_case import (
-    RefreshAuthSessionUseCase,
+    RefreshAuthSessionCommand,
+    RefreshAuthSessionCommandHandler,
 )
 from app.modules.auth.presentation.api.schemas.device import (
     DeviceInfoHeadersSchema,
@@ -113,12 +111,12 @@ async def verify_email_login(
 )
 @inject
 async def refresh(
-    uc: FromDishka[RefreshAuthSessionUseCase],
+    handler: FromDishka[RefreshAuthSessionCommandHandler],
     data: RefreshAuthSessionRequestSchema,
     headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
 ) -> RefreshAuthSessionResponseSchema:
-    result = await uc(
-        RefreshAuthSessionInputDTO(
+    result = await handler(
+        RefreshAuthSessionCommand(
             refresh_token=data.refresh_token,
             device_id=headers.device_id,
         )
