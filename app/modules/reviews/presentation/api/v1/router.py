@@ -14,29 +14,29 @@ from app.core.shared.constants import UNSET
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.deps import get_principal
 from app.modules.auth.shared.context import Principal
-from app.modules.reviews.application.use_cases.create import (
-    CreateReviewInputDTO,
-    CreateReviewUseCase,
+from app.modules.reviews.application.commands.create import (
+    CreateReviewCommand,
+    CreateReviewCommandHandler,
 )
-from app.modules.reviews.application.use_cases.delete import (
+from app.modules.reviews.application.commands.delete import (
     DeleteReviewInputDTO,
     DeleteReviewUseCase,
 )
-from app.modules.reviews.application.use_cases.get import (
+from app.modules.reviews.application.commands.update import (
+    UpdateReviewInputDTO,
+    UpdateReviewUseCase,
+)
+from app.modules.reviews.application.queries.get import (
     GetReviewInputDTO,
     GetReviewUseCase,
 )
-from app.modules.reviews.application.use_cases.get_all_by_user import (
+from app.modules.reviews.application.queries.get_all_by_user import (
     GetAllReviewsByUserInputDTO,
     GetAllReviewsByUserUseCase,
 )
-from app.modules.reviews.application.use_cases.get_all_for_entity import (
+from app.modules.reviews.application.queries.get_all_for_entity import (
     GetAllReviewsForEntityInputDTO,
     GetAllReviewsForEntityUseCase,
-)
-from app.modules.reviews.application.use_cases.update import (
-    UpdateReviewInputDTO,
-    UpdateReviewUseCase,
 )
 from app.modules.reviews.presentation.api.schemas.common import (
     ENTITY_ID_PATH,
@@ -212,14 +212,14 @@ async def get_reviews_for_entity(
 )
 @inject
 async def create_review_for_entity(
-    uc: FromDishka[CreateReviewUseCase],
+    handler: FromDishka[CreateReviewCommandHandler],
     data: CreateReviewRequestSchema,
     principal: Annotated[Principal, Depends(get_principal)],
     entity_type: ReviewEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> CreateReviewResponseSchema:
-    result = await uc(
-        CreateReviewInputDTO(
+    result = await handler(
+        CreateReviewCommand(
             author_id=principal.id.value,
             entity_type=entity_type.domain_name,
             entity_id=entity_id,

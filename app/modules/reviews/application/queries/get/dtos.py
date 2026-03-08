@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from app.modules.reviews.application.use_cases.shared.dtos import ReviewInfoDTO
+from app.modules.reviews.application.shared.dtos import ReviewInfoDTO
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

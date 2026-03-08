@@ -6,14 +6,14 @@ from app.core.shared.domain.value_objects.id import (
     UserIdVO,
 )
 from app.core.shared.utils import prepare_extras
-from app.modules.reviews.application.interfaces.repositories.review import (
-    IReviewRepository,
-)
-from app.modules.reviews.application.use_cases.delete import (
+from app.modules.reviews.application.commands.delete import (
     DeleteReviewInputDTO,
     DeleteReviewOutputDTO,
 )
-from app.modules.reviews.application.use_cases.shared.exceptions import (
+from app.modules.reviews.application.interfaces.repositories.review import (
+    IReviewRepository,
+)
+from app.modules.reviews.application.shared.exceptions import (
     ReviewNotFound,
     ReviewOwnershipViolation,
 )

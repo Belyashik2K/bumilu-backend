@@ -3,11 +3,11 @@ from app.core.shared.domain.value_objects.id import ReviewIdVO
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
-from app.modules.reviews.application.use_cases.get.dtos import (
+from app.modules.reviews.application.queries.get.dtos import (
     GetReviewInputDTO,
     GetReviewOutputDTO,
 )
-from app.modules.reviews.application.use_cases.shared.exceptions import ReviewNotFound
+from app.modules.reviews.application.shared.exceptions import ReviewNotFound
 
 
 class GetReviewUseCase(

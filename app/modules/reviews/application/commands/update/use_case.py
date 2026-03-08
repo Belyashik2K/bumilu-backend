@@ -7,16 +7,16 @@ from app.core.shared.domain.value_objects.id import (
     UserIdVO,
 )
 from app.core.shared.utils import prepare_extras
+from app.modules.reviews.application.commands.update import (
+    UpdateReviewInputDTO,
+    UpdateReviewOutputDTO,
+)
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
-from app.modules.reviews.application.use_cases.shared.exceptions import (
+from app.modules.reviews.application.shared.exceptions import (
     ReviewNotFound,
     ReviewOwnershipViolation,
-)
-from app.modules.reviews.application.use_cases.update import (
-    UpdateReviewInputDTO,
-    UpdateReviewOutputDTO,
 )
 from app.modules.reviews.domain.value_objects import (
     ReviewRatingVO,
