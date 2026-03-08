@@ -95,3 +95,8 @@ class ChatMessageSchema(BaseModel):
         None,
         description="The geographical location associated with the message.",
     )
+    created_at: datetime = Field(
+        ...,
+        description="The timestamp when the message was created.",
+        examples=[LAST_ACTIVITY_AT_EXAMPLE],
+    )
