@@ -1,5 +1,2 @@
-from .dtos import (
-    RemoveFromFavouritesInputDTO,
-    RemoveFromFavouritesOutputDTO,
-)
-from .use_case import RemoveFromFavouritesUseCase
+from .command import RemoveFromFavouritesCommand
+from .handler import RemoveFromFavouritesCommandHandler
