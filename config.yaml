@@ -49,6 +49,10 @@ auth:
         subject: "{code} — Your BumiLu verification code"
         body: >
           Your verification code is: {code}.
+chat:
+  inactivity:
+    threshold_min: 30
+    polling_interval_sec: 60
 cors:
   enabled: false
   allow_origins: [ "http://localhost:3000" ]

@@ -23,13 +23,14 @@ class ReviewTextVO:
         if not isinstance(self.value, str):
             raise ReviewTextMustBeStringOrNone()
 
-        if self.value.strip() == "":
-            raise ReviewTextCannotBeEmpty()
-
         prepared_value = self.value.strip()
+        if prepared_value == "":
+            raise ReviewTextCannotBeEmpty()
 
         review_text_length = len(prepared_value)
         if review_text_length < MINIMUM_REVIEW_TEXT_LENGTH:
             raise ReviewTextTooShort(MINIMUM_REVIEW_TEXT_LENGTH)
         if review_text_length > MAXIMUM_REVIEW_TEXT_LENGTH:
             raise ReviewTextTooLong(MAXIMUM_REVIEW_TEXT_LENGTH)
+
+        object.__setattr__(self, "value", prepared_value)

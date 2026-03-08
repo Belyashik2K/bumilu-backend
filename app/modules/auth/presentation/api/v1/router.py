@@ -9,25 +9,23 @@ from fastapi import (
 from starlette import status
 
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
-from app.modules.auth.application.use_cases.email.request_code import (
-    RequestEmailCodeAtLoginInputDTO,
-    RequestEmailCodeAtLoginUseCase,
+from app.modules.auth.application.commands.email import (
+    RequestEmailCodeAtLoginCommand,
+    RequestEmailCodeAtLoginCommandHandler,
+    VerifyEmailCodeAtLoginCommand,
+    VerifyEmailCodeAtLoginCommandHandler,
 )
-from app.modules.auth.application.use_cases.email.verify_code import (
-    VerifyEmailCodeAtLoginInputDTO,
-    VerifyEmailCodeAtLoginUseCase,
+from app.modules.auth.application.commands.guest import (
+    LoginAsGuestCommand,
+    LoginAsGuestCommandHandler,
 )
-from app.modules.auth.application.use_cases.guest.login import (
-    LoginAsGuestInputDTO,
-    LoginAsGuestUseCase,
+from app.modules.auth.application.commands.logout import (
+    LogoutCommand,
+    LogoutCommandHandler,
 )
-from app.modules.auth.application.use_cases.logout import LogoutInputDTO
-from app.modules.auth.application.use_cases.logout.use_case import LogoutUseCase
-from app.modules.auth.application.use_cases.refresh_session import (
-    RefreshAuthSessionInputDTO,
-)
-from app.modules.auth.application.use_cases.refresh_session.use_case import (
-    RefreshAuthSessionUseCase,
+from app.modules.auth.application.commands.refresh_session import (
+    RefreshAuthSessionCommand,
+    RefreshAuthSessionCommandHandler,
 )
 from app.modules.auth.presentation.api.schemas.device import (
     DeviceInfoHeadersSchema,
@@ -54,11 +52,11 @@ auth_router = APIRouter(
 @auth_router.post("/guest", responses=generate_responses_for_endpoint())
 @inject
 async def login_as_guest(
-    uc: FromDishka[LoginAsGuestUseCase],
+    handler: FromDishka[LoginAsGuestCommandHandler],
     headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
 ) -> LoginAsGuestResponseSchema:
-    result = await uc(
-        LoginAsGuestInputDTO(
+    result = await handler(
+        LoginAsGuestCommand(
             device_id=headers.device_id,
             device_platform=headers.device_platform,
             device_name=headers.device_name,
@@ -74,11 +72,11 @@ async def login_as_guest(
 )
 @inject
 async def request_email_code(
-    uc: FromDishka[RequestEmailCodeAtLoginUseCase],
+    handler: FromDishka[RequestEmailCodeAtLoginCommandHandler],
     data: RequestEmailCodeAtLoginRequestSchema,
     headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
 ) -> dict:
-    await uc(RequestEmailCodeAtLoginInputDTO(email=str(data.email)))
+    await handler(RequestEmailCodeAtLoginCommand(email=str(data.email)))
     return {}
 
 
@@ -88,12 +86,12 @@ async def request_email_code(
 )
 @inject
 async def verify_email_login(
-    uc: FromDishka[VerifyEmailCodeAtLoginUseCase],
+    handler: FromDishka[VerifyEmailCodeAtLoginCommandHandler],
     data: VerifyEmailCodeAtLoginRequestSchema,
     headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
 ) -> VerifyEmailCodeAtLoginResponseSchema:
-    result = await uc(
-        VerifyEmailCodeAtLoginInputDTO(
+    result = await handler(
+        VerifyEmailCodeAtLoginCommand(
             email=str(data.email),
             code=data.code,
             device_id=headers.device_id,
@@ -113,12 +111,12 @@ async def verify_email_login(
 )
 @inject
 async def refresh(
-    uc: FromDishka[RefreshAuthSessionUseCase],
+    handler: FromDishka[RefreshAuthSessionCommandHandler],
     data: RefreshAuthSessionRequestSchema,
     headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
 ) -> RefreshAuthSessionResponseSchema:
-    result = await uc(
-        RefreshAuthSessionInputDTO(
+    result = await handler(
+        RefreshAuthSessionCommand(
             refresh_token=data.refresh_token,
             device_id=headers.device_id,
         )
@@ -133,12 +131,12 @@ async def refresh(
 )
 @inject
 async def logout(
-    uc: FromDishka[LogoutUseCase],
+    handler: FromDishka[LogoutCommandHandler],
     data: LogoutRequestSchema,
     headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
 ) -> None:
-    await uc(
-        LogoutInputDTO(
+    await handler(
+        LogoutCommand(
             refresh_token=data.refresh_token,
             device_id=headers.device_id,
         )
