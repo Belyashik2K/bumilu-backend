@@ -33,7 +33,7 @@ class Chat:
     last_message_preview: MessageTextVO | None = field(default=None)
     last_activity_at: datetime
     closed_at: datetime | None = field(default=None)
-    closed_reason: ChatCloseReasonEnum | None = field(default=None)
+    close_reason: ChatCloseReasonEnum | None = field(default=None)
 
     @classmethod
     def create(
@@ -134,5 +134,5 @@ class Chat:
         now: datetime,
     ) -> None:
         self.status = ChatStatusEnum.CLOSED
-        self.closed_reason = reason
+        self.close_reason = reason
         self.closed_at = self.last_activity_at = now

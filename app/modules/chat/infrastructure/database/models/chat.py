@@ -22,7 +22,10 @@ from app.core.infrastructure.database.mixins import (
     TimestampMixin,
 )
 from app.core.shared.enums import LanguageEnum
-from app.modules.chat.shared.enums import ChatStatusEnum
+from app.modules.chat.shared.enums import (
+    ChatCloseReasonEnum,
+    ChatStatusEnum,
+)
 
 
 class ChatModel(PKUUIDMixin, TimestampMixin, BaseModel):
@@ -44,6 +47,10 @@ class ChatModel(PKUUIDMixin, TimestampMixin, BaseModel):
     last_location_longitude: Mapped[float | None] = mapped_column()
     last_message_preview: Mapped[str | None] = mapped_column(VARCHAR(32))
     last_activity_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    closed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    close_reason: Mapped[ChatCloseReasonEnum | None] = mapped_column(
+        Enum(ChatCloseReasonEnum, name="chat_close_reason_enum")
+    )
 
     __table_args__ = (
         Index(
