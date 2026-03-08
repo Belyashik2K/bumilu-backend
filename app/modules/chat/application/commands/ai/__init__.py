@@ -1,0 +1,1 @@
+from .process_pending_chats import ProcessPendingChatsCommandHandler

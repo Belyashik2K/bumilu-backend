@@ -11,7 +11,7 @@ from app.modules.auth.presentation.api.v1.deps import (
     get_admin_principal,
 )
 from app.modules.auth.shared.context import Principal
-from app.modules.chat.application.commands.admin.submit_message import (
+from app.modules.chat.application.commands.admin import (
     SubmitAdminMessageCommand,
     SubmitAdminMessageCommandHandler,
 )

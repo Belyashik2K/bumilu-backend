@@ -6,11 +6,11 @@ from dishka import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.infrastructure.config import AppConfig
-from app.modules.chat.application.commands.admin.submit_message import (
+from app.modules.chat.application.commands.admin import (
     SubmitAdminMessageCommandHandler,
 )
-from app.modules.chat.application.commands.ai.process_pending_chats import (
-    ProcessPendingChatsUseCase,
+from app.modules.chat.application.commands.ai import (
+    ProcessPendingChatsCommandHandler,
 )
 from app.modules.chat.application.commands.user.submit_message import (
     SubmitUserMessageUseCase,
@@ -101,14 +101,14 @@ class ChatProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def process_pending_chats_uc(
+    async def process_pending_chats_handler(
         self,
         config: AppConfig,
         chat_repository: IChatRepository,
         chat_message_repository: IChatMessageRepository,
         chat_responder: IChatResponder,
-    ) -> ProcessPendingChatsUseCase:
-        return ProcessPendingChatsUseCase(
+    ) -> ProcessPendingChatsCommandHandler:
+        return ProcessPendingChatsCommandHandler(
             chat_repository=chat_repository,
             chat_message_repository=chat_message_repository,
             chat_responder=chat_responder,

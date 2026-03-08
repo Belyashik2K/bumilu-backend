@@ -1,9 +1,8 @@
-from app.core.application.use_cases.base import IBaseUseCase
-from app.core.shared.utils import get_current_dt
-from app.modules.chat.application.commands.ai.process_pending_chats import (
-    ProcessPendingChatsInputDTO,
-    ProcessPendingChatsOutputDTO,
+from app.core.application.commands import (
+    EmptyCommand,
+    ICommandHandler,
 )
+from app.core.shared.utils import get_current_dt
 from app.modules.chat.application.interfaces.chat_responder import IChatResponder
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.application.interfaces.repositories.chat_message import (
@@ -12,9 +11,7 @@ from app.modules.chat.application.interfaces.repositories.chat_message import (
 from app.modules.chat.domain.value_objects.message_text import MessageTextVO
 
 
-class ProcessPendingChatsUseCase(
-    IBaseUseCase[ProcessPendingChatsInputDTO, ProcessPendingChatsOutputDTO]
-):
+class ProcessPendingChatsCommandHandler(ICommandHandler[EmptyCommand]):
     def __init__(
         self,
         chat_repository: IChatRepository,
@@ -27,12 +24,10 @@ class ProcessPendingChatsUseCase(
         self._chat_responder = chat_responder
         self._confidence_score_threshold = confidence_score_threshold
 
-    async def execute(
-        self, input_data: ProcessPendingChatsInputDTO
-    ) -> ProcessPendingChatsOutputDTO:
+    async def handle(self, command: EmptyCommand) -> None:
         pending_chats = await self._chat_repository.get_pending_chats()
         if not pending_chats:
-            return ProcessPendingChatsOutputDTO()
+            return None
 
         pending_chat_ids = [chat.id for chat in pending_chats]
         pending_chat_messages = (
@@ -58,8 +53,7 @@ class ProcessPendingChatsUseCase(
                 message_text = MessageTextVO(result.reply)
                 reply = chat.reply_as_ai(text=message_text, now=now)
                 await self._chat_message_repository.save(reply)
-                print(f"Replied to chat {chat.id} with message {reply.id}")
 
             await self._chat_repository.save(chat)
 
-        return ProcessPendingChatsOutputDTO()
+        return None
