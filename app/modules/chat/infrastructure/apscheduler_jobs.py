@@ -4,7 +4,7 @@ from apscheduler_dishka import inject
 from dishka import FromDishka
 
 from app.core.shared.utils import get_current_dt
-from app.modules.chat.application.use_cases.ai.process_pending_chats import (
+from app.modules.chat.application.commands.ai.process_pending_chats import (
     ProcessPendingChatsInputDTO,
     ProcessPendingChatsUseCase,
 )

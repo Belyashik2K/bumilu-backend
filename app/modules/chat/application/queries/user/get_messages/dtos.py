@@ -4,7 +4,7 @@ from dataclasses import (
 )
 from uuid import UUID
 
-from app.modules.chat.application.use_cases.shared.dtos import ChatMessageInfoDTO
+from app.modules.chat.application.shared.dtos import ChatMessageInfoDTO
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

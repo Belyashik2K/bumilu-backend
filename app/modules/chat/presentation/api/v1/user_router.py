@@ -12,17 +12,17 @@ from app.core.presentation.endpoint_responses import generate_responses_for_endp
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.deps import get_principal
 from app.modules.auth.shared.context import Principal
-from app.modules.chat.application.use_cases.user.get_info import (
+from app.modules.chat.application.commands.user.submit_message import (
+    SubmitUserMessageInputDTO,
+    SubmitUserMessageUseCase,
+)
+from app.modules.chat.application.queries.user.get_info import (
     GetUserActiveChatInfoInputDTO,
     GetUserActiveChatInfoUseCase,
 )
-from app.modules.chat.application.use_cases.user.get_messages import (
+from app.modules.chat.application.queries.user.get_messages import (
     GetUserActiveChatMessagesInputDTO,
     GetUserActiveChatMessagesUseCase,
-)
-from app.modules.chat.application.use_cases.user.submit_message import (
-    SubmitUserMessageInputDTO,
-    SubmitUserMessageUseCase,
 )
 from app.modules.chat.presentation.api.schemas.get import (
     GetChatInfoResponseSchema,

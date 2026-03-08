@@ -4,11 +4,11 @@ from app.modules.chat.application.interfaces.repositories.chat import IChatRepos
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
 )
-from app.modules.chat.application.use_cases.shared.dtos import ChatMessageInfoDTO
-from app.modules.chat.application.use_cases.user.get_messages import (
+from app.modules.chat.application.queries.user.get_messages import (
     GetUserActiveChatMessagesInputDTO,
     GetUserActiveChatMessagesOutputDTO,
 )
+from app.modules.chat.application.shared.dtos import ChatMessageInfoDTO
 
 
 class GetUserActiveChatMessagesUseCase(

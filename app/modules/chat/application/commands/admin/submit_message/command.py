@@ -3,12 +3,12 @@ from uuid import UUID
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class SubmitAdminMessageInputDTO:
+class SubmitAdminMessageCommand:
     actor_id: UUID
     chat_id: UUID
     text: str
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class SubmitAdminMessageOutputDTO:
+class SubmitAdminMessageCommandResult:
     message_id: UUID

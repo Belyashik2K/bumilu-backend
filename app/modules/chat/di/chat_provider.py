@@ -6,25 +6,25 @@ from dishka import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.infrastructure.config import AppConfig
+from app.modules.chat.application.commands.admin.submit_message import (
+    SubmitAdminMessageCommandHandler,
+)
+from app.modules.chat.application.commands.ai.process_pending_chats import (
+    ProcessPendingChatsUseCase,
+)
+from app.modules.chat.application.commands.user.submit_message import (
+    SubmitUserMessageUseCase,
+)
 from app.modules.chat.application.interfaces.chat_responder import IChatResponder
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
 )
-from app.modules.chat.application.use_cases.admin.submit_message import (
-    SubmitAdminMessageUseCase,
-)
-from app.modules.chat.application.use_cases.ai.process_pending_chats import (
-    ProcessPendingChatsUseCase,
-)
-from app.modules.chat.application.use_cases.user.get_info import (
+from app.modules.chat.application.queries.user.get_info import (
     GetUserActiveChatInfoUseCase,
 )
-from app.modules.chat.application.use_cases.user.get_messages import (
+from app.modules.chat.application.queries.user.get_messages import (
     GetUserActiveChatMessagesUseCase,
-)
-from app.modules.chat.application.use_cases.user.submit_message import (
-    SubmitUserMessageUseCase,
 )
 from app.modules.chat.infrastructure.chat_responders.openrouter import (
     OpenRouterChatResponder,
@@ -116,12 +116,12 @@ class ChatProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def submit_admin_reply_uc(
+    async def submit_admin_reply_handler(
         self,
         chat_repository: IChatRepository,
         chat_message_repository: IChatMessageRepository,
-    ) -> SubmitAdminMessageUseCase:
-        return SubmitAdminMessageUseCase(
+    ) -> SubmitAdminMessageCommandHandler:
+        return SubmitAdminMessageCommandHandler(
             chat_repository=chat_repository,
             chat_message_repository=chat_message_repository,
         )
