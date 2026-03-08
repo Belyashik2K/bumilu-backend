@@ -2,6 +2,9 @@ from abc import (
     ABC,
     abstractmethod,
 )
+from datetime import (
+    datetime,
+)
 
 from app.core.application.interfaces.repositories import IBaseRepository
 from app.core.shared.domain.value_objects.id import (
@@ -20,3 +23,6 @@ class IChatRepository(IBaseRepository[Chat], ABC):
 
     @abstractmethod
     async def get_pending_chats(self) -> list[Chat]: ...
+
+    @abstractmethod
+    async def get_inactive_open_chats(self, threshold: datetime) -> list[Chat]: ...

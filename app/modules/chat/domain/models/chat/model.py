@@ -14,7 +14,10 @@ from app.modules.chat.domain.models.chat.exceptions import ChatNotEscalatedToAdm
 from app.modules.chat.domain.models.chat_message.model import ChatMessage
 from app.modules.chat.domain.value_objects.location import LocationVO
 from app.modules.chat.domain.value_objects.message_text import MessageTextVO
-from app.modules.chat.shared.enums import ChatStatusEnum
+from app.modules.chat.shared.enums import (
+    ChatCloseReasonEnum,
+    ChatStatusEnum,
+)
 from app.modules.chat.shared.enums.author_type import (
     AuthorTypeEnum,
 )
@@ -29,6 +32,8 @@ class Chat:
     last_location: LocationVO | None = field(default=None)
     last_message_preview: MessageTextVO | None = field(default=None)
     last_activity_at: datetime
+    closed_at: datetime | None = field(default=None)
+    closed_reason: ChatCloseReasonEnum | None = field(default=None)
 
     @classmethod
     def create(
@@ -122,3 +127,12 @@ class Chat:
 
     def is_escalated(self) -> bool:
         return self.status == ChatStatusEnum.ESCALATED_TO_ADMIN
+
+    def close(
+        self,
+        reason: ChatCloseReasonEnum,
+        now: datetime,
+    ) -> None:
+        self.status = ChatStatusEnum.CLOSED
+        self.closed_reason = reason
+        self.closed_at = self.last_activity_at = now
