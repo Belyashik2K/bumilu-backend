@@ -5,12 +5,13 @@ from dishka.integrations.fastapi import inject
 from fastapi import (
     APIRouter,
     Depends,
-    Query,
 )
 from starlette import status
 
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
-from app.core.shared.presentation.schemas.pagination import OffsetPaginationQuery
+from app.core.shared.presentation.schemas.pagination import (
+    PaginationQuery,
+)
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.deps import get_principal
 from app.modules.auth.shared.context import Principal
@@ -24,11 +25,11 @@ from app.modules.chat.application.queries.user import (
     GetUserActiveChatQuery,
     GetUserActiveChatQueryHandler,
 )
-from app.modules.chat.presentation.api.schemas.get import (
+from app.modules.chat.presentation.api.schemas.user.get import (
     GetChatInfoResponseSchema,
     GetChatMessagesResponseSchema,
 )
-from app.modules.chat.presentation.api.schemas.submit import (
+from app.modules.chat.presentation.api.schemas.user.submit import (
     SubmitUserMessageRequestSchema,
     SubmitUserMessageResponseSchema,
 )
@@ -86,7 +87,7 @@ async def get_current_user_chat(
 async def get_current_user_chat_messages(
     handler: FromDishka[GetUserActiveChatMessagesQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
-    pagination: Annotated[OffsetPaginationQuery, Query()],
+    pagination: PaginationQuery,
 ) -> GetChatMessagesResponseSchema | dict:
     result = await handler(
         GetUserActiveChatMessagesQuery(

@@ -5,7 +5,15 @@ from dataclasses import (
 from datetime import datetime
 from uuid import UUID
 
+from app.core.shared.enums import UserRoleEnum
 from app.modules.chat.shared.enums import AuthorTypeEnum
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class UserView:
+    id: UUID
+    email: str | None = field(default=None)
+    role: UserRoleEnum
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

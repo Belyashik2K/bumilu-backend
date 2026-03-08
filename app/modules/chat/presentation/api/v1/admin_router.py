@@ -1,3 +1,7 @@
+from typing import (
+    Annotated,
+)
+
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import (
@@ -8,6 +12,9 @@ from pydantic import UUID7
 from starlette import status
 
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
+from app.core.shared.presentation.schemas.pagination import (
+    PaginationQueryAsDependency,
+)
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.deps import (
     get_admin_principal,
@@ -21,8 +28,18 @@ from app.modules.chat.application.commands.admin.close_chat import (
     CloseChatAsAdminCommand,
     CloseChatAsAdminCommandHandler,
 )
+from app.modules.chat.application.queries.admin.get_chat_list.handler import (
+    GetAdminChatListQueryHandler,
+)
+from app.modules.chat.application.queries.admin.get_chat_list.query import (
+    GetAdminChatListQuery,
+)
+from app.modules.chat.presentation.api.schemas.admin.get import (
+    AdminChatFilterSchema,
+    AdminChatListResponseSchema,
+)
 from app.modules.chat.presentation.api.schemas.common import CHAT_ID_PATH
-from app.modules.chat.presentation.api.schemas.submit import (
+from app.modules.chat.presentation.api.schemas.user.submit import (
     SubmitAdminMessageRequestSchema,
     SubmitAdminMessageResponseSchema,
 )
@@ -34,11 +51,24 @@ admin_chat_router = APIRouter(
 
 @admin_chat_router.get(
     "",
-    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+    responses=generate_responses_for_endpoint(),
 )
 @inject
-async def get_chats_list() -> None:
-    raise NotImplementedError("This endpoint is not implemented yet.")
+async def get_chats_list(
+    handler: FromDishka[GetAdminChatListQueryHandler],
+    principal: Annotated[Principal, Depends(get_admin_principal)],
+    filters: Annotated[AdminChatFilterSchema, Depends()],
+    pagination: PaginationQueryAsDependency,
+) -> AdminChatListResponseSchema:
+    result = await handler(
+        GetAdminChatListQuery(
+            actor_id=principal.id.value,
+            limit=pagination.limit,
+            offset=pagination.offset,
+            status=filters.status,
+        )
+    )
+    return AdminChatListResponseSchema.model_validate(result, from_attributes=True)
 
 
 @admin_chat_router.get(
@@ -61,7 +91,7 @@ async def get_chat_messages(chat_id: UUID7 = CHAT_ID_PATH) -> None:
 
 @admin_chat_router.post(
     "/{chat_id}/close",
-    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+    responses=generate_responses_for_endpoint(status.HTTP_404_NOT_FOUND),
 )
 @inject
 async def close_chat_as_admin(

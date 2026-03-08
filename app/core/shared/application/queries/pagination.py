@@ -6,6 +6,12 @@ from typing import Self
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
+class OffsetPaginationMixin:
+    limit: int = field(default=20)
+    offset: int = field(default=0)
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
 class OffsetPagination:
     limit: int
     offset: int
