@@ -19,7 +19,7 @@ from app.modules.reviews.application.queries.get_all_by_user import (
     GetAllReviewsByUserQueryHandler,
 )
 from app.modules.reviews.application.queries.get_all_for_entity import (
-    GetAllReviewsForEntityUseCase,
+    GetAllReviewsForEntityQueryHandler,
 )
 from app.modules.reviews.infrastructure.database.repositories.review import (
     SQLAlchemyReviewRepository,
@@ -47,12 +47,12 @@ class ReviewProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def get_all_reviews_for_entity_uc(
+    async def get_all_reviews_for_entity_handler(
         self,
         review_repository: IReviewRepository,
         entity_resolver: IReviewEntityResolver,
-    ) -> GetAllReviewsForEntityUseCase:
-        return GetAllReviewsForEntityUseCase(
+    ) -> GetAllReviewsForEntityQueryHandler:
+        return GetAllReviewsForEntityQueryHandler(
             review_repository=review_repository,
             entity_resolver=entity_resolver,
         )
