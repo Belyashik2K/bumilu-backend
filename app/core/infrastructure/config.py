@@ -173,6 +173,7 @@ class AIAssistantConfig(BaseModel):
     model: str
     system_prompt: str
     confidence_score_threshold: float
+    polling_interval_seconds: int
 
 
 # ================================

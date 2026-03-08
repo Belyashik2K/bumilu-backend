@@ -64,5 +64,5 @@ ai_assistant:
     - Never lower confidence just because the user is angry or insulting.
     - Prefer asking a clarification question instead of giving up.
     - A single confusing message is not enough reason for low confidence.
-
   confidence_score_threshold: 0.5
+  polling_interval_seconds: 1
