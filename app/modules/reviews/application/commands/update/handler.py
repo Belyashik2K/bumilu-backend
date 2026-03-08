@@ -1,6 +1,6 @@
 import logging
 
-from app.core.application.use_cases.base import IBaseUseCase
+from app.core.application.commands import ICommandHandlerWithResult
 from app.core.shared.constants import UnsetType
 from app.core.shared.domain.value_objects.id import (
     ReviewIdVO,
@@ -8,8 +8,8 @@ from app.core.shared.domain.value_objects.id import (
 )
 from app.core.shared.utils import prepare_extras
 from app.modules.reviews.application.commands.update import (
-    UpdateReviewInputDTO,
-    UpdateReviewOutputDTO,
+    UpdateReviewCommand,
+    UpdateReviewCommandResult,
 )
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
@@ -26,23 +26,25 @@ from app.modules.reviews.domain.value_objects import (
 logger = logging.getLogger(__name__)
 
 
-class UpdateReviewUseCase(IBaseUseCase[UpdateReviewInputDTO, UpdateReviewOutputDTO]):
+class UpdateReviewCommandHandler(
+    ICommandHandlerWithResult[UpdateReviewCommand, UpdateReviewCommandResult]
+):
     def __init__(
         self,
         review_repository: IReviewRepository,
     ) -> None:
         self._review_repository = review_repository
 
-    async def execute(
+    async def handle(
         self,
-        input_data: UpdateReviewInputDTO,
-    ) -> UpdateReviewOutputDTO:
-        review_id = ReviewIdVO.from_uuid(input_data.review_id)
+        command: UpdateReviewCommand,
+    ) -> UpdateReviewCommandResult:
+        review_id = ReviewIdVO.from_uuid(command.review_id)
         review = await self._review_repository.get_by_id(review_id)
         if review is None:
             raise ReviewNotFound(review_id=review_id)
 
-        actor_id = UserIdVO.from_uuid(input_data.actor_id)
+        actor_id = UserIdVO.from_uuid(command.actor_id)
         if review.author_id != actor_id:
             logger.warning(
                 "review_update_forbidden",
@@ -55,13 +57,13 @@ class UpdateReviewUseCase(IBaseUseCase[UpdateReviewInputDTO, UpdateReviewOutputD
             raise ReviewOwnershipViolation()
 
         new_rating = (
-            ReviewRatingVO(input_data.rating)
-            if not isinstance(input_data.rating, UnsetType)
+            ReviewRatingVO(command.rating)
+            if not isinstance(command.rating, UnsetType)
             else review.rating
         )
         new_text = (
-            ReviewTextVO(input_data.text)
-            if not isinstance(input_data.text, UnsetType)
+            ReviewTextVO(command.text)
+            if not isinstance(command.text, UnsetType)
             else review.text
         )
 
@@ -71,7 +73,7 @@ class UpdateReviewUseCase(IBaseUseCase[UpdateReviewInputDTO, UpdateReviewOutputD
         )
         await self._review_repository.save(review)
 
-        return UpdateReviewOutputDTO(
+        return UpdateReviewCommandResult(
             review_id=review.id.value,
             rating=review.rating.value,
             text=review.text.value,

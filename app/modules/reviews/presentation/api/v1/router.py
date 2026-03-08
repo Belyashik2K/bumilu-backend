@@ -23,8 +23,8 @@ from app.modules.reviews.application.commands.delete import (
     DeleteReviewCommandHandler,
 )
 from app.modules.reviews.application.commands.update import (
-    UpdateReviewInputDTO,
-    UpdateReviewUseCase,
+    UpdateReviewCommand,
+    UpdateReviewCommandHandler,
 )
 from app.modules.reviews.application.queries.get import (
     GetReviewInputDTO,
@@ -161,14 +161,14 @@ async def delete_review_by_id(
 )
 @inject
 async def update_review_by_id(
-    uc: FromDishka[UpdateReviewUseCase],
+    handler: FromDishka[UpdateReviewCommandHandler],
     data: UpdateReviewRequestSchema,
     principal: Annotated[Principal, Depends(get_principal)],
     review_id: UUID7 = REVIEW_ID_PATH,
 ) -> UpdateReviewResponseSchema:
     data_dump = data.model_dump(exclude_unset=True)
-    result = await uc(
-        UpdateReviewInputDTO(
+    result = await handler(
+        UpdateReviewCommand(
             review_id=review_id,
             actor_id=principal.id.value,
             text=data_dump.get("text", UNSET),
