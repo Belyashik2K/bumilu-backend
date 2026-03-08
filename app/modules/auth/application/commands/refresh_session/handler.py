@@ -1,11 +1,11 @@
 import logging
 
-from app.core.application.use_cases.base import IBaseUseCase
+from app.core.application.commands import ICommandHandlerWithResult
 from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.commands.refresh_session import (
-    RefreshAuthSessionInputDTO,
-    RefreshAuthSessionOutputDTO,
+    RefreshAuthSessionCommand,
+    RefreshAuthSessionCommandResult,
 )
 from app.modules.auth.application.commands.refresh_session.exceptions import (
     InvalidRefreshToken,
@@ -23,10 +23,10 @@ from app.modules.users.application.interfaces.repositories.user import IUserRepo
 logger = logging.getLogger(__name__)
 
 
-class RefreshAuthSessionUseCase(
-    IBaseUseCase[
-        RefreshAuthSessionInputDTO,
-        RefreshAuthSessionOutputDTO,
+class RefreshAuthSessionCommandHandler(
+    ICommandHandlerWithResult[
+        RefreshAuthSessionCommand,
+        RefreshAuthSessionCommandResult,
     ]
 ):
     def __init__(
@@ -39,11 +39,11 @@ class RefreshAuthSessionUseCase(
         self._user_repository = user_repository
         self._auth_session_service = auth_session_service
 
-    async def execute(
+    async def handle(
         self,
-        input_data: RefreshAuthSessionInputDTO,
-    ) -> RefreshAuthSessionOutputDTO:
-        token_hash = self._auth_session_service.get_token_hash(input_data.refresh_token)
+        command: RefreshAuthSessionCommand,
+    ) -> RefreshAuthSessionCommandResult:
+        token_hash = self._auth_session_service.get_token_hash(command.refresh_token)
 
         session = await self._auth_session_repository.get_by_refresh_token_hash(
             token_hash
@@ -53,18 +53,18 @@ class RefreshAuthSessionUseCase(
             logger.info(
                 "refresh_invalid_session",
                 extra=prepare_extras(
-                    device_id=input_data.device_id,
+                    device_id=command.device_id,
                     reason="not_found_or_inactive",
                 ),
             )
             raise InvalidRefreshToken()
 
-        current_device_id = DeviceIdVO.from_uuid(input_data.device_id)
+        current_device_id = DeviceIdVO.from_uuid(command.device_id)
         if session.device_id != current_device_id:
             logger.warning(
                 "refresh_invalid_session",
                 extra=prepare_extras(
-                    device_id=input_data.device_id,
+                    device_id=command.device_id,
                     session_id=str(session.id),
                     reason="device_mismatch",
                 ),
@@ -78,7 +78,7 @@ class RefreshAuthSessionUseCase(
                 extra=prepare_extras(
                     user_id=str(session.user_id),
                     session_id=str(session.id),
-                    device_id=input_data.device_id,
+                    device_id=command.device_id,
                 ),
             )
             raise InvalidRefreshToken()
@@ -88,7 +88,7 @@ class RefreshAuthSessionUseCase(
             role=user.role,
         )
 
-        return RefreshAuthSessionOutputDTO(
+        return RefreshAuthSessionCommandResult(
             access=TokenInfoDTO(
                 token=new_tokens.access_token,
                 expires_in=new_tokens.access_expires_in,

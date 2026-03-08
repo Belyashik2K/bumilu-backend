@@ -13,15 +13,13 @@ from app.modules.auth.application.commands.email import (
 )
 from app.modules.auth.application.commands.guest import LoginAsGuestCommandHandler
 from app.modules.auth.application.commands.logout import LogoutCommandHandler
-from app.modules.auth.application.commands.refresh_session.use_case import (
-    RefreshAuthSessionUseCase,
+from app.modules.auth.application.commands.refresh_session import (
+    RefreshAuthSessionCommandHandler,
 )
 from app.modules.auth.application.interfaces.email_sender import IEmailSender
 from app.modules.auth.application.interfaces.generators import (
-    IVerificationCodeGenerator,
-)
-from app.modules.auth.application.interfaces.generators.refresh_token import (
     IRefreshTokenGenerator,
+    IVerificationCodeGenerator,
 )
 from app.modules.auth.application.interfaces.hashers import (
     ITokenHasher,
@@ -181,13 +179,13 @@ class AuthProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def refresh_session_uc(
+    async def refresh_session_handler(
         self,
         auth_session_repository: IAuthSessionRepository,
         user_repository: IUserRepository,
         auth_session_service: AuthSessionService,
-    ) -> RefreshAuthSessionUseCase:
-        return RefreshAuthSessionUseCase(
+    ) -> RefreshAuthSessionCommandHandler:
+        return RefreshAuthSessionCommandHandler(
             auth_session_repository=auth_session_repository,
             user_repository=user_repository,
             auth_session_service=auth_session_service,
