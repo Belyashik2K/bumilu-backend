@@ -22,8 +22,8 @@ from app.modules.favourites.application.commands.remove import (
     RemoveFromFavouritesCommandHandler,
 )
 from app.modules.favourites.application.queries.get_all_by_user import (
-    GetAllFavouritesByUserInputDTO,
-    GetAllFavouritesByUserUseCase,
+    GetAllFavouritesByUserQuery,
+    GetAllFavouritesByUserQueryHandler,
 )
 from app.modules.favourites.presentation.api.schemas.common import (
     ENTITY_ID_PATH,
@@ -49,11 +49,11 @@ favourites_router = APIRouter(
 )
 @inject
 async def get_my_favourites(
-    uc: FromDishka[GetAllFavouritesByUserUseCase],
+    handler: FromDishka[GetAllFavouritesByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
 ) -> GetAllFavouritesByUserResponseSchema:
-    result = await uc(
-        GetAllFavouritesByUserInputDTO(
+    result = await handler(
+        GetAllFavouritesByUserQuery(
             actor_id=principal.id.value,
             user_id=principal.id.value,
         )
@@ -71,12 +71,12 @@ async def get_my_favourites(
 )
 @inject
 async def get_favourites_by_user_id(
-    uc: FromDishka[GetAllFavouritesByUserUseCase],
+    uc: FromDishka[GetAllFavouritesByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
     user_id: UUID7 = USER_ID_PATH,
 ) -> GetAllFavouritesByUserResponseSchema:
     result = await uc(
-        GetAllFavouritesByUserInputDTO(
+        GetAllFavouritesByUserQuery(
             actor_id=principal.id.value,
             user_id=user_id,
         )

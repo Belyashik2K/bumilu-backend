@@ -1,5 +1,5 @@
-from .dtos import (
-    GetAllFavouritesByUserInputDTO,
-    GetAllFavouritesByUserOutputDTO,
+from .handler import GetAllFavouritesByUserQueryHandler
+from .query import (
+    GetAllFavouritesByUserQuery,
+    GetAllFavouritesByUserQueryResult,
 )
-from .use_case import GetAllFavouritesByUserUseCase
