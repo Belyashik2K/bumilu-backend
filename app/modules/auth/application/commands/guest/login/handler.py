@@ -1,12 +1,12 @@
 import logging
 
-from app.core.application.use_cases.base import IBaseUseCase
+from app.core.application.commands import ICommandHandlerWithResult
 from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.core.shared.enums import UserRoleEnum
 from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.commands.guest.login import (
-    LoginAsGuestInputDTO,
-    LoginAsGuestOutputDTO,
+    LoginAsGuestCommand,
+    LoginAsGuestCommandResult,
 )
 from app.modules.auth.application.commands.shared_dtos import (
     TokenInfoDTO,
@@ -26,10 +26,10 @@ from app.modules.users.domain.models.user import User
 logger = logging.getLogger(__name__)
 
 
-class LoginAsGuestUseCase(
-    IBaseUseCase[
-        LoginAsGuestInputDTO,
-        LoginAsGuestOutputDTO,
+class LoginAsGuestCommandHandler(
+    ICommandHandlerWithResult[
+        LoginAsGuestCommand,
+        LoginAsGuestCommandResult,
     ]
 ):
     def __init__(
@@ -44,17 +44,17 @@ class LoginAsGuestUseCase(
         self._auth_session_repository = auth_session_repository
         self._auth_session_service = auth_session_service
 
-    async def execute(self, input_data: LoginAsGuestInputDTO) -> LoginAsGuestOutputDTO:
-        device_id = DeviceIdVO.from_uuid(input_data.device_id)
+    async def handle(self, command: LoginAsGuestCommand) -> LoginAsGuestCommandResult:
+        device_id = DeviceIdVO.from_uuid(command.device_id)
         device = await self._device_repository.get_by_id(device_id)
 
         if device is None or not device.has_guest_user():
             if device is None:
                 device = Device.create(
                     device_id=device_id,
-                    platform=input_data.device_platform,
-                    name=input_data.device_name,
-                    app_version=input_data.app_version,
+                    platform=command.device_platform,
+                    name=command.device_name,
+                    app_version=command.app_version,
                 )
                 device = await self._device_repository.save(device)
                 logger.info(
@@ -95,7 +95,7 @@ class LoginAsGuestUseCase(
             role=UserRoleEnum.GUEST,
         )
 
-        return LoginAsGuestOutputDTO(
+        return LoginAsGuestCommandResult(
             access=TokenInfoDTO(
                 token=session.access_token,
                 expires_in=session.access_expires_in,

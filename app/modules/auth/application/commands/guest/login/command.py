@@ -13,7 +13,7 @@ from app.modules.auth.application.commands.shared_dtos import (
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
-class LoginAsGuestInputDTO:
+class LoginAsGuestCommand:
     device_id: UUID
     device_platform: DevicePlatformEnum
     device_name: str | None = field(default=None)
@@ -21,4 +21,4 @@ class LoginAsGuestInputDTO:
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
-class LoginAsGuestOutputDTO(IssuedTokensDTO): ...
+class LoginAsGuestCommandResult(IssuedTokensDTO): ...

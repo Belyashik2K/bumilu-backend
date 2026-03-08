@@ -7,13 +7,11 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.infrastructure.config import AppConfig
-from app.modules.auth.application.commands.email.request_code import (
+from app.modules.auth.application.commands.email import (
     RequestEmailCodeAtLoginCommandHandler,
-)
-from app.modules.auth.application.commands.email.verify_code import (
     VerifyEmailCodeAtLoginCommandHandler,
 )
-from app.modules.auth.application.commands.guest.login import LoginAsGuestUseCase
+from app.modules.auth.application.commands.guest import LoginAsGuestCommandHandler
 from app.modules.auth.application.commands.logout.use_case import LogoutUseCase
 from app.modules.auth.application.commands.refresh_session.use_case import (
     RefreshAuthSessionUseCase,
@@ -168,14 +166,14 @@ class AuthProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def login_as_guest_uc(
+    async def login_as_guest_handler(
         self,
         user_repository: IUserRepository,
         device_repository: IDeviceRepository,
         auth_service_repository: IAuthSessionRepository,
         auth_session_service: AuthSessionService,
-    ) -> LoginAsGuestUseCase:
-        return LoginAsGuestUseCase(
+    ) -> LoginAsGuestCommandHandler:
+        return LoginAsGuestCommandHandler(
             user_repository=user_repository,
             device_repository=device_repository,
             auth_session_repository=auth_service_repository,
