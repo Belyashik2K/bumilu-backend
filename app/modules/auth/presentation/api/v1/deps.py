@@ -8,7 +8,7 @@ from app.modules.auth.shared.context import Principal
 
 def get_principal(request: CustomRequest) -> Principal:
     if not request.state.principal:
-        raise ApplicationUnauthorizedException(message="Unauthorized")
+        raise ApplicationUnauthorizedException(message="Who are you, stranger?")
     return request.state.principal
 
 
