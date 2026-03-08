@@ -18,7 +18,7 @@ from app.modules.favourites.application.interfaces.repositories.favourite import
     IFavouriteRepository,
 )
 from app.modules.favourites.application.queries.get_all_by_user import (
-    GetAllFavouritesByUserUseCase,
+    GetAllFavouritesByUserQueryHandler,
 )
 from app.modules.favourites.infrastructure.database.repositories.favourite import (
     SQLAlchemyFavouriteRepository,
@@ -45,12 +45,12 @@ class FavouriteProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def get_favourites_by_user_uc(
+    async def get_favourites_by_user_handler(
         self,
         favourite_repository: IFavouriteRepository,
         user_repository: IUserRepository,
-    ) -> GetAllFavouritesByUserUseCase:
-        return GetAllFavouritesByUserUseCase(
+    ) -> GetAllFavouritesByUserQueryHandler:
+        return GetAllFavouritesByUserQueryHandler(
             favourite_repository=favourite_repository,
             user_repository=user_repository,
         )
