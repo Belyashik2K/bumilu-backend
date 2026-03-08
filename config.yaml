@@ -49,8 +49,10 @@ auth:
         subject: "{code} — Your BumiLu verification code"
         body: >
           Your verification code is: {code}.
-openrouter:
-  api_base_url: "https://openrouter.ai/api/v1"
+chat:
+  inactivity:
+    threshold_minutes: 30
+    polling_interval_seconds: 60
 cors:
   enabled: false
   allow_origins: [ "http://localhost:3000" ]

@@ -16,6 +16,9 @@ from app.core.application.base_handler import (
 class EmptyCommand: ...
 
 
+empty_command = EmptyCommand()
+
+
 class ICommandHandler(Generic[CommandDTO], BaseHandler, ABC):
     async def __call__(self, command: CommandDTO) -> None:
         return await self._run_with_observability(request=command, func=self.handle)
