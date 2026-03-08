@@ -45,7 +45,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, Any]:
     scheduler = await container.get(AsyncIOScheduler)
     config = await container.get(AppConfig)
     setup_dishka_scheduler(container=container, scheduler=scheduler)
-    register_chat_jobs(scheduler, config.ai_assistant.polling_interval_seconds)
+    register_chat_jobs(scheduler, config=config)
     scheduler.start()
     try:
         yield

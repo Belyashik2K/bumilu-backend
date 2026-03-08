@@ -154,26 +154,30 @@ class CORSConfig(BaseModel):
 
 # ================================
 
-
-# ======== OpenRouterConfig ========
+# ========= ChatConfig ========
 
 
 class OpenRouterConfig(BaseModel):
     api_key: str
     api_base_url: str
-
-
-# ================================
-
-
-# ======== AI Assistant Config ========
+    model: str
 
 
 class AIAssistantConfig(BaseModel):
-    model: str
+    openrouter: OpenRouterConfig
     system_prompt: str
     confidence_score_threshold: float
     polling_interval_seconds: int
+
+
+class ChatInactivityConfig(BaseModel):
+    threshold_minutes: int
+    polling_interval_seconds: int
+
+
+class ChatConfig(BaseModel):
+    ai_assistant: AIAssistantConfig
+    inactivity: ChatInactivityConfig
 
 
 # ================================
@@ -195,8 +199,7 @@ class AppConfig(BaseSettings):
     redis: RedisConfig
     auth: AuthConfig
     cors: CORSConfig
-    openrouter: OpenRouterConfig
-    ai_assistant: AIAssistantConfig
+    chat: ChatConfig
 
     @classmethod
     def settings_customise_sources(

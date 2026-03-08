@@ -12,6 +12,9 @@ from app.modules.chat.application.commands.admin import (
 from app.modules.chat.application.commands.ai import (
     ProcessPendingChatsCommandHandler,
 )
+from app.modules.chat.application.commands.close_inactive_chats import (
+    CloseInactiveChatsCommandHandler,
+)
 from app.modules.chat.application.commands.user.submit_message import (
     SubmitUserMessageCommandHandler,
 )
@@ -41,10 +44,10 @@ class ChatProvider(Provider):
         config: AppConfig,
     ) -> OpenRouterChatResponder:
         return OpenRouterChatResponder(
-            api_key=config.openrouter.api_key,
-            api_base_url=config.openrouter.api_base_url,
-            model=config.ai_assistant.model,
-            system_prompt=config.ai_assistant.system_prompt,
+            api_key=config.chat.ai_assistant.openrouter.api_key,
+            api_base_url=config.chat.ai_assistant.openrouter.api_base_url,
+            model=config.chat.ai_assistant.openrouter.model,
+            system_prompt=config.chat.ai_assistant.system_prompt,
         )
 
     @provide(scope=Scope.REQUEST, provides=IChatRepository)
@@ -110,7 +113,7 @@ class ChatProvider(Provider):
             chat_repository=chat_repository,
             chat_message_repository=chat_message_repository,
             chat_responder=chat_responder,
-            confidence_score_threshold=config.ai_assistant.confidence_score_threshold,
+            confidence_score_threshold=config.chat.ai_assistant.confidence_score_threshold,
         )
 
     @provide(scope=Scope.REQUEST)
@@ -122,4 +125,15 @@ class ChatProvider(Provider):
         return SubmitAdminMessageCommandHandler(
             chat_repository=chat_repository,
             chat_message_repository=chat_message_repository,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def close_inactive_chats_handler(
+        self,
+        config: AppConfig,
+        chat_repository: IChatRepository,
+    ) -> CloseInactiveChatsCommandHandler:
+        return CloseInactiveChatsCommandHandler(
+            chat_repository=chat_repository,
+            inactivity_threshold_minutes=config.chat.inactivity.threshold_minutes,
         )
