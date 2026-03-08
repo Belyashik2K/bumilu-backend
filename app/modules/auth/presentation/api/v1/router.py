@@ -9,24 +9,22 @@ from fastapi import (
 from starlette import status
 
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
-from app.modules.auth.application.use_cases.email.request_code import (
-    RequestEmailCodeAtLoginInputDTO,
-    RequestEmailCodeAtLoginUseCase,
+from app.modules.auth.application.commands.email import (
+    RequestEmailCodeAtLoginCommand,
+    RequestEmailCodeAtLoginCommandHandler,
+    VerifyEmailCodeAtLoginCommand,
+    VerifyEmailCodeAtLoginCommandHandler,
 )
-from app.modules.auth.application.use_cases.email.verify_code import (
-    VerifyEmailCodeAtLoginInputDTO,
-    VerifyEmailCodeAtLoginUseCase,
-)
-from app.modules.auth.application.use_cases.guest.login import (
+from app.modules.auth.application.commands.guest.login import (
     LoginAsGuestInputDTO,
     LoginAsGuestUseCase,
 )
-from app.modules.auth.application.use_cases.logout import LogoutInputDTO
-from app.modules.auth.application.use_cases.logout.use_case import LogoutUseCase
-from app.modules.auth.application.use_cases.refresh_session import (
+from app.modules.auth.application.commands.logout import LogoutInputDTO
+from app.modules.auth.application.commands.logout.use_case import LogoutUseCase
+from app.modules.auth.application.commands.refresh_session import (
     RefreshAuthSessionInputDTO,
 )
-from app.modules.auth.application.use_cases.refresh_session.use_case import (
+from app.modules.auth.application.commands.refresh_session.use_case import (
     RefreshAuthSessionUseCase,
 )
 from app.modules.auth.presentation.api.schemas.device import (
@@ -74,11 +72,11 @@ async def login_as_guest(
 )
 @inject
 async def request_email_code(
-    uc: FromDishka[RequestEmailCodeAtLoginUseCase],
+    uc: FromDishka[RequestEmailCodeAtLoginCommandHandler],
     data: RequestEmailCodeAtLoginRequestSchema,
     headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
 ) -> dict:
-    await uc(RequestEmailCodeAtLoginInputDTO(email=str(data.email)))
+    await uc(RequestEmailCodeAtLoginCommand(email=str(data.email)))
     return {}
 
 
@@ -88,12 +86,12 @@ async def request_email_code(
 )
 @inject
 async def verify_email_login(
-    uc: FromDishka[VerifyEmailCodeAtLoginUseCase],
+    uc: FromDishka[VerifyEmailCodeAtLoginCommandHandler],
     data: VerifyEmailCodeAtLoginRequestSchema,
     headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
 ) -> VerifyEmailCodeAtLoginResponseSchema:
     result = await uc(
-        VerifyEmailCodeAtLoginInputDTO(
+        VerifyEmailCodeAtLoginCommand(
             email=str(data.email),
             code=data.code,
             device_id=headers.device_id,

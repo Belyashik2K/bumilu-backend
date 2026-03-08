@@ -3,14 +3,14 @@ import logging
 from app.core.application.use_cases.base import IBaseUseCase
 from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.core.shared.utils import prepare_extras
+from app.modules.auth.application.commands.logout import (
+    LogoutInputDTO,
+    LogoutOutputDTO,
+)
 from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
 )
 from app.modules.auth.application.services.auth_session import AuthSessionService
-from app.modules.auth.application.use_cases.logout import (
-    LogoutInputDTO,
-    LogoutOutputDTO,
-)
 
 logger = logging.getLogger(__name__)
 

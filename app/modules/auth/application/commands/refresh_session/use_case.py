@@ -3,21 +3,21 @@ import logging
 from app.core.application.use_cases.base import IBaseUseCase
 from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.core.shared.utils import prepare_extras
+from app.modules.auth.application.commands.refresh_session import (
+    RefreshAuthSessionInputDTO,
+    RefreshAuthSessionOutputDTO,
+)
+from app.modules.auth.application.commands.refresh_session.exceptions import (
+    InvalidRefreshToken,
+)
+from app.modules.auth.application.commands.shared_dtos import (
+    TokenInfoDTO,
+    UserInfoDTO,
+)
 from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
 )
 from app.modules.auth.application.services.auth_session import AuthSessionService
-from app.modules.auth.application.use_cases.refresh_session import (
-    RefreshAuthSessionInputDTO,
-    RefreshAuthSessionOutputDTO,
-)
-from app.modules.auth.application.use_cases.refresh_session.exceptions import (
-    InvalidRefreshToken,
-)
-from app.modules.auth.application.use_cases.shared_dtos import (
-    TokenInfoDTO,
-    UserInfoDTO,
-)
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 
 logger = logging.getLogger(__name__)

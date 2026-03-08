@@ -7,7 +7,7 @@ from uuid import UUID
 from app.core.shared.enums import (
     DevicePlatformEnum,
 )
-from app.modules.auth.application.use_cases.shared_dtos import (
+from app.modules.auth.application.commands.shared_dtos import (
     IssuedTokensDTO,
 )
 

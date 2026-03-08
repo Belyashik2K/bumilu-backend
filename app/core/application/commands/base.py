@@ -18,7 +18,7 @@ class EmptyCommand: ...
 
 class ICommandHandler(Generic[CommandDTO], BaseHandler, ABC):
     async def __call__(self, command: CommandDTO) -> None:
-        return await self._run_with_observability(command, self.handle)
+        return await self._run_with_observability(request=command, func=self.handle)
 
     @abstractmethod
     async def handle(self, command: CommandDTO) -> None: ...
@@ -26,7 +26,7 @@ class ICommandHandler(Generic[CommandDTO], BaseHandler, ABC):
 
 class ICommandHandlerWithResult(Generic[CommandDTO, ResultDTO], BaseHandler, ABC):
     async def __call__(self, command: CommandDTO) -> ResultDTO:
-        return await self._run_with_observability(command, self.handle)
+        return await self._run_with_observability(request=command, func=self.handle)
 
     @abstractmethod
     async def handle(self, command: CommandDTO) -> ResultDTO: ...
