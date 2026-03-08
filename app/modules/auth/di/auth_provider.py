@@ -12,7 +12,7 @@ from app.modules.auth.application.commands.email import (
     VerifyEmailCodeAtLoginCommandHandler,
 )
 from app.modules.auth.application.commands.guest import LoginAsGuestCommandHandler
-from app.modules.auth.application.commands.logout.use_case import LogoutUseCase
+from app.modules.auth.application.commands.logout import LogoutCommandHandler
 from app.modules.auth.application.commands.refresh_session.use_case import (
     RefreshAuthSessionUseCase,
 )
@@ -198,8 +198,8 @@ class AuthProvider(Provider):
         self,
         auth_session_repository: IAuthSessionRepository,
         auth_session_service: AuthSessionService,
-    ) -> LogoutUseCase:
-        return LogoutUseCase(
+    ) -> LogoutCommandHandler:
+        return LogoutCommandHandler(
             auth_session_repository=auth_session_repository,
             auth_session_service=auth_session_service,
         )

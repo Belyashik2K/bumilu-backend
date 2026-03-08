@@ -19,8 +19,10 @@ from app.modules.auth.application.commands.guest import (
     LoginAsGuestCommand,
     LoginAsGuestCommandHandler,
 )
-from app.modules.auth.application.commands.logout import LogoutInputDTO
-from app.modules.auth.application.commands.logout.use_case import LogoutUseCase
+from app.modules.auth.application.commands.logout import (
+    LogoutCommand,
+    LogoutCommandHandler,
+)
 from app.modules.auth.application.commands.refresh_session import (
     RefreshAuthSessionInputDTO,
 )
@@ -131,12 +133,12 @@ async def refresh(
 )
 @inject
 async def logout(
-    uc: FromDishka[LogoutUseCase],
+    handler: FromDishka[LogoutCommandHandler],
     data: LogoutRequestSchema,
     headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
 ) -> None:
-    await uc(
-        LogoutInputDTO(
+    await handler(
+        LogoutCommand(
             refresh_token=data.refresh_token,
             device_id=headers.device_id,
         )
