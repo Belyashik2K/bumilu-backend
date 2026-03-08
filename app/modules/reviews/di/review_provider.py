@@ -5,22 +5,22 @@ from dishka import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.reviews.application.commands.create import CreateReviewCommandHandler
+from app.modules.reviews.application.commands.delete import DeleteReviewCommandHandler
+from app.modules.reviews.application.commands.update import UpdateReviewCommandHandler
 from app.modules.reviews.application.interfaces.entity_resolver import (
     IReviewEntityResolver,
 )
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
-from app.modules.reviews.application.use_cases.create import CreateReviewUseCase
-from app.modules.reviews.application.use_cases.delete import DeleteReviewUseCase
-from app.modules.reviews.application.use_cases.get import GetReviewUseCase
-from app.modules.reviews.application.use_cases.get_all_by_user import (
-    GetAllReviewsByUserUseCase,
+from app.modules.reviews.application.queries.get import GetReviewQueryHandler
+from app.modules.reviews.application.queries.get_all_by_user import (
+    GetAllReviewsByUserQueryHandler,
 )
-from app.modules.reviews.application.use_cases.get_all_for_entity import (
-    GetAllReviewsForEntityUseCase,
+from app.modules.reviews.application.queries.get_all_for_entity import (
+    GetAllReviewsForEntityQueryHandler,
 )
-from app.modules.reviews.application.use_cases.update import UpdateReviewUseCase
 from app.modules.reviews.infrastructure.database.repositories.review import (
     SQLAlchemyReviewRepository,
 )
@@ -47,61 +47,61 @@ class ReviewProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def get_all_reviews_for_entity_uc(
+    async def get_all_reviews_for_entity_handler(
         self,
         review_repository: IReviewRepository,
         entity_resolver: IReviewEntityResolver,
-    ) -> GetAllReviewsForEntityUseCase:
-        return GetAllReviewsForEntityUseCase(
+    ) -> GetAllReviewsForEntityQueryHandler:
+        return GetAllReviewsForEntityQueryHandler(
             review_repository=review_repository,
             entity_resolver=entity_resolver,
         )
 
     @provide(scope=Scope.REQUEST)
-    async def create_review_uc(
+    async def create_review_handler(
         self,
         review_repository: IReviewRepository,
         entity_resolver: IReviewEntityResolver,
-    ) -> CreateReviewUseCase:
-        return CreateReviewUseCase(
+    ) -> CreateReviewCommandHandler:
+        return CreateReviewCommandHandler(
             review_repository=review_repository,
             entity_resolver=entity_resolver,
         )
 
     @provide(scope=Scope.REQUEST)
-    async def update_review_uc(
+    async def update_review_handler(
         self,
         review_repository: IReviewRepository,
-    ) -> UpdateReviewUseCase:
-        return UpdateReviewUseCase(
+    ) -> UpdateReviewCommandHandler:
+        return UpdateReviewCommandHandler(
             review_repository=review_repository,
         )
 
     @provide(scope=Scope.REQUEST)
-    async def delete_review_uc(
+    async def delete_review_handler(
         self,
         review_repository: IReviewRepository,
-    ) -> DeleteReviewUseCase:
-        return DeleteReviewUseCase(
+    ) -> DeleteReviewCommandHandler:
+        return DeleteReviewCommandHandler(
             review_repository=review_repository,
         )
 
     @provide(scope=Scope.REQUEST)
-    async def get_review_uc(
+    async def get_review_handler(
         self,
         review_repository: IReviewRepository,
-    ) -> GetReviewUseCase:
-        return GetReviewUseCase(
+    ) -> GetReviewQueryHandler:
+        return GetReviewQueryHandler(
             review_repository=review_repository,
         )
 
     @provide(scope=Scope.REQUEST)
-    async def get_all_reviews_by_user_uc(
+    async def get_all_reviews_by_user_handler(
         self,
         review_repository: IReviewRepository,
         user_repository: IUserRepository,
-    ) -> GetAllReviewsByUserUseCase:
-        return GetAllReviewsByUserUseCase(
+    ) -> GetAllReviewsByUserQueryHandler:
+        return GetAllReviewsByUserQueryHandler(
             review_repository=review_repository,
             user_repository=user_repository,
         )

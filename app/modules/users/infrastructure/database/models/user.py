@@ -24,6 +24,9 @@ if TYPE_CHECKING:
     from app.modules.auth.infrastructure.database.models import (
         AuthSessionModel,
     )
+    from app.modules.chat.infrastructure.database.models import (
+        ChatModel,
+    )
 
 
 class UserModel(PKUUIDMixin, TimestampMixin, BaseModel):
@@ -35,6 +38,12 @@ class UserModel(PKUUIDMixin, TimestampMixin, BaseModel):
         Enum(UserRoleEnum, name="user_role_enum")
     )
 
+    chats: Mapped[list["ChatModel"]] = relationship(
+        "ChatModel",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="raise",
+    )
     auth_sessions: Mapped[list["AuthSessionModel"]] = relationship(
         "AuthSessionModel",
         back_populates="user",

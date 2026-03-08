@@ -10,8 +10,12 @@ requires-python = ">=3.11"
 dependencies = [
     "aiosmtplib>=5.1.0",
     "alembic>=1.18.4",
+    "alembic-postgresql-enum>=1.10.0",
+    "apscheduler>=3.11.2",
+    "apscheduler-dishka>=1.0.0",
     "dishka>=1.8.0",
     "fastapi[all]>=0.129.0",
+    "openai>=2.26.0",
     "pydantic-settings[yaml]>=2.13.0",
     "pyjwt>=2.11.0",
     "redis>=7.2.0",
@@ -82,3 +86,10 @@ fixable = ["ALL"]
 quote-style = "double"
 indent-style = "space"
 line-ending = "auto"
+
+[tool.mypy]
+disable_error_code = ["prop-decorator"]
+
+[[tool.mypy.overrides]]
+module = "apscheduler.*"
+ignore_missing_imports = true
