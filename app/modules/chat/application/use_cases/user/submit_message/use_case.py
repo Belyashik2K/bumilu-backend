@@ -16,7 +16,7 @@ from app.modules.chat.domain.models.chat import Chat
 from app.modules.chat.domain.value_objects.location import LocationVO
 from app.modules.chat.domain.value_objects.message_text import MessageTextVO
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
-from app.modules.users.application.use_cases.get.exceptions import UserNotFound
+from app.modules.users.application.queries.get.exceptions import UserNotFound
 
 
 class SubmitUserMessageUseCase(

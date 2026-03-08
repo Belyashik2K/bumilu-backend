@@ -15,7 +15,7 @@ from app.modules.favourites.application.shared.exceptions import (
 )
 from app.modules.favourites.domain.models.favourite import Favourite
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
-from app.modules.users.application.use_cases.get.exceptions import UserNotFound
+from app.modules.users.application.queries.get.exceptions import UserNotFound
 
 
 class AddToFavouritesCommandHandler(ICommandHandler[AddToFavouritesCommand]):

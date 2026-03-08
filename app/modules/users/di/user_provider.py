@@ -6,7 +6,7 @@ from dishka import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
-from app.modules.users.application.use_cases.get import GetUserUseCase
+from app.modules.users.application.queries.get import GetUserQueryHandler
 from app.modules.users.infrastructure.database.repositories.user import (
     SQLAlchemyUserRepository,
 )
@@ -23,10 +23,10 @@ class UserProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def get_user_uc(
+    async def get_user_handler(
         self,
         user_repository: IUserRepository,
-    ) -> GetUserUseCase:
-        return GetUserUseCase(
+    ) -> GetUserQueryHandler:
+        return GetUserQueryHandler(
             user_repository=user_repository,
         )
