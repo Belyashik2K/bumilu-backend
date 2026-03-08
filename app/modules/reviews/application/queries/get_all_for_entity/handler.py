@@ -9,7 +9,7 @@ from app.modules.reviews.application.interfaces.entity_resolver import (
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
-from app.modules.reviews.application.queries.get_all_for_entity import (
+from app.modules.reviews.application.queries.get_all_for_entity.query import (
     GetAllReviewsForEntityQuery,
     GetAllReviewsForEntityQueryResult,
 )

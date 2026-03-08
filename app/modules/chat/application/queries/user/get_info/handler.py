@@ -1,7 +1,7 @@
 from app.core.application.queries import IQueryHandler
 from app.core.shared.domain.value_objects.id import UserIdVO
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
-from app.modules.chat.application.queries.user.get_info import (
+from app.modules.chat.application.queries.user.get_info.query import (
     GetUserActiveChatInfoQuery,
     GetUserActiveChatInfoQueryResult,
 )

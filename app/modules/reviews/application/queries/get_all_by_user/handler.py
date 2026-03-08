@@ -3,7 +3,7 @@ from app.core.shared.domain.value_objects.id import UserIdVO
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
-from app.modules.reviews.application.queries.get_all_by_user import (
+from app.modules.reviews.application.queries.get_all_by_user.query import (
     GetAllReviewsByUserQuery,
     GetAllReviewsByUserQueryResult,
 )
