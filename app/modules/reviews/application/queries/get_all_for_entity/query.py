@@ -9,15 +9,14 @@ from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetAllReviewsForEntityInputDTO:
+class GetAllReviewsForEntityQuery:
     actor_id: UUID
     entity_id: UUID
     entity_type: ReviewEntityTypeEnum
-    filters: None = field(default=None)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetAllReviewsForEntityOutputDTO:
+class GetAllReviewsForEntityQueryResult:
     entity_id: UUID
     entity_type: ReviewEntityTypeEnum
     actor_review: ReviewInfoDTO | None = field(default=None)

@@ -1,5 +1,5 @@
-from .dtos import (
-    GetAllReviewsForEntityInputDTO,
-    GetAllReviewsForEntityOutputDTO,
+from .handler import GetAllReviewsForEntityQueryHandler
+from .query import (
+    GetAllReviewsForEntityQuery,
+    GetAllReviewsForEntityQueryResult,
 )
-from .use_case import GetAllReviewsForEntityUseCase

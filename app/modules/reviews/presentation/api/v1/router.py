@@ -35,8 +35,8 @@ from app.modules.reviews.application.queries.get_all_by_user import (
     GetAllReviewsByUserQueryHandler,
 )
 from app.modules.reviews.application.queries.get_all_for_entity import (
-    GetAllReviewsForEntityInputDTO,
-    GetAllReviewsForEntityUseCase,
+    GetAllReviewsForEntityQuery,
+    GetAllReviewsForEntityQueryHandler,
 )
 from app.modules.reviews.presentation.api.schemas.common import (
     ENTITY_ID_PATH,
@@ -75,10 +75,10 @@ reviews_router = APIRouter(
 )
 @inject
 async def get_my_reviews(
-    uc: FromDishka[GetAllReviewsByUserQueryHandler],
+    handler: FromDishka[GetAllReviewsByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
 ) -> GetAllReviewsByUserResponseSchema:
-    result = await uc(
+    result = await handler(
         GetAllReviewsByUserQuery(
             user_id=principal.id.value,
             actor_id=principal.id.value,
@@ -97,11 +97,11 @@ async def get_my_reviews(
 )
 @inject
 async def get_reviews_by_user_id(
-    uc: FromDishka[GetAllReviewsByUserQueryHandler],
+    handler: FromDishka[GetAllReviewsByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
     user_id: UUID7 = USER_ID_PATH,
 ) -> GetAllReviewsByUserResponseSchema:
-    result = await uc(
+    result = await handler(
         GetAllReviewsByUserQuery(
             user_id=user_id,
             actor_id=principal.id.value,
@@ -120,11 +120,11 @@ async def get_reviews_by_user_id(
 )
 @inject
 async def get_review_by_id(
-    uc: FromDishka[GetReviewQueryHandler],
+    handler: FromDishka[GetReviewQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
     review_id: UUID7 = REVIEW_ID_PATH,
 ) -> ReviewInfoSchema:
-    result = await uc(
+    result = await handler(
         GetReviewQuery(
             review_id=review_id,
         )
@@ -186,13 +186,13 @@ async def update_review_by_id(
 )
 @inject
 async def get_reviews_for_entity(
-    uc: FromDishka[GetAllReviewsForEntityUseCase],
+    handler: FromDishka[GetAllReviewsForEntityQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
     entity_type: ReviewEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> GetAllReviewsForEntityResponseSchema:
-    result = await uc(
-        GetAllReviewsForEntityInputDTO(
+    result = await handler(
+        GetAllReviewsForEntityQuery(
             actor_id=principal.id.value,
             entity_id=entity_id,
             entity_type=entity_type.domain_name,
