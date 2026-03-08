@@ -1,5 +1,2 @@
-from .dtos import (
-    LogoutInputDTO,
-    LogoutOutputDTO,
-)
-from .use_case import LogoutUseCase
+from .command import LogoutCommand
+from .handler import LogoutCommandHandler
