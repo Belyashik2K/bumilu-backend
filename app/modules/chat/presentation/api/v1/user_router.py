@@ -12,17 +12,15 @@ from app.core.presentation.endpoint_responses import generate_responses_for_endp
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.deps import get_principal
 from app.modules.auth.shared.context import Principal
-from app.modules.chat.application.commands.user.submit_message import (
+from app.modules.chat.application.commands.user import (
     SubmitUserMessageCommand,
     SubmitUserMessageCommandHandler,
 )
-from app.modules.chat.application.queries.user.get_info import (
-    GetUserActiveChatInfoInputDTO,
-    GetUserActiveChatInfoUseCase,
-)
-from app.modules.chat.application.queries.user.get_messages import (
-    GetUserActiveChatMessagesInputDTO,
-    GetUserActiveChatMessagesUseCase,
+from app.modules.chat.application.queries.user import (
+    GetUserActiveChatInfoQuery,
+    GetUserActiveChatInfoQueryHandler,
+    GetUserActiveChatMessagesQuery,
+    GetUserActiveChatMessagesQueryHandler,
 )
 from app.modules.chat.presentation.api.schemas.get import (
     GetChatInfoResponseSchema,
@@ -63,11 +61,11 @@ async def submit_user_message(
 )
 @inject
 async def get_current_user_chat(
-    uc: FromDishka[GetUserActiveChatInfoUseCase],
+    handler: FromDishka[GetUserActiveChatInfoQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
 ) -> GetChatInfoResponseSchema:
-    result = await uc(
-        GetUserActiveChatInfoInputDTO(
+    result = await handler(
+        GetUserActiveChatInfoQuery(
             user_id=principal.id.value,
         )
     )
@@ -80,11 +78,11 @@ async def get_current_user_chat(
 )
 @inject
 async def get_current_user_chat_messages(
-    uc: FromDishka[GetUserActiveChatMessagesUseCase],
+    handler: FromDishka[GetUserActiveChatMessagesQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
 ) -> GetChatMessagesResponseSchema:
-    result = await uc(
-        GetUserActiveChatMessagesInputDTO(
+    result = await handler(
+        GetUserActiveChatMessagesQuery(
             user_id=principal.id.value,
         )
     )

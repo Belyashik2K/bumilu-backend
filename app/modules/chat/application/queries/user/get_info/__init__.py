@@ -1,5 +1,5 @@
-from .dtos import (
-    GetUserActiveChatInfoInputDTO,
-    GetUserActiveChatInfoOutputDTO,
+from .handler import GetUserActiveChatInfoQueryHandler
+from .query import (
+    GetUserActiveChatInfoQuery,
+    GetUserActiveChatInfoQueryResult,
 )
-from .use_case import GetUserActiveChatInfoUseCase

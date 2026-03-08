@@ -1,20 +1,20 @@
-from app.core.application.use_cases.base import IBaseUseCase
+from app.core.application.queries import IQueryHandler
 from app.core.shared.domain.value_objects.id import UserIdVO
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
 )
 from app.modules.chat.application.queries.user.get_messages import (
-    GetUserActiveChatMessagesInputDTO,
-    GetUserActiveChatMessagesOutputDTO,
+    GetUserActiveChatMessagesQuery,
+    GetUserActiveChatMessagesQueryResult,
 )
 from app.modules.chat.application.shared.dtos import ChatMessageInfoDTO
 
 
-class GetUserActiveChatMessagesUseCase(
-    IBaseUseCase[
-        GetUserActiveChatMessagesInputDTO,
-        GetUserActiveChatMessagesOutputDTO,
+class GetUserActiveChatMessagesQueryHandler(
+    IQueryHandler[
+        GetUserActiveChatMessagesQuery,
+        GetUserActiveChatMessagesQueryResult,
     ]
 ):
     def __init__(
@@ -25,16 +25,16 @@ class GetUserActiveChatMessagesUseCase(
         self._chat_repository = chat_repository
         self._chat_message_repository = chat_message_repository
 
-    async def execute(
-        self, input_data: GetUserActiveChatMessagesInputDTO
-    ) -> GetUserActiveChatMessagesOutputDTO:
+    async def handle(
+        self, input_data: GetUserActiveChatMessagesQuery
+    ) -> GetUserActiveChatMessagesQueryResult:
         user_id = UserIdVO.from_uuid(input_data.user_id)
         chat_id = await self._chat_repository.get_active_chat_id(user_id)
         if not chat_id:
-            return GetUserActiveChatMessagesOutputDTO()
+            return GetUserActiveChatMessagesQueryResult()
 
         messages = await self._chat_message_repository.get_chat_messages(chat_id)
-        return GetUserActiveChatMessagesOutputDTO(
+        return GetUserActiveChatMessagesQueryResult(
             chat_id=chat_id.value,
             messages=[
                 ChatMessageInfoDTO(
