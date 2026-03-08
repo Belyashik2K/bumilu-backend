@@ -14,7 +14,7 @@ from app.modules.reviews.application.interfaces.entity_resolver import (
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
-from app.modules.reviews.application.queries.get import GetReviewUseCase
+from app.modules.reviews.application.queries.get import GetReviewQueryHandler
 from app.modules.reviews.application.queries.get_all_by_user import (
     GetAllReviewsByUserUseCase,
 )
@@ -90,8 +90,8 @@ class ReviewProvider(Provider):
     async def get_review_uc(
         self,
         review_repository: IReviewRepository,
-    ) -> GetReviewUseCase:
-        return GetReviewUseCase(
+    ) -> GetReviewQueryHandler:
+        return GetReviewQueryHandler(
             review_repository=review_repository,
         )
 

@@ -1,5 +1,5 @@
-from .dtos import (
-    GetReviewInputDTO,
-    GetReviewOutputDTO,
+from .handler import GetReviewQueryHandler
+from .query import (
+    GetReviewQuery,
+    GetReviewQueryResult,
 )
-from .use_case import GetReviewUseCase
