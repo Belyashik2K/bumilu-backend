@@ -9,11 +9,9 @@ from app.core.infrastructure.config import AppConfig
 from app.modules.chat.application.commands.admin import (
     SubmitAdminMessageCommandHandler,
 )
-from app.modules.chat.application.commands.ai import (
-    ProcessPendingChatsCommandHandler,
-)
-from app.modules.chat.application.commands.close_inactive_chats import (
+from app.modules.chat.application.commands.cron import (
     CloseInactiveChatsCommandHandler,
+    ProcessPendingChatsCommandHandler,
 )
 from app.modules.chat.application.commands.user.submit_message import (
     SubmitUserMessageCommandHandler,

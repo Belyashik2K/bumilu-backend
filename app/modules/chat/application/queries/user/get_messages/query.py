@@ -5,7 +5,7 @@ from dataclasses import (
 from uuid import UUID
 
 from app.core.shared.application.queries.pagination import OffsetPagination
-from app.modules.chat.application.queries.shared.views import ChatMessageView
+from app.modules.chat.application.queries.common_views import ChatMessageView
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

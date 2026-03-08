@@ -81,7 +81,6 @@ async def get_current_user_chat(
 @user_chat_router.get(
     "/users/me/chat/messages",
     responses=generate_responses_for_endpoint(),
-    response_model_exclude_none=True,
 )
 @inject
 async def get_current_user_chat_messages(

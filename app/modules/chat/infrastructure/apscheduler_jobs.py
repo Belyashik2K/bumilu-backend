@@ -6,9 +6,9 @@ from dishka import FromDishka
 from app.core.application.commands.base import empty_command
 from app.core.infrastructure.config import AppConfig
 from app.core.shared.utils import get_current_dt
-from app.modules.chat.application.commands.ai import ProcessPendingChatsCommandHandler
-from app.modules.chat.application.commands.close_inactive_chats import (
+from app.modules.chat.application.commands.cron import (
     CloseInactiveChatsCommandHandler,
+    ProcessPendingChatsCommandHandler,
 )
 
 
