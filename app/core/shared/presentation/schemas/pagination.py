@@ -1,3 +1,7 @@
+from typing import Annotated
+
+from fastapi import Query
+from fastapi.params import Depends
 from pydantic import (
     BaseModel,
     Field,
@@ -56,3 +60,7 @@ class OffsetPaginationSchema(BaseModel):
         description="The offset value for the previous page of results, or null if there are no previous pages.",
         examples=[PREV_OFFSET_EXAMPLE],
     )
+
+
+PaginationQuery = Annotated[OffsetPaginationQuery, Query()]
+PaginationQueryAsDependency = Annotated[OffsetPaginationQuery, Depends()]

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import (
@@ -14,6 +15,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
+    relationship,
 )
 
 from app.core.infrastructure.database import BaseModel
@@ -26,6 +28,9 @@ from app.modules.chat.shared.enums import (
     ChatCloseReasonEnum,
     ChatStatusEnum,
 )
+
+if TYPE_CHECKING:
+    from app.modules.users.infrastructure.database.models import UserModel
 
 
 class ChatModel(PKUUIDMixin, TimestampMixin, BaseModel):
@@ -50,6 +55,10 @@ class ChatModel(PKUUIDMixin, TimestampMixin, BaseModel):
     closed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     close_reason: Mapped[ChatCloseReasonEnum | None] = mapped_column(
         Enum(ChatCloseReasonEnum, name="chat_close_reason_enum")
+    )
+
+    user: Mapped["UserModel"] = relationship(
+        "UserModel", back_populates="chats", lazy="raise"
     )
 
     __table_args__ = (

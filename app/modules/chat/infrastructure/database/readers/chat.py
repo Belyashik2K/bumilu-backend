@@ -1,8 +1,20 @@
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import (
+    func,
+    select,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
+from app.modules.chat.application.queries.admin.get_chat_list.view import (
+    AdminChatListPage,
+    AdminChatPreviewView,
+)
+from app.modules.chat.application.queries.common_views import (
+    LocationView,
+    UserView,
+)
 from app.modules.chat.application.queries.readers.chat import IChatReader
 from app.modules.chat.application.queries.user.get_chat import UserChatView
 from app.modules.chat.infrastructure.database.models import ChatModel
@@ -23,4 +35,66 @@ class SQLAlchemyChatReader(IChatReader):
             return None
         return UserChatView(
             id=row.id, status=row.status, last_activity_at=row.last_activity_at
+        )
+
+    async def list_admin_chats(
+        self,
+        limit: int,
+        offset: int,
+        status: ChatStatusEnum | None = None,
+    ) -> AdminChatListPage:
+        count_stmt = select(func.count()).select_from(ChatModel)
+        items_stmt = select(ChatModel).options(joinedload(ChatModel.user))
+
+        if status is not None:
+            count_stmt = count_stmt.where(ChatModel.status == status)
+            items_stmt = items_stmt.where(ChatModel.status == status)
+
+        total_subquery = count_stmt.scalar_subquery()
+
+        stmt = (
+            items_stmt.add_columns(total_subquery.label("total_count"))
+            .order_by(ChatModel.created_at.asc())
+            .limit(limit)
+            .offset(offset)
+        )
+
+        result = await self._session.execute(stmt)
+        rows = result.all()
+
+        if not rows:
+            total = await self._session.scalar(count_stmt)
+            return AdminChatListPage(
+                items=[],
+                total=total or 0,
+            )
+
+        chats: list[ChatModel] = [row.ChatModel for row in rows]
+        total = rows[0].total_count
+
+        converted_chats = [
+            AdminChatPreviewView(
+                id=chat.id,
+                user=UserView(
+                    id=chat.user.id,
+                    email=chat.user.email,
+                    role=chat.user.role,
+                ),
+                language=chat.language,
+                status=chat.status,
+                last_activity_at=chat.last_activity_at,
+                last_message_preview=chat.last_message_preview,
+                last_location=LocationView(
+                    latitude=chat.last_location_latitude,
+                    longitude=chat.last_location_longitude,
+                )
+                if chat.last_location_latitude and chat.last_location_longitude
+                else None,
+            )
+            for chat in chats
+        ]
+
+        return AdminChatListPage(
+            items=converted_chats,
+            total=total,
         )
