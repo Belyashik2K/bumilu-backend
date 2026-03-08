@@ -1,12 +1,10 @@
-from app.core.application.use_cases.base import (
-    IBaseUseCase,
-)
+from app.core.application.commands import ICommandHandlerWithResult
 from app.core.shared.domain.value_objects.id import UserIdVO
 from app.core.shared.enums import LanguageEnum
 from app.core.shared.utils import get_current_dt
 from app.modules.chat.application.commands.user.submit_message import (
-    SubmitUserMessageInputDTO,
-    SubmitUserMessageOutputDTO,
+    SubmitUserMessageCommand,
+    SubmitUserMessageCommandResult,
 )
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.application.interfaces.repositories.chat_message import (
@@ -19,8 +17,8 @@ from app.modules.users.application.interfaces.repositories.user import IUserRepo
 from app.modules.users.application.queries.get.exceptions import UserNotFound
 
 
-class SubmitUserMessageUseCase(
-    IBaseUseCase[SubmitUserMessageInputDTO, SubmitUserMessageOutputDTO]
+class SubmitUserMessageCommandHandler(
+    ICommandHandlerWithResult[SubmitUserMessageCommand, SubmitUserMessageCommandResult]
 ):
     def __init__(
         self,
@@ -32,18 +30,18 @@ class SubmitUserMessageUseCase(
         self._chat_message_repository = chat_message_repository
         self._user_repository = user_repository
 
-    async def execute(
-        self, input_data: SubmitUserMessageInputDTO
-    ) -> SubmitUserMessageOutputDTO:
-        user_id = UserIdVO.from_uuid(input_data.user_id)
+    async def handle(
+        self, command: SubmitUserMessageCommand
+    ) -> SubmitUserMessageCommandResult:
+        user_id = UserIdVO.from_uuid(command.user_id)
         chat = await self._chat_repository.find_active_chat(user_id)
         now = get_current_dt()
 
         location: LocationVO | None = None
-        if input_data.longitude and input_data.latitude:
+        if command.longitude and command.latitude:
             location = LocationVO.from_coordinates(
-                latitude=input_data.latitude,
-                longitude=input_data.longitude,
+                latitude=command.latitude,
+                longitude=command.longitude,
             )
 
         if not chat:
@@ -61,14 +59,14 @@ class SubmitUserMessageUseCase(
             )
 
         message = chat.reply_as_user(
-            text=MessageTextVO(input_data.text),
+            text=MessageTextVO(command.text),
             location=location,
             now=now,
         )
         await self._chat_repository.save(chat)
         await self._chat_message_repository.save(message)
 
-        return SubmitUserMessageOutputDTO(
+        return SubmitUserMessageCommandResult(
             chat_id=chat.id.value,
             message_id=message.id.value,
         )

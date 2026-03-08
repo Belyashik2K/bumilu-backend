@@ -13,8 +13,8 @@ from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.deps import get_principal
 from app.modules.auth.shared.context import Principal
 from app.modules.chat.application.commands.user.submit_message import (
-    SubmitUserMessageInputDTO,
-    SubmitUserMessageUseCase,
+    SubmitUserMessageCommand,
+    SubmitUserMessageCommandHandler,
 )
 from app.modules.chat.application.queries.user.get_info import (
     GetUserActiveChatInfoInputDTO,
@@ -42,12 +42,12 @@ user_chat_router = APIRouter(tags=["Chat"], dependencies=[Depends(security)])
 )
 @inject
 async def submit_user_message(
-    uc: FromDishka[SubmitUserMessageUseCase],
+    handler: FromDishka[SubmitUserMessageCommandHandler],
     data: SubmitUserMessageRequestSchema,
     principal: Annotated[Principal, Depends(get_principal)],
 ) -> SubmitUserMessageResponseSchema:
-    result = await uc(
-        SubmitUserMessageInputDTO(
+    result = await handler(
+        SubmitUserMessageCommand(
             user_id=principal.id.value,
             text=data.text,
             latitude=data.location.latitude if data.location else None,

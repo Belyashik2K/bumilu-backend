@@ -6,7 +6,7 @@ from uuid import UUID
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class SubmitUserMessageInputDTO:
+class SubmitUserMessageCommand:
     user_id: UUID
     text: str
     latitude: float | None = field(default=None)
@@ -14,6 +14,6 @@ class SubmitUserMessageInputDTO:
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class SubmitUserMessageOutputDTO:
+class SubmitUserMessageCommandResult:
     chat_id: UUID
     message_id: UUID
