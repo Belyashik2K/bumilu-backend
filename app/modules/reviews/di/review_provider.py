@@ -16,7 +16,7 @@ from app.modules.reviews.application.interfaces.repositories.review import (
 )
 from app.modules.reviews.application.queries.get import GetReviewQueryHandler
 from app.modules.reviews.application.queries.get_all_by_user import (
-    GetAllReviewsByUserUseCase,
+    GetAllReviewsByUserQueryHandler,
 )
 from app.modules.reviews.application.queries.get_all_for_entity import (
     GetAllReviewsForEntityUseCase,
@@ -87,7 +87,7 @@ class ReviewProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def get_review_uc(
+    async def get_review_handler(
         self,
         review_repository: IReviewRepository,
     ) -> GetReviewQueryHandler:
@@ -96,12 +96,12 @@ class ReviewProvider(Provider):
         )
 
     @provide(scope=Scope.REQUEST)
-    async def get_all_reviews_by_user_uc(
+    async def get_all_reviews_by_user_handler(
         self,
         review_repository: IReviewRepository,
         user_repository: IUserRepository,
-    ) -> GetAllReviewsByUserUseCase:
-        return GetAllReviewsByUserUseCase(
+    ) -> GetAllReviewsByUserQueryHandler:
+        return GetAllReviewsByUserQueryHandler(
             review_repository=review_repository,
             user_repository=user_repository,
         )

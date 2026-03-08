@@ -31,8 +31,8 @@ from app.modules.reviews.application.queries.get import (
     GetReviewQueryHandler,
 )
 from app.modules.reviews.application.queries.get_all_by_user import (
-    GetAllReviewsByUserInputDTO,
-    GetAllReviewsByUserUseCase,
+    GetAllReviewsByUserQuery,
+    GetAllReviewsByUserQueryHandler,
 )
 from app.modules.reviews.application.queries.get_all_for_entity import (
     GetAllReviewsForEntityInputDTO,
@@ -75,11 +75,11 @@ reviews_router = APIRouter(
 )
 @inject
 async def get_my_reviews(
-    uc: FromDishka[GetAllReviewsByUserUseCase],
+    uc: FromDishka[GetAllReviewsByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
 ) -> GetAllReviewsByUserResponseSchema:
     result = await uc(
-        GetAllReviewsByUserInputDTO(
+        GetAllReviewsByUserQuery(
             user_id=principal.id.value,
             actor_id=principal.id.value,
         )
@@ -97,12 +97,12 @@ async def get_my_reviews(
 )
 @inject
 async def get_reviews_by_user_id(
-    uc: FromDishka[GetAllReviewsByUserUseCase],
+    uc: FromDishka[GetAllReviewsByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
     user_id: UUID7 = USER_ID_PATH,
 ) -> GetAllReviewsByUserResponseSchema:
     result = await uc(
-        GetAllReviewsByUserInputDTO(
+        GetAllReviewsByUserQuery(
             user_id=user_id,
             actor_id=principal.id.value,
         )
