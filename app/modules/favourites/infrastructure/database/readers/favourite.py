@@ -35,6 +35,10 @@ class SQLAlchemyFavouriteReader(IFavouriteReader):
         )
         items_stmt = select(FavouriteModel).where(FavouriteModel.user_id == user_id)
 
+        if entity_type is not None:
+            count_stmt = count_stmt.where(FavouriteModel.entity_type == entity_type)
+            items_stmt = items_stmt.where(FavouriteModel.entity_type == entity_type)
+
         total_subquery = count_stmt.scalar_subquery()
         stmt = (
             items_stmt.add_columns(total_subquery.label("total_count"))
@@ -42,9 +46,6 @@ class SQLAlchemyFavouriteReader(IFavouriteReader):
             .limit(limit)
             .offset(offset)
         )
-
-        if entity_type:
-            stmt = items_stmt.where(FavouriteModel.entity_type == entity_type)
 
         result = await self._session.execute(stmt)
         rows = result.all()
