@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import Path
 from pydantic import (
     UUID7,
@@ -16,6 +18,7 @@ ENTITY_ID_EXAMPLE = (
 )
 ENTITY_TYPE_EXAMPLE = FavouriteEntityTypeEnum.PLACE
 ENTITY_TYPE_PATH_EXAMPLE = FavouriteEntityPathEnum.PLACES
+ENTITY_CREATED_AT_EXAMPLE = "2026-03-09T04:30:00Z"
 
 ENTITY_TYPE_PATH = Path(
     ...,
@@ -44,4 +47,9 @@ class FavouriteItemInfoSchema(BaseModel):
         ...,
         description="ID of the entity which is added to favourites.",
         examples=[ENTITY_ID_EXAMPLE],
+    )
+    created_at: datetime = Field(
+        ...,
+        description="Date and time when the entity was added to favourites.",
+        examples=[ENTITY_CREATED_AT_EXAMPLE],
     )

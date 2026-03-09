@@ -4,6 +4,7 @@ from pydantic import (
     Field,
 )
 
+from app.core.shared.presentation.schemas.pagination import OffsetPaginationSchema
 from app.modules.favourites.presentation.api.schemas.common import (
     FavouriteItemInfoSchema,
 )
@@ -16,7 +17,11 @@ class GetAllFavouritesByUserResponseSchema(BaseModel):
         description="The unique identifier of the user whose favourite items are being retrieved.",
         examples=[USER_ID_EXAMPLE],
     )
-    items: list[FavouriteItemInfoSchema] = Field(
+    favourites: list[FavouriteItemInfoSchema] = Field(
         ...,
         description="List of favourite items for the user.",
+    )
+    pagination: OffsetPaginationSchema = Field(
+        ...,
+        description="Pagination information for the list of favourite items.",
     )

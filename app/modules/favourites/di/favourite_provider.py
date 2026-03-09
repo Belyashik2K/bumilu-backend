@@ -17,8 +17,14 @@ from app.modules.favourites.application.interfaces.entity_resolver import (
 from app.modules.favourites.application.interfaces.repositories.favourite import (
     IFavouriteRepository,
 )
-from app.modules.favourites.application.queries.get_all_by_user import (
+from app.modules.favourites.application.queries.get_all_by_user.handler import (
     GetAllFavouritesByUserQueryHandler,
+)
+from app.modules.favourites.application.queries.readers.favourite import (
+    IFavouriteReader,
+)
+from app.modules.favourites.infrastructure.database.readers.favourite import (
+    SQLAlchemyFavouriteReader,
 )
 from app.modules.favourites.infrastructure.database.repositories.favourite import (
     SQLAlchemyFavouriteRepository,
@@ -27,6 +33,7 @@ from app.modules.favourites.infrastructure.entity_resolver import (
     FavouriteEntityResolver,
 )
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
+from app.modules.users.application.queries.readers.user import IUserReader
 
 
 class FavouriteProvider(Provider):
@@ -44,15 +51,21 @@ class FavouriteProvider(Provider):
             session=session,
         )
 
+    @provide(scope=Scope.REQUEST, provides=IFavouriteReader)
+    async def favourite_reader(
+        self, session: AsyncSession
+    ) -> SQLAlchemyFavouriteReader:
+        return SQLAlchemyFavouriteReader(
+            session=session,
+        )
+
     @provide(scope=Scope.REQUEST)
     async def get_favourites_by_user_handler(
-        self,
-        favourite_repository: IFavouriteRepository,
-        user_repository: IUserRepository,
+        self, favourite_reader: IFavouriteReader, user_reader: IUserReader
     ) -> GetAllFavouritesByUserQueryHandler:
         return GetAllFavouritesByUserQueryHandler(
-            favourite_repository=favourite_repository,
-            user_repository=user_repository,
+            favourite_reader=favourite_reader,
+            user_reader=user_reader,
         )
 
     @provide(scope=Scope.REQUEST)
