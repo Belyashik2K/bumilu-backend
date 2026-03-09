@@ -1,37 +1,28 @@
 from app.core.application.queries import IQueryHandler
-from app.core.shared.domain.value_objects.id import UserIdVO
-from app.modules.users.application.interfaces.repositories.user import IUserRepository
 from app.modules.users.application.queries.get.exceptions import UserNotFound
 from app.modules.users.application.queries.get.query import (
     GetUserQuery,
-    GetUserQueryResult,
 )
+from app.modules.users.application.queries.readers.user import IUserReader
+from app.modules.users.application.queries.shared_views import UserInfoView
 
 
 class GetUserQueryHandler(
     IQueryHandler[
         GetUserQuery,
-        GetUserQueryResult,
+        UserInfoView,
     ]
 ):
-    def __init__(
-        self,
-        user_repository: IUserRepository,
-    ) -> None:
-        self._user_repository = user_repository
+    def __init__(self, user_reader: IUserReader) -> None:
+        self._user_reader = user_reader
 
     async def handle(
         self,
         query: GetUserQuery,
-    ) -> GetUserQueryResult:
-        user_id = UserIdVO.from_uuid(query.id)
-
-        user = await self._user_repository.get_by_id(user_id)
+    ) -> UserInfoView:
+        user = await self._user_reader.get_by_id(query.user_id)
         if not user:
-            raise UserNotFound(user_id=user_id)
+            # TODO: remove type ignore after fixing the type of user_id in UserNotFound
+            raise UserNotFound(user_id=query.user_id)  # type: ignore
 
-        return GetUserQueryResult(
-            id=str(user.id),
-            email=str(user.email) if user.email else None,
-            role=user.role,
-        )
+        return user

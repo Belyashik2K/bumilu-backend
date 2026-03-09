@@ -2,12 +2,13 @@ from dataclasses import (
     dataclass,
     field,
 )
+from uuid import UUID
 
 from app.core.shared.enums import UserRoleEnum
 
 
-@dataclass(slots=True, kw_only=True, frozen=True)
-class UserInfoDTO:  # TODO: remove this class
-    id: str
+@dataclass(frozen=True, slots=True, kw_only=True)
+class UserInfoView:
+    id: UUID
     email: str | None = field(default=None)
     role: UserRoleEnum

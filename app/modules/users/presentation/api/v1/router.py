@@ -35,7 +35,7 @@ async def get_current_user(
 ) -> AuthenticatedUserInfoSchema:
     result = await handler(
         GetUserQuery(
-            id=principal.id.value,
+            user_id=principal.id.value,
         )
     )
     return AuthenticatedUserInfoSchema.model_validate(result, from_attributes=True)
