@@ -5,12 +5,13 @@ from dataclasses import (
 from datetime import datetime
 from uuid import UUID
 
+from app.core.shared.application.queries.pagination import OffsetPagination
 from app.core.shared.enums import UserRoleEnum
 from app.modules.chat.shared.enums import AuthorTypeEnum
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class UserView:
+class ChatUserView:
     id: UUID
     email: str | None = field(default=None)
     role: UserRoleEnum
@@ -41,3 +42,10 @@ class ChatMessageView:
 class ChatMessagesPage:
     items: list[ChatMessageView]
     total: int
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class PaginatedChatMessagesView:
+    chat_id: UUID | None = field(default=None)
+    messages: list[ChatMessageView] = field(default_factory=list)
+    pagination: OffsetPagination

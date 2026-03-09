@@ -2,15 +2,15 @@ from app.core.application.queries import IQueryHandler
 from app.core.shared.application.queries.pagination import OffsetPagination
 from app.modules.chat.application.queries.admin.get_chat_messages.query import (
     GetAdminChatMessagesQuery,
-    GetAdminChatMessagesQueryResult,
 )
+from app.modules.chat.application.queries.common_views import PaginatedChatMessagesView
 from app.modules.chat.application.queries.readers.chat import IChatReader
 from app.modules.chat.application.queries.readers.chat_message import IChatMessageReader
 from app.modules.chat.application.shared.exceptions import ChatNotFound
 
 
 class GetAdminChatMessagesQueryHandler(
-    IQueryHandler[GetAdminChatMessagesQuery, GetAdminChatMessagesQueryResult],
+    IQueryHandler[GetAdminChatMessagesQuery, PaginatedChatMessagesView],
 ):
     def __init__(
         self,
@@ -22,7 +22,7 @@ class GetAdminChatMessagesQueryHandler(
 
     async def handle(
         self, query: GetAdminChatMessagesQuery
-    ) -> GetAdminChatMessagesQueryResult:
+    ) -> PaginatedChatMessagesView:
         chat = await self._chat_reader.get_admin_chat_by_id(query.chat_id)
         if chat is None:
             # TODO: use proper exception handling
@@ -32,7 +32,7 @@ class GetAdminChatMessagesQueryHandler(
             chat.id, limit=query.limit, offset=query.offset
         )
 
-        return GetAdminChatMessagesQueryResult(
+        return PaginatedChatMessagesView(
             chat_id=chat.id,
             messages=messages.items,
             pagination=OffsetPagination.create(

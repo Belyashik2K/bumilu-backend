@@ -13,11 +13,11 @@ from app.modules.chat.application.queries.admin.get_chat_list.view import (
     AdminChatPreviewView,
 )
 from app.modules.chat.application.queries.common_views import (
+    ChatUserView,
     LocationView,
-    UserView,
 )
 from app.modules.chat.application.queries.readers.chat import IChatReader
-from app.modules.chat.application.queries.user.get_chat import UserChatView
+from app.modules.chat.application.queries.user.get_chat.view import UserChatView
 from app.modules.chat.infrastructure.database.models import ChatModel
 from app.modules.chat.shared.enums import ChatStatusEnum
 
@@ -51,7 +51,7 @@ class SQLAlchemyChatReader(IChatReader):
             return None
         return AdminChatView(
             id=chat.id,
-            user=UserView(
+            user=ChatUserView(
                 id=chat.user.id,
                 email=chat.user.email,
                 role=chat.user.role,
@@ -108,7 +108,7 @@ class SQLAlchemyChatReader(IChatReader):
         converted_chats = [
             AdminChatPreviewView(
                 id=chat.id,
-                user=UserView(
+                user=ChatUserView(
                     id=chat.user.id,
                     email=chat.user.email,
                     role=chat.user.role,

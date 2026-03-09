@@ -19,11 +19,17 @@ from app.modules.chat.application.commands.user import (
     SubmitUserMessageCommand,
     SubmitUserMessageCommandHandler,
 )
-from app.modules.chat.application.queries.user import (
-    GetUserActiveChatMessagesQuery,
-    GetUserActiveChatMessagesQueryHandler,
-    GetUserActiveChatQuery,
+from app.modules.chat.application.queries.user.get_chat.handler import (
     GetUserActiveChatQueryHandler,
+)
+from app.modules.chat.application.queries.user.get_chat.query import (
+    GetUserActiveChatQuery,
+)
+from app.modules.chat.application.queries.user.get_messages.handler import (
+    GetUserActiveChatMessagesQueryHandler,
+)
+from app.modules.chat.application.queries.user.get_messages.query import (
+    GetUserActiveChatMessagesQuery,
 )
 from app.modules.chat.presentation.api.schemas.user.get import (
     GetChatInfoResponseSchema,
