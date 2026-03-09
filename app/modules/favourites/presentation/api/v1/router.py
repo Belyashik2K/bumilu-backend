@@ -36,6 +36,7 @@ from app.modules.favourites.presentation.api.schemas.common import (
     USER_ID_PATH,
 )
 from app.modules.favourites.presentation.api.schemas.get import (
+    FavouritesFiltersDep,
     GetAllFavouritesByUserResponseSchema,
 )
 from app.modules.favourites.shared.enums.favourite_entity import FavouriteEntityPathEnum
@@ -56,6 +57,7 @@ favourites_router = APIRouter(
 async def get_my_favourites(
     handler: FromDishka[GetAllFavouritesByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
+    filters: FavouritesFiltersDep,
     pagination: OffsetPaginationDep,
 ) -> GetAllFavouritesByUserResponseSchema:
     result = await handler(
@@ -64,6 +66,7 @@ async def get_my_favourites(
             user_id=principal.id.value,
             limit=pagination.limit,
             offset=pagination.offset,
+            entity_type=filters.entity_type,
         )
     )
     return GetAllFavouritesByUserResponseSchema.model_validate(
@@ -81,12 +84,17 @@ async def get_my_favourites(
 async def get_favourites_by_user_id(
     uc: FromDishka[GetAllFavouritesByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
+    filters: FavouritesFiltersDep,
+    pagination: OffsetPaginationDep,
     user_id: UUID7 = USER_ID_PATH,
 ) -> GetAllFavouritesByUserResponseSchema:
     result = await uc(
         GetAllFavouritesByUserQuery(
             actor_id=principal.id.value,
             user_id=user_id,
+            limit=pagination.limit,
+            offset=pagination.offset,
+            entity_type=filters.entity_type,
         )
     )
     return GetAllFavouritesByUserResponseSchema.model_validate(
