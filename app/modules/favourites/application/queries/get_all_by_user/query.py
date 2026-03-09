@@ -4,16 +4,12 @@ from dataclasses import (
 )
 from uuid import UUID
 
-from app.modules.favourites.application.shared.dtos import FavouriteItemDTO
+from app.core.shared.application.queries.pagination import OffsetPaginationMixin
+from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetAllFavouritesByUserQuery:
+class GetAllFavouritesByUserQuery(OffsetPaginationMixin):
     actor_id: UUID
     user_id: UUID
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class GetAllFavouritesByUserQueryResult:
-    user_id: UUID
-    items: list[FavouriteItemDTO] = field(default_factory=list)
+    entity_type: FavouriteEntityTypeEnum | None = field(default=None)

@@ -10,6 +10,9 @@ from pydantic import UUID7
 from starlette import status
 
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
+from app.core.shared.presentation.schemas.pagination import (
+    OffsetPaginationDep,
+)
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.deps import get_principal
 from app.modules.auth.shared.context import Principal
@@ -21,9 +24,11 @@ from app.modules.favourites.application.commands.remove import (
     RemoveFromFavouritesCommand,
     RemoveFromFavouritesCommandHandler,
 )
-from app.modules.favourites.application.queries.get_all_by_user import (
-    GetAllFavouritesByUserQuery,
+from app.modules.favourites.application.queries.get_all_by_user.handler import (
     GetAllFavouritesByUserQueryHandler,
+)
+from app.modules.favourites.application.queries.get_all_by_user.query import (
+    GetAllFavouritesByUserQuery,
 )
 from app.modules.favourites.presentation.api.schemas.common import (
     ENTITY_ID_PATH,
@@ -51,11 +56,14 @@ favourites_router = APIRouter(
 async def get_my_favourites(
     handler: FromDishka[GetAllFavouritesByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
+    pagination: OffsetPaginationDep,
 ) -> GetAllFavouritesByUserResponseSchema:
     result = await handler(
         GetAllFavouritesByUserQuery(
             actor_id=principal.id.value,
             user_id=principal.id.value,
+            limit=pagination.limit,
+            offset=pagination.offset,
         )
     )
     return GetAllFavouritesByUserResponseSchema.model_validate(
