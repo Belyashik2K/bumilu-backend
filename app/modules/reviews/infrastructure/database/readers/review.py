@@ -49,6 +49,7 @@ class SQLAlchemyReviewReader(IReviewReader):
             ),
             text=review.text,
             rating=review.rating,
+            created_at=review.created_at,
         )
 
     async def _get_reviews_page(
@@ -91,18 +92,7 @@ class SQLAlchemyReviewReader(IReviewReader):
         review = result.scalar_one_or_none()
         if not review:
             return None
-        return ReviewInfoView(
-            review_id=review.id,
-            entity=ReviewEntityInfoView(
-                id=review.entity_id,
-                type=review.entity_type,
-            ),
-            author=ReviewAuthorInfoView(
-                id=review.author_id,
-            ),
-            text=review.text,
-            rating=review.rating,
-        )
+        return self._to_review_info_view(review)
 
     async def get_user_review_for_entity(
         self,
@@ -123,18 +113,7 @@ class SQLAlchemyReviewReader(IReviewReader):
         review = result.scalar_one_or_none()
         if not review:
             return None
-        return ReviewInfoView(
-            review_id=review.id,
-            entity=ReviewEntityInfoView(
-                id=review.entity_id,
-                type=review.entity_type,
-            ),
-            author=ReviewAuthorInfoView(
-                id=review.author_id,
-            ),
-            text=review.text,
-            rating=review.rating,
-        )
+        return self._to_review_info_view(review)
 
     async def get_all_by_user_id(
         self,

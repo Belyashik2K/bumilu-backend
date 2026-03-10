@@ -2,6 +2,7 @@ from dataclasses import (
     dataclass,
     field,
 )
+from datetime import datetime
 from uuid import UUID
 
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
@@ -25,6 +26,7 @@ class ReviewInfoView:
     author: ReviewAuthorInfoView
     text: str | None = field(default=None)
     rating: int
+    created_at: datetime
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

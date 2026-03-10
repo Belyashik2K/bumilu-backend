@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated
 
 from fastapi import (
@@ -89,6 +90,11 @@ class BaseReviewInfoSchema(BaseModel):
     )
     text: str | None = TEXT_FIELD
     rating: int = RATING_FIELD
+    created_at: datetime = Field(
+        ...,
+        description="Timestamp when the review was created",
+        examples=["2026-03-10T04:30:00Z"],
+    )
 
 
 class ReviewInfoSchema(BaseReviewInfoSchema):
