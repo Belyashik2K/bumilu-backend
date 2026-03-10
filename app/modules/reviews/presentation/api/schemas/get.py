@@ -4,11 +4,13 @@ from pydantic import (
     Field,
 )
 
+from app.core.shared.presentation.schemas.pagination import OffsetPaginationSchema
 from app.modules.reviews.presentation.api.schemas.common import (
     AUTHOR_ID_EXAMPLE,
     ENTITY_ID_EXAMPLE,
     ENTITY_TYPE_EXAMPLE,
     REVIEW_ID_EXAMPLE,
+    ReviewAuthorInfoSchema,
     ReviewInfoSchema,
 )
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
@@ -39,8 +41,8 @@ class ReviewInfoSchemaWithoutEntity(ReviewInfoSchema):
     entity_type: ReviewEntityTypeEnum = Field(exclude=True)
 
 
-class ReviewInfoSchemaWithAuthor(ReviewInfoSchema):
-    author_id: UUID7 = Field(exclude=True)
+class ReviewInfoSchemaWithoutAuthor(ReviewInfoSchema):
+    author: ReviewAuthorInfoSchema = Field(exclude=True)
 
 
 class GetAllReviewsByUserResponseSchema(BaseModel):
@@ -49,8 +51,11 @@ class GetAllReviewsByUserResponseSchema(BaseModel):
         description="ID of the user (author) for which reviews are fetched",
         examples=[AUTHOR_ID_EXAMPLE],
     )
-    items: list[ReviewInfoSchemaWithAuthor] = Field(
+    reviews: list[ReviewInfoSchemaWithoutAuthor] = Field(
         ..., description="List of reviews left by the user (author) fetched"
+    )
+    pagination: OffsetPaginationSchema = Field(
+        ..., description="Pagination info for the reviews fetched"
     )
 
 

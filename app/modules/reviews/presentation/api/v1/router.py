@@ -11,6 +11,7 @@ from starlette import status
 
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.core.shared.constants import UNSET
+from app.core.shared.presentation.schemas.pagination import OffsetPaginationDep
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.deps import get_principal
 from app.modules.auth.shared.context import Principal
@@ -30,9 +31,11 @@ from app.modules.reviews.application.queries.get.handler import GetReviewQueryHa
 from app.modules.reviews.application.queries.get.query import (
     GetReviewQuery,
 )
-from app.modules.reviews.application.queries.get_all_by_user import (
-    GetAllReviewsByUserQuery,
+from app.modules.reviews.application.queries.get_all_by_user.handler import (
     GetAllReviewsByUserQueryHandler,
+)
+from app.modules.reviews.application.queries.get_all_by_user.query import (
+    GetAllReviewsByUserQuery,
 )
 from app.modules.reviews.application.queries.get_all_for_entity import (
     GetAllReviewsForEntityQuery,
@@ -77,11 +80,14 @@ reviews_router = APIRouter(
 async def get_my_reviews(
     handler: FromDishka[GetAllReviewsByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
+    pagination: OffsetPaginationDep,
 ) -> GetAllReviewsByUserResponseSchema:
     result = await handler(
         GetAllReviewsByUserQuery(
             user_id=principal.id.value,
             actor_id=principal.id.value,
+            limit=pagination.limit,
+            offset=pagination.offset,
         )
     )
     return GetAllReviewsByUserResponseSchema.model_validate(
@@ -99,12 +105,15 @@ async def get_my_reviews(
 async def get_reviews_by_user_id(
     handler: FromDishka[GetAllReviewsByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
+    pagination: OffsetPaginationDep,
     user_id: UUID7 = USER_ID_PATH,
 ) -> GetAllReviewsByUserResponseSchema:
     result = await handler(
         GetAllReviewsByUserQuery(
             user_id=user_id,
             actor_id=principal.id.value,
+            limit=pagination.limit,
+            offset=pagination.offset,
         )
     )
     return GetAllReviewsByUserResponseSchema.model_validate(

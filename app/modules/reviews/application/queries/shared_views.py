@@ -25,3 +25,9 @@ class ReviewInfoView:
     author: ReviewAuthorInfoView
     text: str | None = field(default=None)
     rating: int
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ReviewsPage:
+    items: list[ReviewInfoView] = field(default_factory=list)
+    total: int
