@@ -47,6 +47,7 @@ from app.modules.reviews.presentation.api.schemas.common import (
     REVIEW_ID_PATH,
     USER_ID_PATH,
     ReviewInfoSchema,
+    ReviewsFiltersDep,
 )
 from app.modules.reviews.presentation.api.schemas.create import (
     CreateReviewRequestSchema,
@@ -81,6 +82,7 @@ async def get_my_reviews(
     handler: FromDishka[GetAllReviewsByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
     pagination: OffsetPaginationDep,
+    filters: ReviewsFiltersDep,
 ) -> GetAllReviewsByUserResponseSchema:
     result = await handler(
         GetAllReviewsByUserQuery(
@@ -88,6 +90,7 @@ async def get_my_reviews(
             actor_id=principal.id.value,
             limit=pagination.limit,
             offset=pagination.offset,
+            entity_type=filters.entity_type,
         )
     )
     return GetAllReviewsByUserResponseSchema.model_validate(
@@ -106,6 +109,7 @@ async def get_reviews_by_user_id(
     handler: FromDishka[GetAllReviewsByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
     pagination: OffsetPaginationDep,
+    filters: ReviewsFiltersDep,
     user_id: UUID7 = USER_ID_PATH,
 ) -> GetAllReviewsByUserResponseSchema:
     result = await handler(
@@ -114,6 +118,7 @@ async def get_reviews_by_user_id(
             actor_id=principal.id.value,
             limit=pagination.limit,
             offset=pagination.offset,
+            entity_type=filters.entity_type,
         )
     )
     return GetAllReviewsByUserResponseSchema.model_validate(
