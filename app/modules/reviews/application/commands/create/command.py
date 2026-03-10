@@ -4,7 +4,6 @@ from dataclasses import (
 )
 from uuid import UUID
 
-from app.modules.reviews.application.shared.dtos import ReviewInfoDTO
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
 
@@ -18,4 +17,5 @@ class CreateReviewCommand:
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class CreateReviewCommandResult(ReviewInfoDTO): ...
+class CreateReviewCommandResult:
+    review_id: UUID
