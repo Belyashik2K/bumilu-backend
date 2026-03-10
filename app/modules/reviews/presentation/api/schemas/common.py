@@ -1,4 +1,10 @@
-from fastapi import Path
+from typing import Annotated
+
+from fastapi import (
+    Depends,
+    Path,
+    Query,
+)
 from pydantic import (
     UUID7,
     BaseModel,
@@ -92,3 +98,26 @@ class ReviewInfoSchema(BaseReviewInfoSchema):
     author: ReviewAuthorInfoSchema = Field(
         ..., description="Information about the author of the review"
     )
+
+
+class ReviewsFilters(BaseModel):
+    entity_type: ReviewEntityTypeEnum | None = Field(
+        None,
+        description="Filter reviews by their entity type.",
+        examples=[ENTITY_TYPE_EXAMPLE],
+    )
+
+
+def get_reviews_filters(
+    entity_type: Annotated[
+        ReviewEntityTypeEnum | None,
+        Query(
+            description="Filter reviews items by their entity type. If not provided, review items of all entity types will be returned.",
+            examples=[ENTITY_TYPE_EXAMPLE],
+        ),
+    ] = None,
+) -> ReviewsFilters:
+    return ReviewsFilters(entity_type=entity_type)
+
+
+ReviewsFiltersDep = Annotated[ReviewsFilters, Depends(get_reviews_filters)]
