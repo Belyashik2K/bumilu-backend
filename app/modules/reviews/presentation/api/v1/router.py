@@ -37,9 +37,11 @@ from app.modules.reviews.application.queries.get_all_by_user.handler import (
 from app.modules.reviews.application.queries.get_all_by_user.query import (
     GetAllReviewsByUserQuery,
 )
-from app.modules.reviews.application.queries.get_all_for_entity import (
-    GetAllReviewsForEntityQuery,
+from app.modules.reviews.application.queries.get_all_for_entity.handler import (
     GetAllReviewsForEntityQueryHandler,
+)
+from app.modules.reviews.application.queries.get_all_for_entity.query import (
+    GetAllReviewsForEntityQuery,
 )
 from app.modules.reviews.presentation.api.schemas.common import (
     ENTITY_ID_PATH,
@@ -202,6 +204,7 @@ async def update_review_by_id(
 async def get_reviews_for_entity(
     handler: FromDishka[GetAllReviewsForEntityQueryHandler],
     principal: Annotated[Principal, Depends(get_principal)],
+    pagination: OffsetPaginationDep,
     entity_type: ReviewEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> GetAllReviewsForEntityResponseSchema:
@@ -210,6 +213,8 @@ async def get_reviews_for_entity(
             actor_id=principal.id.value,
             entity_id=entity_id,
             entity_type=entity_type.domain_name,
+            limit=pagination.limit,
+            offset=pagination.offset,
         )
     )
     return GetAllReviewsForEntityResponseSchema.model_validate(

@@ -16,10 +16,28 @@ class IReviewReader(ABC):
     async def get_by_id(self, review_id: UUID) -> ReviewInfoView | None: ...
 
     @abstractmethod
+    async def get_user_review_for_entity(
+        self,
+        user_id: UUID,
+        entity_type: ReviewEntityTypeEnum,
+        entity_id: UUID,
+    ) -> ReviewInfoView | None: ...
+
+    @abstractmethod
     async def get_all_by_user_id(
         self,
         user_id: UUID,
         limit: int | None = None,
         offset: int | None = None,
         entity_type: ReviewEntityTypeEnum | None = None,
+    ) -> ReviewsPage: ...
+
+    @abstractmethod
+    async def get_all_by_entity(
+        self,
+        entity_type: ReviewEntityTypeEnum,
+        entity_id: UUID,
+        exclude_review_id: UUID | None = None,
+        limit: int | None = None,
+        offset: int | None = None,
     ) -> ReviewsPage: ...
