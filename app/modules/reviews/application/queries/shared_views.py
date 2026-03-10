@@ -21,7 +21,7 @@ class ReviewEntityInfoView:
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class ReviewInfoView:
-    review_id: UUID
+    id: UUID
     entity: ReviewEntityInfoView
     author: ReviewAuthorInfoView
     text: str | None = field(default=None)

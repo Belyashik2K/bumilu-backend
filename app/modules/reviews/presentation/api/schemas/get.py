@@ -61,10 +61,10 @@ class GetAllReviewsForEntityResponseSchema(BaseModel):
         ...,
         description="Information about the entity the reviews are for",
     )
-    my_review: ReviewInfoSchemaWithoutEntity | None = Field(
+    actor_review: ReviewInfoSchemaWithoutEntity | None = Field(
         None,
         description="Review left by the current user for the entity, if exists",
-        alias="actor_review",
+        serialization_alias="my_review",
         examples=[MY_REVIEW_EXAMPLE_DATA],
     )
     reviews: list[ReviewInfoSchemaWithoutEntity] = Field(
