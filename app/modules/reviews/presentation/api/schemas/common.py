@@ -85,9 +85,7 @@ class ReviewEntityInfoSchema(BaseModel):
 
 
 class BaseReviewInfoSchema(BaseModel):
-    review_id: UUID7 = Field(
-        ..., description="ID of the review", examples=[REVIEW_ID_EXAMPLE]
-    )
+    id: UUID7 = Field(..., description="ID of the review", examples=[REVIEW_ID_EXAMPLE])
     text: str | None = TEXT_FIELD
     rating: int = RATING_FIELD
     created_at: datetime = Field(

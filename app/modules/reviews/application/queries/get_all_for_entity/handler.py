@@ -51,7 +51,7 @@ class GetAllReviewsForEntityQueryHandler(
         reviews = await self._review_reader.get_all_by_entity(
             entity_type=query.entity_type,
             entity_id=entity_id,
-            exclude_review_id=actor_review.review_id if actor_review else None,
+            exclude_review_id=actor_review.id if actor_review else None,
             limit=query.limit,
             offset=query.offset,
         )

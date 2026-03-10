@@ -39,7 +39,7 @@ class SQLAlchemyReviewReader(IReviewReader):
     @staticmethod
     def _to_review_info_view(review: ReviewModel) -> ReviewInfoView:
         return ReviewInfoView(
-            review_id=review.id,
+            id=review.id,
             entity=ReviewEntityInfoView(
                 id=review.entity_id,
                 type=review.entity_type,
