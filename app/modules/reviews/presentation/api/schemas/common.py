@@ -58,6 +58,25 @@ USER_ID_PATH = Path(
 )
 
 
+class ReviewAuthorInfoSchema(BaseModel):
+    id: UUID7 = Field(
+        ..., description="Review author's ID", examples=[AUTHOR_ID_EXAMPLE]
+    )
+
+
+class ReviewEntityInfoSchema(BaseModel):
+    id: UUID7 = Field(
+        ...,
+        description="ID of the entity the review is for",
+        examples=[ENTITY_ID_EXAMPLE],
+    )
+    type: ReviewEntityTypeEnum = Field(
+        ...,
+        description="Type of the entity the review is for",
+        examples=[ENTITY_TYPE_EXAMPLE],
+    )
+
+
 class BaseReviewInfoSchema(BaseModel):
     review_id: UUID7 = Field(
         ..., description="ID of the review", examples=[REVIEW_ID_EXAMPLE]
@@ -67,16 +86,9 @@ class BaseReviewInfoSchema(BaseModel):
 
 
 class ReviewInfoSchema(BaseReviewInfoSchema):
-    entity_id: UUID7 = Field(
-        ...,
-        description="ID of the entity the review is for",
-        examples=[ENTITY_ID_EXAMPLE],
+    entity: ReviewEntityInfoSchema = Field(
+        ..., description="Information about the entity the review is for"
     )
-    entity_type: ReviewEntityTypeEnum = Field(
-        ...,
-        description="Type of the entity the review is for",
-        examples=[ENTITY_TYPE_EXAMPLE],
-    )
-    author_id: UUID7 = Field(
-        ..., description="ID of the review's author", examples=[AUTHOR_ID_EXAMPLE]
+    author: ReviewAuthorInfoSchema = Field(
+        ..., description="Information about the author of the review"
     )

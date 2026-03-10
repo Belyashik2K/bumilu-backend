@@ -1,0 +1,27 @@
+from dataclasses import (
+    dataclass,
+    field,
+)
+from uuid import UUID
+
+from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ReviewAuthorInfoView:
+    id: UUID
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ReviewEntityInfoView:
+    id: UUID
+    type: ReviewEntityTypeEnum
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ReviewInfoView:
+    review_id: UUID
+    entity: ReviewEntityInfoView
+    author: ReviewAuthorInfoView
+    text: str | None = field(default=None)
+    rating: int

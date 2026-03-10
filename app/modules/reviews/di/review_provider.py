@@ -14,12 +14,16 @@ from app.modules.reviews.application.interfaces.entity_resolver import (
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
 )
-from app.modules.reviews.application.queries.get import GetReviewQueryHandler
+from app.modules.reviews.application.queries.get.handler import GetReviewQueryHandler
 from app.modules.reviews.application.queries.get_all_by_user import (
     GetAllReviewsByUserQueryHandler,
 )
 from app.modules.reviews.application.queries.get_all_for_entity import (
     GetAllReviewsForEntityQueryHandler,
+)
+from app.modules.reviews.application.queries.readers.review import IReviewReader
+from app.modules.reviews.infrastructure.database.readers.review import (
+    SQLAlchemyReviewReader,
 )
 from app.modules.reviews.infrastructure.database.repositories.review import (
     SQLAlchemyReviewRepository,
@@ -43,6 +47,15 @@ class ReviewProvider(Provider):
         session: AsyncSession,
     ) -> SQLAlchemyReviewRepository:
         return SQLAlchemyReviewRepository(
+            session=session,
+        )
+
+    @provide(scope=Scope.REQUEST, provides=IReviewReader)
+    async def review_reader(
+        self,
+        session: AsyncSession,
+    ) -> SQLAlchemyReviewReader:
+        return SQLAlchemyReviewReader(
             session=session,
         )
 
@@ -88,11 +101,10 @@ class ReviewProvider(Provider):
 
     @provide(scope=Scope.REQUEST)
     async def get_review_handler(
-        self,
-        review_repository: IReviewRepository,
+        self, review_reader: IReviewReader
     ) -> GetReviewQueryHandler:
         return GetReviewQueryHandler(
-            review_repository=review_repository,
+            review_reader=review_reader,
         )
 
     @provide(scope=Scope.REQUEST)
