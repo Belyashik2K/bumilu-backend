@@ -41,8 +41,8 @@ from app.modules.chat.application.queries.user.get_chat.handler import (
 from app.modules.chat.application.queries.user.get_messages.handler import (
     GetUserActiveChatMessagesQueryHandler,
 )
-from app.modules.chat.infrastructure.chat_responders.openrouter import (
-    OpenRouterChatResponder,
+from app.modules.chat.infrastructure.chat_responders.openai import (
+    OpenAIChatResponder,
 )
 from app.modules.chat.infrastructure.database.readers.chat import SQLAlchemyChatReader
 from app.modules.chat.infrastructure.database.readers.chat_message import (
@@ -59,14 +59,14 @@ from app.modules.users.application.interfaces.repositories.user import IUserRepo
 
 class ChatProvider(Provider):
     @provide(scope=Scope.APP, provides=IChatResponder)
-    def chat_responder(
+    def openai_chat_responder(
         self,
         config: AppConfig,
-    ) -> OpenRouterChatResponder:
-        return OpenRouterChatResponder(
-            api_key=config.chat.ai_assistant.openrouter.api_key,
-            api_base_url=config.chat.ai_assistant.openrouter.api_base_url,
-            model=config.chat.ai_assistant.openrouter.model,
+    ) -> OpenAIChatResponder:
+        return OpenAIChatResponder(
+            api_key=config.chat.ai_assistant.openai.api_key,
+            api_base_url=config.chat.ai_assistant.openai.api_base_url,
+            model=config.chat.ai_assistant.openai.model,
             system_prompt=config.chat.ai_assistant.system_prompt,
         )
 

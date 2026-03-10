@@ -157,14 +157,14 @@ class CORSConfig(BaseModel):
 # ========= ChatConfig ========
 
 
-class OpenRouterConfig(BaseModel):
+class OpenAIConfig(BaseModel):
     api_key: str
     api_base_url: str
     model: str
 
 
 class AIAssistantConfig(BaseModel):
-    openrouter: OpenRouterConfig
+    openai: OpenAIConfig
     system_prompt: str
     confidence_score_threshold: float
     polling_interval_sec: int

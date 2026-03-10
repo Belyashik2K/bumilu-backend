@@ -1,6 +1,6 @@
 chat:
   ai_assistant:
-    openrouter:
+    openai:
       api_base_url: "https://openrouter.ai/api/v1"
       model: "stepfun/step-3.5-flash:free"
     system_prompt: >
