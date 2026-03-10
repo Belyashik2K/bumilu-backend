@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import (
@@ -14,6 +15,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
+    relationship,
 )
 
 from app.core.infrastructure.database import BaseModel
@@ -22,6 +24,9 @@ from app.core.infrastructure.database.mixins import (
     TimestampMixin,
 )
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
+
+if TYPE_CHECKING:
+    from app.modules.users.infrastructure.database.models import UserModel
 
 
 class ReviewModel(PKUUIDMixin, TimestampMixin, BaseModel):
@@ -39,6 +44,10 @@ class ReviewModel(PKUUIDMixin, TimestampMixin, BaseModel):
     entity_id: Mapped[UUID] = mapped_column(_UUID, index=True)
     text: Mapped[str | None] = mapped_column(VARCHAR(1000))
     rating: Mapped[int] = mapped_column()
+
+    author: Mapped["UserModel"] = relationship(
+        "UserModel", back_populates="reviews", lazy="raise"
+    )
 
     __table_args__ = (
         Index(

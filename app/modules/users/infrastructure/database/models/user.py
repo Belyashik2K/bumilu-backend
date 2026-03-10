@@ -27,6 +27,9 @@ if TYPE_CHECKING:
     from app.modules.chat.infrastructure.database.models import (
         ChatModel,
     )
+    from app.modules.reviews.infrastructure.database.models import (
+        ReviewModel,
+    )
 
 
 class UserModel(PKUUIDMixin, TimestampMixin, BaseModel):
@@ -41,6 +44,12 @@ class UserModel(PKUUIDMixin, TimestampMixin, BaseModel):
     chats: Mapped[list["ChatModel"]] = relationship(
         "ChatModel",
         back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="raise",
+    )
+    reviews: Mapped[list["ReviewModel"]] = relationship(
+        "ReviewModel",
+        back_populates="author",
         cascade="all, delete-orphan",
         lazy="raise",
     )

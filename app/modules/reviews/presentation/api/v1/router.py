@@ -26,9 +26,9 @@ from app.modules.reviews.application.commands.update import (
     UpdateReviewCommand,
     UpdateReviewCommandHandler,
 )
-from app.modules.reviews.application.queries.get import (
+from app.modules.reviews.application.queries.get.handler import GetReviewQueryHandler
+from app.modules.reviews.application.queries.get.query import (
     GetReviewQuery,
-    GetReviewQueryHandler,
 )
 from app.modules.reviews.application.queries.get_all_by_user import (
     GetAllReviewsByUserQuery,
