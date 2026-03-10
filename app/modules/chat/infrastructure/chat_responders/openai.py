@@ -14,7 +14,7 @@ from app.modules.chat.domain.models.chat_message import ChatMessage
 from app.modules.chat.shared.enums import AuthorTypeEnum
 
 
-class OpenRouterChatResponder(IChatResponder):
+class OpenAIChatResponder(IChatResponder):
     def __init__(
         self,
         api_key: str,
@@ -71,9 +71,6 @@ class OpenRouterChatResponder(IChatResponder):
                 f"lat={chat.last_location.latitude}, "
                 f"lon={chat.last_location.longitude}"
             )
-
-        print("\n\n".join(prompt_parts))
-
         return "\n\n".join(prompt_parts)
 
     @staticmethod
