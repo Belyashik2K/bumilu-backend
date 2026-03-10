@@ -1,19 +1,21 @@
 from app.core.application.queries import IQueryHandler
+from app.core.shared.application.queries.pagination import OffsetPagination
 from app.core.shared.domain.value_objects.id import (
     IdVO,
-    UserIdVO,
 )
 from app.modules.reviews.application.interfaces.entity_resolver import (
     IReviewEntityResolver,
 )
-from app.modules.reviews.application.interfaces.repositories.review import (
-    IReviewRepository,
-)
 from app.modules.reviews.application.queries.get_all_for_entity.query import (
     GetAllReviewsForEntityQuery,
-    GetAllReviewsForEntityQueryResult,
 )
-from app.modules.reviews.application.shared.dtos import ReviewInfoDTO
+from app.modules.reviews.application.queries.get_all_for_entity.view import (
+    PaginatedReviewsForEntityView,
+)
+from app.modules.reviews.application.queries.readers.review import IReviewReader
+from app.modules.reviews.application.queries.shared_views import (
+    ReviewEntityInfoView,
+)
 from app.modules.reviews.application.shared.exceptions import (
     ReviewEntityNotFound,
 )
@@ -22,71 +24,60 @@ from app.modules.reviews.application.shared.exceptions import (
 class GetAllReviewsForEntityQueryHandler(
     IQueryHandler[
         GetAllReviewsForEntityQuery,
-        GetAllReviewsForEntityQueryResult,
+        PaginatedReviewsForEntityView,
     ]
 ):
     def __init__(
         self,
-        review_repository: IReviewRepository,
+        review_reader: IReviewReader,
         entity_resolver: IReviewEntityResolver,
     ) -> None:
-        self._review_repository = review_repository
+        self._review_reader = review_reader
         self._entity_resolver = entity_resolver
 
     async def handle(
         self,
         query: GetAllReviewsForEntityQuery,
-    ) -> GetAllReviewsForEntityQueryResult:
-        actor_id = UserIdVO.from_uuid(query.actor_id) if query.actor_id else None
-        entity_id = IdVO.from_uuid(query.entity_id)
+    ) -> PaginatedReviewsForEntityView:
+        actor_id = query.actor_id
+        entity_id = query.entity_id
 
-        actor_review = None
-        if actor_id:
-            actor_review = await self._review_repository.get_by_entity_and_author(
-                entity_type=query.entity_type,
-                entity_id=entity_id,
-                author_id=actor_id,
-            )
-
-        reviews = await self._review_repository.get_all_by_entity_excluding_author(
+        actor_review = await self._review_reader.get_user_review_for_entity(
+            user_id=actor_id,
             entity_type=query.entity_type,
             entity_id=entity_id,
-            author_id=actor_id,
+        )
+
+        reviews = await self._review_reader.get_all_by_entity(
+            entity_type=query.entity_type,
+            entity_id=entity_id,
+            exclude_review_id=actor_review.review_id if actor_review else None,
+            limit=query.limit,
+            offset=query.offset,
         )
 
         if not reviews:
             # If there are no reviews, check if the entity exists
+            entity_id_vo = IdVO.from_uuid(query.entity_id)
             exists = await self._entity_resolver.resolve(
                 entity_type=query.entity_type,
-                entity_id=entity_id,
+                entity_id=entity_id_vo,
             )
             if not exists:
                 raise ReviewEntityNotFound(
-                    entity_type=query.entity_type, entity_id=entity_id
+                    entity_type=query.entity_type, entity_id=entity_id_vo
                 )
 
-        return GetAllReviewsForEntityQueryResult(
-            entity_id=query.entity_id,
-            entity_type=query.entity_type,
-            actor_review=ReviewInfoDTO(
-                review_id=actor_review.id.value,
-                entity_id=actor_review.entity_id.value,
-                entity_type=actor_review.entity_type,
-                author_id=actor_review.author_id.value,
-                text=actor_review.text.value,
-                rating=actor_review.rating.value,
-            )
-            if actor_review
-            else None,
-            items=[
-                ReviewInfoDTO(
-                    review_id=review.id.value,
-                    entity_id=review.entity_id.value,
-                    entity_type=review.entity_type,
-                    author_id=review.author_id.value,
-                    text=review.text.value,
-                    rating=review.rating.value,
-                )
-                for review in reviews
-            ],
+        return PaginatedReviewsForEntityView(
+            entity=ReviewEntityInfoView(
+                id=entity_id,
+                type=query.entity_type,
+            ),
+            actor_review=actor_review,
+            reviews=reviews.items,
+            pagination=OffsetPagination.create(
+                limit=query.limit,
+                offset=query.offset,
+                total=reviews.total,
+            ),
         )
