@@ -19,8 +19,7 @@ from app.modules.chat.domain.value_objects.message_text import MessageTextVO
 
 class SubmitAdminMessageCommandHandler(
     ICommandHandlerWithResult[
-        SubmitAdminMessageCommand,
-        SubmitAdminMessageCommandResult,
+        SubmitAdminMessageCommand, SubmitAdminMessageCommandResult
     ]
 ):
     def __init__(
