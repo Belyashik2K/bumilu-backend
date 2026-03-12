@@ -1,6 +1,9 @@
 import logging
 
 from app.core.application.commands import ICommandHandlerWithResult
+from app.core.application.interfaces.transaction_manager import (
+    ITransactionManager,
+)
 from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.commands.email.verify_code import (
@@ -47,7 +50,9 @@ class VerifyEmailCodeAtLoginCommandHandler(
         auth_session_service: AuthSessionService,
         challenge_store: IEmailLoginChallengeStore,
         code_hasher: IVerificationCodeHasher,
+        transaction_manager: ITransactionManager,
     ) -> None:
+        super().__init__(transaction_manager)
         self._user_repository = user_repository
         self._device_repository = device_repository
         self._auth_session_repository = auth_session_repository

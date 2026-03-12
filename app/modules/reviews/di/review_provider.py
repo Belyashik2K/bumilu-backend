@@ -5,6 +5,7 @@ from dishka import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.modules.reviews.application.commands.create import CreateReviewCommandHandler
 from app.modules.reviews.application.commands.delete import DeleteReviewCommandHandler
 from app.modules.reviews.application.commands.update import UpdateReviewCommandHandler
@@ -75,8 +76,10 @@ class ReviewProvider(Provider):
         self,
         review_repository: IReviewRepository,
         entity_resolver: IReviewEntityResolver,
+        transaction_manager: ITransactionManager,
     ) -> CreateReviewCommandHandler:
         return CreateReviewCommandHandler(
+            transaction_manager=transaction_manager,
             review_repository=review_repository,
             entity_resolver=entity_resolver,
         )
@@ -85,8 +88,10 @@ class ReviewProvider(Provider):
     async def update_review_handler(
         self,
         review_repository: IReviewRepository,
+        transaction_manager: ITransactionManager,
     ) -> UpdateReviewCommandHandler:
         return UpdateReviewCommandHandler(
+            transaction_manager=transaction_manager,
             review_repository=review_repository,
         )
 
@@ -94,8 +99,10 @@ class ReviewProvider(Provider):
     async def delete_review_handler(
         self,
         review_repository: IReviewRepository,
+        transaction_manager: ITransactionManager,
     ) -> DeleteReviewCommandHandler:
         return DeleteReviewCommandHandler(
+            transaction_manager=transaction_manager,
             review_repository=review_repository,
         )
 

@@ -1,2 +1,4 @@
 logging:
   level: "DEBUG"
+database:
+  echo: false

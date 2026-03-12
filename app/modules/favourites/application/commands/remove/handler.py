@@ -1,4 +1,5 @@
 from app.core.application.commands import ICommandHandler
+from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.shared.domain.value_objects.id import (
     IdVO,
     UserIdVO,
@@ -13,7 +14,12 @@ from app.modules.favourites.domain.models.favourite import Favourite
 
 
 class RemoveFromFavouritesCommandHandler(ICommandHandler[RemoveFromFavouritesCommand]):
-    def __init__(self, favourite_repository: IFavouriteRepository) -> None:
+    def __init__(
+        self,
+        favourite_repository: IFavouriteRepository,
+        transaction_manager: ITransactionManager,
+    ) -> None:
+        super().__init__(transaction_manager)
         self._favourite_repository = favourite_repository
 
     async def handle(self, command: RemoveFromFavouritesCommand) -> None:

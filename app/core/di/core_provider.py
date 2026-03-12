@@ -9,9 +9,15 @@ from dishka import (
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.application.interfaces.transaction_manager import (
+    ITransactionManager,
+)
 from app.core.infrastructure.apscheduler_logger import create_apscheduler_logger
 from app.core.infrastructure.config import AppConfig
 from app.core.infrastructure.database.helper import SQLAlchemyDatabaseHelper
+from app.core.infrastructure.database.transaction_manager import (
+    SQLAlchemyTransactionManager,
+)
 
 
 class CoreProvider(Provider):
@@ -54,10 +60,12 @@ class CoreProvider(Provider):
         self,
         database_helper: SQLAlchemyDatabaseHelper,
     ) -> AsyncIterator[AsyncSession]:
-        session = database_helper.session_factory()
-        try:
+        async with database_helper.session_factory() as session:
             yield session
-            await session.commit()
-        except Exception:
-            await session.rollback()  # TODO: uow in UC
-            raise
+
+    @provide(scope=Scope.REQUEST, provides=ITransactionManager)
+    async def transaction_manager(
+        self,
+        session: AsyncSession,
+    ) -> SQLAlchemyTransactionManager:
+        return SQLAlchemyTransactionManager(session=session)

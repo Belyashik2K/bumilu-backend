@@ -1,6 +1,7 @@
 import logging
 
 from app.core.application.commands import ICommandHandler
+from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.shared.domain.value_objects.id import (
     ReviewIdVO,
     UserIdVO,
@@ -20,7 +21,12 @@ logger = logging.getLogger(__name__)
 
 
 class DeleteReviewCommandHandler(ICommandHandler[DeleteReviewCommand]):
-    def __init__(self, review_repository: IReviewRepository) -> None:
+    def __init__(
+        self,
+        review_repository: IReviewRepository,
+        transaction_manager: ITransactionManager,
+    ) -> None:
+        super().__init__(transaction_manager)
         self._review_repository = review_repository
 
     async def handle(self, command: DeleteReviewCommand) -> None:

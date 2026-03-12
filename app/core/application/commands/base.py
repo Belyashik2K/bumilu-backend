@@ -10,6 +10,7 @@ from app.core.application.base_handler import (
     CommandDTO,
     ResultDTO,
 )
+from app.core.application.interfaces.transaction_manager import ITransactionManager
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -19,17 +20,43 @@ class EmptyCommand: ...
 empty_command = EmptyCommand()
 
 
-class ICommandHandler(Generic[CommandDTO], BaseHandler, ABC):
-    async def __call__(self, command: CommandDTO) -> None:
-        return await self._run_with_observability(request=command, func=self.handle)
+class BaseCommandHandler(Generic[CommandDTO], BaseHandler, ABC):
+    use_transaction: bool = True
 
+    def __init__(self, transaction_manager: ITransactionManager) -> None:
+        self._transaction_manager = transaction_manager
+
+    async def __call__(self, command: CommandDTO) -> ResultDTO:
+        if self.use_transaction:
+            return await self._run_with_transaction(command)
+        return await self._run_without_transaction(command)
+
+    async def _run_with_transaction(self, command: CommandDTO) -> ResultDTO:
+        async with self._transaction_manager:
+            return await self._run_with_observability(
+                request=command,
+                func=self.handle,
+            )
+
+    async def _run_without_transaction(self, command: CommandDTO) -> ResultDTO:
+        return await self._run_with_observability(
+            request=command,
+            func=self.handle,
+        )
+
+    @abstractmethod
+    async def handle(self, command: CommandDTO): ...
+
+
+class ICommandHandler(BaseCommandHandler[CommandDTO], ABC):
     @abstractmethod
     async def handle(self, command: CommandDTO) -> None: ...
 
 
-class ICommandHandlerWithResult(Generic[CommandDTO, ResultDTO], BaseHandler, ABC):
-    async def __call__(self, command: CommandDTO) -> ResultDTO:
-        return await self._run_with_observability(request=command, func=self.handle)
-
+class ICommandHandlerWithResult(
+    BaseCommandHandler[CommandDTO],
+    Generic[CommandDTO, ResultDTO],
+    ABC,
+):
     @abstractmethod
     async def handle(self, command: CommandDTO) -> ResultDTO: ...

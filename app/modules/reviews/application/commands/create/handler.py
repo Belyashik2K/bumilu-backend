@@ -1,4 +1,5 @@
 from app.core.application.commands import ICommandHandlerWithResult
+from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.shared.domain.value_objects.id import (
     IdVO,
     UserIdVO,
@@ -36,7 +37,9 @@ class CreateReviewCommandHandler(
         self,
         review_repository: IReviewRepository,
         entity_resolver: IReviewEntityResolver,
+        transaction_manager: ITransactionManager,
     ) -> None:
+        super().__init__(transaction_manager)
         self._review_repository = review_repository
         self._entity_resolver = entity_resolver
 

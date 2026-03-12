@@ -5,6 +5,7 @@ from dishka import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.modules.favourites.application.commands.add import (
     AddToFavouritesCommandHandler,
 )
@@ -74,8 +75,10 @@ class FavouriteProvider(Provider):
         favourite_repository: IFavouriteRepository,
         user_repository: IUserRepository,
         entity_resolver: IFavouriteEntityResolver,
+        transaction_manager: ITransactionManager,
     ) -> AddToFavouritesCommandHandler:
         return AddToFavouritesCommandHandler(
+            transaction_manager=transaction_manager,
             favourite_repository=favourite_repository,
             user_repository=user_repository,
             entity_resolver=entity_resolver,
@@ -85,7 +88,9 @@ class FavouriteProvider(Provider):
     async def remove_from_favourites_handler(
         self,
         favourite_repository: IFavouriteRepository,
+        transaction_manager: ITransactionManager,
     ) -> RemoveFromFavouritesCommandHandler:
         return RemoveFromFavouritesCommandHandler(
+            transaction_manager=transaction_manager,
             favourite_repository=favourite_repository,
         )
