@@ -1,1 +1,1 @@
-from .email import EmailVO
+from .user_email import UserEmailVO

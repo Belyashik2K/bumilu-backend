@@ -15,13 +15,13 @@ from app.modules.users.domain.models.user.exceptions import (
     UserEmailAlreadySet,
     VerifiedUserCannotBeGuest,
 )
-from app.modules.users.domain.value_objects import EmailVO
+from app.modules.users.domain.value_objects import UserEmailVO
 
 
 @dataclass(slots=True, kw_only=True)
 class User:
     id: UserIdVO
-    email: EmailVO | None = field(default=None)
+    email: UserEmailVO | None = field(default=None)
     email_verified_at: datetime | None = field(default=None)
     role: UserRoleEnum = field(default=UserRoleEnum.GUEST)
 
@@ -31,7 +31,7 @@ class User:
 
     @classmethod
     def create_verified(
-        cls, *, email: EmailVO, role: UserRoleEnum = UserRoleEnum.USER
+        cls, *, email: UserEmailVO, role: UserRoleEnum = UserRoleEnum.USER
     ) -> Self:
         if role is UserRoleEnum.GUEST:
             raise VerifiedUserCannotBeGuest()
@@ -43,7 +43,7 @@ class User:
             role=role,
         )
 
-    def attach_email(self, email: EmailVO) -> None:
+    def attach_email(self, email: UserEmailVO) -> None:
         if self.email is not None and self.email != email:
             raise UserEmailAlreadySet()
         self.email = email

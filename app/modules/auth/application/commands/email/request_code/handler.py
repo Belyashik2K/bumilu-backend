@@ -21,7 +21,7 @@ from app.modules.auth.application.interfaces.hashers import IVerificationCodeHas
 from app.modules.auth.application.interfaces.stores.email_login import (
     IEmailLoginChallengeStore,
 )
-from app.modules.users.domain.value_objects import EmailVO
+from app.modules.users.domain.value_objects import UserEmailVO
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ class RequestEmailCodeAtLoginCommandHandler(
         self,
         command: RequestEmailCodeAtLoginCommand,
     ) -> None:
-        email = EmailVO(command.email)
+        email = UserEmailVO(command.email)
 
         code = self._code_generator.generate()
         code_hash = self._code_hasher.hash(email=email, code=code)
