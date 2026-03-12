@@ -139,14 +139,14 @@ class SQLAlchemyReviewReader(IReviewReader):
         self,
         entity_type: ReviewEntityTypeEnum,
         entity_id: UUID,
-        exclude_review_id: UUID | None = None,
+        exclude_author_id: UUID | None = None,
         limit: int | None = None,
         offset: int | None = None,
     ) -> ReviewsPage:
         count_stmt, items_stmt = self._build_reviews_base_query(
             ReviewModel.entity_type == entity_type,
             ReviewModel.entity_id == entity_id,
-            ReviewModel.id != exclude_review_id if exclude_review_id else True,
+            ReviewModel.author_id != exclude_author_id if exclude_author_id else True,
         )
 
         return await self._get_reviews_page(

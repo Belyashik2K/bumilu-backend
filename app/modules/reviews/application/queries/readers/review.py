@@ -37,7 +37,7 @@ class IReviewReader(ABC):
         self,
         entity_type: ReviewEntityTypeEnum,
         entity_id: UUID,
-        exclude_review_id: UUID | None = None,
+        exclude_author_id: UUID | None = None,
         limit: int | None = None,
         offset: int | None = None,
     ) -> ReviewsPage: ...
