@@ -1,4 +1,5 @@
 from app.core.application.commands import ICommandHandlerWithResult
+from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.shared.domain.value_objects.id import UserIdVO
 from app.core.shared.enums import LanguageEnum
 from app.core.shared.utils import get_current_dt
@@ -25,7 +26,9 @@ class SubmitUserMessageCommandHandler(
         chat_repository: IChatRepository,
         chat_message_repository: IChatMessageRepository,
         user_repository: IUserRepository,
+        transaction_manager: ITransactionManager,
     ) -> None:
+        super().__init__(transaction_manager)
         self._chat_repository = chat_repository
         self._chat_message_repository = chat_message_repository
         self._user_repository = user_repository

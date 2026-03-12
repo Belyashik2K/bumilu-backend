@@ -5,6 +5,7 @@ from dishka import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.infrastructure.config import AppConfig
 from app.modules.chat.application.commands.admin import (
     SubmitAdminMessageCommandHandler,
@@ -130,8 +131,10 @@ class ChatProvider(Provider):
         user_repository: IUserRepository,
         chat_repository: IChatRepository,
         chat_message_repository: IChatMessageRepository,
+        transaction_manager: ITransactionManager,
     ) -> SubmitUserMessageCommandHandler:
         return SubmitUserMessageCommandHandler(
+            transaction_manager=transaction_manager,
             user_repository=user_repository,
             chat_repository=chat_repository,
             chat_message_repository=chat_message_repository,
@@ -144,8 +147,10 @@ class ChatProvider(Provider):
         chat_repository: IChatRepository,
         chat_message_repository: IChatMessageRepository,
         chat_responder: IChatResponder,
+        transaction_manager: ITransactionManager,
     ) -> ProcessPendingChatsCommandHandler:
         return ProcessPendingChatsCommandHandler(
+            transaction_manager=transaction_manager,
             chat_repository=chat_repository,
             chat_message_repository=chat_message_repository,
             chat_responder=chat_responder,
@@ -157,8 +162,10 @@ class ChatProvider(Provider):
         self,
         chat_repository: IChatRepository,
         chat_message_repository: IChatMessageRepository,
+        transaction_manager: ITransactionManager,
     ) -> SubmitAdminMessageCommandHandler:
         return SubmitAdminMessageCommandHandler(
+            transaction_manager=transaction_manager,
             chat_repository=chat_repository,
             chat_message_repository=chat_message_repository,
         )
@@ -168,18 +175,22 @@ class ChatProvider(Provider):
         self,
         config: AppConfig,
         chat_repository: IChatRepository,
+        transaction_manager: ITransactionManager,
     ) -> CloseInactiveChatsCommandHandler:
         return CloseInactiveChatsCommandHandler(
+            transaction_manager=transaction_manager,
             chat_repository=chat_repository,
             inactivity_threshold_minutes=config.chat.inactivity.threshold_min,
         )
 
     @provide(scope=Scope.REQUEST)
     async def close_chat_as_admin_handler(
-        self,
-        chat_repository: IChatRepository,
+        self, chat_repository: IChatRepository, transaction_manager: ITransactionManager
     ) -> CloseChatAsAdminCommandHandler:
-        return CloseChatAsAdminCommandHandler(chat_repository=chat_repository)
+        return CloseChatAsAdminCommandHandler(
+            transaction_manager=transaction_manager,
+            chat_repository=chat_repository,
+        )
 
     @provide(scope=Scope.REQUEST)
     async def get_admin_chat_list_handler(

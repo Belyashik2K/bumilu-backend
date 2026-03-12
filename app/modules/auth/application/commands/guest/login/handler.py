@@ -1,6 +1,9 @@
 import logging
 
 from app.core.application.commands import ICommandHandlerWithResult
+from app.core.application.interfaces.transaction_manager import (
+    ITransactionManager,
+)
 from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.core.shared.enums import UserRoleEnum
 from app.core.shared.utils import prepare_extras
@@ -38,7 +41,9 @@ class LoginAsGuestCommandHandler(
         device_repository: IDeviceRepository,
         auth_session_repository: IAuthSessionRepository,
         auth_session_service: AuthSessionService,
+        transaction_manager: ITransactionManager,
     ) -> None:
+        super().__init__(transaction_manager)
         self._user_repository = user_repository
         self._device_repository = device_repository
         self._auth_session_repository = auth_session_repository

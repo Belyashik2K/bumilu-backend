@@ -3,6 +3,9 @@ import logging
 from app.core.application.commands import (
     ICommandHandler,
 )
+from app.core.application.interfaces.transaction_manager import (
+    ITransactionManager,
+)
 from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.commands.email.request_code.command import (
     RequestEmailCodeAtLoginCommand,
@@ -26,17 +29,21 @@ logger = logging.getLogger(__name__)
 class RequestEmailCodeAtLoginCommandHandler(
     ICommandHandler[RequestEmailCodeAtLoginCommand]
 ):
+    use_transaction = False
+
     def __init__(
         self,
         code_generator: IVerificationCodeGenerator,
         code_hasher: IVerificationCodeHasher,
         challenge_store: IEmailLoginChallengeStore,
         email_sender: IEmailSender,
+        transaction_manager: ITransactionManager,
         email_subject: str,
         email_body_template: str,
         resend_cooldown_seconds: int,
         ttl_seconds: int,
     ) -> None:
+        super().__init__(transaction_manager)
         self._code_generator = code_generator
         self._code_hasher = code_hasher
         self._challenge_store = challenge_store

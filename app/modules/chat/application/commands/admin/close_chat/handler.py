@@ -1,4 +1,5 @@
 from app.core.application.commands import ICommandHandler
+from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.shared.domain.value_objects.id import ChatIdVO
 from app.core.shared.utils import get_current_dt
 from app.modules.chat.application.commands.admin.close_chat.command import (
@@ -10,7 +11,12 @@ from app.modules.chat.shared.enums import ChatCloseReasonEnum
 
 
 class CloseChatAsAdminCommandHandler(ICommandHandler[CloseChatAsAdminCommand]):
-    def __init__(self, chat_repository: IChatRepository) -> None:
+    def __init__(
+        self,
+        chat_repository: IChatRepository,
+        transaction_manager: ITransactionManager,
+    ) -> None:
+        super().__init__(transaction_manager)
         self._chat_repository = chat_repository
 
     async def handle(self, command: CloseChatAsAdminCommand) -> None:

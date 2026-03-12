@@ -1,4 +1,5 @@
 from app.core.application.commands import ICommandHandler
+from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.shared.domain.value_objects.id import (
     IdVO,
     UserIdVO,
@@ -24,7 +25,9 @@ class AddToFavouritesCommandHandler(ICommandHandler[AddToFavouritesCommand]):
         favourite_repository: IFavouriteRepository,
         user_repository: IUserRepository,
         entity_resolver: IFavouriteEntityResolver,
+        transaction_manager: ITransactionManager,
     ) -> None:
+        super().__init__(transaction_manager)
         self._favourite_repository = favourite_repository
         self._user_repository = user_repository
         self._entity_resolver = entity_resolver

@@ -1,6 +1,7 @@
 import logging
 
 from app.core.application.commands import ICommandHandler
+from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.commands.logout import (
@@ -19,7 +20,9 @@ class LogoutCommandHandler(ICommandHandler[LogoutCommand]):
         self,
         auth_session_repository: IAuthSessionRepository,
         auth_session_service: AuthSessionService,
+        transaction_manager: ITransactionManager,
     ) -> None:
+        super().__init__(transaction_manager)
         self._auth_session_repository = auth_session_repository
         self._auth_session_service = auth_session_service
 

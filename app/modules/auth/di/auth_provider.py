@@ -6,6 +6,9 @@ from dishka import (
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.application.interfaces.transaction_manager import (
+    ITransactionManager,
+)
 from app.core.infrastructure.config import AppConfig
 from app.modules.auth.application.commands.email import (
     RequestEmailCodeAtLoginCommandHandler,
@@ -170,8 +173,10 @@ class AuthProvider(Provider):
         device_repository: IDeviceRepository,
         auth_service_repository: IAuthSessionRepository,
         auth_session_service: AuthSessionService,
+        transaction_manager: ITransactionManager,
     ) -> LoginAsGuestCommandHandler:
         return LoginAsGuestCommandHandler(
+            transaction_manager=transaction_manager,
             user_repository=user_repository,
             device_repository=device_repository,
             auth_session_repository=auth_service_repository,
@@ -184,8 +189,10 @@ class AuthProvider(Provider):
         auth_session_repository: IAuthSessionRepository,
         user_repository: IUserRepository,
         auth_session_service: AuthSessionService,
+        transaction_manager: ITransactionManager,
     ) -> RefreshAuthSessionCommandHandler:
         return RefreshAuthSessionCommandHandler(
+            transaction_manager=transaction_manager,
             auth_session_repository=auth_session_repository,
             user_repository=user_repository,
             auth_session_service=auth_session_service,
@@ -196,8 +203,10 @@ class AuthProvider(Provider):
         self,
         auth_session_repository: IAuthSessionRepository,
         auth_session_service: AuthSessionService,
+        transaction_manager: ITransactionManager,
     ) -> LogoutCommandHandler:
         return LogoutCommandHandler(
+            transaction_manager=transaction_manager,
             auth_session_repository=auth_session_repository,
             auth_session_service=auth_session_service,
         )
@@ -210,8 +219,10 @@ class AuthProvider(Provider):
         code_hasher: IVerificationCodeHasher,
         challenge_store: IEmailLoginChallengeStore,
         email_sender: IEmailSender,
+        transaction_manager: ITransactionManager,
     ) -> RequestEmailCodeAtLoginCommandHandler:
         return RequestEmailCodeAtLoginCommandHandler(
+            transaction_manager=transaction_manager,
             code_generator=code_generator,
             code_hasher=code_hasher,
             challenge_store=challenge_store,
@@ -231,8 +242,10 @@ class AuthProvider(Provider):
         auth_session_service: AuthSessionService,
         challenge_store: IEmailLoginChallengeStore,
         code_hasher: IVerificationCodeHasher,
+        transaction_manager: ITransactionManager,
     ) -> VerifyEmailCodeAtLoginCommandHandler:
         return VerifyEmailCodeAtLoginCommandHandler(
+            transaction_manager=transaction_manager,
             auth_session_repository=auth_session_repository,
             user_repository=user_repository,
             device_repository=device_repository,

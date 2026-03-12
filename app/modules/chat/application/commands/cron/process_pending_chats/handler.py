@@ -2,6 +2,7 @@ from app.core.application.commands import (
     EmptyCommand,
     ICommandHandler,
 )
+from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.shared.utils import get_current_dt
 from app.modules.chat.application.interfaces.chat_responder import IChatResponder
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
@@ -17,8 +18,10 @@ class ProcessPendingChatsCommandHandler(ICommandHandler[EmptyCommand]):
         chat_repository: IChatRepository,
         chat_message_repository: IChatMessageRepository,
         chat_responder: IChatResponder,
+        transaction_manager: ITransactionManager,
         confidence_score_threshold: float,
     ) -> None:
+        super().__init__(transaction_manager)
         self._chat_repository = chat_repository
         self._chat_message_repository = chat_message_repository
         self._chat_responder = chat_responder
