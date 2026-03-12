@@ -14,6 +14,7 @@ from app.modules.auth.infrastructure.database.models import *  # noqa: F401
 from app.modules.chat.infrastructure.database.models import *  # noqa: F401
 from app.modules.favourites.infrastructure.database.models import *  # noqa: F401
 from app.modules.reviews.infrastructure.database.models import *  # noqa: F401
+from app.modules.staff.infrastructure.database.models import *  # noqa: F401
 from app.modules.users.infrastructure.database.models import *  # noqa: F401
 
 # this is the Alembic Config object, which provides
