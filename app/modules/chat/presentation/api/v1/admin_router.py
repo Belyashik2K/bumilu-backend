@@ -139,7 +139,7 @@ async def close_chat_as_admin(
     await handler(CloseChatAsAdminCommand(actor_id=principal.id.value, chat_id=chat_id))
 
 
-@admin_chat_router.post("/{chat_id}/reply")
+@admin_chat_router.post("/{chat_id}/messages")
 @inject
 async def reply_to_chat_as_admin(
     handler: FromDishka[SubmitAdminMessageCommandHandler],
