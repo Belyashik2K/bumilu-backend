@@ -3,9 +3,9 @@ from abc import (
     abstractmethod,
 )
 
-from app.modules.users.domain.value_objects import EmailVO
+from app.modules.users.domain.value_objects import UserEmailVO
 
 
 class IEmailSender(ABC):
     @abstractmethod
-    async def send(self, *, to: EmailVO, subject: str, body: str) -> None: ...
+    async def send(self, *, to: UserEmailVO, subject: str, body: str) -> None: ...

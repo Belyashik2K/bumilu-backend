@@ -31,7 +31,7 @@ from app.modules.auth.application.services.auth_session import AuthSessionServic
 from app.modules.auth.domain.models.device import Device
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 from app.modules.users.domain.models.user import User
-from app.modules.users.domain.value_objects import EmailVO
+from app.modules.users.domain.value_objects import UserEmailVO
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +64,7 @@ class VerifyEmailCodeAtLoginCommandHandler(
         self,
         command: VerifyEmailCodeAtLoginCommand,
     ) -> VerifyEmailCodeAtLoginCommandResult:
-        email = EmailVO(command.email)
+        email = UserEmailVO(command.email)
         code = command.code
 
         code_hash = self._code_hasher.hash(email=email, code=code)

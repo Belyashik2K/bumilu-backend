@@ -15,7 +15,7 @@ from aiosmtplib import (
 from app.core.shared.exceptions import BaseInfrastructureException
 from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.interfaces.email_sender import IEmailSender
-from app.modules.users.domain.value_objects import EmailVO
+from app.modules.users.domain.value_objects import UserEmailVO
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class SMTPLibEmailSender(IEmailSender):
 
     def _get_context(
         self,
-        to: EmailVO,
+        to: UserEmailVO,
         *,
         error_type: str | None = None,
     ) -> dict:
@@ -63,7 +63,7 @@ class SMTPLibEmailSender(IEmailSender):
             error_type=error_type,
         )
 
-    async def send(self, to: EmailVO, subject: str, body: str) -> None:
+    async def send(self, to: UserEmailVO, subject: str, body: str) -> None:
         message = EmailMessage()
         message["From"] = formataddr((self.from_author, self.from_email))
         message["To"] = str(to)

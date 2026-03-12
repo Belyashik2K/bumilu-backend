@@ -13,7 +13,7 @@ from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.interfaces.stores.email_login import (
     IEmailLoginChallengeStore,
 )
-from app.modules.users.domain.value_objects import EmailVO
+from app.modules.users.domain.value_objects import UserEmailVO
 
 _CONSUME_LUA: Final[str] = """
 -- KEYS[1] = key
@@ -73,20 +73,20 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
 
     def _get_context(
         self,
-        email: EmailVO,
+        email: UserEmailVO,
     ) -> dict:
         return prepare_extras(
             email=email.fingerprint,
             redis_client=repr(self._redis),
         )
 
-    def _rl_key(self, email: EmailVO) -> str:
+    def _rl_key(self, email: UserEmailVO) -> str:
         return f"{self._key_prefix}:rl:{email!s}"
 
-    def _key(self, email: EmailVO) -> str:
+    def _key(self, email: UserEmailVO) -> str:
         return f"{self._key_prefix}:{email!s}"
 
-    async def consume(self, *, email: EmailVO, code_hash: str) -> bool:
+    async def consume(self, *, email: UserEmailVO, code_hash: str) -> bool:
         try:
             res = await self._redis.eval(  # type: ignore
                 _CONSUME_LUA,
@@ -105,7 +105,7 @@ class RedisEmailLoginChallengeStore(IEmailLoginChallengeStore):
     async def save_with_rate_limit(
         self,
         *,
-        email: EmailVO,
+        email: UserEmailVO,
         code_hash: str,
         ttl_seconds: int,
         min_interval_seconds: int,
