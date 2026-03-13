@@ -2,7 +2,7 @@ from app.core.application.commands import ICommandHandlerWithResult
 from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.shared.domain.value_objects.id import (
     IdVO,
-    UserIdVO,
+    PrincipalIdVO,
 )
 from app.modules.reviews.application.commands.create import (
     CreateReviewCommand,
@@ -45,7 +45,7 @@ class CreateReviewCommandHandler(
 
     async def handle(self, command: CreateReviewCommand) -> CreateReviewCommandResult:
         entity_id = IdVO.from_uuid(command.entity_id)
-        author_id = UserIdVO.from_uuid(command.author_id)
+        author_id = PrincipalIdVO.from_uuid(command.author_id)
 
         current_review = await self._review_repository.get_by_entity_and_author(
             entity_type=command.entity_type,

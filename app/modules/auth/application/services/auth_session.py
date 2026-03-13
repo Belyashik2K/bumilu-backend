@@ -6,7 +6,6 @@ from datetime import timedelta
 
 from app.core.shared.domain.value_objects.id import (
     DeviceIdVO,
-    UserIdVO,
 )
 from app.core.shared.enums import UserRoleEnum
 from app.core.shared.utils import (
@@ -24,6 +23,7 @@ from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
 )
 from app.modules.auth.domain.models.auth_session import AuthSession
+from app.modules.auth.domain.models.principal import Principal
 
 logger = logging.getLogger(__name__)
 
@@ -75,23 +75,28 @@ class AuthSessionService:
     async def issue(
         self,
         *,
-        user_id: UserIdVO,
+        principal: Principal,
         device_id: DeviceIdVO,
         role: UserRoleEnum,
     ) -> IssuedAuthTokens:
         token = self._refresh_token_generator.generate()
         token_hash = self.get_token_hash(token)
 
+        now = get_current_dt()
+
         session = AuthSession.create(
-            user_id=user_id,
+            principal_id=principal.id,
+            principal_type=principal.type,
             refresh_token_hash=token_hash,
             device_id=device_id,
-            expires_at=get_current_dt() + timedelta(seconds=self._refresh_ttl_seconds),
+            expires_at=now + timedelta(seconds=self._refresh_ttl_seconds),
+            now=now,
         )
         await self._auth_session_repository.save(session)
 
         access_token = self._access_token_manager.issue(
-            user_id=user_id,
+            principal_id=principal.id,
+            principal_type=principal.type,
             session_id=session.id,
             role=role,
             ttl=self._access_ttl_seconds,
@@ -100,7 +105,8 @@ class AuthSessionService:
         logger.info(
             "auth_session_issued",
             extra=prepare_extras(
-                user_id=str(user_id),
+                principal_id=str(principal.id),
+                principal_type=principal.type,
                 device_id=str(device_id),
                 session_id=str(session.id),
                 access_ttl_s=self._access_ttl_seconds,
@@ -128,7 +134,8 @@ class AuthSessionService:
         await self._auth_session_repository.save(session)
 
         access_token = self._access_token_manager.issue(
-            user_id=session.user_id,
+            principal_id=session.principal_id,
+            principal_type=session.principal_type,
             session_id=session.id,
             role=role,
             ttl=self._access_ttl_seconds,
@@ -137,7 +144,8 @@ class AuthSessionService:
         logger.info(
             "auth_session_rotated",
             extra=prepare_extras(
-                user_id=str(session.user_id),
+                user_id=str(session.principal_id),
+                principal_type=session.principal_type,
                 device_id=str(session.device_id),
                 session_id=str(session.id),
             ),
@@ -156,7 +164,8 @@ class AuthSessionService:
         logger.info(
             "auth_session_revoked",
             extra=prepare_extras(
-                user_id=str(session.user_id),
+                principal_id=str(session.principal_id),
+                principal_type=session.principal_type,
                 device_id=str(session.device_id),
                 session_id=str(session.id),
             ),

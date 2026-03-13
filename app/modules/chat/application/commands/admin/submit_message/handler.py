@@ -2,7 +2,7 @@ from app.core.application.commands import ICommandHandlerWithResult
 from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.shared.domain.value_objects.id import (
     ChatIdVO,
-    UserIdVO,
+    PrincipalIdVO,
 )
 from app.core.shared.utils import get_current_dt
 from app.modules.chat.application.commands.admin.submit_message import (
@@ -36,7 +36,7 @@ class SubmitAdminMessageCommandHandler(
         self,
         command: SubmitAdminMessageCommand,
     ) -> SubmitAdminMessageCommandResult:
-        author_id = UserIdVO.from_uuid(command.actor_id)
+        author_id = PrincipalIdVO.from_uuid(command.actor_id)
         chat_id = ChatIdVO.from_uuid(command.chat_id)
         text = MessageTextVO(command.text)
         now = get_current_dt()

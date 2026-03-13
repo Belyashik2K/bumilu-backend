@@ -6,8 +6,8 @@ from datetime import (
 import jwt
 
 from app.core.shared.domain.value_objects.id import (
+    PrincipalIdVO,
     SessionIdVO,
-    UserIdVO,
 )
 from app.core.shared.enums import UserRoleEnum
 from app.core.shared.utils import get_current_dt
@@ -15,6 +15,7 @@ from app.modules.auth.application.interfaces.managers.access_token import (
     IAccessTokenManager,
     TokenInfoDTO,
 )
+from app.modules.auth.shared.enums import PrincipalTypeEnum
 
 
 class PyJWTAccessTokenManager(IAccessTokenManager):
@@ -34,14 +35,16 @@ class PyJWTAccessTokenManager(IAccessTokenManager):
 
     def issue(
         self,
-        user_id: UserIdVO,
+        principal_id: PrincipalIdVO,
+        principal_type: PrincipalTypeEnum,
         session_id: SessionIdVO,
         role: UserRoleEnum,
         ttl: int,
     ) -> str:
         payload = {
             "type": "access",
-            "sub": str(user_id),
+            "sub": str(principal_id),
+            "principal_type": str(principal_type),
             "iss": self._issuer,
             "exp": self._get_expiration_time(seconds=ttl),
             "iat": get_current_dt(),
@@ -70,7 +73,7 @@ class PyJWTAccessTokenManager(IAccessTokenManager):
             raise ValueError("Invalid token type")
 
         return TokenInfoDTO(
-            user_id=UserIdVO.from_str(payload["sub"]),
+            user_id=PrincipalIdVO.from_str(payload["sub"]),
             session_id=SessionIdVO.from_str(payload["session_id"]),
             role=UserRoleEnum(payload["role"]),
             issued_at=payload["iat"],

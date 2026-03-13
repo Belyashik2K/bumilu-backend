@@ -1,6 +1,6 @@
 from app.core.application.commands import ICommandHandlerWithResult
 from app.core.application.interfaces.transaction_manager import ITransactionManager
-from app.core.shared.domain.value_objects.id import UserIdVO
+from app.core.shared.domain.value_objects.id import PrincipalIdVO
 from app.core.shared.enums import LanguageEnum
 from app.core.shared.utils import get_current_dt
 from app.modules.chat.application.commands.user.submit_message import (
@@ -36,7 +36,7 @@ class SubmitUserMessageCommandHandler(
     async def handle(
         self, command: SubmitUserMessageCommand
     ) -> SubmitUserMessageCommandResult:
-        user_id = UserIdVO.from_uuid(command.user_id)
+        user_id = PrincipalIdVO.from_uuid(command.user_id)
         chat = await self._chat_repository.find_active_chat(user_id)
         now = get_current_dt()
 

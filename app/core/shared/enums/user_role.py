@@ -4,6 +4,5 @@ from enum import (
 
 
 class UserRoleEnum(StrEnum):
-    ADMIN = "admin"
     USER = "user"
     GUEST = "guest"

@@ -7,7 +7,7 @@ from typing import Self
 
 from app.core.shared.domain.value_objects.id import (
     ChatIdVO,
-    UserIdVO,
+    PrincipalIdVO,
 )
 from app.core.shared.enums import LanguageEnum
 from app.modules.chat.domain.models.chat.exceptions import ChatNotEscalatedToAdmin
@@ -26,7 +26,7 @@ from app.modules.chat.shared.enums.author_type import (
 @dataclass(slots=True, kw_only=True)
 class Chat:
     id: ChatIdVO
-    user_id: UserIdVO
+    user_id: PrincipalIdVO
     language: LanguageEnum
     status: ChatStatusEnum
     last_location: LocationVO | None = field(default=None)
@@ -38,7 +38,7 @@ class Chat:
     @classmethod
     def create(
         cls,
-        user_id: UserIdVO,
+        user_id: PrincipalIdVO,
         language: LanguageEnum,
         location: LocationVO | None,
         now: datetime,
@@ -54,7 +54,7 @@ class Chat:
 
     def _add_message(
         self,
-        author_id: UserIdVO | None,
+        author_id: PrincipalIdVO | None,
         author_type: AuthorTypeEnum,
         text: MessageTextVO,
         location: LocationVO | None,
@@ -90,7 +90,7 @@ class Chat:
 
     def reply_as_admin(
         self,
-        author_id: UserIdVO,
+        author_id: PrincipalIdVO,
         text: MessageTextVO,
         now: datetime,
     ) -> ChatMessage:

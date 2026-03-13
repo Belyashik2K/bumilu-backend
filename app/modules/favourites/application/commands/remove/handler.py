@@ -2,7 +2,7 @@ from app.core.application.commands import ICommandHandler
 from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.shared.domain.value_objects.id import (
     IdVO,
-    UserIdVO,
+    PrincipalIdVO,
 )
 from app.modules.favourites.application.commands.remove import (
     RemoveFromFavouritesCommand,
@@ -23,7 +23,7 @@ class RemoveFromFavouritesCommandHandler(ICommandHandler[RemoveFromFavouritesCom
         self._favourite_repository = favourite_repository
 
     async def handle(self, command: RemoveFromFavouritesCommand) -> None:
-        user_id = UserIdVO.from_uuid(command.user_id)
+        user_id = PrincipalIdVO.from_uuid(command.user_id)
         entity_id = IdVO.from_uuid(command.entity_id)
 
         favourite = Favourite.create(

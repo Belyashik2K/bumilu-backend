@@ -24,11 +24,16 @@ from app.modules.auth.application.interfaces.repositories.auth_session import (
 from app.modules.auth.application.interfaces.repositories.device import (
     IDeviceRepository,
 )
+from app.modules.auth.application.interfaces.repositories.principal import (
+    IPrincipalRepository,
+)
 from app.modules.auth.application.interfaces.stores.email_login import (
     IEmailLoginChallengeStore,
 )
 from app.modules.auth.application.services.auth_session import AuthSessionService
 from app.modules.auth.domain.models.device import Device
+from app.modules.auth.domain.models.principal import Principal
+from app.modules.auth.shared.enums import PrincipalTypeEnum
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 from app.modules.users.domain.models.user import User
 from app.modules.users.domain.value_objects import UserEmailVO
@@ -46,6 +51,7 @@ class VerifyEmailCodeAtLoginCommandHandler(
         self,
         user_repository: IUserRepository,
         device_repository: IDeviceRepository,
+        principal_repository: IPrincipalRepository,
         auth_session_repository: IAuthSessionRepository,
         auth_session_service: AuthSessionService,
         challenge_store: IEmailLoginChallengeStore,
@@ -55,6 +61,7 @@ class VerifyEmailCodeAtLoginCommandHandler(
         super().__init__(transaction_manager)
         self._user_repository = user_repository
         self._device_repository = device_repository
+        self._principal_repository = principal_repository
         self._auth_session_repository = auth_session_repository
         self._auth_session_service = auth_session_service
         self._challenge_store = challenge_store
@@ -81,7 +88,9 @@ class VerifyEmailCodeAtLoginCommandHandler(
 
         user = await self._user_repository.get_by_email(email)
         if user is None:
-            user = User.create_verified(email=email)
+            principal = Principal.create(type=PrincipalTypeEnum.USER)
+            user = User.create_user(id=principal.id, email=email)
+            await self._principal_repository.save(principal)
             await self._user_repository.save(user)
             logger.info(
                 "user_created_via_email_login",
@@ -90,6 +99,11 @@ class VerifyEmailCodeAtLoginCommandHandler(
                     email=email.fingerprint,
                 ),
             )
+        else:
+            principal = await self._principal_repository.get_by_id(user.id)
+            if principal is None:
+                # TODO: More friendly error
+                raise RuntimeError("Guest principal not found for device")
 
         current_device_id = DeviceIdVO(command.device_id)
 
@@ -121,7 +135,7 @@ class VerifyEmailCodeAtLoginCommandHandler(
             )
 
         tokens = await self._auth_session_service.issue(
-            user_id=user.id,
+            principal=principal,
             device_id=current_device_id,
             role=user.role,
         )

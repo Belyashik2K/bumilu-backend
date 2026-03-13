@@ -19,6 +19,7 @@ from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
 )
 from app.modules.auth.application.services.auth_session import AuthSessionService
+from app.modules.auth.shared.enums import PrincipalTypeEnum
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 
 logger = logging.getLogger(__name__)
@@ -62,6 +63,18 @@ class RefreshAuthSessionCommandHandler(
             )
             raise InvalidRefreshToken()
 
+        if session.principal_type != PrincipalTypeEnum.USER:
+            logger.warning(
+                "refresh_invalid_session",
+                extra=prepare_extras(
+                    device_id=command.device_id,
+                    session_id=str(session.id),
+                    session_principal_type=session.principal_type.value,
+                    reason="invalid_principal_type",
+                ),
+            )
+            raise InvalidRefreshToken()
+
         current_device_id = DeviceIdVO.from_uuid(command.device_id)
         if session.device_id != current_device_id:
             logger.warning(
@@ -74,12 +87,12 @@ class RefreshAuthSessionCommandHandler(
             )
             raise InvalidRefreshToken()
 
-        user = await self._user_repository.get_by_id(session.user_id)
+        user = await self._user_repository.get_by_id(session.principal_id)
         if user is None:
             logger.warning(
                 "refresh_user_not_found",
                 extra=prepare_extras(
-                    user_id=str(session.user_id),
+                    user_id=str(session.principal_id),
                     session_id=str(session.id),
                     device_id=command.device_id,
                 ),
