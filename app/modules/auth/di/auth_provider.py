@@ -37,6 +37,9 @@ from app.modules.auth.application.interfaces.repositories.auth_session import (
 from app.modules.auth.application.interfaces.repositories.device import (
     IDeviceRepository,
 )
+from app.modules.auth.application.interfaces.repositories.principal import (
+    IPrincipalRepository,
+)
 from app.modules.auth.application.interfaces.stores.email_login import (
     IEmailLoginChallengeStore,
 )
@@ -46,6 +49,9 @@ from app.modules.auth.infrastructure.database.repositories.auth_session import (
 )
 from app.modules.auth.infrastructure.database.repositories.device import (
     SQLAlchemyDeviceRepository,
+)
+from app.modules.auth.infrastructure.database.repositories.principal import (
+    SQLAlchemyPrincipalRepository,
 )
 from app.modules.auth.infrastructure.generators.secrets_refresh_token_generator import (
     SecretsRefreshTokenGenerator,
@@ -148,6 +154,14 @@ class AuthProvider(Provider):
             session=session,
         )
 
+    @provide(scope=Scope.REQUEST, provides=IPrincipalRepository)
+    async def principal_repository(
+        self, session: AsyncSession
+    ) -> SQLAlchemyPrincipalRepository:
+        return SQLAlchemyPrincipalRepository(
+            session=session,
+        )
+
     @provide(scope=Scope.REQUEST)
     async def auth_session_service(
         self,
@@ -171,6 +185,7 @@ class AuthProvider(Provider):
         self,
         user_repository: IUserRepository,
         device_repository: IDeviceRepository,
+        principal_repository: IPrincipalRepository,
         auth_service_repository: IAuthSessionRepository,
         auth_session_service: AuthSessionService,
         transaction_manager: ITransactionManager,
@@ -179,6 +194,7 @@ class AuthProvider(Provider):
             transaction_manager=transaction_manager,
             user_repository=user_repository,
             device_repository=device_repository,
+            principal_repository=principal_repository,
             auth_session_repository=auth_service_repository,
             auth_session_service=auth_session_service,
         )
@@ -239,6 +255,7 @@ class AuthProvider(Provider):
         auth_session_repository: IAuthSessionRepository,
         user_repository: IUserRepository,
         device_repository: IDeviceRepository,
+        principal_repository: IPrincipalRepository,
         auth_session_service: AuthSessionService,
         challenge_store: IEmailLoginChallengeStore,
         code_hasher: IVerificationCodeHasher,
@@ -249,6 +266,7 @@ class AuthProvider(Provider):
             auth_session_repository=auth_session_repository,
             user_repository=user_repository,
             device_repository=device_repository,
+            principal_repository=principal_repository,
             auth_session_service=auth_session_service,
             challenge_store=challenge_store,
             code_hasher=code_hasher,

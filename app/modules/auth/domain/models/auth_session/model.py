@@ -7,21 +7,23 @@ from typing import Self
 
 from app.core.shared.domain.value_objects.id import (
     DeviceIdVO,
+    PrincipalIdVO,
     SessionIdVO,
-    UserIdVO,
 )
 from app.core.shared.utils import get_current_dt
 from app.modules.auth.domain.models.auth_session.exceptions import (
     CannotRotateInactiveSession,
     SessionExpirationMustBeInFuture,
 )
+from app.modules.auth.shared.enums import PrincipalTypeEnum
 
 
 @dataclass(slots=True, kw_only=True)
 class AuthSession:
     id: SessionIdVO
-    user_id: UserIdVO
-    device_id: DeviceIdVO
+    principal_id: PrincipalIdVO
+    principal_type: PrincipalTypeEnum
+    device_id: DeviceIdVO | None = field(default=None)
     refresh_token_hash: str
     expires_at: datetime
     revoked_at: datetime | None = field(default=None)
@@ -47,19 +49,20 @@ class AuthSession:
     @classmethod
     def create(
         cls,
-        user_id: UserIdVO,
-        device_id: DeviceIdVO,
+        principal_id: PrincipalIdVO,
+        principal_type: PrincipalTypeEnum,
         refresh_token_hash: str,
         expires_at: datetime,
+        now: datetime,
+        device_id: DeviceIdVO | None = None,
     ) -> Self:
-        if (
-            expires_at <= get_current_dt()
-        ):  # TODO: Make domain undependent of current time by injecting a now
+        if expires_at <= now:
             raise SessionExpirationMustBeInFuture(expires_at)
 
         return cls(
             id=SessionIdVO.new(),
-            user_id=user_id,
+            principal_id=principal_id,
+            principal_type=principal_type,
             device_id=device_id,
             refresh_token_hash=refresh_token_hash,
             expires_at=expires_at,

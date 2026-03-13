@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.infrastructure.database import SQLAlchemyBaseRepository
 from app.core.shared.domain.value_objects.id import (
     DeviceIdVO,
-    UserIdVO,
+    PrincipalIdVO,
 )
 from app.modules.auth.application.interfaces.repositories.device import (
     IDeviceRepository,
@@ -24,7 +24,7 @@ class SQLAlchemyDeviceRepository(
             platform=data.platform,
             name=data.name,
             app_version=data.app_version,
-            guest_user_id=UserIdVO.from_uuid(data.guest_user_id)
+            guest_user_id=PrincipalIdVO.from_uuid(data.guest_user_id)
             if data.guest_user_id
             else None,
             last_seen_at=data.last_seen_at,

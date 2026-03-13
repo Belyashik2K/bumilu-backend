@@ -3,8 +3,8 @@ import logging
 from app.core.application.commands import ICommandHandler
 from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.shared.domain.value_objects.id import (
+    PrincipalIdVO,
     ReviewIdVO,
-    UserIdVO,
 )
 from app.core.shared.utils import prepare_extras
 from app.modules.reviews.application.commands.delete import (
@@ -36,7 +36,7 @@ class DeleteReviewCommandHandler(ICommandHandler[DeleteReviewCommand]):
         if not review:
             return None
 
-        actor_id = UserIdVO.from_uuid(command.actor_id)
+        actor_id = PrincipalIdVO.from_uuid(command.actor_id)
         if review.author_id != actor_id:
             logger.warning(
                 "review_delete_forbidden",

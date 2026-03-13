@@ -7,7 +7,7 @@ from typing import Self
 from app.core.shared.domain.value_objects.id import (
     ChatIdVO,
     ChatMessageIdVO,
-    UserIdVO,
+    PrincipalIdVO,
 )
 from app.modules.chat.domain.value_objects.location import LocationVO
 from app.modules.chat.domain.value_objects.message_text import MessageTextVO
@@ -19,7 +19,7 @@ class ChatMessage:
     id: ChatMessageIdVO
     chat_id: ChatIdVO
     author_type: AuthorTypeEnum
-    author_id: UserIdVO | None = field(default=None)
+    author_id: PrincipalIdVO | None = field(default=None)
     text: MessageTextVO
     location: LocationVO | None = field(default=None)
 
@@ -28,7 +28,7 @@ class ChatMessage:
         cls,
         chat_id: ChatIdVO,
         author_type: AuthorTypeEnum,
-        author_id: UserIdVO | None,
+        author_id: PrincipalIdVO | None,
         text: MessageTextVO,
         location: LocationVO | None,
     ) -> Self:

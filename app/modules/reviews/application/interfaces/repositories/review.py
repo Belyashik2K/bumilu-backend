@@ -6,8 +6,8 @@ from abc import (
 from app.core.application.interfaces.repositories import IBaseRepository
 from app.core.shared.domain.value_objects.id import (
     IdVO,
+    PrincipalIdVO,
     ReviewIdVO,
-    UserIdVO,
 )
 from app.modules.reviews.domain.models.review import Review
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
@@ -19,7 +19,7 @@ class IReviewRepository(IBaseRepository[Review], ABC):
         self,
         entity_type: ReviewEntityTypeEnum,
         entity_id: IdVO,
-        author_id: UserIdVO,
+        author_id: PrincipalIdVO,
     ) -> Review | None: ...
 
     @abstractmethod
@@ -27,7 +27,7 @@ class IReviewRepository(IBaseRepository[Review], ABC):
         self,
         entity_type: ReviewEntityTypeEnum,
         entity_id: IdVO,
-        author_id: UserIdVO | None,
+        author_id: PrincipalIdVO | None,
     ) -> list[Review]: ...
 
     @abstractmethod
@@ -40,7 +40,7 @@ class IReviewRepository(IBaseRepository[Review], ABC):
     @abstractmethod
     async def get_all_by_author(
         self,
-        author_id: UserIdVO,
+        author_id: PrincipalIdVO,
     ) -> list[Review]: ...
 
     @abstractmethod

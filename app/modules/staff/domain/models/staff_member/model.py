@@ -1,14 +1,16 @@
 from dataclasses import dataclass
 from typing import Self
 
-from app.core.shared.domain.value_objects.id import StaffMemberIdVO
+from app.core.shared.domain.value_objects.id import (
+    PrincipalIdVO,
+)
 from app.modules.staff.domain.value_objects.staff_email.object import StaffEmailVO
 from app.modules.staff.shared.enums.staff_role import StaffRoleEnum
 
 
 @dataclass(slots=True, kw_only=True)
 class StaffMember:
-    id: StaffMemberIdVO
+    id: PrincipalIdVO
     name: str
     email: StaffEmailVO
     password_hash: str
@@ -18,13 +20,14 @@ class StaffMember:
     def create(
         cls,
         *,
+        id: PrincipalIdVO,
         name: str,
         email: StaffEmailVO,
         password_hash: str,
         role: StaffRoleEnum,
     ) -> Self:
         return cls(
-            id=StaffMemberIdVO.new(),
+            id=id,
             name=name,
             email=email,
             password_hash=password_hash,

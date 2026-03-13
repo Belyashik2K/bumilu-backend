@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.infrastructure.database import SQLAlchemyBaseRepository
 from app.core.shared.domain.value_objects.id import (
     ChatIdVO,
-    UserIdVO,
+    PrincipalIdVO,
 )
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.domain.models.chat import Chat
@@ -45,7 +45,7 @@ class SQLAlchemyChatRepository(
     def _to_entity(self, data: ChatModel) -> Chat:
         return Chat(
             id=ChatIdVO.from_uuid(data.id),
-            user_id=UserIdVO.from_uuid(data.user_id),
+            user_id=PrincipalIdVO.from_uuid(data.user_id),
             language=data.language,
             status=data.status,
             last_location=LocationVO.from_coordinates(
@@ -59,7 +59,7 @@ class SQLAlchemyChatRepository(
             close_reason=data.close_reason,
         )
 
-    async def find_active_chat(self, user_id: UserIdVO) -> Chat | None:
+    async def find_active_chat(self, user_id: PrincipalIdVO) -> Chat | None:
         stmt = select(ChatModel).where(
             ChatModel.user_id == user_id.value,
             ChatModel.status != ChatStatusEnum.CLOSED,
@@ -70,7 +70,7 @@ class SQLAlchemyChatRepository(
             return None
         return self._to_entity(chat_model)
 
-    async def get_active_chat_id(self, user_id: UserIdVO) -> ChatIdVO | None:
+    async def get_active_chat_id(self, user_id: PrincipalIdVO) -> ChatIdVO | None:
         stmt = select(ChatModel.id).where(
             ChatModel.user_id == user_id.value,
             ChatModel.status != ChatStatusEnum.CLOSED,

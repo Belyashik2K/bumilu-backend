@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Self
 
 from app.core.shared.domain.value_objects.id import (
-    UserIdVO,
+    PrincipalIdVO,
 )
 from app.core.shared.enums import UserRoleEnum
 from app.core.shared.utils import get_current_dt
@@ -20,24 +20,31 @@ from app.modules.users.domain.value_objects import UserEmailVO
 
 @dataclass(slots=True, kw_only=True)
 class User:
-    id: UserIdVO
+    id: PrincipalIdVO
     email: UserEmailVO | None = field(default=None)
     email_verified_at: datetime | None = field(default=None)
-    role: UserRoleEnum = field(default=UserRoleEnum.GUEST)
+    role: UserRoleEnum
 
     @classmethod
-    def create_guest(cls) -> Self:
-        return cls(id=UserIdVO.new(), role=UserRoleEnum.GUEST)
+    def create_guest(
+        cls,
+        id: PrincipalIdVO,
+    ) -> Self:
+        return cls(id=id, role=UserRoleEnum.GUEST)
 
     @classmethod
-    def create_verified(
-        cls, *, email: UserEmailVO, role: UserRoleEnum = UserRoleEnum.USER
+    def create_user(
+        cls,
+        *,
+        id: PrincipalIdVO,
+        email: UserEmailVO,
+        role: UserRoleEnum = UserRoleEnum.USER,
     ) -> Self:
         if role is UserRoleEnum.GUEST:
             raise VerifiedUserCannotBeGuest()
         now = get_current_dt()
         return cls(
-            id=UserIdVO.new(),
+            id=id,
             email=email,
             email_verified_at=now,
             role=role,

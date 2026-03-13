@@ -10,8 +10,8 @@ from app.core.infrastructure.database.exception_catcher import (
 )
 from app.core.shared.domain.value_objects.id import (
     IdVO,
+    PrincipalIdVO,
     ReviewIdVO,
-    UserIdVO,
 )
 from app.modules.reviews.application.interfaces.repositories.review import (
     IReviewRepository,
@@ -31,24 +31,24 @@ class SQLAlchemyReviewRepository(
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(session, ReviewModel)
 
-    def _to_entity(self, review: ReviewModel) -> Review:
+    def _to_entity(self, data: ReviewModel) -> Review:
         return Review(
-            id=ReviewIdVO.from_uuid(review.id),
-            author_id=UserIdVO.from_uuid(review.author_id),
-            entity_type=review.entity_type,
-            entity_id=IdVO.from_uuid(review.entity_id),
-            text=ReviewTextVO(review.text),
-            rating=ReviewRatingVO(review.rating),
+            id=ReviewIdVO.from_uuid(data.id),
+            author_id=PrincipalIdVO.from_uuid(data.author_id),
+            entity_type=data.entity_type,
+            entity_id=IdVO.from_uuid(data.entity_id),
+            text=ReviewTextVO(data.text),
+            rating=ReviewRatingVO(data.rating),
         )
 
-    def _to_data(self, review: Review) -> ReviewModel:
+    def _to_data(self, entity: Review) -> ReviewModel:
         return ReviewModel(
-            id=review.id.value,
-            author_id=review.author_id.value,
-            entity_type=review.entity_type,
-            entity_id=review.entity_id.value,
-            text=review.text.value,
-            rating=review.rating.value,
+            id=entity.id.value,
+            author_id=entity.author_id.value,
+            entity_type=entity.entity_type,
+            entity_id=entity.entity_id.value,
+            text=entity.text.value,
+            rating=entity.rating.value,
         )
 
     @sqlalchemy_exception_catcher
@@ -56,7 +56,7 @@ class SQLAlchemyReviewRepository(
         self,
         entity_type: ReviewEntityTypeEnum,
         entity_id: IdVO,
-        author_id: UserIdVO,
+        author_id: PrincipalIdVO,
     ) -> Review | None:
         stmt = select(ReviewModel).where(
             ReviewModel.entity_type == entity_type,
@@ -74,7 +74,7 @@ class SQLAlchemyReviewRepository(
         self,
         entity_type: ReviewEntityTypeEnum,
         entity_id: IdVO,
-        author_id: UserIdVO | None,
+        author_id: PrincipalIdVO | None,
     ) -> list[Review]:
         stmt = select(ReviewModel).where(
             ReviewModel.entity_type == entity_type,
@@ -89,7 +89,7 @@ class SQLAlchemyReviewRepository(
     @sqlalchemy_exception_catcher
     async def get_all_by_author(
         self,
-        author_id: UserIdVO,
+        author_id: PrincipalIdVO,
     ) -> list[Review]:
         stmt = select(ReviewModel).where(
             ReviewModel.author_id == author_id.value,

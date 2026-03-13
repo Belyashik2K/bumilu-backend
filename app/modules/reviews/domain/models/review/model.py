@@ -3,8 +3,8 @@ from typing import Self
 
 from app.core.shared.domain.value_objects.id import (
     IdVO,
+    PrincipalIdVO,
     ReviewIdVO,
-    UserIdVO,
 )
 from app.modules.reviews.domain.value_objects import (
     ReviewRatingVO,
@@ -16,7 +16,7 @@ from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 @dataclass(slots=True, kw_only=True)
 class Review:
     id: ReviewIdVO
-    author_id: UserIdVO
+    author_id: PrincipalIdVO
     entity_type: ReviewEntityTypeEnum
     entity_id: IdVO
     text: ReviewTextVO
@@ -25,7 +25,7 @@ class Review:
     @classmethod
     def create(
         cls,
-        author_id: UserIdVO,
+        author_id: PrincipalIdVO,
         entity_type: ReviewEntityTypeEnum,
         entity_id: IdVO,
         text: ReviewTextVO,

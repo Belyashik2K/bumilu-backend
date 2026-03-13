@@ -2,7 +2,7 @@ from app.core.application.commands import ICommandHandler
 from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.shared.domain.value_objects.id import (
     IdVO,
-    UserIdVO,
+    PrincipalIdVO,
 )
 from app.modules.favourites.application.commands.add import AddToFavouritesCommand
 from app.modules.favourites.application.interfaces.entity_resolver import (
@@ -34,7 +34,7 @@ class AddToFavouritesCommandHandler(ICommandHandler[AddToFavouritesCommand]):
 
     async def handle(self, command: AddToFavouritesCommand) -> None:
         entity_id = IdVO.from_uuid(command.entity_id)
-        user_id = UserIdVO.from_uuid(command.user_id)
+        user_id = PrincipalIdVO.from_uuid(command.user_id)
 
         user = await self._user_repository.get_by_id(user_id)
         if not user:

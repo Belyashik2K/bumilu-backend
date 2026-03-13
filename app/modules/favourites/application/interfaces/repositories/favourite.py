@@ -3,7 +3,7 @@ from abc import (
     abstractmethod,
 )
 
-from app.core.shared.domain.value_objects.id import UserIdVO
+from app.core.shared.domain.value_objects.id import PrincipalIdVO
 from app.modules.favourites.domain.models.favourite import Favourite
 
 
@@ -23,5 +23,5 @@ class IFavouriteRepository(ABC):
     @abstractmethod
     async def get_all_by_user_id(
         self,
-        user_id: UserIdVO,
+        user_id: PrincipalIdVO,
     ) -> list[Favourite]: ...

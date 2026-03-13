@@ -7,7 +7,7 @@ from app.core.infrastructure.database import SQLAlchemyBaseRepository
 from app.core.shared.domain.value_objects.id import (
     ChatIdVO,
     ChatMessageIdVO,
-    UserIdVO,
+    PrincipalIdVO,
 )
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
@@ -39,7 +39,9 @@ class SQLAlchemyChatMessageRepository(
         return ChatMessage(
             id=ChatMessageIdVO.from_uuid(data.id),
             chat_id=ChatIdVO.from_uuid(data.chat_id),
-            author_id=UserIdVO.from_uuid(data.author_id) if data.author_id else None,
+            author_id=PrincipalIdVO.from_uuid(data.author_id)
+            if data.author_id
+            else None,
             author_type=data.author_type,
             text=MessageTextVO(data.text),
             location=LocationVO.from_coordinates(

@@ -9,7 +9,7 @@ from app.core.infrastructure.database.exception_catcher import (
 )
 from app.core.shared.domain.value_objects.id import (
     IdVO,
-    UserIdVO,
+    PrincipalIdVO,
 )
 from app.modules.favourites.application.interfaces.repositories.favourite import (
     IFavouriteRepository,
@@ -28,7 +28,7 @@ class SQLAlchemyFavouriteRepository(IFavouriteRepository):
     @staticmethod
     def _to_entity(data: FavouriteModel) -> Favourite:
         return Favourite(
-            user_id=UserIdVO.from_uuid(data.user_id),
+            user_id=PrincipalIdVO.from_uuid(data.user_id),
             entity_type=data.entity_type,
             entity_id=IdVO.from_uuid(data.entity_id),
         )
@@ -68,7 +68,7 @@ class SQLAlchemyFavouriteRepository(IFavouriteRepository):
     @sqlalchemy_exception_catcher
     async def get_all_by_user_id(
         self,
-        user_id: UserIdVO,
+        user_id: PrincipalIdVO,
     ) -> list[Favourite]:
         stmt = select(FavouriteModel).where(FavouriteModel.user_id == user_id.value)
         result = await self.session.execute(stmt)

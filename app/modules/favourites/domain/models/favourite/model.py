@@ -6,7 +6,7 @@ from datetime import datetime
 
 from app.core.shared.domain.value_objects.id import (
     IdVO,
-    UserIdVO,
+    PrincipalIdVO,
 )
 from app.core.shared.utils import get_current_dt
 from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
@@ -14,7 +14,7 @@ from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class Favourite:
-    user_id: UserIdVO
+    user_id: PrincipalIdVO
     entity_type: FavouriteEntityTypeEnum
     entity_id: IdVO
     created_at: datetime = field(default_factory=get_current_dt)
@@ -22,7 +22,7 @@ class Favourite:
     @classmethod
     def create(
         cls,
-        user_id: UserIdVO,
+        user_id: PrincipalIdVO,
         entity_type: FavouriteEntityTypeEnum,
         entity_id: IdVO,
     ) -> "Favourite":
