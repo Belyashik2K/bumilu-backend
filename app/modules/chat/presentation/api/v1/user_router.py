@@ -13,7 +13,7 @@ from app.core.shared.presentation.schemas.pagination import (
     OffsetPaginationDep,
 )
 from app.modules.auth.presentation.api import security
-from app.modules.auth.presentation.api.v1.deps import get_principal
+from app.modules.auth.presentation.api.v1.users.deps import get_principal
 from app.modules.auth.shared.context import Principal
 from app.modules.chat.application.commands.user import (
     SubmitUserMessageCommand,
