@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Belyashik2K", email = "work@belyashik2k.ru" }
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 dependencies = [
     "aiosmtplib>=5.1.0",
     "alembic>=1.18.4",
