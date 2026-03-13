@@ -25,7 +25,10 @@ from app.core.infrastructure.database.mixins import (
 from app.modules.auth.shared.enums import PrincipalTypeEnum
 
 if TYPE_CHECKING:
-    from app.modules.auth.infrastructure.database.models import DeviceModel
+    from app.modules.auth.infrastructure.database.models import (
+        DeviceModel,
+        PrincipalModel,
+    )
 
 
 class AuthSessionModel(PKUUIDMixin, CreatedAtMixin, BaseModel):
@@ -51,6 +54,11 @@ class AuthSessionModel(PKUUIDMixin, CreatedAtMixin, BaseModel):
         DateTime(timezone=True), index=True
     )
 
+    principal: Mapped["PrincipalModel"] = relationship(
+        "PrincipalModel",
+        back_populates="auth_sessions",
+        lazy="raise",
+    )
     device: Mapped["DeviceModel"] = relationship(
         "DeviceModel",
         back_populates="auth_sessions",

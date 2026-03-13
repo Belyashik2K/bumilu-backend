@@ -7,4 +7,4 @@ from uuid6 import UUID
 
 
 class PKUUIDMixin:
-    id: Mapped[UUID] = mapped_column(_UUID, primary_key=True)
+    id: Mapped[UUID] = mapped_column(_UUID(), primary_key=True)
