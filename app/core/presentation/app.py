@@ -35,6 +35,7 @@ from app.modules.chat.di import ChatProvider
 from app.modules.chat.infrastructure.apscheduler_jobs import register_chat_jobs
 from app.modules.favourites.di import FavouriteProvider
 from app.modules.reviews.di import ReviewProvider
+from app.modules.staff.di import StaffProvider
 from app.modules.users.di import UserProvider
 
 
@@ -98,6 +99,7 @@ def create_app() -> FastAPI:
         ReviewProvider(),
         FavouriteProvider(),
         ChatProvider(),
+        StaffProvider(),
         FastapiProvider(),
     )
     setup_dishka_fastapi(container=container, app=app)

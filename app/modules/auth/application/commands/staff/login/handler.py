@@ -12,7 +12,9 @@ from app.modules.auth.application.interfaces.repositories.principal import (
     IPrincipalRepository,
 )
 from app.modules.auth.application.services.auth_session import AuthSessionService
-from app.modules.staff.application.repositories.staff import IStaffMemberRepository
+from app.modules.staff.application.repositories.staff_member import (
+    IStaffMemberRepository,
+)
 from app.modules.staff.domain.value_objects.staff_email import StaffEmailVO
 from app.modules.users.application.queries.shared_dtos import AccountInfoDTO
 
@@ -27,13 +29,13 @@ class LoginAsStaffMemberCommandHandler(
         transaction_manager: ITransactionManager,
         principal_repository: IPrincipalRepository,
         staff_member_repository: IStaffMemberRepository,
-        password_hasher: IStaffPasswordHasher,
+        staff_password_hasher: IStaffPasswordHasher,
         auth_session_service: AuthSessionService,
     ) -> None:
         super().__init__(transaction_manager)
         self._principal_repository = principal_repository
         self._staff_member_repository = staff_member_repository
-        self._password_hasher = password_hasher
+        self._staff_password_hasher = staff_password_hasher
         self._auth_session_service = auth_session_service
 
     async def handle(
@@ -47,7 +49,7 @@ class LoginAsStaffMemberCommandHandler(
         if staff_member is None:
             raise ValueError("Invalid email or password")
 
-        if not self._password_hasher.verify(
+        if not self._staff_password_hasher.verify(
             password=command.password, password_hash=staff_member.password_hash
         ):
             raise ValueError("Invalid email or password")
