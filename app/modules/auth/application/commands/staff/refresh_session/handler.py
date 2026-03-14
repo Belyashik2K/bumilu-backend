@@ -13,7 +13,7 @@ from app.modules.auth.application.interfaces.repositories.auth_session import (
 )
 from app.modules.auth.application.services.auth_session import AuthSessionService
 from app.modules.auth.shared.enums import PrincipalTypeEnum
-from app.modules.staff.application.repositories.staff_member import (
+from app.modules.staff.application.interfaces.repositories.staff_member import (
     IStaffMemberRepository,
 )
 from app.modules.users.application.queries.shared_dtos import AccountInfoDTO

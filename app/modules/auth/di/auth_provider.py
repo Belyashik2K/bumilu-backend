@@ -80,7 +80,7 @@ from app.modules.auth.infrastructure.smtplib_email_sender import SMTPLibEmailSen
 from app.modules.auth.infrastructure.stores.redis_email_challenge_store import (
     RedisEmailLoginChallengeStore,
 )
-from app.modules.staff.application.repositories.staff_member import (
+from app.modules.staff.application.interfaces.repositories.staff_member import (
     IStaffMemberRepository,
 )
 from app.modules.users.application.interfaces.repositories.user import IUserRepository

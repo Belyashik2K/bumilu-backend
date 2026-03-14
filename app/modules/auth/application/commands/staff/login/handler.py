@@ -14,7 +14,7 @@ from app.modules.auth.application.interfaces.repositories.principal import (
 from app.modules.auth.application.services.auth_session import AuthSessionService
 from app.modules.auth.domain.models.principal import Principal
 from app.modules.auth.shared.enums import PrincipalTypeEnum
-from app.modules.staff.application.repositories.staff_member import (
+from app.modules.staff.application.interfaces.repositories.staff_member import (
     IStaffMemberRepository,
 )
 from app.modules.staff.domain.models.staff_member import StaffMember

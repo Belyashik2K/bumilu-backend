@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.infrastructure.database import SQLAlchemyBaseRepository
 from app.core.shared.domain.value_objects.id import PrincipalIdVO
-from app.modules.staff.application.repositories.staff_member import (
+from app.modules.staff.application.interfaces.repositories.staff_member import (
     IStaffMemberRepository,
 )
 from app.modules.staff.domain.models.staff_member import StaffMember
