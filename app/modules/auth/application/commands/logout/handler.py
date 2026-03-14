@@ -41,17 +41,28 @@ class LogoutCommandHandler(ICommandHandler[LogoutCommand]):
             )
             return None
 
-        current_device_id = DeviceIdVO.from_uuid(command.device_id)
-        if session.device_id != current_device_id:
-            logger.warning(
-                "logout_invalid_session",
-                extra=prepare_extras(
-                    device_id=command.device_id,
-                    session_id=str(session.id),
-                    reason="device_mismatch",
-                ),
-            )
-            return None
+        if session.is_user_session():
+            if not command.device_id:
+                logger.warning(
+                    "logout_invalid_session",
+                    extra=prepare_extras(
+                        session_id=str(session.id),
+                        reason="missing_device_id_for_user_session",
+                    ),
+                )
+                return None
+
+            current_device_id = DeviceIdVO.from_uuid(command.device_id)
+            if session.device_id != current_device_id:
+                logger.warning(
+                    "logout_invalid_session",
+                    extra=prepare_extras(
+                        device_id=command.device_id,
+                        session_id=str(session.id),
+                        reason="device_mismatch",
+                    ),
+                )
+                return None
 
         await self._auth_session_service.revoke(session=session)
         return None
