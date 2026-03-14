@@ -14,7 +14,7 @@ from app.core.shared.presentation.schemas.pagination import (
     OffsetPaginationDep,
 )
 from app.modules.auth.presentation.api import security
-from app.modules.auth.presentation.api.v1.users.deps import get_principal
+from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
 from app.modules.auth.shared.context import Principal
 from app.modules.favourites.application.commands.add import (
     AddToFavouritesCommand,
@@ -56,7 +56,7 @@ favourites_router = APIRouter(
 @inject
 async def get_my_favourites(
     handler: FromDishka[GetAllFavouritesByUserQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     filters: FavouritesFiltersDep,
     pagination: OffsetPaginationDep,
 ) -> GetAllFavouritesByUserResponseSchema:
@@ -83,7 +83,7 @@ async def get_my_favourites(
 @inject
 async def get_favourites_by_user_id(
     uc: FromDishka[GetAllFavouritesByUserQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     filters: FavouritesFiltersDep,
     pagination: OffsetPaginationDep,
     user_id: UUID7 = USER_ID_PATH,
@@ -112,7 +112,7 @@ async def get_favourites_by_user_id(
 @inject
 async def add_to_favourites(
     handler: FromDishka[AddToFavouritesCommandHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     entity_type: FavouriteEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> None:
@@ -135,7 +135,7 @@ async def add_to_favourites(
 @inject
 async def remove_from_favourites(
     handler: FromDishka[RemoveFromFavouritesCommandHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     entity_type: FavouriteEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> None:

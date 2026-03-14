@@ -1,4 +1,7 @@
-from collections.abc import Awaitable, Callable
+from collections.abc import (
+    Awaitable,
+    Callable,
+)
 
 from starlette.requests import Request
 from starlette.responses import Response
@@ -37,9 +40,10 @@ class AuthMiddleware(CustomBaseHTTPMiddleware):
         try:
             token_info = token_manager.validate_and_decode(token)
             request.state.principal = Principal(
-                id=token_info.user_id,
-                session_id=token_info.session_id,
+                id=token_info.principal_id,
+                type=token_info.principal_type,
                 role=token_info.role,
+                session_id=token_info.session_id,
             )
             return await call_next(request)
         except Exception:

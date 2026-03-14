@@ -13,7 +13,7 @@ from app.core.presentation.endpoint_responses import generate_responses_for_endp
 from app.core.shared.constants import UNSET
 from app.core.shared.presentation.schemas.pagination import OffsetPaginationDep
 from app.modules.auth.presentation.api import security
-from app.modules.auth.presentation.api.v1.users.deps import get_principal
+from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
 from app.modules.auth.shared.context import Principal
 from app.modules.reviews.application.commands.create import (
     CreateReviewCommand,
@@ -82,7 +82,7 @@ reviews_router = APIRouter(
 @inject
 async def get_my_reviews(
     handler: FromDishka[GetAllReviewsByUserQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     pagination: OffsetPaginationDep,
     filters: ReviewsFiltersDep,
 ) -> GetAllReviewsByUserResponseSchema:
@@ -109,7 +109,7 @@ async def get_my_reviews(
 @inject
 async def get_reviews_by_user_id(
     handler: FromDishka[GetAllReviewsByUserQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     pagination: OffsetPaginationDep,
     filters: ReviewsFiltersDep,
     user_id: UUID7 = USER_ID_PATH,
@@ -137,7 +137,7 @@ async def get_reviews_by_user_id(
 @inject
 async def get_review_by_id(
     handler: FromDishka[GetReviewQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     review_id: UUID7 = REVIEW_ID_PATH,
 ) -> ReviewInfoSchema:
     result = await handler(
@@ -158,7 +158,7 @@ async def get_review_by_id(
 @inject
 async def delete_review_by_id(
     handler: FromDishka[DeleteReviewCommandHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     review_id: UUID7 = REVIEW_ID_PATH,
 ) -> None:
     await handler(
@@ -179,7 +179,7 @@ async def delete_review_by_id(
 async def update_review_by_id(
     handler: FromDishka[UpdateReviewCommandHandler],
     data: UpdateReviewRequestSchema,
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     review_id: UUID7 = REVIEW_ID_PATH,
 ) -> UpdateReviewResponseSchema:
     data_dump = data.model_dump(exclude_unset=True)
@@ -203,7 +203,7 @@ async def update_review_by_id(
 @inject
 async def get_reviews_for_entity(
     handler: FromDishka[GetAllReviewsForEntityQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     pagination: OffsetPaginationDep,
     entity_type: ReviewEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
@@ -233,7 +233,7 @@ async def get_reviews_for_entity(
 async def create_review_for_entity(
     handler: FromDishka[CreateReviewCommandHandler],
     data: CreateReviewRequestSchema,
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     entity_type: ReviewEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> CreateReviewResponseSchema:

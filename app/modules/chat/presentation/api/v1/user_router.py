@@ -13,7 +13,7 @@ from app.core.shared.presentation.schemas.pagination import (
     OffsetPaginationDep,
 )
 from app.modules.auth.presentation.api import security
-from app.modules.auth.presentation.api.v1.users.deps import get_principal
+from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
 from app.modules.auth.shared.context import Principal
 from app.modules.chat.application.commands.user import (
     SubmitUserMessageCommand,
@@ -51,7 +51,7 @@ user_chat_router = APIRouter(tags=["Chat"], dependencies=[Depends(security)])
 async def submit_user_message(
     handler: FromDishka[SubmitUserMessageCommandHandler],
     data: SubmitUserMessageRequestSchema,
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
 ) -> SubmitUserMessageResponseSchema:
     result = await handler(
         SubmitUserMessageCommand(
@@ -71,7 +71,7 @@ async def submit_user_message(
 @inject
 async def get_current_user_chat(
     handler: FromDishka[GetUserActiveChatQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
 ) -> GetChatInfoResponseSchema | dict:
     result = await handler(
         GetUserActiveChatQuery(
@@ -92,7 +92,7 @@ async def get_current_user_chat(
 @inject
 async def get_current_user_chat_messages(
     handler: FromDishka[GetUserActiveChatMessagesQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     pagination: OffsetPaginationDep,
 ) -> GetChatMessagesResponseSchema | dict:
     result = await handler(

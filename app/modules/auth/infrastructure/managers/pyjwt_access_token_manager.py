@@ -16,6 +16,7 @@ from app.modules.auth.application.interfaces.managers.access_token import (
     TokenInfoDTO,
 )
 from app.modules.auth.shared.enums import PrincipalTypeEnum
+from app.modules.staff.shared.enums.staff_role import StaffRoleEnum
 
 
 class PyJWTAccessTokenManager(IAccessTokenManager):
@@ -72,10 +73,19 @@ class PyJWTAccessTokenManager(IAccessTokenManager):
         if payload.get("type") != "access":
             raise ValueError("Invalid token type")
 
+        principal_type = PrincipalTypeEnum(payload["principal_type"])
+        role = payload["role"]
+
+        mapped_role = {
+            PrincipalTypeEnum.USER: lambda: UserRoleEnum(role),
+            PrincipalTypeEnum.STAFF: lambda: StaffRoleEnum(role),
+        }
+
         return TokenInfoDTO(
-            user_id=PrincipalIdVO.from_str(payload["sub"]),
+            principal_type=principal_type,
+            principal_id=PrincipalIdVO.from_str(payload["sub"]),
             session_id=SessionIdVO.from_str(payload["session_id"]),
-            role=UserRoleEnum(payload["role"]),
+            role=mapped_role[principal_type](),
             issued_at=payload["iat"],
             expires_at=payload["exp"],
         )

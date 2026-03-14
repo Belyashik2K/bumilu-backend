@@ -12,8 +12,10 @@ def get_principal(request: CustomRequest) -> Principal:
     return request.state.principal
 
 
-def get_admin_principal(request: CustomRequest) -> Principal:
+def get_user_principal(request: CustomRequest) -> Principal:
     principal = get_principal(request)
-    if not principal.is_admin():
-        raise ApplicationForbiddenException(message="Know and fight for your rights.")
-    return principal
+    if not principal.is_user():
+        raise ApplicationForbiddenException(
+            message="You're too cool for that, brother."
+        )
+    return request.state.principal
