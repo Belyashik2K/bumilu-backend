@@ -36,6 +36,12 @@ class AuthSession:
     def is_active(self) -> bool:
         return self.revoked_at is None and self.expires_at > get_current_dt()
 
+    def is_staff_session(self) -> bool:
+        return self.principal_type == PrincipalTypeEnum.STAFF
+
+    def is_user_session(self) -> bool:
+        return self.principal_type == PrincipalTypeEnum.USER
+
     def rotate(
         self,
         refresh_token_hash: str,

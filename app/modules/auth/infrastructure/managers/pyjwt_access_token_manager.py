@@ -44,7 +44,7 @@ class PyJWTAccessTokenManager(IAccessTokenManager):
         payload = {
             "type": "access",
             "sub": str(principal_id),
-            "principal_type": str(principal_type),
+            "principal_type": principal_type.value,
             "iss": self._issuer,
             "exp": self._get_expiration_time(seconds=ttl),
             "iat": get_current_dt(),
