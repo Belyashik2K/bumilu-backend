@@ -4,18 +4,20 @@ from pydantic import (
     Field,
 )
 
-STAFF_EMAIL_EXAMPLE = "belyashik2k@dev.bumilu.ru"
-STAFF_PASSWORD_EXAMPLE = "supersecretpassword123"
+from app.modules.staff.presentation.api.schemas.common import (
+    STAFF_MEMBER_EMAIL_EXAMPLE,
+    STAFF_MEMBER_PASSWORD_EXAMPLE,
+)
 
 
 class StaffMemberLoginRequestSchema(BaseModel):
     email: EmailStr = Field(
         ...,
         description="Email address of the staff member account.",
-        examples=[STAFF_EMAIL_EXAMPLE],
+        examples=[STAFF_MEMBER_EMAIL_EXAMPLE],
     )
     password: str = Field(
         ...,
         description="Password for the staff member account.",
-        examples=[STAFF_PASSWORD_EXAMPLE],
+        examples=[STAFF_MEMBER_PASSWORD_EXAMPLE],
     )
