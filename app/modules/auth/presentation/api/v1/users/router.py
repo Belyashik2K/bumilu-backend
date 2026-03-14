@@ -45,7 +45,7 @@ from app.modules.auth.presentation.api.schemas.user.refresh import (
 )
 
 users_auth_router = APIRouter(
-    tags=["User Authentication"],
+    tags=["User Auth"],
     prefix="/users",
 )
 
