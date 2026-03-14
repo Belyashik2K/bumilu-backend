@@ -4,10 +4,11 @@ from dataclasses import (
 )
 
 from app.core.shared.enums import UserRoleEnum
+from app.modules.staff.shared.enums.staff_role import StaffRoleEnum
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
-class UserInfoDTO:  # TODO: remove this class
+class AccountInfoDTO:  # TODO: remove this class
     id: str
     email: str | None = field(default=None)
-    role: UserRoleEnum
+    role: UserRoleEnum | StaffRoleEnum

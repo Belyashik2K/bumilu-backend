@@ -4,16 +4,16 @@ from app.core.application.commands import ICommandHandlerWithResult
 from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.core.shared.utils import prepare_extras
-from app.modules.auth.application.commands.refresh_session import (
+from app.modules.auth.application.commands.shared_dtos import (
+    AccountInfoDTO,
+    TokenInfoDTO,
+)
+from app.modules.auth.application.commands.user.refresh_session import (
     RefreshAuthSessionCommand,
     RefreshAuthSessionCommandResult,
 )
-from app.modules.auth.application.commands.refresh_session.exceptions import (
+from app.modules.auth.application.commands.user.refresh_session.exceptions import (
     InvalidRefreshToken,
-)
-from app.modules.auth.application.commands.shared_dtos import (
-    TokenInfoDTO,
-    UserInfoDTO,
 )
 from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
@@ -113,7 +113,7 @@ class RefreshAuthSessionCommandHandler(
                 token=new_tokens.refresh_token,
                 expires_in=new_tokens.refresh_expires_in,
             ),
-            user=UserInfoDTO(
+            account=AccountInfoDTO(
                 id=str(user.id),
                 email=str(user.email) if user.email is not None else None,
                 role=user.role,

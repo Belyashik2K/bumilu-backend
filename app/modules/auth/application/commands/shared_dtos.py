@@ -2,7 +2,7 @@ from dataclasses import (
     dataclass,
 )
 
-from app.modules.users.application.queries.shared_dtos import UserInfoDTO
+from app.modules.users.application.queries.shared_dtos import AccountInfoDTO
 
 
 @dataclass(slots=True, kw_only=True, frozen=True)
@@ -15,4 +15,4 @@ class TokenInfoDTO:
 class IssuedTokensDTO:
     access: TokenInfoDTO
     refresh: TokenInfoDTO
-    user: UserInfoDTO
+    account: AccountInfoDTO

@@ -7,10 +7,10 @@ from app.core.application.interfaces.transaction_manager import (
     ITransactionManager,
 )
 from app.core.shared.utils import prepare_extras
-from app.modules.auth.application.commands.email.request_code.command import (
+from app.modules.auth.application.commands.user.email.request_code.command import (
     RequestEmailCodeAtLoginCommand,
 )
-from app.modules.auth.application.commands.email.request_code.exceptions import (
+from app.modules.auth.application.commands.user.email.request_code.exceptions import (
     VerificationCodeRequestedTooEarly,
 )
 from app.modules.auth.application.interfaces.email_sender import IEmailSender
