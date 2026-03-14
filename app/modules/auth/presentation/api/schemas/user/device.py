@@ -6,12 +6,11 @@ from pydantic import (
 )
 
 from app.core.shared.enums import DevicePlatformEnum
-from app.modules.auth.presentation.api.schemas.common import (
-    APP_VERSION_EXAMPLE,
-    DEVICE_ID_EXAMPLE,
-    DEVICE_NAME_EXAMPLE,
-    DEVICE_PLATFORM_EXAMPLE,
-)
+
+DEVICE_ID_EXAMPLE = "019caaaa-0000-7000-a000-000000000001"
+DEVICE_PLATFORM_EXAMPLE = DevicePlatformEnum.ANDROID
+DEVICE_NAME_EXAMPLE = "Xiaomi 11T (Android 11)"
+APP_VERSION_EXAMPLE = "1.0.0"
 
 
 class DeviceInfoHeadersSchema(BaseModel):

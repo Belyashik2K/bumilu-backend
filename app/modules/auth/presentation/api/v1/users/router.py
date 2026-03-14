@@ -27,20 +27,21 @@ from app.modules.auth.application.commands.user.refresh_session import (
     RefreshAuthSessionCommand,
     RefreshAuthSessionCommandHandler,
 )
-from app.modules.auth.presentation.api.schemas.device import (
-    DeviceInfoHeadersSchema,
-    get_device_info_headers,
-)
-from app.modules.auth.presentation.api.schemas.login import (
-    LoginAsGuestResponseSchema,
-    RequestEmailCodeAtLoginRequestSchema,
-    VerifyEmailCodeAtLoginRequestSchema,
-    VerifyEmailCodeAtLoginResponseSchema,
+from app.modules.auth.presentation.api.schemas.common import (
+    RefreshAuthSessionRequestSchema,
 )
 from app.modules.auth.presentation.api.schemas.logout import LogoutRequestSchema
 from app.modules.auth.presentation.api.schemas.refresh import (
-    RefreshAuthSessionRequestSchema,
-    RefreshAuthSessionResponseSchema,
+    RefreshUserAuthSessionResponseSchema,
+)
+from app.modules.auth.presentation.api.schemas.user.device import (
+    DeviceInfoHeadersSchema,
+    get_device_info_headers,
+)
+from app.modules.auth.presentation.api.schemas.user.login import (
+    RequestEmailCodeAtLoginRequestSchema,
+    SuccessfulUserLoginSchema,
+    VerifyEmailCodeAtLoginRequestSchema,
 )
 
 users_auth_router = APIRouter(
@@ -54,7 +55,7 @@ users_auth_router = APIRouter(
 async def login_as_guest(
     handler: FromDishka[LoginAsGuestCommandHandler],
     headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
-) -> LoginAsGuestResponseSchema:
+) -> SuccessfulUserLoginSchema:
     result = await handler(
         LoginAsGuestCommand(
             device_id=headers.device_id,
@@ -63,7 +64,7 @@ async def login_as_guest(
             app_version=headers.app_version,
         )
     )
-    return LoginAsGuestResponseSchema.model_validate(result, from_attributes=True)
+    return SuccessfulUserLoginSchema.model_validate(result, from_attributes=True)
 
 
 @users_auth_router.post(
@@ -89,7 +90,7 @@ async def verify_email_login(
     handler: FromDishka[VerifyEmailCodeAtLoginCommandHandler],
     data: VerifyEmailCodeAtLoginRequestSchema,
     headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
-) -> VerifyEmailCodeAtLoginResponseSchema:
+) -> SuccessfulUserLoginSchema:
     result = await handler(
         VerifyEmailCodeAtLoginCommand(
             email=str(data.email),
@@ -100,9 +101,7 @@ async def verify_email_login(
             app_version=headers.app_version,
         )
     )
-    return VerifyEmailCodeAtLoginResponseSchema.model_validate(
-        result, from_attributes=True
-    )
+    return SuccessfulUserLoginSchema.model_validate(result, from_attributes=True)
 
 
 @users_auth_router.post(
@@ -114,14 +113,16 @@ async def refresh(
     handler: FromDishka[RefreshAuthSessionCommandHandler],
     data: RefreshAuthSessionRequestSchema,
     headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
-) -> RefreshAuthSessionResponseSchema:
+) -> RefreshUserAuthSessionResponseSchema:
     result = await handler(
         RefreshAuthSessionCommand(
             refresh_token=data.refresh_token,
             device_id=headers.device_id,
         )
     )
-    return RefreshAuthSessionResponseSchema.model_validate(result, from_attributes=True)
+    return RefreshUserAuthSessionResponseSchema.model_validate(
+        result, from_attributes=True
+    )
 
 
 @users_auth_router.post(
