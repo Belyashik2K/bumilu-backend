@@ -31,9 +31,6 @@ from app.modules.auth.presentation.api.schemas.common import (
     RefreshAuthSessionRequestSchema,
 )
 from app.modules.auth.presentation.api.schemas.logout import LogoutRequestSchema
-from app.modules.auth.presentation.api.schemas.refresh import (
-    RefreshUserAuthSessionResponseSchema,
-)
 from app.modules.auth.presentation.api.schemas.user.device import (
     DeviceInfoHeadersSchema,
     get_device_info_headers,
@@ -42,6 +39,9 @@ from app.modules.auth.presentation.api.schemas.user.login import (
     RequestEmailCodeAtLoginRequestSchema,
     SuccessfulUserLoginSchema,
     VerifyEmailCodeAtLoginRequestSchema,
+)
+from app.modules.auth.presentation.api.schemas.user.refresh import (
+    RefreshUserAuthSessionResponseSchema,
 )
 
 users_auth_router = APIRouter(
