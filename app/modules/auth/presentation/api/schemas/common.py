@@ -1,22 +1,34 @@
 from pydantic import (
+    UUID7,
     BaseModel,
+    EmailStr,
     Field,
 )
 
-from app.core.shared.enums import (
-    DevicePlatformEnum,
-)
+from app.core.shared.enums import UserRoleEnum
+from app.modules.staff.shared.enums.staff_role import StaffRoleEnum
 from app.modules.users.presentation.api.schemas.common import (
-    AuthenticatedUserInfoSchema,
+    USER_EMAIL_EXAMPLE,
+    USER_ID_EXAMPLE,
+    USER_ROLE_EXAMPLE,
 )
-
-DEVICE_ID_EXAMPLE = "019caaaa-0000-7000-a000-000000000001"
-DEVICE_PLATFORM_EXAMPLE = DevicePlatformEnum.ANDROID
-DEVICE_NAME_EXAMPLE = "Xiaomi 11T (Android 11)"
-APP_VERSION_EXAMPLE = "1.0.0"
 
 TOKEN_EXAMPLE = "itsshowinglikeitstheendoftheworld"
 TOKEN_EXPIRES_IN_EXAMPLE = 3600
+
+
+class AuthenticatedAccountInfoSchema(BaseModel):
+    id: UUID7 = Field(
+        ...,
+        description="Unique identifier for the account.",
+        examples=[USER_ID_EXAMPLE],
+    )
+    email: EmailStr | None = Field(
+        None, description="Email address of the account.", examples=[USER_EMAIL_EXAMPLE]
+    )
+    role: UserRoleEnum | StaffRoleEnum = Field(
+        ..., description="Role of the account.", examples=[USER_ROLE_EXAMPLE]
+    )
 
 
 class TokenInfoSchema(BaseModel):
@@ -31,6 +43,14 @@ class TokenInfoSchema(BaseModel):
 class SuccessfulLoginSchema(BaseModel):
     access: TokenInfoSchema = Field(..., description="Access token information.")
     refresh: TokenInfoSchema = Field(..., description="Refresh token information.")
-    user: AuthenticatedUserInfoSchema = Field(
-        ..., description="Authenticated user information."
+    account: AuthenticatedAccountInfoSchema = Field(
+        ..., description="Authenticated account information."
+    )
+
+
+class RefreshAuthSessionRequestSchema(BaseModel):
+    refresh_token: str = Field(
+        ...,
+        description="The refresh token issued during authentication or previous refresh.",
+        examples=[TOKEN_EXAMPLE],
     )
