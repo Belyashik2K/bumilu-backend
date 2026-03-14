@@ -16,9 +16,7 @@ from app.core.shared.presentation.schemas.pagination import (
     OffsetPaginationDep,
 )
 from app.modules.auth.presentation.api import security
-from app.modules.auth.presentation.api.v1.users.deps import (
-    get_admin_principal,
-)
+from app.modules.auth.presentation.api.v1.staff.deps import get_staff_principal
 from app.modules.auth.shared.context import Principal
 from app.modules.chat.application.commands.admin import (
     SubmitAdminMessageCommand,
@@ -70,7 +68,7 @@ admin_chat_router = APIRouter(
 @inject
 async def get_chats_list(
     handler: FromDishka[GetAdminChatListQueryHandler],
-    principal: Annotated[Principal, Depends(get_admin_principal)],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
     filters: AdminChatFiltersDep,
     pagination: OffsetPaginationDep,
 ) -> AdminChatListResponseSchema:
@@ -92,7 +90,7 @@ async def get_chats_list(
 @inject
 async def get_chat_info(
     handler: FromDishka[GetAdminChatQueryHandler],
-    principal: Annotated[Principal, Depends(get_admin_principal)],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
     chat_id: UUID7 = CHAT_ID_PATH,
 ) -> AdminChatInfoSchema:
     result = await handler(
@@ -111,7 +109,7 @@ async def get_chat_info(
 @inject
 async def get_chat_messages(
     handler: FromDishka[GetAdminChatMessagesQueryHandler],
-    principal: Annotated[Principal, Depends(get_admin_principal)],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
     pagination: OffsetPaginationDep,
     chat_id: UUID7 = CHAT_ID_PATH,
 ) -> GetChatMessagesResponseSchema:
@@ -133,7 +131,7 @@ async def get_chat_messages(
 @inject
 async def close_chat_as_admin(
     handler: FromDishka[CloseChatAsAdminCommandHandler],
-    principal: Principal = Depends(get_admin_principal),
+    principal: Principal = Depends(get_staff_principal),
     chat_id: UUID7 = CHAT_ID_PATH,
 ) -> None:
     await handler(CloseChatAsAdminCommand(actor_id=principal.id.value, chat_id=chat_id))
@@ -144,7 +142,7 @@ async def close_chat_as_admin(
 async def reply_to_chat_as_admin(
     handler: FromDishka[SubmitAdminMessageCommandHandler],
     data: SubmitAdminMessageRequestSchema,
-    principal: Principal = Depends(get_admin_principal),
+    principal: Principal = Depends(get_staff_principal),
     chat_id: UUID7 = CHAT_ID_PATH,
 ) -> SubmitAdminMessageResponseSchema:
     result = await handler(

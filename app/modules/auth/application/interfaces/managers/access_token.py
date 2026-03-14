@@ -15,9 +15,10 @@ from app.modules.staff.shared.enums.staff_role import StaffRoleEnum
 
 @dataclass(frozen=True, slots=True)
 class TokenInfoDTO:
-    user_id: PrincipalIdVO
-    session_id: SessionIdVO
+    principal_id: PrincipalIdVO
+    principal_type: PrincipalTypeEnum
     role: UserRoleEnum | StaffRoleEnum
+    session_id: SessionIdVO
     issued_at: int
     expires_at: int
 
