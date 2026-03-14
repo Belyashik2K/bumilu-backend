@@ -11,4 +11,4 @@ class PWDLibStaffPasswordHasher(IStaffPasswordHasher):
         return self._password_hash.hash(password)
 
     def verify(self, password: str, password_hash: str) -> bool:
-        return self._password_hash.verify(password_hash, password)
+        return self._password_hash.verify(password, password_hash)
