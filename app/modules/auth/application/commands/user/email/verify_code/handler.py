@@ -6,16 +6,16 @@ from app.core.application.interfaces.transaction_manager import (
 )
 from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.core.shared.utils import prepare_extras
-from app.modules.auth.application.commands.email.verify_code import (
+from app.modules.auth.application.commands.shared_dtos import (
+    AccountInfoDTO,
+    TokenInfoDTO,
+)
+from app.modules.auth.application.commands.user.email.verify_code import (
     VerifyEmailCodeAtLoginCommand,
     VerifyEmailCodeAtLoginCommandResult,
 )
-from app.modules.auth.application.commands.email.verify_code.exceptions import (
+from app.modules.auth.application.commands.user.email.verify_code.exceptions import (
     InvalidEmailVerificationCode,
-)
-from app.modules.auth.application.commands.shared_dtos import (
-    TokenInfoDTO,
-    UserInfoDTO,
 )
 from app.modules.auth.application.interfaces.hashers import IVerificationCodeHasher
 from app.modules.auth.application.interfaces.repositories.auth_session import (
@@ -149,7 +149,7 @@ class VerifyEmailCodeAtLoginCommandHandler(
                 token=tokens.refresh_token,
                 expires_in=tokens.refresh_expires_in,
             ),
-            user=UserInfoDTO(
+            account=AccountInfoDTO(
                 id=str(user.id),
                 email=str(user.email),
                 role=user.role,

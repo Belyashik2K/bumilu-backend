@@ -9,21 +9,21 @@ from fastapi import (
 from starlette import status
 
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
-from app.modules.auth.application.commands.email import (
+from app.modules.auth.application.commands.logout import (
+    LogoutCommand,
+    LogoutCommandHandler,
+)
+from app.modules.auth.application.commands.user.email import (
     RequestEmailCodeAtLoginCommand,
     RequestEmailCodeAtLoginCommandHandler,
     VerifyEmailCodeAtLoginCommand,
     VerifyEmailCodeAtLoginCommandHandler,
 )
-from app.modules.auth.application.commands.guest import (
+from app.modules.auth.application.commands.user.guest import (
     LoginAsGuestCommand,
     LoginAsGuestCommandHandler,
 )
-from app.modules.auth.application.commands.logout import (
-    LogoutCommand,
-    LogoutCommandHandler,
-)
-from app.modules.auth.application.commands.refresh_session import (
+from app.modules.auth.application.commands.user.refresh_session import (
     RefreshAuthSessionCommand,
     RefreshAuthSessionCommandHandler,
 )

@@ -10,13 +10,14 @@ from app.core.shared.domain.value_objects.id import (
 )
 from app.core.shared.enums import UserRoleEnum
 from app.modules.auth.shared.enums import PrincipalTypeEnum
+from app.modules.staff.shared.enums.staff_role import StaffRoleEnum
 
 
 @dataclass(frozen=True, slots=True)
 class TokenInfoDTO:
     user_id: PrincipalIdVO
     session_id: SessionIdVO
-    role: UserRoleEnum
+    role: UserRoleEnum | StaffRoleEnum
     issued_at: int
     expires_at: int
 
@@ -28,7 +29,7 @@ class IAccessTokenManager(ABC):
         principal_id: PrincipalIdVO,
         principal_type: PrincipalTypeEnum,
         session_id: SessionIdVO,
-        role: UserRoleEnum,
+        role: UserRoleEnum | StaffRoleEnum,
         ttl: int,
     ) -> str: ...
 

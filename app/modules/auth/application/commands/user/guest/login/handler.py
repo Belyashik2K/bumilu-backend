@@ -7,13 +7,13 @@ from app.core.application.interfaces.transaction_manager import (
 from app.core.shared.domain.value_objects.id import DeviceIdVO
 from app.core.shared.enums import UserRoleEnum
 from app.core.shared.utils import prepare_extras
-from app.modules.auth.application.commands.guest.login import (
+from app.modules.auth.application.commands.shared_dtos import (
+    AccountInfoDTO,
+    TokenInfoDTO,
+)
+from app.modules.auth.application.commands.user.guest.login import (
     LoginAsGuestCommand,
     LoginAsGuestCommandResult,
-)
-from app.modules.auth.application.commands.shared_dtos import (
-    TokenInfoDTO,
-    UserInfoDTO,
 )
 from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
@@ -123,7 +123,7 @@ class LoginAsGuestCommandHandler(
                 token=session.refresh_token,
                 expires_in=session.refresh_expires_in,
             ),
-            user=UserInfoDTO(
+            account=AccountInfoDTO(
                 id=str(device.guest_user_id),
                 email=None,
                 role=UserRoleEnum.GUEST,

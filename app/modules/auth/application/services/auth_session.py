@@ -24,6 +24,7 @@ from app.modules.auth.application.interfaces.repositories.auth_session import (
 )
 from app.modules.auth.domain.models.auth_session import AuthSession
 from app.modules.auth.domain.models.principal import Principal
+from app.modules.staff.shared.enums.staff_role import StaffRoleEnum
 
 logger = logging.getLogger(__name__)
 
@@ -76,8 +77,8 @@ class AuthSessionService:
         self,
         *,
         principal: Principal,
-        device_id: DeviceIdVO,
-        role: UserRoleEnum,
+        role: UserRoleEnum | StaffRoleEnum,
+        device_id: DeviceIdVO | None = None,
     ) -> IssuedAuthTokens:
         token = self._refresh_token_generator.generate()
         token_hash = self.get_token_hash(token)
@@ -125,7 +126,7 @@ class AuthSessionService:
         self,
         *,
         session: AuthSession,
-        role: UserRoleEnum,
+        role: UserRoleEnum | StaffRoleEnum,
     ) -> IssuedAuthTokens:
         new_refresh_token = self._refresh_token_generator.generate()
         new_refresh_token_hash = self.get_token_hash(new_refresh_token)

@@ -10,13 +10,13 @@ from app.core.application.interfaces.transaction_manager import (
     ITransactionManager,
 )
 from app.core.infrastructure.config import AppConfig
-from app.modules.auth.application.commands.email import (
+from app.modules.auth.application.commands.logout import LogoutCommandHandler
+from app.modules.auth.application.commands.user.email import (
     RequestEmailCodeAtLoginCommandHandler,
     VerifyEmailCodeAtLoginCommandHandler,
 )
-from app.modules.auth.application.commands.guest import LoginAsGuestCommandHandler
-from app.modules.auth.application.commands.logout import LogoutCommandHandler
-from app.modules.auth.application.commands.refresh_session import (
+from app.modules.auth.application.commands.user.guest import LoginAsGuestCommandHandler
+from app.modules.auth.application.commands.user.refresh_session import (
     RefreshAuthSessionCommandHandler,
 )
 from app.modules.auth.application.interfaces.email_sender import IEmailSender
