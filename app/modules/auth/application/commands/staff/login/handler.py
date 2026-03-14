@@ -12,10 +12,14 @@ from app.modules.auth.application.interfaces.repositories.principal import (
     IPrincipalRepository,
 )
 from app.modules.auth.application.services.auth_session import AuthSessionService
+from app.modules.auth.domain.models.principal import Principal
+from app.modules.auth.shared.enums import PrincipalTypeEnum
 from app.modules.staff.application.repositories.staff_member import (
     IStaffMemberRepository,
 )
+from app.modules.staff.domain.models.staff_member import StaffMember
 from app.modules.staff.domain.value_objects.staff_email import StaffEmailVO
+from app.modules.staff.shared.enums.staff_role import StaffRoleEnum
 from app.modules.users.application.queries.shared_dtos import AccountInfoDTO
 
 
@@ -46,8 +50,21 @@ class LoginAsStaffMemberCommandHandler(
         staff_member = await self._staff_member_repository.get_by_email(
             staff_member_email
         )
+
         if staff_member is None:
-            raise ValueError("Invalid email or password")
+            if await self._staff_member_repository.total_staff_members() == 0:
+                principal = Principal.create(type=PrincipalTypeEnum.STAFF)
+                staff_member = StaffMember.create(
+                    id=principal.id,
+                    name="Owner",
+                    email=staff_member_email,
+                    password_hash=self._staff_password_hasher.hash(command.password),
+                    role=StaffRoleEnum.OWNER,
+                )
+                await self._principal_repository.save(principal)
+                await self._staff_member_repository.save(staff_member)
+            else:
+                raise ValueError("Invalid email or password")
 
         if not self._staff_password_hasher.verify(
             password=command.password, password_hash=staff_member.password_hash

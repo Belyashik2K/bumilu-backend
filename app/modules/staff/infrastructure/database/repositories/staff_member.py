@@ -1,4 +1,7 @@
-from sqlalchemy import select
+from sqlalchemy import (
+    func,
+    select,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.infrastructure.database import SQLAlchemyBaseRepository
@@ -43,3 +46,9 @@ class SQLAlchemyStaffMemberRepository(
         if data is None:
             return None
         return self._to_entity(data)
+
+    async def total_staff_members(self) -> int:
+        stmt = select(func.count(StaffMemberModel.id))
+        result = await self.session.execute(stmt)
+        total = result.scalar_one()
+        return total

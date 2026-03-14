@@ -11,3 +11,6 @@ from app.modules.staff.domain.value_objects.staff_email import StaffEmailVO
 class IStaffMemberRepository(IBaseRepository[StaffMember], ABC):
     @abstractmethod
     async def get_by_email(self, email: StaffEmailVO) -> StaffMember | None: ...
+
+    @abstractmethod
+    async def total_staff_members(self) -> int: ...
