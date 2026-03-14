@@ -11,6 +11,12 @@ from app.core.application.interfaces.transaction_manager import (
 )
 from app.core.infrastructure.config import AppConfig
 from app.modules.auth.application.commands.logout import LogoutCommandHandler
+from app.modules.auth.application.commands.staff.login import (
+    LoginAsStaffMemberCommandHandler,
+)
+from app.modules.auth.application.commands.staff.refresh_session import (
+    RefreshStaffMemberAuthSessionCommandHandler,
+)
 from app.modules.auth.application.commands.user.email import (
     RequestEmailCodeAtLoginCommandHandler,
     VerifyEmailCodeAtLoginCommandHandler,
@@ -25,6 +31,7 @@ from app.modules.auth.application.interfaces.generators import (
     IVerificationCodeGenerator,
 )
 from app.modules.auth.application.interfaces.hashers import (
+    IStaffPasswordHasher,
     ITokenHasher,
     IVerificationCodeHasher,
 )
@@ -63,12 +70,18 @@ from app.modules.auth.infrastructure.hashers.hmac_token_hasher import HMACTokenH
 from app.modules.auth.infrastructure.hashers.hmac_verification_code_hasher import (
     HMACVerificationCodeHasher,
 )
+from app.modules.auth.infrastructure.hashers.pwdlib_staff_password_hasher import (
+    PWDLibStaffPasswordHasher,
+)
 from app.modules.auth.infrastructure.managers.pyjwt_access_token_manager import (
     PyJWTAccessTokenManager,
 )
 from app.modules.auth.infrastructure.smtplib_email_sender import SMTPLibEmailSender
 from app.modules.auth.infrastructure.stores.redis_email_challenge_store import (
     RedisEmailLoginChallengeStore,
+)
+from app.modules.staff.application.repositories.staff_member import (
+    IStaffMemberRepository,
 )
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 
@@ -88,6 +101,10 @@ class AuthProvider(Provider):
     @provide(scope=Scope.APP, provides=IRefreshTokenGenerator)
     async def refresh_token_generator(self) -> SecretsRefreshTokenGenerator:
         return SecretsRefreshTokenGenerator()
+
+    @provide(scope=Scope.APP, provides=IStaffPasswordHasher)
+    async def staff_password_hasher(self) -> PWDLibStaffPasswordHasher:
+        return PWDLibStaffPasswordHasher()
 
     @provide(scope=Scope.APP, provides=ITokenHasher)
     async def token_hasher(
@@ -270,4 +287,36 @@ class AuthProvider(Provider):
             auth_session_service=auth_session_service,
             challenge_store=challenge_store,
             code_hasher=code_hasher,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def login_as_staff_member_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        principal_repository: IPrincipalRepository,
+        staff_member_repository: IStaffMemberRepository,
+        auth_session_service: AuthSessionService,
+        staff_password_hasher: IStaffPasswordHasher,
+    ) -> LoginAsStaffMemberCommandHandler:
+        return LoginAsStaffMemberCommandHandler(
+            transaction_manager=transaction_manager,
+            principal_repository=principal_repository,
+            staff_member_repository=staff_member_repository,
+            auth_session_service=auth_session_service,
+            staff_password_hasher=staff_password_hasher,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def refresh_staff_member_session_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        auth_session_repository: IAuthSessionRepository,
+        staff_member_repository: IStaffMemberRepository,
+        auth_session_service: AuthSessionService,
+    ) -> RefreshStaffMemberAuthSessionCommandHandler:
+        return RefreshStaffMemberAuthSessionCommandHandler(
+            transaction_manager=transaction_manager,
+            auth_session_repository=auth_session_repository,
+            staff_member_repository=staff_member_repository,
+            auth_session_service=auth_session_service,
         )
