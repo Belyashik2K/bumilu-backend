@@ -49,7 +49,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, Any]:
     config = await container.get(AppConfig)
     setup_dishka_scheduler(container=container, scheduler=scheduler)
     register_chat_jobs(scheduler, config=config)
-    scheduler.start()
+    # scheduler.start()
     try:
         yield
     finally:

@@ -66,6 +66,20 @@ services:
         condition: service_completed_successfully
     networks:
       - bumilu
+  scheduler:
+    build: .
+    restart: unless-stopped
+    env_file: [ .env ]
+    command: [ "taskiq", "scheduler", "app.core.infrastructure.taskiq_scheduler:scheduler", "--update-interval", "1" ]
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    networks:
+      - bumilu
 networks:
   bumilu:
 volumes:

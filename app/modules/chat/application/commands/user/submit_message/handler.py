@@ -7,6 +7,9 @@ from app.modules.chat.application.commands.user.submit_message import (
     SubmitUserMessageCommand,
     SubmitUserMessageCommandResult,
 )
+from app.modules.chat.application.interfaces.chat_reply_dispatcher import (
+    IChatReplyDispatcher,
+)
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
@@ -26,12 +29,14 @@ class SubmitUserMessageCommandHandler(
         chat_repository: IChatRepository,
         chat_message_repository: IChatMessageRepository,
         user_repository: IUserRepository,
+        chat_reply_dispatcher: IChatReplyDispatcher,
         transaction_manager: ITransactionManager,
     ) -> None:
         super().__init__(transaction_manager)
         self._chat_repository = chat_repository
         self._chat_message_repository = chat_message_repository
         self._user_repository = user_repository
+        self._chat_reply_dispatcher = chat_reply_dispatcher
 
     async def handle(
         self, command: SubmitUserMessageCommand
@@ -68,6 +73,10 @@ class SubmitUserMessageCommandHandler(
         )
         await self._chat_repository.save(chat)
         await self._chat_message_repository.save(message)
+
+        await self._chat_reply_dispatcher.dispatch(
+            chat_id=chat.id.value, delay_seconds=5
+        )
 
         return SubmitUserMessageCommandResult(
             chat_id=chat.id.value,
