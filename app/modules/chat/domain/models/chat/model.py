@@ -144,3 +144,6 @@ class Chat:
         self.status = ChatStatusEnum.CLOSED
         self.close_reason = reason
         self.closed_at = self.last_activity_at = now
+
+    def can_start_ai_reply(self) -> bool:
+        return self.status == ChatStatusEnum.WAITING_FOR_AI
