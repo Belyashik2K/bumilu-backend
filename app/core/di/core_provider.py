@@ -22,10 +22,6 @@ from app.core.infrastructure.database.transaction_manager import (
 
 class CoreProvider(Provider):
     @provide(scope=Scope.APP)
-    def config(self) -> AppConfig:
-        return AppConfig()  # type: ignore[call-arg]
-
-    @provide(scope=Scope.APP)
     def database_helper(
         self,
         config: AppConfig,

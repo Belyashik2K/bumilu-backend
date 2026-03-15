@@ -13,7 +13,7 @@ from app.modules.auth.application.commands.user.email.request_code.command impor
 from app.modules.auth.application.commands.user.email.request_code.exceptions import (
     VerificationCodeRequestedTooEarly,
 )
-from app.modules.auth.application.interfaces.email_sender import IEmailSender
+from app.modules.auth.application.interfaces.email_dispatcher import IEmailDispatcher
 from app.modules.auth.application.interfaces.generators import (
     IVerificationCodeGenerator,
 )
@@ -36,7 +36,7 @@ class RequestEmailCodeAtLoginCommandHandler(
         code_generator: IVerificationCodeGenerator,
         code_hasher: IVerificationCodeHasher,
         challenge_store: IEmailLoginChallengeStore,
-        email_sender: IEmailSender,
+        email_dispatcher: IEmailDispatcher,
         transaction_manager: ITransactionManager,
         email_subject: str,
         email_body_template: str,
@@ -47,7 +47,7 @@ class RequestEmailCodeAtLoginCommandHandler(
         self._code_generator = code_generator
         self._code_hasher = code_hasher
         self._challenge_store = challenge_store
-        self._email_sender = email_sender
+        self._email_dispatcher = email_dispatcher
         self._email_subject = email_subject
         self._email_body_template = email_body_template
         self._resend_cooldown_seconds = resend_cooldown_seconds
@@ -77,8 +77,8 @@ class RequestEmailCodeAtLoginCommandHandler(
             )
             raise VerificationCodeRequestedTooEarly(retry_after_seconds=retry_after)
 
-        await self._email_sender.send(
-            to=email,
+        await self._email_dispatcher.dispatch(
+            to=str(email),
             subject=self._email_subject.format(code=code),
             body=self._email_body_template.format(
                 code=code, ttl_min=self._ttl_seconds // 60

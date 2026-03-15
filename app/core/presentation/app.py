@@ -21,7 +21,10 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
-from app.core.di import CoreProvider
+from app.core.di import (
+    ConfigProvider,
+    CoreProvider,
+)
 from app.core.infrastructure.config import AppConfig
 from app.core.infrastructure.logging import setup_logging
 from app.core.presentation.api import api_router
@@ -93,6 +96,7 @@ def create_app() -> FastAPI:
     set_exception_handlers(app)
 
     container = make_async_container(
+        ConfigProvider(),
         CoreProvider(),
         UserProvider(),
         AuthProvider(),
