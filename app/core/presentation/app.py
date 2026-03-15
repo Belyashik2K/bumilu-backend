@@ -22,8 +22,8 @@ from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
 from app.core.di import (
+    CORE_PROVIDERS,
     ConfigProvider,
-    CoreProvider,
 )
 from app.core.infrastructure.config import AppConfig
 from app.core.infrastructure.logging import setup_logging
@@ -34,7 +34,7 @@ from app.core.presentation.middlewares.outer import (
 )
 from app.modules.auth.di import AuthProvider
 from app.modules.auth.presentation.api.middlewares.auth import AuthMiddleware
-from app.modules.chat.di import ChatProvider
+from app.modules.chat.di import CHAT_PROVIDERS
 from app.modules.chat.infrastructure.apscheduler_jobs import register_chat_jobs
 from app.modules.favourites.di import FavouriteProvider
 from app.modules.reviews.di import ReviewProvider
@@ -97,12 +97,12 @@ def create_app() -> FastAPI:
 
     container = make_async_container(
         ConfigProvider(),
-        CoreProvider(),
+        *CORE_PROVIDERS,
         UserProvider(),
         AuthProvider(),
         ReviewProvider(),
         FavouriteProvider(),
-        ChatProvider(),
+        *CHAT_PROVIDERS,
         StaffProvider(),
         FastapiProvider(),
     )

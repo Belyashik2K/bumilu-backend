@@ -2,6 +2,7 @@ from abc import (
     ABC,
     abstractmethod,
 )
+from datetime import datetime
 from uuid import UUID
 
 
@@ -11,6 +12,6 @@ class IChatReplyDispatcher(ABC):
         self,
         *,
         chat_id: UUID,
-        # expected_reply_version: int,
+        expected_last_activity_at: datetime,
         delay_seconds: int,
     ) -> None: ...

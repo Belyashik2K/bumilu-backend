@@ -75,7 +75,9 @@ class SubmitUserMessageCommandHandler(
         await self._chat_message_repository.save(message)
 
         await self._chat_reply_dispatcher.dispatch(
-            chat_id=chat.id.value, delay_seconds=5
+            chat_id=chat.id.value,
+            expected_last_activity_at=now,
+            delay_seconds=5,
         )
 
         return SubmitUserMessageCommandResult(
