@@ -20,6 +20,9 @@ from app.modules.chat.application.commands.cron import (
 from app.modules.chat.application.commands.user.submit_message import (
     SubmitUserMessageCommandHandler,
 )
+from app.modules.chat.application.interfaces.chat_reply_dispatcher import (
+    IChatReplyDispatcher,
+)
 from app.modules.chat.application.interfaces.chat_responder import IChatResponder
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.application.interfaces.repositories.chat_message import (
@@ -55,6 +58,9 @@ from app.modules.chat.infrastructure.database.repositories.chat import (
 from app.modules.chat.infrastructure.database.repositories.chat_message import (
     SQLAlchemyChatMessageRepository,
 )
+from app.modules.chat.infrastructure.queue.dispatchers.taskiq_chat_reply_dispatcher import (
+    TaskiqChatReplyDispatcher,
+)
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 
 
@@ -70,6 +76,12 @@ class ChatProvider(Provider):
             model=config.chat.ai_assistant.openai.model,
             system_prompt=config.chat.ai_assistant.system_prompt,
         )
+
+    @provide(scope=Scope.APP, provides=IChatReplyDispatcher)
+    async def chat_reply_dispatcher(
+        self,
+    ) -> TaskiqChatReplyDispatcher:
+        return TaskiqChatReplyDispatcher()
 
     @provide(scope=Scope.REQUEST, provides=IChatRepository)
     async def chat_repository(
@@ -131,6 +143,7 @@ class ChatProvider(Provider):
         user_repository: IUserRepository,
         chat_repository: IChatRepository,
         chat_message_repository: IChatMessageRepository,
+        chat_reply_dispatcher: IChatReplyDispatcher,
         transaction_manager: ITransactionManager,
     ) -> SubmitUserMessageCommandHandler:
         return SubmitUserMessageCommandHandler(
@@ -138,6 +151,7 @@ class ChatProvider(Provider):
             user_repository=user_repository,
             chat_repository=chat_repository,
             chat_message_repository=chat_message_repository,
+            chat_reply_dispatcher=chat_reply_dispatcher,
         )
 
     @provide(scope=Scope.REQUEST)
