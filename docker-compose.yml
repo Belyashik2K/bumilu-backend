@@ -52,6 +52,20 @@ services:
         condition: service_completed_successfully
     networks:
       - bumilu
+  worker:
+    build: .
+    restart: unless-stopped
+    env_file: [ .env ]
+    command: [ "taskiq", "worker", "app.core.infrastructure.queue.worker:broker" ]
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    networks:
+      - bumilu
 networks:
   bumilu:
 volumes:
