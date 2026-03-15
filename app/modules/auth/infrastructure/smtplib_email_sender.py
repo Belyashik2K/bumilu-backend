@@ -15,7 +15,6 @@ from aiosmtplib import (
 from app.core.shared.exceptions import BaseInfrastructureException
 from app.core.shared.utils import prepare_extras
 from app.modules.auth.application.interfaces.email_sender import IEmailSender
-from app.modules.users.domain.value_objects import UserEmailVO
 
 logger = logging.getLogger(__name__)
 
@@ -51,19 +50,17 @@ class SMTPLibEmailSender(IEmailSender):
 
     def _get_context(
         self,
-        to: UserEmailVO,
         *,
         error_type: str | None = None,
     ) -> dict:
         return prepare_extras(
             provider="smtp",
-            to=to.fingerprint,
             host=self.host,
             port=self.port,
             error_type=error_type,
         )
 
-    async def send(self, to: UserEmailVO, subject: str, body: str) -> None:
+    async def send(self, to: str, subject: str, body: str) -> None:
         message = EmailMessage()
         message["From"] = formataddr((self.from_author, self.from_email))
         message["To"] = str(to)
@@ -84,15 +81,15 @@ class SMTPLibEmailSender(IEmailSender):
             await smtp.send_message(message)
             logger.debug(
                 "email_login_smtp_sent",
-                extra=self._get_context(to),
+                extra=self._get_context(),
             )
         except SMTPException as e:
-            raise EmailDeliveryFailed(context=self._get_context(to=to)) from e
+            raise EmailDeliveryFailed(context=self._get_context()) from e
         finally:
             try:
                 await smtp.quit()
             except Exception as e:
                 logger.debug(
                     "email_login_smtp_quit_failed",
-                    extra=self._get_context(to, error_type=type(e).__name__),
+                    extra=self._get_context(error_type=type(e).__name__),
                 )

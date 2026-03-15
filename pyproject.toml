@@ -21,6 +21,8 @@ dependencies = [
     "pyjwt>=2.11.0",
     "redis>=7.2.0",
     "sqlalchemy[postgresql-asyncpg]>=2.0.46",
+    "taskiq>=0.12.1",
+    "taskiq-redis>=1.2.2",
     "uuid6>=2025.0.1",
 ]
 
@@ -82,6 +84,7 @@ fixable = ["ALL"]
 
 [tool.ruff.lint.per-file-ignores]
 "**/__init__.py" = ["F401"] # Ignore unused imports in __init__.py files
+"app/core/infrastructure/queue/worker.py" = ["E402"] # Do not perform function calls in argument defaults
 
 [tool.ruff.format]
 quote-style = "double"

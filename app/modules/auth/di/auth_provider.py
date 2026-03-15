@@ -25,7 +25,7 @@ from app.modules.auth.application.commands.user.guest import LoginAsGuestCommand
 from app.modules.auth.application.commands.user.refresh_session import (
     RefreshAuthSessionCommandHandler,
 )
-from app.modules.auth.application.interfaces.email_sender import IEmailSender
+from app.modules.auth.application.interfaces.email_dispatcher import IEmailDispatcher
 from app.modules.auth.application.interfaces.generators import (
     IRefreshTokenGenerator,
     IVerificationCodeGenerator,
@@ -76,7 +76,9 @@ from app.modules.auth.infrastructure.hashers.pwdlib_staff_password_hasher import
 from app.modules.auth.infrastructure.managers.pyjwt_access_token_manager import (
     PyJWTAccessTokenManager,
 )
-from app.modules.auth.infrastructure.smtplib_email_sender import SMTPLibEmailSender
+from app.modules.auth.infrastructure.queue.dispatchers.taskiq_email_dispatcher import (
+    TaskiqEmailDispatcher,
+)
 from app.modules.auth.infrastructure.stores.redis_email_challenge_store import (
     RedisEmailLoginChallengeStore,
 )
@@ -131,20 +133,11 @@ class AuthProvider(Provider):
             code_length=config.auth.otp.length,
         )
 
-    @provide(scope=Scope.APP, provides=IEmailSender)
-    async def email_sender(
+    @provide(scope=Scope.APP, provides=IEmailDispatcher)
+    async def email_dispatcher(
         self,
-        config: AppConfig,
-    ) -> IEmailSender:
-        return SMTPLibEmailSender(
-            host=config.auth.email.smtp.host,
-            port=config.auth.email.smtp.port,
-            login=config.auth.email.smtp.username,
-            password=config.auth.email.smtp.password,
-            from_author=config.auth.email.smtp.from_name,
-            from_email=config.auth.email.smtp.from_email,
-            timeout=config.auth.email.smtp.timeout,
-        )
+    ) -> TaskiqEmailDispatcher:
+        return TaskiqEmailDispatcher()
 
     @provide(scope=Scope.APP, provides=IEmailLoginChallengeStore)
     async def email_login_challenge_store(
@@ -251,7 +244,7 @@ class AuthProvider(Provider):
         code_generator: IVerificationCodeGenerator,
         code_hasher: IVerificationCodeHasher,
         challenge_store: IEmailLoginChallengeStore,
-        email_sender: IEmailSender,
+        email_dispatcher: IEmailDispatcher,
         transaction_manager: ITransactionManager,
     ) -> RequestEmailCodeAtLoginCommandHandler:
         return RequestEmailCodeAtLoginCommandHandler(
@@ -259,7 +252,7 @@ class AuthProvider(Provider):
             code_generator=code_generator,
             code_hasher=code_hasher,
             challenge_store=challenge_store,
-            email_sender=email_sender,
+            email_dispatcher=email_dispatcher,
             email_subject=config.auth.email.templates.otp.subject,
             email_body_template=config.auth.email.templates.otp.body,
             resend_cooldown_seconds=config.auth.otp.resend_cooldown_sec,
