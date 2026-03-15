@@ -101,3 +101,15 @@ class SQLAlchemyChatRepository(
         result = await self.session.execute(stmt)
         chat_models = result.scalars().all()
         return [self._to_entity(chat_model) for chat_model in chat_models]
+
+    async def get_by_id_with_lock(self, chat_id: ChatIdVO) -> Chat | None:
+        stmt = (
+            select(ChatModel)
+            .where(ChatModel.id == chat_id.value)
+            .with_for_update(skip_locked=True)
+        )
+        result = await self.session.execute(stmt)
+        chat = result.scalar_one_or_none()
+        if not chat:
+            return None
+        return self._to_entity(chat)

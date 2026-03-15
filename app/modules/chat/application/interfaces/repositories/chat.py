@@ -26,3 +26,6 @@ class IChatRepository(IBaseRepository[Chat], ABC):
 
     @abstractmethod
     async def get_inactive_open_chats(self, threshold: datetime) -> list[Chat]: ...
+
+    @abstractmethod
+    async def get_by_id_with_lock(self, chat_id: ChatIdVO) -> Chat | None: ...
