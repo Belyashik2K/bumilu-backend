@@ -8,15 +8,7 @@ from app.core.infrastructure.config import AppConfig
 from app.core.shared.utils import get_current_dt
 from app.modules.chat.application.commands.cron import (
     CloseInactiveChatsCommandHandler,
-    ProcessPendingChatsCommandHandler,
 )
-
-
-@inject
-async def process_pending_chats(
-    command: FromDishka[ProcessPendingChatsCommandHandler],
-) -> None:
-    await command(empty_command)
 
 
 @inject
@@ -31,13 +23,6 @@ def register_chat_jobs(
     config: AppConfig,
 ) -> None:
     now = get_current_dt()
-    scheduler.add_job(
-        process_pending_chats,
-        trigger=IntervalTrigger(seconds=config.chat.ai_assistant.polling_interval_sec),
-        id="process_pending_chats",
-        replace_existing=True,
-        next_run_time=now,
-    )
     scheduler.add_job(
         close_inactive_chats,
         trigger=IntervalTrigger(seconds=config.chat.inactivity.polling_interval_sec),

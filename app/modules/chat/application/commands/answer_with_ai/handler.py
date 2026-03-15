@@ -33,15 +33,15 @@ class AnswerWithAIInChatCommandHandler(ICommandHandler[AnswerWithAIInChatCommand
         chat_id = ChatIdVO.from_uuid(command.chat_id)
 
         # TODO: Change status to PROCESSING_WITH_AI and release lock, start new transaction
+        # TODO: Add logging
         chat = await self._chat_repository.get_by_id_with_lock(chat_id)
         if chat is None:
-            print(f"Chat with id {chat_id} not found or locked by other process")
             return None
 
         if command.expected_last_activity_at != chat.last_activity_at:
-            print(
-                f"Chat with id {chat_id} has been updated since the command was issued, skipping AI response"
-            )
+            return None
+
+        if not chat.can_start_ai_reply():
             return None
 
         chat_messages = await self._chat_message_repository.get_chat_messages(chat_id)

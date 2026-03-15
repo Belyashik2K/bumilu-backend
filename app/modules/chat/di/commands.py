@@ -15,7 +15,6 @@ from app.modules.chat.application.commands.answer_with_ai.handler import (
 )
 from app.modules.chat.application.commands.cron import (
     CloseInactiveChatsCommandHandler,
-    ProcessPendingChatsCommandHandler,
 )
 from app.modules.chat.application.commands.user import SubmitUserMessageCommandHandler
 from app.modules.chat.application.interfaces.chat_reply_dispatcher import (
@@ -45,23 +44,6 @@ class ChatCommandHandlersProvider(Provider):
             chat_repository=chat_repository,
             chat_message_repository=chat_message_repository,
             chat_reply_dispatcher=chat_reply_dispatcher,
-        )
-
-    @provide(scope=Scope.REQUEST)
-    async def process_pending_chats_handler(
-        self,
-        config: AppConfig,
-        chat_repository: IChatRepository,
-        chat_message_repository: IChatMessageRepository,
-        chat_responder: IChatResponder,
-        transaction_manager: ITransactionManager,
-    ) -> ProcessPendingChatsCommandHandler:
-        return ProcessPendingChatsCommandHandler(
-            transaction_manager=transaction_manager,
-            chat_repository=chat_repository,
-            chat_message_repository=chat_message_repository,
-            chat_responder=chat_responder,
-            confidence_score_threshold=config.chat.ai_assistant.confidence_score_threshold,
         )
 
     @provide(scope=Scope.REQUEST)
