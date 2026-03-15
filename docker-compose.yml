@@ -56,7 +56,7 @@ services:
     build: .
     restart: unless-stopped
     env_file: [ .env ]
-    command: [ "taskiq", "worker", "app.core.infrastructure.queue.worker:broker" ]
+    command: [ "taskiq", "worker", "app.core.infrastructure.queue.worker:broker", "--workers", "8" ]
     depends_on:
       redis:
         condition: service_healthy
