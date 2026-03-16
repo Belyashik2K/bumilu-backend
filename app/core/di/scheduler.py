@@ -5,7 +5,7 @@ from dishka import (
     provide,
 )
 
-from app.core.infrastructure.apscheduler_logger import init_apscheduler
+from app.core.infrastructure.schedulers.apscheduler import init_apscheduler
 
 
 class SchedulerProvider(Provider):

@@ -4,7 +4,7 @@ from datetime import (
 )
 from uuid import UUID
 
-from app.core.infrastructure.taskiq_scheduler import redis_source
+from app.core.infrastructure.schedulers.taskiq import redis_source
 from app.core.shared.utils import get_current_dt
 from app.modules.chat.application.interfaces.chat_reply_dispatcher import (
     IChatReplyDispatcher,

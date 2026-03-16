@@ -79,7 +79,7 @@ services:
     command: [
       "taskiq",
       "scheduler",
-      "app.core.infrastructure.taskiq_scheduler:scheduler",
+      "app.core.infrastructure.schedulers.taskiq:scheduler",
       "--update-interval",
       "${TASKIQ__SCHEDULER__POLLING_INTERVAL}"
     ]

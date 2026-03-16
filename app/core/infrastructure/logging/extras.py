@@ -25,6 +25,7 @@ RESERVED = {
     "request_id",
     "message",
     "color_message",
+    "taskName",
 }
 
 
