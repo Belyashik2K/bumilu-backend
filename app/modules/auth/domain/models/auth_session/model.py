@@ -45,12 +45,15 @@ class AuthSession:
     def rotate(
         self,
         refresh_token_hash: str,
+        *,
+        new_expires_at: datetime | None = None,
     ) -> None:
         if not self.is_active():
             raise CannotRotateInactiveSession()
         if refresh_token_hash == self.refresh_token_hash:
             return
         self.refresh_token_hash = refresh_token_hash
+        self.expires_at = new_expires_at or self.expires_at
 
     @classmethod
     def create(
