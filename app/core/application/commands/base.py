@@ -20,7 +20,7 @@ class EmptyCommand: ...
 empty_command = EmptyCommand()
 
 
-class BaseCommandHandler(Generic[CommandDTO], BaseHandler, ABC):
+class BaseCommandHandler(Generic[CommandDTO, ResultDTO], BaseHandler, ABC):
     use_transaction: bool = True
 
     def __init__(self, transaction_manager: ITransactionManager) -> None:
@@ -48,13 +48,13 @@ class BaseCommandHandler(Generic[CommandDTO], BaseHandler, ABC):
     async def handle(self, command: CommandDTO): ...
 
 
-class ICommandHandler(BaseCommandHandler[CommandDTO], ABC):
+class ICommandHandler(BaseCommandHandler[CommandDTO, None], ABC):
     @abstractmethod
     async def handle(self, command: CommandDTO) -> None: ...
 
 
 class ICommandHandlerWithResult(
-    BaseCommandHandler[CommandDTO],
+    BaseCommandHandler[CommandDTO, ResultDTO],
     Generic[CommandDTO, ResultDTO],
     ABC,
 ):
