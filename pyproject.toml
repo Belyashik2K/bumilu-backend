@@ -84,7 +84,7 @@ fixable = ["ALL"]
 
 [tool.ruff.lint.per-file-ignores]
 "**/__init__.py" = ["F401"] # Ignore unused imports in __init__.py files
-"app/core/infrastructure/queue/worker.py" = ["E402"] # Do not perform function calls in argument defaults
+"app/core/infrastructure/queue/worker.py" = ["E402"] # Ignore module level import not at top of file in worker.py
 
 [tool.ruff.format]
 quote-style = "double"
