@@ -26,10 +26,10 @@ from app.modules.chat.application.queries.user.get_chat.query import (
     GetUserRecentChatQuery,
 )
 from app.modules.chat.application.queries.user.get_messages.handler import (
-    GetUserActiveChatMessagesQueryHandler,
+    GetUserRecentChatMessagesQueryHandler,
 )
 from app.modules.chat.application.queries.user.get_messages.query import (
-    GetUserActiveChatMessagesQuery,
+    GetUserRecentChatMessagesQuery,
 )
 from app.modules.chat.presentation.api.schemas.user.get import (
     GetChatInfoResponseSchema,
@@ -90,13 +90,13 @@ async def get_recent_user_chat(
     responses=generate_responses_for_endpoint(),
 )
 @inject
-async def get_current_user_chat_messages(
-    handler: FromDishka[GetUserActiveChatMessagesQueryHandler],
+async def get_recent_user_chat_messages(
+    handler: FromDishka[GetUserRecentChatMessagesQueryHandler],
     principal: Annotated[Principal, Depends(get_user_principal)],
     pagination: OffsetPaginationDep,
 ) -> GetChatMessagesResponseSchema | dict:
     result = await handler(
-        GetUserActiveChatMessagesQuery(
+        GetUserRecentChatMessagesQuery(
             user_id=principal.id.value,
             limit=pagination.limit,
             offset=pagination.offset,
