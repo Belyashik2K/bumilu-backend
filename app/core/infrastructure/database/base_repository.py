@@ -46,6 +46,16 @@ class SQLAlchemyBaseRepository(IBaseRepository[TEntity], Generic[TEntity, TModel
         return self._to_entity(merged_data)
 
     @sqlalchemy_exception_catcher
+    async def batch_save(self, entities: list[TEntity]) -> list[TEntity]:
+        data_list = [self._to_data(entity) for entity in entities]
+        merged_data_list = []
+        for data in data_list:
+            merged_data = await self.session.merge(data)
+            merged_data_list.append(merged_data)
+        await self.session.flush()
+        return [self._to_entity(merged_data) for merged_data in merged_data_list]
+
+    @sqlalchemy_exception_catcher
     async def get_by_id(self, _id: IdVO) -> TEntity | None:
         if not (data := await self._raw_get(_id)):
             return None
