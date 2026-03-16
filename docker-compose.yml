@@ -56,7 +56,13 @@ services:
     build: .
     restart: unless-stopped
     env_file: [ .env ]
-    command: [ "taskiq", "worker", "app.core.infrastructure.queue.worker:broker", "--workers", "8" ]
+    command: [
+      "taskiq",
+      "worker",
+      "app.core.infrastructure.queue.worker:broker",
+      "--workers",
+      "${TASKIQ__WORKERS_COUNT}"
+    ]
     depends_on:
       redis:
         condition: service_healthy
@@ -70,7 +76,13 @@ services:
     build: .
     restart: unless-stopped
     env_file: [ .env ]
-    command: [ "taskiq", "scheduler", "app.core.infrastructure.taskiq_scheduler:scheduler", "--update-interval", "1" ]
+    command: [
+      "taskiq",
+      "scheduler",
+      "app.core.infrastructure.taskiq_scheduler:scheduler",
+      "--update-interval",
+      "${TASKIQ__SCHEDULER__POLLING_INTERVAL}"
+    ]
     depends_on:
       redis:
         condition: service_healthy
