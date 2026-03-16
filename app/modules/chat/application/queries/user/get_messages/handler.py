@@ -4,13 +4,13 @@ from app.modules.chat.application.queries.common_views import PaginatedChatMessa
 from app.modules.chat.application.queries.readers.chat import IChatReader
 from app.modules.chat.application.queries.readers.chat_message import IChatMessageReader
 from app.modules.chat.application.queries.user.get_messages.query import (
-    GetUserActiveChatMessagesQuery,
+    GetUserRecentChatMessagesQuery,
 )
 
 
-class GetUserActiveChatMessagesQueryHandler(
+class GetUserRecentChatMessagesQueryHandler(
     IQueryHandler[
-        GetUserActiveChatMessagesQuery,
+        GetUserRecentChatMessagesQuery,
         PaginatedChatMessagesView | None,
     ]
 ):
@@ -23,7 +23,7 @@ class GetUserActiveChatMessagesQueryHandler(
         self._chat_message_reader = chat_message_reader
 
     async def handle(
-        self, query: GetUserActiveChatMessagesQuery
+        self, query: GetUserRecentChatMessagesQuery
     ) -> PaginatedChatMessagesView | None:
         chat = await self._chat_reader.get_recent_chat_by_user_id(query.user_id)
         if chat is None:

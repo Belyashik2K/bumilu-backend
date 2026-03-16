@@ -9,5 +9,5 @@ from app.core.shared.application.queries.pagination import (
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetUserActiveChatMessagesQuery(OffsetPaginationMixin):
+class GetUserRecentChatMessagesQuery(OffsetPaginationMixin):
     user_id: UUID

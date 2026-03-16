@@ -19,7 +19,7 @@ from app.modules.chat.application.queries.user.get_chat.handler import (
     GetUserRecentChatQueryHandler,
 )
 from app.modules.chat.application.queries.user.get_messages.handler import (
-    GetUserActiveChatMessagesQueryHandler,
+    GetUserRecentChatMessagesQueryHandler,
 )
 
 
@@ -36,8 +36,8 @@ class ChatQueryHandlersProvider(Provider):
         self,
         chat_reader: IChatReader,
         chat_message_reader: IChatMessageReader,
-    ) -> GetUserActiveChatMessagesQueryHandler:
-        return GetUserActiveChatMessagesQueryHandler(
+    ) -> GetUserRecentChatMessagesQueryHandler:
+        return GetUserRecentChatMessagesQueryHandler(
             chat_reader=chat_reader,
             chat_message_reader=chat_message_reader,
         )
