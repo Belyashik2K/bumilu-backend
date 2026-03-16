@@ -25,7 +25,7 @@ class GetUserActiveChatMessagesQueryHandler(
     async def handle(
         self, query: GetUserActiveChatMessagesQuery
     ) -> PaginatedChatMessagesView | None:
-        chat = await self._chat_reader.get_active_chat_by_user_id(query.user_id)
+        chat = await self._chat_reader.get_recent_chat_by_user_id(query.user_id)
         if chat is None:
             return None
 

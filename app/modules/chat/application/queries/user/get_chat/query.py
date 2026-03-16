@@ -5,5 +5,5 @@ from uuid import UUID
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetUserActiveChatQuery:
+class GetUserRecentChatQuery:
     user_id: UUID
