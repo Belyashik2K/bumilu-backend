@@ -128,10 +128,12 @@ class AuthSessionService:
         session: AuthSession,
         role: UserRoleEnum | StaffRoleEnum,
     ) -> IssuedAuthTokens:
+        now = get_current_dt()
         new_refresh_token = self._refresh_token_generator.generate()
         new_refresh_token_hash = self.get_token_hash(new_refresh_token)
 
-        session.rotate(new_refresh_token_hash)  # TODO: extend expiration time
+        new_expires_at = now + timedelta(seconds=self._refresh_ttl_seconds)
+        session.rotate(new_refresh_token_hash, new_expires_at=new_expires_at)
         await self._auth_session_repository.save(session)
 
         access_token = self._access_token_manager.issue(
