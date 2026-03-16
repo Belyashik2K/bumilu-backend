@@ -28,4 +28,5 @@ class CloseInactiveChatsCommandHandler(ICommandHandler[EmptyCommand]):
 
         for chat in inactive_chats:
             chat.close(reason=ChatCloseReasonEnum.INACTIVITY, now=now)
-            await self._chat_repository.save(chat)
+
+        await self._chat_repository.batch_save(inactive_chats)

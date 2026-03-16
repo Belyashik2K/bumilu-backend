@@ -94,9 +94,13 @@ class SQLAlchemyChatRepository(
         return [self._to_entity(chat_model) for chat_model in chat_models]
 
     async def get_inactive_open_chats(self, threshold: datetime) -> list[Chat]:
-        stmt = select(ChatModel).where(
-            ChatModel.status == ChatStatusEnum.ACTIVE,
-            ChatModel.last_activity_at < threshold,
+        stmt = (
+            select(ChatModel)
+            .where(
+                ChatModel.status == ChatStatusEnum.ACTIVE,
+                ChatModel.last_activity_at < threshold,
+            )
+            .with_for_update(skip_locked=True)
         )
         result = await self.session.execute(stmt)
         chat_models = result.scalars().all()
