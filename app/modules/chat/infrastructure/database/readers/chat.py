@@ -26,9 +26,12 @@ class SQLAlchemyChatReader(IChatReader):
     def __init__(self, session: AsyncSession):
         self._session = session
 
-    async def get_active_chat_by_user_id(self, user_id: UUID) -> UserChatView | None:
-        stmt = select(ChatModel.id, ChatModel.status, ChatModel.last_activity_at).where(
-            ChatModel.user_id == user_id, ChatModel.status != ChatStatusEnum.CLOSED
+    async def get_recent_chat_by_user_id(self, user_id: UUID) -> UserChatView | None:
+        stmt = (
+            select(ChatModel.id, ChatModel.status, ChatModel.last_activity_at)
+            .where(ChatModel.user_id == user_id)
+            .order_by(ChatModel.last_activity_at.desc())
+            .limit(1)
         )
         result = await self._session.execute(stmt)
         row = result.first()

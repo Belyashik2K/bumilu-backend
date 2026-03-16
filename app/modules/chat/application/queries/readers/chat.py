@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 class IChatReader(ABC):
     @abstractmethod
-    async def get_active_chat_by_user_id(
+    async def get_recent_chat_by_user_id(
         self, user_id: UUID
     ) -> Optional["UserChatView"]: ...
 

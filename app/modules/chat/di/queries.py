@@ -16,7 +16,7 @@ from app.modules.chat.application.queries.admin.get_chat_messages.handler import
 from app.modules.chat.application.queries.readers.chat import IChatReader
 from app.modules.chat.application.queries.readers.chat_message import IChatMessageReader
 from app.modules.chat.application.queries.user.get_chat.handler import (
-    GetUserActiveChatQueryHandler,
+    GetUserRecentChatQueryHandler,
 )
 from app.modules.chat.application.queries.user.get_messages.handler import (
     GetUserActiveChatMessagesQueryHandler,
@@ -25,11 +25,11 @@ from app.modules.chat.application.queries.user.get_messages.handler import (
 
 class ChatQueryHandlersProvider(Provider):
     @provide(scope=Scope.REQUEST)
-    async def get_user_active_chat_info_handler(
+    async def get_user_recent_chat_info_handler(
         self,
         chat_reader: IChatReader,
-    ) -> GetUserActiveChatQueryHandler:
-        return GetUserActiveChatQueryHandler(chat_reader=chat_reader)
+    ) -> GetUserRecentChatQueryHandler:
+        return GetUserRecentChatQueryHandler(chat_reader=chat_reader)
 
     @provide(scope=Scope.REQUEST)
     async def get_user_active_chat_messages_handler(

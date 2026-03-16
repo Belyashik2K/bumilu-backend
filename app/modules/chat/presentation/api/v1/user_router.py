@@ -20,10 +20,10 @@ from app.modules.chat.application.commands.user import (
     SubmitUserMessageCommandHandler,
 )
 from app.modules.chat.application.queries.user.get_chat.handler import (
-    GetUserActiveChatQueryHandler,
+    GetUserRecentChatQueryHandler,
 )
 from app.modules.chat.application.queries.user.get_chat.query import (
-    GetUserActiveChatQuery,
+    GetUserRecentChatQuery,
 )
 from app.modules.chat.application.queries.user.get_messages.handler import (
     GetUserActiveChatMessagesQueryHandler,
@@ -69,12 +69,12 @@ async def submit_user_message(
     responses=generate_responses_for_endpoint(),
 )
 @inject
-async def get_current_user_chat(
-    handler: FromDishka[GetUserActiveChatQueryHandler],
+async def get_recent_user_chat(
+    handler: FromDishka[GetUserRecentChatQueryHandler],
     principal: Annotated[Principal, Depends(get_user_principal)],
 ) -> GetChatInfoResponseSchema | dict:
     result = await handler(
-        GetUserActiveChatQuery(
+        GetUserRecentChatQuery(
             user_id=principal.id.value,
         )
     )
