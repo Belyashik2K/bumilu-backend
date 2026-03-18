@@ -12,7 +12,10 @@ from app.modules.favourites.application.queries.get_all_by_user.view import (
 from app.modules.favourites.application.queries.readers.favourite import (
     IFavouriteReader,
 )
-from app.modules.favourites.application.queries.shared_views import FavouriteEntityView
+from app.modules.favourites.application.queries.shared_views import (
+    FavouriteEntityInfoView,
+    FavouriteView,
+)
 from app.modules.favourites.infrastructure.database.models import FavouriteModel
 from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
 
@@ -62,9 +65,11 @@ class SQLAlchemyFavouriteReader(IFavouriteReader):
 
         return FavouritesPage(
             items=[
-                FavouriteEntityView(
-                    entity_id=fav.entity_id,
-                    entity_type=fav.entity_type,
+                FavouriteView(
+                    entity=FavouriteEntityInfoView(
+                        id=fav.entity_id,
+                        type=fav.entity_type,
+                    ),
                     created_at=fav.created_at,
                 )
                 for fav in favourites

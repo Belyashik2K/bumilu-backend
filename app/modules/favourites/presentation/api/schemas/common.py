@@ -37,15 +37,23 @@ USER_ID_PATH = Path(
 )
 
 
-class FavouriteItemInfoSchema(BaseModel):
-    entity_type: FavouriteEntityTypeEnum = Field(
+class FavouriteEntityInfoSchema(BaseModel):
+    id: UUID7 = Field(
+        ...,
+        description="ID of the entity which is added to favourites.",
+        examples=[ENTITY_ID_EXAMPLE],
+    )
+    type: FavouriteEntityTypeEnum = Field(
         ...,
         description="Type of the entity which is added to favourites.",
         examples=[ENTITY_TYPE_EXAMPLE],
     )
-    entity_id: UUID7 = Field(
+
+
+class FavouriteItemInfoSchema(BaseModel):
+    entity: FavouriteEntityInfoSchema = Field(
         ...,
-        description="ID of the entity which is added to favourites.",
+        description="Info about entity which is added to favourites.",
         examples=[ENTITY_ID_EXAMPLE],
     )
     created_at: datetime = Field(
