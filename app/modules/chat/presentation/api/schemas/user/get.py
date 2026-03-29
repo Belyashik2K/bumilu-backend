@@ -4,7 +4,7 @@ from pydantic import (
     Field,
 )
 
-from app.core.shared.presentation.schemas.pagination import OffsetPaginationSchema
+from app.core.presentation.api.schemas.pagination import OffsetPaginationSchema
 from app.modules.chat.presentation.api.schemas.common import (
     CHAT_ID_EXAMPLE,
     ChatInfoSchema,

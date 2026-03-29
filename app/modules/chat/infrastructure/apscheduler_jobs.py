@@ -5,7 +5,7 @@ from dishka import FromDishka
 
 from app.core.application.commands.base import empty_command
 from app.core.infrastructure.config import AppConfig
-from app.core.shared.utils import get_current_dt
+from app.core.utils import get_current_dt
 from app.modules.chat.application.commands.cron import (
     CloseInactiveChatsCommandHandler,
 )

@@ -5,11 +5,11 @@ from dataclasses import (
 from datetime import datetime
 from typing import Self
 
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     ChatIdVO,
     PrincipalIdVO,
 )
-from app.core.shared.enums import LanguageEnum
+from app.core.enums import LanguageEnum
 from app.modules.chat.domain.models.chat.exceptions import ChatNotEscalatedToAdmin
 from app.modules.chat.domain.models.chat_message.model import ChatMessage
 from app.modules.chat.domain.value_objects.location import LocationVO

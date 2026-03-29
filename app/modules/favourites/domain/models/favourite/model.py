@@ -4,11 +4,11 @@ from dataclasses import (
 )
 from datetime import datetime
 
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     IdVO,
     PrincipalIdVO,
 )
-from app.core.shared.utils import get_current_dt
+from app.core.utils import get_current_dt
 from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
 
 

@@ -1,11 +1,11 @@
 from fastapi import Depends
 from starlette.requests import Request
 
-from app.core.presentation.custom_request import CustomRequest
-from app.core.shared.exceptions.application.base import (
+from app.core.exceptions.application.base import (
     ApplicationForbiddenException,
     ApplicationUnauthorizedException,
 )
+from app.core.presentation.custom_request import CustomRequest
 from app.modules.auth.presentation.api.v1.users.deps import get_principal
 from app.modules.auth.shared.context import Principal
 

@@ -3,7 +3,7 @@ from typing import (
     Any,
 )
 
-from app.core.shared.exceptions.base import BaseProjectException
+from app.core.exceptions.base import BaseProjectException
 
 
 class BaseInfrastructureException(BaseProjectException):

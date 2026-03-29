@@ -4,7 +4,7 @@ from dataclasses import (
 )
 from typing import Self
 
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     ChatIdVO,
     ChatMessageIdVO,
     PrincipalIdVO,

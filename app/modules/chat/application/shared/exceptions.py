@@ -1,5 +1,5 @@
-from app.core.shared.domain.value_objects.id import ChatIdVO
-from app.core.shared.exceptions.application.base import ApplicationNotFoundException
+from app.core.domain.value_objects.id import ChatIdVO
+from app.core.exceptions.application.base import ApplicationNotFoundException
 
 
 class ChatNotFound(ApplicationNotFoundException):

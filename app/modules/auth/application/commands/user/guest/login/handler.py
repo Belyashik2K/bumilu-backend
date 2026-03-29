@@ -4,9 +4,9 @@ from app.core.application.commands import ICommandHandlerWithResult
 from app.core.application.interfaces.transaction_manager import (
     ITransactionManager,
 )
-from app.core.shared.domain.value_objects.id import DeviceIdVO
-from app.core.shared.enums import UserRoleEnum
-from app.core.shared.utils import prepare_extras
+from app.core.domain.value_objects.id import DeviceIdVO
+from app.core.enums import UserRoleEnum
+from app.core.utils import prepare_extras
 from app.modules.auth.application.commands.shared_dtos import (
     AccountInfoDTO,
     TokenInfoDTO,

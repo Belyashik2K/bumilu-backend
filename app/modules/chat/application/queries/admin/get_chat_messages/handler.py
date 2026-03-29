@@ -1,5 +1,5 @@
 from app.core.application.queries import IQueryHandler
-from app.core.shared.application.queries.pagination import OffsetPagination
+from app.core.application.queries.pagination import OffsetPagination
 from app.modules.chat.application.queries.admin.get_chat_messages.query import (
     GetAdminChatMessagesQuery,
 )

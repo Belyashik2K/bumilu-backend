@@ -4,7 +4,7 @@ from pydantic import (
     Field,
 )
 
-from app.core.shared.presentation.schemas.pagination import OffsetPaginationSchema
+from app.core.presentation.api.schemas.pagination import OffsetPaginationSchema
 from app.modules.reviews.presentation.api.schemas.common import (
     AUTHOR_ID_EXAMPLE,
     REVIEW_ID_EXAMPLE,

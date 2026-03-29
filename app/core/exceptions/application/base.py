@@ -3,8 +3,8 @@ from typing import (
     Any,
 )
 
-from app.core.shared.exceptions.application.error_code import ApplicationErrorCodeEnum
-from app.core.shared.exceptions.base import BaseProjectException
+from app.core.exceptions.application.error_code import ApplicationErrorCodeEnum
+from app.core.exceptions.base import BaseProjectException
 
 
 class BaseApplicationException(BaseProjectException):

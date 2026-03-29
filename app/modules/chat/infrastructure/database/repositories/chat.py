@@ -3,11 +3,11 @@ from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.infrastructure.database import SQLAlchemyBaseRepository
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     ChatIdVO,
     PrincipalIdVO,
 )
+from app.core.infrastructure.database import SQLAlchemyBaseRepository
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.domain.models.chat import Chat
 from app.modules.chat.domain.value_objects.location import LocationVO

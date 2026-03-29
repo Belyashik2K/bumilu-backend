@@ -3,8 +3,8 @@ from typing import (
     Any,
 )
 
-from app.core.shared.exceptions.base import BaseProjectException
-from app.core.shared.exceptions.domain.error_code import DomainErrorCodeEnum
+from app.core.exceptions.base import BaseProjectException
+from app.core.exceptions.domain.error_code import DomainErrorCodeEnum
 
 
 class BaseDomainException(BaseProjectException):

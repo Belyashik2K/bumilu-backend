@@ -3,7 +3,7 @@ from dataclasses import (
     field,
 )
 
-from app.core.shared.enums import UserRoleEnum
+from app.core.enums import UserRoleEnum
 from app.modules.staff.shared.enums.staff_role import StaffRoleEnum
 
 

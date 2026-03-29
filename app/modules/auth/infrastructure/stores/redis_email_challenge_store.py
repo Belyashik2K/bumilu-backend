@@ -8,8 +8,8 @@ from typing import (
 from redis import RedisError
 from redis.asyncio import Redis
 
-from app.core.shared.exceptions import BaseInfrastructureException
-from app.core.shared.utils import prepare_extras
+from app.core.exceptions import BaseInfrastructureException
+from app.core.utils import prepare_extras
 from app.modules.auth.application.interfaces.stores.email_login import (
     IEmailLoginChallengeStore,
 )

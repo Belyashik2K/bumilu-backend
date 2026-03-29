@@ -18,11 +18,11 @@ from sqlalchemy.orm import (
     relationship,
 )
 
+from app.core.enums import UserRoleEnum
 from app.core.infrastructure.database import BaseModel
 from app.core.infrastructure.database.mixins import (
     TimestampMixin,
 )
-from app.core.shared.enums import UserRoleEnum
 
 if TYPE_CHECKING:
     from app.modules.chat.infrastructure.database.models import (

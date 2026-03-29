@@ -5,14 +5,14 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.infrastructure.database import SQLAlchemyBaseRepository
-from app.core.infrastructure.database.exception_catcher import (
-    sqlalchemy_exception_catcher,
-)
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     DeviceIdVO,
     PrincipalIdVO,
     SessionIdVO,
+)
+from app.core.infrastructure.database import SQLAlchemyBaseRepository
+from app.core.infrastructure.database.exception_catcher import (
+    sqlalchemy_exception_catcher,
 )
 from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,

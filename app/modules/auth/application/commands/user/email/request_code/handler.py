@@ -6,7 +6,7 @@ from app.core.application.commands import (
 from app.core.application.interfaces.transaction_manager import (
     ITransactionManager,
 )
-from app.core.shared.utils import prepare_extras
+from app.core.utils import prepare_extras
 from app.modules.auth.application.commands.user.email.request_code.command import (
     RequestEmailCodeAtLoginCommand,
 )

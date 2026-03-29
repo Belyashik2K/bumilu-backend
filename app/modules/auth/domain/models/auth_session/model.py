@@ -5,12 +5,12 @@ from dataclasses import (
 from datetime import datetime
 from typing import Self
 
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     DeviceIdVO,
     PrincipalIdVO,
     SessionIdVO,
 )
-from app.core.shared.utils import get_current_dt
+from app.core.utils import get_current_dt
 from app.modules.auth.domain.models.auth_session.exceptions import (
     CannotRotateInactiveSession,
     SessionExpirationMustBeInFuture,

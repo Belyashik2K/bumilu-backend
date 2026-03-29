@@ -1,5 +1,5 @@
-from app.core.shared.domain.value_objects.id import ChatIdVO
-from app.core.shared.exceptions.domain.base import DomainConflictException
+from app.core.domain.value_objects.id import ChatIdVO
+from app.core.exceptions.domain.base import DomainConflictException
 
 
 class ChatNotEscalatedToAdmin(DomainConflictException):

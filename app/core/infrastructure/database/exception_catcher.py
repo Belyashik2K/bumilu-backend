@@ -1,5 +1,9 @@
 import logging
-from collections.abc import Callable, Coroutine, Mapping
+from collections.abc import (
+    Callable,
+    Coroutine,
+    Mapping,
+)
 from functools import wraps
 from typing import (
     Any,
@@ -12,7 +16,7 @@ from sqlalchemy.exc import (
     SQLAlchemyError,
 )
 
-from app.core.shared.exceptions import BaseInfrastructureException
+from app.core.exceptions import BaseInfrastructureException
 
 logger = logging.getLogger(__name__)
 

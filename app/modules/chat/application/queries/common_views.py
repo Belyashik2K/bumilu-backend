@@ -5,8 +5,8 @@ from dataclasses import (
 from datetime import datetime
 from uuid import UUID
 
-from app.core.shared.application.queries.pagination import OffsetPagination
-from app.core.shared.enums import UserRoleEnum
+from app.core.application.queries.pagination import OffsetPagination
+from app.core.enums import UserRoleEnum
 from app.modules.chat.shared.enums import AuthorTypeEnum
 
 

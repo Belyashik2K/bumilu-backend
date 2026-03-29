@@ -2,11 +2,11 @@ import logging
 
 from app.core.application.commands import ICommandHandler
 from app.core.application.interfaces.transaction_manager import ITransactionManager
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     PrincipalIdVO,
     ReviewIdVO,
 )
-from app.core.shared.utils import prepare_extras
+from app.core.utils import prepare_extras
 from app.modules.reviews.application.commands.delete import (
     DeleteReviewCommand,
 )

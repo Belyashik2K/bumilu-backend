@@ -11,11 +11,11 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.application.interfaces.repositories import IBaseRepository
+from app.core.domain.value_objects.id import IdVO
 from app.core.infrastructure.database.exception_catcher import (
     sqlalchemy_exception_catcher,
 )
 from app.core.infrastructure.database.mixins import PKUUIDMixin
-from app.core.shared.domain.value_objects.id import IdVO
 
 TEntity = TypeVar("TEntity")  # Entity
 TModel = TypeVar("TModel", bound=PKUUIDMixin)  # SQLAlchemy model

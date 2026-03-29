@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import ClassVar
 
-from app.core.shared.domain.value_objects.email.object import BaseEmailVO
+from app.core.domain.value_objects.email.object import BaseEmailVO
 
 
 @dataclass(frozen=True, slots=True)

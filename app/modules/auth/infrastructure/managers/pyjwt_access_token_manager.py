@@ -5,12 +5,12 @@ from datetime import (
 
 import jwt
 
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     PrincipalIdVO,
     SessionIdVO,
 )
-from app.core.shared.enums import UserRoleEnum
-from app.core.shared.utils import get_current_dt
+from app.core.enums import UserRoleEnum
+from app.core.utils import get_current_dt
 from app.modules.auth.application.interfaces.managers.access_token import (
     IAccessTokenManager,
     TokenInfoDTO,

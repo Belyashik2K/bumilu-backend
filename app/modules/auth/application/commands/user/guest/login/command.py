@@ -4,7 +4,7 @@ from dataclasses import (
 )
 from uuid import UUID
 
-from app.core.shared.enums import (
+from app.core.enums import (
     DevicePlatformEnum,
 )
 from app.modules.auth.application.commands.shared_dtos import (

@@ -18,7 +18,7 @@ from app.core.infrastructure.logging.context import (
     generate_request_id,
     request_id_ctx,
 )
-from app.core.shared.utils import (
+from app.core.utils import (
     start_timer,
     stop_timer,
 )

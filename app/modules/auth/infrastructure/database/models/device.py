@@ -17,12 +17,12 @@ from sqlalchemy.orm import (
 )
 from uuid6 import UUID
 
+from app.core.enums import DevicePlatformEnum
 from app.core.infrastructure.database import BaseModel
 from app.core.infrastructure.database.mixins import (
     CreatedAtMixin,
     PKUUIDMixin,
 )
-from app.core.shared.enums import DevicePlatformEnum
 
 if TYPE_CHECKING:
     from app.modules.auth.infrastructure.database.models import AuthSessionModel
