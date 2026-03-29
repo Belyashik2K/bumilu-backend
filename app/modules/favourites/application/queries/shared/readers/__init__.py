@@ -1,0 +1,1 @@
+from .favourite import IFavouriteReader
