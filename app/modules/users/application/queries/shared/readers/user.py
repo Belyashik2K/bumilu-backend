@@ -9,7 +9,7 @@ from typing import (
 from uuid import UUID
 
 if TYPE_CHECKING:
-    from app.modules.users.application.queries.shared_views import UserInfoView
+    from app.modules.users.application.queries.shared.views import UserInfoView
 
 
 class IUserReader(ABC):

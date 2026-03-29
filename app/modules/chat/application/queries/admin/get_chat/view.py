@@ -6,7 +6,7 @@ from datetime import datetime
 from uuid import UUID
 
 from app.core.enums import LanguageEnum
-from app.modules.chat.application.queries.common_views import (
+from app.modules.chat.application.queries.shared.views import (
     ChatUserView,
     LocationView,
 )

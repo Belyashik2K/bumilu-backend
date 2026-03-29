@@ -4,7 +4,7 @@ from abc import (
 )
 from uuid import UUID
 
-from app.modules.chat.application.queries.common_views import (
+from app.modules.chat.application.queries.shared.views import (
     ChatMessagesPage,
 )
 

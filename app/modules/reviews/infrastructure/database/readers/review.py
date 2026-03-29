@@ -8,8 +8,8 @@ from sqlalchemy import (
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from app.modules.reviews.application.queries.readers.review import IReviewReader
-from app.modules.reviews.application.queries.shared_views import (
+from app.modules.reviews.application.queries.shared.readers.review import IReviewReader
+from app.modules.reviews.application.queries.shared.views import (
     ReviewAuthorInfoView,
     ReviewEntityInfoView,
     ReviewInfoView,

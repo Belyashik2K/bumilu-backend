@@ -12,8 +12,8 @@ from app.modules.reviews.application.queries.get_all_for_entity.query import (
 from app.modules.reviews.application.queries.get_all_for_entity.view import (
     PaginatedReviewsForEntityView,
 )
-from app.modules.reviews.application.queries.readers.review import IReviewReader
-from app.modules.reviews.application.queries.shared_views import (
+from app.modules.reviews.application.queries.shared.readers.review import IReviewReader
+from app.modules.reviews.application.queries.shared.views import (
     ReviewEntityInfoView,
 )
 from app.modules.reviews.application.shared.exceptions import (

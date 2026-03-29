@@ -3,8 +3,8 @@ from app.modules.users.application.queries.get.exceptions import UserNotFound
 from app.modules.users.application.queries.get.query import (
     GetUserQuery,
 )
-from app.modules.users.application.queries.readers.user import IUserReader
-from app.modules.users.application.queries.shared_views import UserInfoView
+from app.modules.users.application.queries.shared.readers import IUserReader
+from app.modules.users.application.queries.shared.views import UserInfoView
 
 
 class GetUserQueryHandler(

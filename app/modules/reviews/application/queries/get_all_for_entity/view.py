@@ -4,7 +4,7 @@ from dataclasses import (
 )
 
 from app.core.application.queries.pagination import OffsetPagination
-from app.modules.reviews.application.queries.shared_views import (
+from app.modules.reviews.application.queries.shared.views import (
     ReviewEntityInfoView,
     ReviewInfoView,
 )

@@ -6,9 +6,9 @@ from app.modules.reviews.application.queries.get_all_by_user.query import (
 from app.modules.reviews.application.queries.get_all_by_user.view import (
     PaginatedReviewsByUserView,
 )
-from app.modules.reviews.application.queries.readers.review import IReviewReader
+from app.modules.reviews.application.queries.shared.readers.review import IReviewReader
 from app.modules.users.application.queries.get.exceptions import UserNotFound
-from app.modules.users.application.queries.readers.user import IUserReader
+from app.modules.users.application.queries.shared.readers import IUserReader
 
 
 class GetAllReviewsByUserQueryHandler(

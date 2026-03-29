@@ -16,7 +16,7 @@ from app.modules.auth.shared.enums import PrincipalTypeEnum
 from app.modules.staff.application.interfaces.repositories.staff_member import (
     IStaffMemberRepository,
 )
-from app.modules.users.application.queries.shared_dtos import AccountInfoDTO
+from app.modules.users.application.queries.shared.dtos import AccountInfoDTO
 
 
 class RefreshStaffMemberAuthSessionCommandHandler(

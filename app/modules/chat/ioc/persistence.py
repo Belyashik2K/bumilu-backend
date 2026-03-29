@@ -9,8 +9,10 @@ from app.modules.chat.application.interfaces.repositories.chat import IChatRepos
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
 )
-from app.modules.chat.application.queries.readers.chat import IChatReader
-from app.modules.chat.application.queries.readers.chat_message import IChatMessageReader
+from app.modules.chat.application.queries.shared.readers import (
+    IChatMessageReader,
+    IChatReader,
+)
 from app.modules.chat.infrastructure.database.readers.chat import SQLAlchemyChatReader
 from app.modules.chat.infrastructure.database.readers.chat_message import (
     SQLAlchemyChatMessageReader,
