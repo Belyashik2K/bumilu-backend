@@ -4,7 +4,7 @@ from abc import (
 )
 from uuid import UUID
 
-from app.modules.reviews.application.queries.shared_views import (
+from app.modules.reviews.application.queries.shared.views import (
     ReviewInfoView,
     ReviewsPage,
 )
