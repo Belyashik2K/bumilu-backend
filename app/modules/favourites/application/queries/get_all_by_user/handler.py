@@ -6,11 +6,11 @@ from app.modules.favourites.application.queries.get_all_by_user.query import (
 from app.modules.favourites.application.queries.get_all_by_user.view import (
     PaginatedFavouritesView,
 )
-from app.modules.favourites.application.queries.readers.favourite import (
+from app.modules.favourites.application.queries.shared.readers import (
     IFavouriteReader,
 )
 from app.modules.users.application.queries.get.exceptions import UserNotFound
-from app.modules.users.application.queries.readers.user import IUserReader
+from app.modules.users.application.queries.shared.readers import IUserReader
 
 
 class GetAllFavouritesByUserQueryHandler(

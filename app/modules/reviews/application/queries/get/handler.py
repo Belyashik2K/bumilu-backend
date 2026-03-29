@@ -2,8 +2,8 @@ from app.core.application.queries import IQueryHandler
 from app.modules.reviews.application.queries.get.query import (
     GetReviewQuery,
 )
-from app.modules.reviews.application.queries.readers.review import IReviewReader
-from app.modules.reviews.application.queries.shared_views import ReviewInfoView
+from app.modules.reviews.application.queries.shared.readers.review import IReviewReader
+from app.modules.reviews.application.queries.shared.views import ReviewInfoView
 from app.modules.reviews.application.shared.exceptions import ReviewNotFound
 
 

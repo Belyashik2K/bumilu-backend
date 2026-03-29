@@ -3,9 +3,11 @@ from app.core.application.queries.pagination import OffsetPagination
 from app.modules.chat.application.queries.admin.get_chat_messages.query import (
     GetAdminChatMessagesQuery,
 )
-from app.modules.chat.application.queries.common_views import PaginatedChatMessagesView
-from app.modules.chat.application.queries.readers.chat import IChatReader
-from app.modules.chat.application.queries.readers.chat_message import IChatMessageReader
+from app.modules.chat.application.queries.shared.readers import (
+    IChatMessageReader,
+    IChatReader,
+)
+from app.modules.chat.application.queries.shared.views import PaginatedChatMessagesView
 from app.modules.chat.application.shared.exceptions import ChatNotFound
 
 

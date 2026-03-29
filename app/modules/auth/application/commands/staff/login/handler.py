@@ -20,7 +20,7 @@ from app.modules.staff.application.interfaces.repositories.staff_member import (
 from app.modules.staff.domain.models.staff_member import StaffMember
 from app.modules.staff.domain.value_objects.staff_email import StaffEmailVO
 from app.modules.staff.shared.enums.staff_role import StaffRoleEnum
-from app.modules.users.application.queries.shared_dtos import AccountInfoDTO
+from app.modules.users.application.queries.shared.dtos import AccountInfoDTO
 
 
 class LoginAsStaffMemberCommandHandler(

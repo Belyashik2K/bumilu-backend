@@ -9,10 +9,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.favourites.application.queries.get_all_by_user.view import (
     FavouritesPage,
 )
-from app.modules.favourites.application.queries.readers.favourite import (
+from app.modules.favourites.application.queries.shared.readers import (
     IFavouriteReader,
 )
-from app.modules.favourites.application.queries.shared_views import (
+from app.modules.favourites.application.queries.shared.views import (
     FavouriteEntityInfoView,
     FavouriteView,
 )

@@ -13,8 +13,10 @@ from app.modules.chat.application.queries.admin.get_chat_list.handler import (
 from app.modules.chat.application.queries.admin.get_chat_messages.handler import (
     GetAdminChatMessagesQueryHandler,
 )
-from app.modules.chat.application.queries.readers.chat import IChatReader
-from app.modules.chat.application.queries.readers.chat_message import IChatMessageReader
+from app.modules.chat.application.queries.shared.readers import (
+    IChatMessageReader,
+    IChatReader,
+)
 from app.modules.chat.application.queries.user.get_chat.handler import (
     GetUserRecentChatQueryHandler,
 )

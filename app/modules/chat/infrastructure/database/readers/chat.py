@@ -12,11 +12,11 @@ from app.modules.chat.application.queries.admin.get_chat_list.view import (
     AdminChatListPage,
     AdminChatPreviewView,
 )
-from app.modules.chat.application.queries.common_views import (
+from app.modules.chat.application.queries.shared.readers import IChatReader
+from app.modules.chat.application.queries.shared.views import (
     ChatUserView,
     LocationView,
 )
-from app.modules.chat.application.queries.readers.chat import IChatReader
 from app.modules.chat.application.queries.user.get_chat.view import UserChatView
 from app.modules.chat.infrastructure.database.models import ChatModel
 from app.modules.chat.shared.enums import ChatStatusEnum

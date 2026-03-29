@@ -6,7 +6,7 @@ from app.modules.chat.application.queries.admin.get_chat_list.query import (
 from app.modules.chat.application.queries.admin.get_chat_list.view import (
     PaginatedAdminChatListView,
 )
-from app.modules.chat.application.queries.readers.chat import IChatReader
+from app.modules.chat.application.queries.shared.readers import IChatReader
 
 
 class GetAdminChatListQueryHandler(

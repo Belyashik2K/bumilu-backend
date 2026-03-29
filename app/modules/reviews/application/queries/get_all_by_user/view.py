@@ -5,7 +5,7 @@ from dataclasses import (
 from uuid import UUID
 
 from app.core.application.queries.pagination import OffsetPagination
-from app.modules.reviews.application.queries.shared_views import ReviewInfoView
+from app.modules.reviews.application.queries.shared.views import ReviewInfoView
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

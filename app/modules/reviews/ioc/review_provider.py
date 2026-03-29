@@ -22,7 +22,7 @@ from app.modules.reviews.application.queries.get_all_by_user.handler import (
 from app.modules.reviews.application.queries.get_all_for_entity.handler import (
     GetAllReviewsForEntityQueryHandler,
 )
-from app.modules.reviews.application.queries.readers.review import IReviewReader
+from app.modules.reviews.application.queries.shared.readers.review import IReviewReader
 from app.modules.reviews.infrastructure.database.readers.review import (
     SQLAlchemyReviewReader,
 )
@@ -32,7 +32,7 @@ from app.modules.reviews.infrastructure.database.repositories.review import (
 from app.modules.reviews.infrastructure.entity_resolver import (
     ReviewEntityResolver,
 )
-from app.modules.users.application.queries.readers.user import IUserReader
+from app.modules.users.application.queries.shared.readers import IUserReader
 
 
 class ReviewProvider(Provider):

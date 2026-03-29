@@ -1,5 +1,5 @@
 from app.core.application.queries import IQueryHandler
-from app.modules.chat.application.queries.readers.chat import IChatReader
+from app.modules.chat.application.queries.shared.readers import IChatReader
 from app.modules.chat.application.queries.user.get_chat.query import (
     GetUserRecentChatQuery,
 )

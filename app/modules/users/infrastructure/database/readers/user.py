@@ -4,8 +4,8 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.users.application.queries.readers.user import IUserReader
-from app.modules.users.application.queries.shared_views import UserInfoView
+from app.modules.users.application.queries.shared.readers import IUserReader
+from app.modules.users.application.queries.shared.views import UserInfoView
 from app.modules.users.infrastructure.database.models import UserModel
 
 

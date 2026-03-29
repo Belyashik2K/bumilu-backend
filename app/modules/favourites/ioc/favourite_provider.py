@@ -21,7 +21,7 @@ from app.modules.favourites.application.interfaces.repositories.favourite import
 from app.modules.favourites.application.queries.get_all_by_user.handler import (
     GetAllFavouritesByUserQueryHandler,
 )
-from app.modules.favourites.application.queries.readers.favourite import (
+from app.modules.favourites.application.queries.shared.readers import (
     IFavouriteReader,
 )
 from app.modules.favourites.infrastructure.database.readers.favourite import (
@@ -34,7 +34,7 @@ from app.modules.favourites.infrastructure.entity_resolver import (
     FavouriteEntityResolver,
 )
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
-from app.modules.users.application.queries.readers.user import IUserReader
+from app.modules.users.application.queries.shared.readers import IUserReader
 
 
 class FavouriteProvider(Provider):

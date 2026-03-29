@@ -5,7 +5,7 @@ from dataclasses import (
 from uuid import UUID
 
 from app.core.application.queries.pagination import OffsetPagination
-from app.modules.favourites.application.queries.shared_views import FavouriteView
+from app.modules.favourites.application.queries.shared.views import FavouriteView
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

@@ -3,7 +3,7 @@ from app.modules.chat.application.queries.admin.get_chat.query import (
     GetAdminChatQuery,
 )
 from app.modules.chat.application.queries.admin.get_chat.view import AdminChatView
-from app.modules.chat.application.queries.readers.chat import IChatReader
+from app.modules.chat.application.queries.shared.readers import IChatReader
 from app.modules.chat.application.shared.exceptions import ChatNotFound
 
 
