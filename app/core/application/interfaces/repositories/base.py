@@ -7,7 +7,7 @@ from typing import (
     TypeVar,
 )
 
-from app.core.shared.domain.value_objects.id import IdVO
+from app.core.domain.value_objects.id import IdVO
 
 TEntity = TypeVar("TEntity")
 

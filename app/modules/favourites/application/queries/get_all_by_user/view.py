@@ -4,7 +4,7 @@ from dataclasses import (
 )
 from uuid import UUID
 
-from app.core.shared.application.queries.pagination import OffsetPagination
+from app.core.application.queries.pagination import OffsetPagination
 from app.modules.favourites.application.queries.shared_views import FavouriteView
 
 

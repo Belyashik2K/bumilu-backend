@@ -9,9 +9,9 @@ from fastapi import (
 from pydantic import UUID7
 from starlette import status
 
+from app.core.constants import UNSET
+from app.core.presentation.api.schemas.pagination import OffsetPaginationDep
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
-from app.core.shared.constants import UNSET
-from app.core.shared.presentation.schemas.pagination import OffsetPaginationDep
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
 from app.modules.auth.shared.context import Principal

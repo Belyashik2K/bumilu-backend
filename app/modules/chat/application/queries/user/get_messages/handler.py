@@ -1,5 +1,5 @@
 from app.core.application.queries import IQueryHandler
-from app.core.shared.application.queries.pagination import OffsetPagination
+from app.core.application.queries.pagination import OffsetPagination
 from app.modules.chat.application.queries.common_views import PaginatedChatMessagesView
 from app.modules.chat.application.queries.readers.chat import IChatReader
 from app.modules.chat.application.queries.readers.chat_message import IChatMessageReader

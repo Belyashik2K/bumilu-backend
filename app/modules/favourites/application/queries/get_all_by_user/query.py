@@ -4,7 +4,7 @@ from dataclasses import (
 )
 from uuid import UUID
 
-from app.core.shared.application.queries.pagination import OffsetPaginationMixin
+from app.core.application.queries.pagination import OffsetPaginationMixin
 from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
 
 

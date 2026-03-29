@@ -3,7 +3,7 @@ from abc import (
     abstractmethod,
 )
 
-from app.core.shared.domain.value_objects.id import PrincipalIdVO
+from app.core.domain.value_objects.id import PrincipalIdVO
 from app.modules.favourites.domain.models.favourite import Favourite
 
 

@@ -3,7 +3,7 @@ from dataclasses import (
 )
 from uuid import UUID
 
-from app.core.shared.application.queries.pagination import (
+from app.core.application.queries.pagination import (
     OffsetPaginationMixin,
 )
 

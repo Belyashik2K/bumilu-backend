@@ -9,7 +9,7 @@ from sqlalchemy.orm import (
     mapped_column,
 )
 
-from app.core.shared.utils import get_current_dt
+from app.core.utils import get_current_dt
 
 
 class CreatedAtMixin:

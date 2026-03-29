@@ -10,7 +10,7 @@ from pydantic import (
     Field,
 )
 
-from app.core.shared.presentation.schemas.pagination import OffsetPaginationSchema
+from app.core.presentation.api.schemas.pagination import OffsetPaginationSchema
 from app.modules.favourites.presentation.api.schemas.common import (
     ENTITY_TYPE_EXAMPLE,
     FavouriteItemInfoSchema,

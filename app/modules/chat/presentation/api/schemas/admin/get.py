@@ -11,8 +11,8 @@ from pydantic import (
     Field,
 )
 
-from app.core.shared.enums import LanguageEnum
-from app.core.shared.presentation.schemas.pagination import (
+from app.core.enums import LanguageEnum
+from app.core.presentation.api.schemas.pagination import (
     OffsetPaginationSchema,
 )
 from app.modules.chat.presentation.api.schemas.admin.common import ChatUserSchema

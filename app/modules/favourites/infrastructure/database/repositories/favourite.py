@@ -4,12 +4,12 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.infrastructure.database.exception_catcher import (
-    sqlalchemy_exception_catcher,
-)
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     IdVO,
     PrincipalIdVO,
+)
+from app.core.infrastructure.database.exception_catcher import (
+    sqlalchemy_exception_catcher,
 )
 from app.modules.favourites.application.interfaces.repositories.favourite import (
     IFavouriteRepository,

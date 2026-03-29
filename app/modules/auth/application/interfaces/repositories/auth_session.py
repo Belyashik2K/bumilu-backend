@@ -4,7 +4,7 @@ from abc import (
 )
 
 from app.core.application.interfaces.repositories import IBaseRepository
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     DeviceIdVO,
 )
 from app.modules.auth.domain.models.auth_session import AuthSession

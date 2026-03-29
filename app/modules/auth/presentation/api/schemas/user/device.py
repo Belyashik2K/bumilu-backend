@@ -5,7 +5,7 @@ from pydantic import (
     Field,
 )
 
-from app.core.shared.enums import DevicePlatformEnum
+from app.core.enums import DevicePlatformEnum
 
 DEVICE_ID_EXAMPLE = "019caaaa-0000-7000-a000-000000000001"
 DEVICE_PLATFORM_EXAMPLE = DevicePlatformEnum.ANDROID

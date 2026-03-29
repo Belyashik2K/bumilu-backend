@@ -5,8 +5,8 @@ from dataclasses import (
 from datetime import datetime
 from uuid import UUID
 
-from app.core.shared.application.queries.pagination import OffsetPagination
-from app.core.shared.enums import LanguageEnum
+from app.core.application.queries.pagination import OffsetPagination
+from app.core.enums import LanguageEnum
 from app.modules.chat.application.queries.common_views import (
     ChatUserView,
     LocationView,

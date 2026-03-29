@@ -5,7 +5,7 @@ from app.core.application.commands import (
     ICommandHandler,
 )
 from app.core.application.interfaces.transaction_manager import ITransactionManager
-from app.core.shared.utils import get_current_dt
+from app.core.utils import get_current_dt
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.shared.enums import ChatCloseReasonEnum
 

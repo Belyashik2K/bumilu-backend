@@ -8,7 +8,7 @@ from typing import (
     Self,
 )
 
-from app.core.shared.domain.value_objects.email.exceptions import (
+from app.core.domain.value_objects.email.exceptions import (
     EmailDomainNotAllowed,
     EmailTldNotAllowed,
     InvalidEmailFormat,

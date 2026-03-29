@@ -1,6 +1,6 @@
 from app.core.application.queries import IQueryHandler
-from app.core.shared.application.queries.pagination import OffsetPagination
-from app.core.shared.domain.value_objects.id import (
+from app.core.application.queries.pagination import OffsetPagination
+from app.core.domain.value_objects.id import (
     IdVO,
 )
 from app.modules.reviews.application.interfaces.entity_resolver import (

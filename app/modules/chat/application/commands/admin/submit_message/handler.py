@@ -1,10 +1,10 @@
 from app.core.application.commands import ICommandHandlerWithResult
 from app.core.application.interfaces.transaction_manager import ITransactionManager
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     ChatIdVO,
     PrincipalIdVO,
 )
-from app.core.shared.utils import get_current_dt
+from app.core.utils import get_current_dt
 from app.modules.chat.application.commands.admin.submit_message import (
     SubmitAdminMessageCommand,
     SubmitAdminMessageCommandResult,

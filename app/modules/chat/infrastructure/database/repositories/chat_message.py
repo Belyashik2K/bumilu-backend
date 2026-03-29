@@ -3,12 +3,12 @@ from collections.abc import Iterable
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.infrastructure.database import SQLAlchemyBaseRepository
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     ChatIdVO,
     ChatMessageIdVO,
     PrincipalIdVO,
 )
+from app.core.infrastructure.database import SQLAlchemyBaseRepository
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
 )

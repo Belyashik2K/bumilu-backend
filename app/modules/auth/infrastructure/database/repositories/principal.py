@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.domain.value_objects.id import PrincipalIdVO
 from app.core.infrastructure.database import SQLAlchemyBaseRepository
-from app.core.shared.domain.value_objects.id import PrincipalIdVO
 from app.modules.auth.application.interfaces.repositories.principal import (
     IPrincipalRepository,
 )

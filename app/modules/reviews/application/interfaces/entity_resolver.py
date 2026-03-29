@@ -4,7 +4,7 @@ from abc import (
 )
 
 from app.core.application.interfaces.entity_resolver import IEntityResolver
-from app.core.shared.domain.value_objects.id import IdVO
+from app.core.domain.value_objects.id import IdVO
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
 

@@ -4,7 +4,7 @@ from dataclasses import (
 )
 from uuid import UUID
 
-from app.core.shared.enums import UserRoleEnum
+from app.core.enums import UserRoleEnum
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

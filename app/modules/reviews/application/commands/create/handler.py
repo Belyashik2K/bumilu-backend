@@ -1,6 +1,6 @@
 from app.core.application.commands import ICommandHandlerWithResult
 from app.core.application.interfaces.transaction_manager import ITransactionManager
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     IdVO,
     PrincipalIdVO,
 )

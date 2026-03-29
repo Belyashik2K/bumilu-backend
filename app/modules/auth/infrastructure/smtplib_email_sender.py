@@ -12,8 +12,8 @@ from aiosmtplib import (
     SMTPException,
 )
 
-from app.core.shared.exceptions import BaseInfrastructureException
-from app.core.shared.utils import prepare_extras
+from app.core.exceptions import BaseInfrastructureException
+from app.core.utils import prepare_extras
 from app.modules.auth.application.interfaces.email_sender import IEmailSender
 
 logger = logging.getLogger(__name__)

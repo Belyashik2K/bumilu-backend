@@ -5,7 +5,7 @@ from pydantic import (
     Field,
 )
 
-from app.core.shared.enums import UserRoleEnum
+from app.core.enums import UserRoleEnum
 from app.modules.staff.shared.enums.staff_role import StaffRoleEnum
 from app.modules.users.presentation.api.schemas.common import (
     USER_EMAIL_EXAMPLE,

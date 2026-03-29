@@ -4,11 +4,11 @@ from dataclasses import (
 )
 from datetime import timedelta
 
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     DeviceIdVO,
 )
-from app.core.shared.enums import UserRoleEnum
-from app.core.shared.utils import (
+from app.core.enums import UserRoleEnum
+from app.core.utils import (
     get_current_dt,
     prepare_extras,
 )

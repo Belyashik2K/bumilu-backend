@@ -4,8 +4,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.domain.value_objects.id import PrincipalIdVO
 from app.core.infrastructure.database import SQLAlchemyBaseRepository
-from app.core.shared.domain.value_objects.id import PrincipalIdVO
 from app.modules.staff.application.interfaces.repositories.staff_member import (
     IStaffMemberRepository,
 )

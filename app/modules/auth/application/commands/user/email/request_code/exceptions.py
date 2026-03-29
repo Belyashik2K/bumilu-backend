@@ -1,4 +1,4 @@
-from app.core.shared.exceptions.application.base import (
+from app.core.exceptions.application.base import (
     ApplicationRateLimitExceededException,
 )
 

@@ -1,5 +1,5 @@
 from app.core.application.queries import IQueryHandler
-from app.core.shared.application.queries.pagination import OffsetPagination
+from app.core.application.queries.pagination import OffsetPagination
 from app.modules.reviews.application.queries.get_all_by_user.query import (
     GetAllReviewsByUserQuery,
 )

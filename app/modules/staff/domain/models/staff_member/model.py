@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Self
 
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     PrincipalIdVO,
 )
 from app.modules.staff.domain.value_objects.staff_email.object import StaffEmailVO

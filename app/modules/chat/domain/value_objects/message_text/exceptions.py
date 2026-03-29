@@ -1,4 +1,4 @@
-from app.core.shared.exceptions.domain.base import DomainValidationException
+from app.core.exceptions.domain.base import DomainValidationException
 
 
 class MessageTextMustBeStringOrNone(DomainValidationException):
