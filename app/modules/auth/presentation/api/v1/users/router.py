@@ -69,6 +69,7 @@ async def login_as_guest(
 
 @users_auth_router.post(
     "/email/request-code",
+    status_code=status.HTTP_204_NO_CONTENT,
     responses=generate_responses_for_endpoint(),
 )
 @inject
@@ -76,9 +77,8 @@ async def request_email_code(
     handler: FromDishka[RequestEmailCodeAtLoginCommandHandler],
     data: RequestEmailCodeAtLoginRequestSchema,
     headers: Annotated[DeviceInfoHeadersSchema, Depends(get_device_info_headers)],
-) -> dict:
+) -> None:
     await handler(RequestEmailCodeAtLoginCommand(email=str(data.email)))
-    return {}
 
 
 @users_auth_router.post(
