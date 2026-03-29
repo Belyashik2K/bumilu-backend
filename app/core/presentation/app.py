@@ -21,25 +21,25 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
-from app.core.di import (
+from app.core.infrastructure.config import AppConfig
+from app.core.infrastructure.logging import setup_logging
+from app.core.ioc import (
     CORE_PROVIDERS,
     ConfigProvider,
 )
-from app.core.infrastructure.config import AppConfig
-from app.core.infrastructure.logging import setup_logging
 from app.core.presentation.api import api_router
 from app.core.presentation.exceptions import set_exception_handlers
 from app.core.presentation.middlewares.outer import (
     AccessLogMiddleware,
 )
-from app.modules.auth.di import AuthProvider
+from app.modules.auth.ioc import AuthProvider
 from app.modules.auth.presentation.api.middlewares.auth import AuthMiddleware
-from app.modules.chat.di import CHAT_PROVIDERS
 from app.modules.chat.infrastructure.apscheduler_jobs import register_chat_jobs
-from app.modules.favourites.di import FavouriteProvider
-from app.modules.reviews.di import ReviewProvider
-from app.modules.staff.di import StaffProvider
-from app.modules.users.di import UserProvider
+from app.modules.chat.ioc import CHAT_PROVIDERS
+from app.modules.favourites.ioc import FavouriteProvider
+from app.modules.reviews.ioc import ReviewProvider
+from app.modules.staff.ioc import StaffProvider
+from app.modules.users.ioc import UserProvider
 
 
 @asynccontextmanager
