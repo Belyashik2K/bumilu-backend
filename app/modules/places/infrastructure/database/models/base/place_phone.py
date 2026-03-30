@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import (
@@ -12,6 +13,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
+    relationship,
 )
 
 from app.core.infrastructure.database import BaseModel
@@ -20,6 +22,11 @@ from app.core.infrastructure.database.mixins import (
     TimestampMixin,
 )
 from app.modules.places.shared.enums import PlacePhoneTypeEnum
+
+if TYPE_CHECKING:
+    from app.modules.places.infrastructure.database.models.base.place import (
+        PlaceModel,
+    )
 
 
 class PlacePhoneModel(PKUUIDMixin, TimestampMixin, BaseModel):
@@ -39,3 +46,8 @@ class PlacePhoneModel(PKUUIDMixin, TimestampMixin, BaseModel):
         Enum(PlacePhoneTypeEnum, name="place_phone_type_enum")
     )
     is_primary: Mapped[bool] = mapped_column(default=False)
+
+    place: Mapped["PlaceModel"] = relationship(
+        "PlaceModel",
+        back_populates="phones",
+    )
