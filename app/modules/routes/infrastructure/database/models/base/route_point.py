@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import (
     UUID as _UUID,
 )
@@ -9,6 +11,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
+    relationship,
 )
 
 from app.core.infrastructure.database import BaseModel
@@ -16,6 +19,14 @@ from app.core.infrastructure.database.mixins import (
     PKUUIDMixin,
     TimestampMixin,
 )
+
+if TYPE_CHECKING:
+    from app.modules.places.infrastructure.database.models.base.place import (
+        PlaceModel,
+    )
+    from app.modules.routes.infrastructure.database.models.base.route import (
+        RouteModel,
+    )
 
 
 class RoutePointModel(PKUUIDMixin, TimestampMixin, BaseModel):
@@ -39,3 +50,12 @@ class RoutePointModel(PKUUIDMixin, TimestampMixin, BaseModel):
         ),
     )
     point_index: Mapped[int] = mapped_column(Integer())
+
+    route: Mapped["RouteModel"] = relationship(
+        "RouteModel",
+        back_populates="points",
+    )
+    place: Mapped["PlaceModel"] = relationship(
+        "PlaceModel",
+        back_populates="route_points",
+    )

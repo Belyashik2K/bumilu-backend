@@ -12,6 +12,9 @@ from app.core.infrastructure.database.mixins import (
 )
 
 if TYPE_CHECKING:
+    from app.modules.routes.infrastructure.database.models.base import (
+        RoutePointModel,
+    )
     from app.modules.routes.infrastructure.database.models.translations import (
         RouteTranslationModel,
     )
@@ -22,6 +25,11 @@ class RouteModel(PKUUIDMixin, TimestampMixin, BaseModel):
 
     translations: Mapped["RouteTranslationModel"] = relationship(
         "RouteTranslationModel",
+        back_populates="route",
+        cascade="all, delete-orphan",
+    )
+    points: Mapped[list["RoutePointModel"]] = relationship(
+        "RoutePointModel",
         back_populates="route",
         cascade="all, delete-orphan",
     )
