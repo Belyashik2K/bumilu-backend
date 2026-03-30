@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from app.modules.places.infrastructure.database.models.base.place import (
         PlaceModel,
     )
-    from app.modules.places.infrastructure.database.models.translations.category_translations import (
+    from app.modules.places.infrastructure.database.models.translations.category import (
         PlaceCategoryTranslationModel,
     )
 

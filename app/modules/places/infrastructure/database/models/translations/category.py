@@ -31,6 +31,7 @@ if TYPE_CHECKING:
 
 class PlaceCategoryTranslationModel(PKUUIDMixin, TimestampMixin, BaseModel):
     __tablename__ = "place_category_translations"
+    __table_args__ = (UniqueConstraint("category_id", "language_code"),)
 
     category_id: Mapped[UUID] = mapped_column(
         _UUID(),
@@ -43,7 +44,5 @@ class PlaceCategoryTranslationModel(PKUUIDMixin, TimestampMixin, BaseModel):
 
     category: Mapped["PlaceCategoryModel"] = relationship(
         "PlaceCategoryModel",
-        back_populates="translations",
+        back_populates="translation",
     )
-
-    __table_args__ = (UniqueConstraint("category_id", "language_code"),)

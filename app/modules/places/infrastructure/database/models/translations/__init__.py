@@ -1,1 +1,2 @@
-from .category_translations import PlaceCategoryTranslationModel
+from .category import PlaceCategoryTranslationModel
+from .place import PlaceTranslationModel
