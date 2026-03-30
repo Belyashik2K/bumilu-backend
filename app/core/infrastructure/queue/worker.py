@@ -21,4 +21,5 @@ container = make_async_container(
 )
 setup_dishka(broker=broker, container=container)
 
+import app.core.infrastructure.database.models_registry
 import app.modules.chat.infrastructure.queue.tasks  # noqa: F401
