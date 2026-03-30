@@ -1,7 +1,7 @@
 name: bumilu-users-service
 services:
   postgres:
-    image: postgres:17-alpine
+    image: postgis/postgis:18-3.6
     restart: unless-stopped
     env_file: [ .env ]
     environment:
@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${DATABASE__PASSWORD}
       POSTGRES_DB: ${DATABASE__NAME}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
       interval: 1s
