@@ -25,6 +25,9 @@ if TYPE_CHECKING:
     from app.modules.places.infrastructure.database.models.base.category import (
         PlaceCategoryModel,
     )
+    from app.modules.places.infrastructure.database.models.translations.place import (
+        PlaceTranslationModel,
+    )
 
 
 class PlaceModel(PKUUIDMixin, TimestampMixin, BaseModel):
@@ -42,8 +45,15 @@ class PlaceModel(PKUUIDMixin, TimestampMixin, BaseModel):
         Geography(geometry_type="POINT", srid=4326, spatial_index=False)
     )
     timezone: Mapped[str] = mapped_column(String(64))
+    address_taxi: Mapped[str | None] = mapped_column(String(255))
+    address_taxi_comment: Mapped[str | None] = mapped_column(String(255))
 
     category: Mapped["PlaceCategoryModel"] = relationship(
         "PlaceCategoryModel",
         back_populates="places",
+    )
+    translations: Mapped[list["PlaceTranslationModel"]] = relationship(
+        "PlaceTranslationModel",
+        back_populates="place",
+        cascade="all, delete-orphan",
     )
