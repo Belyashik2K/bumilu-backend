@@ -34,6 +34,9 @@ if TYPE_CHECKING:
     from app.modules.places.infrastructure.database.models.translations.place import (
         PlaceTranslationModel,
     )
+    from app.modules.routes.infrastructure.database.models.base.route_point import (
+        RoutePointModel,
+    )
 
 
 class PlaceModel(PKUUIDMixin, TimestampMixin, BaseModel):
@@ -70,6 +73,11 @@ class PlaceModel(PKUUIDMixin, TimestampMixin, BaseModel):
     )
     working_hours: Mapped[list["PlaceWorkingHourModel"]] = relationship(
         "PlaceWorkingHoursModel",
+        back_populates="place",
+        cascade="all, delete-orphan",
+    )
+    route_points: Mapped[list["RoutePointModel"]] = relationship(
+        "RoutePointModel",
         back_populates="place",
         cascade="all, delete-orphan",
     )
