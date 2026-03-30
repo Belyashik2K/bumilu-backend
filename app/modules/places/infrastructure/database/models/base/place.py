@@ -22,7 +22,7 @@ from app.core.infrastructure.database.mixins import (
 )
 
 if TYPE_CHECKING:
-    from app.modules.places.infrastructure.database.models.base.category import (
+    from app.modules.places.infrastructure.database.models.base.place_category import (
         PlaceCategoryModel,
     )
     from app.modules.places.infrastructure.database.models.base.place_phone import (
