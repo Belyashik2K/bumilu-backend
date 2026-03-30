@@ -14,6 +14,9 @@ from app.core.infrastructure.database.mixins import (
 )
 
 if TYPE_CHECKING:
+    from app.modules.places.infrastructure.database.models.base.place import (
+        PlaceModel,
+    )
     from app.modules.places.infrastructure.database.models.translations.category_translations import (
         PlaceCategoryTranslationModel,
     )
@@ -27,6 +30,11 @@ class PlaceCategoryModel(PKUUIDMixin, TimestampMixin, BaseModel):
 
     translations: Mapped[list["PlaceCategoryTranslationModel"]] = relationship(
         "PlaceCategoryTranslationModel",
+        back_populates="category",
+        cascade="all, delete-orphan",
+    )
+    places: Mapped[list["PlaceModel"]] = relationship(
+        "PlaceModel",
         back_populates="category",
         cascade="all, delete-orphan",
     )
