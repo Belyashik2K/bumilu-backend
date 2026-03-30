@@ -44,5 +44,5 @@ class PlaceCategoryTranslationModel(PKUUIDMixin, TimestampMixin, BaseModel):
 
     category: Mapped["PlaceCategoryModel"] = relationship(
         "PlaceCategoryModel",
-        back_populates="translation",
+        back_populates="translations",
     )

@@ -20,6 +20,9 @@ from app.core.infrastructure.database.mixins import (
     PKUUIDMixin,
     TimestampMixin,
 )
+from app.modules.routes.infrastructure.database.models.base.route_point import (
+    RoutePointModel,
+)
 
 if TYPE_CHECKING:
     from app.modules.places.infrastructure.database.models.base.place_category import (
@@ -33,9 +36,6 @@ if TYPE_CHECKING:
     )
     from app.modules.places.infrastructure.database.models.translations.place import (
         PlaceTranslationModel,
-    )
-    from app.modules.routes.infrastructure.database.models.base.route_point import (
-        RoutePointModel,
     )
 
 
@@ -72,7 +72,7 @@ class PlaceModel(PKUUIDMixin, TimestampMixin, BaseModel):
         cascade="all, delete-orphan",
     )
     working_hours: Mapped[list["PlaceWorkingHourModel"]] = relationship(
-        "PlaceWorkingHoursModel",
+        "PlaceWorkingHourModel",
         back_populates="place",
         cascade="all, delete-orphan",
     )
