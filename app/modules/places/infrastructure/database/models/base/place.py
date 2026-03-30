@@ -25,6 +25,12 @@ if TYPE_CHECKING:
     from app.modules.places.infrastructure.database.models.base.category import (
         PlaceCategoryModel,
     )
+    from app.modules.places.infrastructure.database.models.base.place_phone import (
+        PlacePhoneModel,
+    )
+    from app.modules.places.infrastructure.database.models.base.place_working_hour import (
+        PlaceWorkingHourModel,
+    )
     from app.modules.places.infrastructure.database.models.translations.place import (
         PlaceTranslationModel,
     )
@@ -54,6 +60,16 @@ class PlaceModel(PKUUIDMixin, TimestampMixin, BaseModel):
     )
     translations: Mapped[list["PlaceTranslationModel"]] = relationship(
         "PlaceTranslationModel",
+        back_populates="place",
+        cascade="all, delete-orphan",
+    )
+    phones: Mapped[list["PlacePhoneModel"]] = relationship(
+        "PlacePhoneModel",
+        back_populates="place",
+        cascade="all, delete-orphan",
+    )
+    working_hours: Mapped[list["PlaceWorkingHourModel"]] = relationship(
+        "PlaceWorkingHoursModel",
         back_populates="place",
         cascade="all, delete-orphan",
     )
