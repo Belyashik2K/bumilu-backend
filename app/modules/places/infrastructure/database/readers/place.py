@@ -1,7 +1,10 @@
 from uuid import UUID
 
+from geoalchemy2 import Geometry
 from sqlalchemy import (
+    Float,
     and_,
+    func,
     select,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,20 +37,25 @@ class SQLAlchemyPlaceReader(IPlaceReader):
     @staticmethod
     def to_view(
         place: PlaceModel,
+        *,
+        latitude: float,
+        longitude: float,
     ) -> PlaceView:
+        translation = place.translations[0]
+
         return PlaceView(
             id=place.id,
             category_id=place.category_id,
-            title=place.translations[0].title,
-            description=place.translations[0].description,
-            short_description=place.translations[0].short_description,
+            title=translation.title,
+            description=translation.description,
+            short_description=translation.short_description,
             timezone=place.timezone,
             location=PlaceLocationView(
-                latitude=place.latitude,
-                longitude=place.longitude,
+                latitude=latitude,
+                longitude=longitude,
             ),
             address=PlaceAddressView(
-                display=place.translations[0].address_display,
+                display=translation.address_display,
                 taxi=place.address_taxi,
                 taxi_comment=place.address_taxi_comment,
             ),
@@ -68,15 +76,29 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                     for wh in place.working_hours
                     if wh.weekday == day
                 ]
-                for day in range(7)
+                for day in range(1, 8)
             },
         )
 
     async def get_by_id(
-        self, place_id: UUID, translation_language: LanguageEnum
+        self,
+        place_id: UUID,
+        translation_language: LanguageEnum,
     ) -> PlaceView | None:
         stmt = (
-            select(PlaceModel)
+            select(
+                PlaceModel,
+                func.ST_Y(
+                    PlaceModel.location.cast(Geometry(geometry_type="POINT", srid=4326))
+                )
+                .cast(Float)
+                .label("latitude"),
+                func.ST_X(
+                    PlaceModel.location.cast(Geometry(geometry_type="POINT", srid=4326))
+                )
+                .cast(Float)
+                .label("longitude"),
+            )
             .join(PlaceModel.translations)
             .where(
                 and_(
@@ -92,7 +114,15 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         )
 
         result = await self._session.execute(stmt)
-        place = result.scalars().first()
-        if place is None:
+        row = result.unique().one_or_none()
+
+        if row is None:
             return None
-        return self.to_view(place)
+
+        place, latitude, longitude = row
+
+        return self.to_view(
+            place,
+            latitude=float(latitude),
+            longitude=float(longitude),
+        )
