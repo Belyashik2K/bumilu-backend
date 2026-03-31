@@ -20,5 +20,5 @@ class GetPlaceQueryHandler(
             place_id=query.place_id, translation_language=query.language
         )
         if place is None:
-            raise ValueError("Place not found")
+            raise ValueError("Place not found")  # TODO: custom exception
         return place

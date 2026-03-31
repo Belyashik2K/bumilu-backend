@@ -6,6 +6,8 @@ from fastapi import (
     APIRouter,
     Depends,
 )
+from pydantic import UUID7
+from starlette import status
 
 from app.core.presentation.api.schemas.accept_language import AcceptLanguageDep
 from app.core.presentation.api.schemas.pagination import OffsetPaginationDep
@@ -18,9 +20,14 @@ from app.modules.places.application.queries.categories.get_all.handler import (
 from app.modules.places.application.queries.categories.get_all.query import (
     GetAllPlaceCategoriesQuery,
 )
+from app.modules.places.application.queries.places.get.handler import (
+    GetPlaceQueryHandler,
+)
+from app.modules.places.application.queries.places.get.query import GetPlaceQuery
 from app.modules.places.presentation.api.schemas.categories.get import (
     PlaceCategoriesListResponseSchema,
 )
+from app.modules.places.presentation.api.schemas.places.main import PlaceSchema
 
 places_router = APIRouter(prefix="/places", tags=["Places"])
 
@@ -46,3 +53,23 @@ async def get_place_categories(
     return PlaceCategoriesListResponseSchema.model_validate(
         result, from_attributes=True
     )
+
+
+@places_router.get(
+    "/{place_id}",
+    responses=generate_responses_for_endpoint(status.HTTP_404_NOT_FOUND),
+)
+@inject
+async def get_place_by_id(
+    place_id: UUID7,
+    handler: FromDishka[GetPlaceQueryHandler],
+    principal: Annotated[Principal, Depends(get_user_principal)],
+    accept_language: AcceptLanguageDep,
+) -> PlaceSchema:
+    result = await handler(
+        GetPlaceQuery(
+            place_id=place_id,
+            language=accept_language.language,
+        )
+    )
+    return PlaceSchema.model_validate(result, from_attributes=True)

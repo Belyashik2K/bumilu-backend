@@ -67,8 +67,8 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 )
                 for phone in place.phones
             ],
-            working_hours={
-                day: [
+            weekly_working_hours={
+                str(day): [
                     PlaceWorkingHoursIntervalView(
                         start=wh.start_time,
                         end=wh.end_time,
