@@ -5,7 +5,6 @@ from dataclasses import (
 from typing import Self
 
 
-@dataclass(frozen=True, slots=True, kw_only=True)
 class OffsetPaginationMixin:
     limit: int = field(default=20)
     offset: int = field(default=0)
