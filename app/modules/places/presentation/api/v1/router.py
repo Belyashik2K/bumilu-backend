@@ -9,7 +9,10 @@ from fastapi import (
 from pydantic import UUID7
 from starlette import status
 
-from app.core.presentation.api.schemas.accept_language import AcceptLanguageDep
+from app.core.presentation.api.schemas.accept_language import (
+    AcceptLanguageDep,
+)
+from app.core.presentation.api.schemas.bbox import BBoxDep
 from app.core.presentation.api.schemas.pagination import OffsetPaginationDep
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
@@ -30,11 +33,20 @@ from app.modules.places.application.queries.places.get_all.handler import (
 from app.modules.places.application.queries.places.get_all.query import (
     GetAllPlacesQuery,
 )
+from app.modules.places.application.queries.places.get_map_poi.handler import (
+    GetPlacesMapPOIQueryHandler,
+)
+from app.modules.places.application.queries.places.get_map_poi.query import (
+    BBox,
+    GetPlacesMapPOIQuery,
+)
 from app.modules.places.presentation.api.schemas.categories.get import (
     PlaceCategoriesListResponseSchema,
 )
 from app.modules.places.presentation.api.schemas.places.main import (
+    GetPlaceMapPOIsResponseSchema,
     PaginatedPlaceCardsResponseSchema,
+    PlaceMapPOISchema,
     PlaceSchema,
 )
 
@@ -88,6 +100,36 @@ async def get_place_categories(
     )
     return PlaceCategoriesListResponseSchema.model_validate(
         result, from_attributes=True
+    )
+
+
+@places_router.get(
+    "/map/poi",
+    responses=generate_responses_for_endpoint(),
+)
+@inject
+async def get_place_map_pois(
+    handler: FromDishka[GetPlacesMapPOIQueryHandler],
+    principal: Annotated[Principal, Depends(get_user_principal)],
+    accept_language: AcceptLanguageDep,
+    bbox: BBoxDep,
+) -> GetPlaceMapPOIsResponseSchema:
+    result = await handler(
+        GetPlacesMapPOIQuery(
+            bounds=BBox(
+                south=bbox.south,
+                west=bbox.west,
+                north=bbox.north,
+                east=bbox.east,
+            ),
+            language=accept_language.language,
+        )
+    )
+    return GetPlaceMapPOIsResponseSchema(
+        pois=[
+            PlaceMapPOISchema.model_validate(poi, from_attributes=True)
+            for poi in result
+        ]
     )
 
 
