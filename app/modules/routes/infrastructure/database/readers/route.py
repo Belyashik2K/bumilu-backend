@@ -1,19 +1,40 @@
+from uuid import UUID
+
 from geoalchemy2 import Geography
+from geoalchemy2.shape import to_shape
 from sqlalchemy import (
     cast,
     func,
     select,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import contains_eager
+from sqlalchemy.orm import (
+    contains_eager,
+    selectinload,
+    with_loader_criteria,
+)
 
 from app.core.enums import LanguageEnum
-from app.modules.places.infrastructure.database.models import PlaceModel
+from app.core.utils.datetime import get_current_dt_in_timezone
+from app.modules.places.application.queries.places.shared.views import (
+    PlaceCardCategoryView,
+    PlaceCardView,
+    PlaceLocationView,
+    PlaceWorkingHoursIntervalView,
+)
+from app.modules.places.infrastructure.database.models import (
+    PlaceCategoryModel,
+    PlaceCategoryTranslationModel,
+    PlaceModel,
+    PlaceTranslationModel,
+)
 from app.modules.places.shared.enums.route_sort import RouteSortByEnum
 from app.modules.routes.application.queries.shared.readers.route import IRouteReader
 from app.modules.routes.application.queries.shared.views import (
     RouteCardPage,
     RouteCardView,
+    RoutePointView,
+    RouteView,
 )
 from app.modules.routes.infrastructure.database.models import (
     RouteModel,
@@ -25,6 +46,44 @@ from app.modules.routes.infrastructure.database.models import (
 class SQLAlchemyRouteReader(IRouteReader):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
+
+    @staticmethod
+    def to_view(route: RouteModel) -> RouteView:
+        translation = route.translations[0]
+
+        points = []
+        for point in sorted(route.points, key=lambda p: p.point_index):
+            place = point.place
+            location = to_shape(place.location)
+
+            points.append(
+                RoutePointView(
+                    index=point.point_index,
+                    preview=PlaceCardView(
+                        id=place.id,
+                        title=place.translations[0].title,
+                        short_description=place.translations[0].short_description,
+                        timezone=place.timezone,
+                        category=PlaceCardCategoryView(
+                            name=place.category.translations[0].name,
+                        ),
+                        location=PlaceLocationView(
+                            latitude=location.y,  # type: ignore
+                            longitude=location.x,  # type: ignore
+                        ),
+                        today_working_hours=[],
+                    ),
+                )
+            )
+
+        return RouteView(
+            id=route.id,
+            title=translation.title,
+            description=translation.description,
+            short_description=translation.short_description,
+            points=points,
+            total_places=len(points),
+        )
 
     @staticmethod
     def to_card_view(
@@ -41,6 +100,83 @@ class SQLAlchemyRouteReader(IRouteReader):
             if distance_meters is not None
             else None,
         )
+
+    @staticmethod
+    def to_place_card_view(  # TODO: DRY
+        place: PlaceModel,
+        *,
+        latitude: float,
+        longitude: float,
+    ) -> PlaceCardView:
+        translation = place.translations[0]
+
+        today_working_hours = []
+        for wh in place.working_hours:
+            now = get_current_dt_in_timezone(place.timezone)
+            if wh.weekday == now.weekday() + 1:
+                today_working_hours.append(
+                    PlaceWorkingHoursIntervalView(
+                        start=wh.start_time,
+                        end=wh.end_time,
+                    )
+                )
+
+        return PlaceCardView(
+            id=place.id,
+            title=translation.title,
+            short_description=translation.short_description,
+            timezone=place.timezone,
+            category=PlaceCardCategoryView(
+                name=place.category.translations[0].name,
+            ),
+            location=PlaceLocationView(
+                latitude=latitude,
+                longitude=longitude,
+            ),
+            today_working_hours=today_working_hours,
+        )
+
+    async def get_by_id(
+        self,
+        route_id: UUID,
+        *,
+        translation_language: LanguageEnum,
+    ) -> RouteView | None:
+        stmt = (
+            select(RouteModel)
+            .join(RouteModel.translations)
+            .where(
+                RouteModel.id == route_id,
+                RouteTranslationModel.language_code == translation_language,
+            )
+            .options(
+                contains_eager(RouteModel.translations),
+                selectinload(RouteModel.points)
+                .joinedload(RoutePointModel.place)
+                .selectinload(PlaceModel.translations),
+                selectinload(RouteModel.points)
+                .joinedload(RoutePointModel.place)
+                .joinedload(PlaceModel.category)
+                .selectinload(PlaceCategoryModel.translations),
+                with_loader_criteria(
+                    PlaceTranslationModel,
+                    PlaceTranslationModel.language_code == translation_language,
+                    include_aliases=True,
+                ),
+                with_loader_criteria(
+                    PlaceCategoryTranslationModel,
+                    PlaceCategoryTranslationModel.language_code == translation_language,
+                    include_aliases=True,
+                ),
+            )
+        )
+
+        result = await self._session.execute(stmt)
+        route = result.unique().scalar_one_or_none()
+        if route is None:
+            return None
+
+        return self.to_view(route)
 
     async def get_all(
         self,
