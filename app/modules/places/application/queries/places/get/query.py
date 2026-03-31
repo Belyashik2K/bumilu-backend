@@ -1,8 +1,9 @@
 from dataclasses import dataclass
+from uuid import UUID
 
 from app.core.application.queries.language import LanguageMixin
-from app.core.application.queries.pagination import OffsetPaginationMixin
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetAllPlaceCategoriesQuery(LanguageMixin, OffsetPaginationMixin): ...
+class GetPlaceQuery(LanguageMixin):
+    place_id: UUID

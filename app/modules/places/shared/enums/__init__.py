@@ -1,1 +1,1 @@
-from .place_number_type import PlacePhoneTypeEnum
+from .place_phone_type import PlacePhoneTypeEnum

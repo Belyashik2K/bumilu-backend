@@ -43,7 +43,9 @@ class PlaceTranslationModel(PKUUIDMixin, TimestampMixin, BaseModel):
     title: Mapped[str] = mapped_column(String(255))
     description: Mapped[str | None] = mapped_column(String(1024))
     short_description: Mapped[str | None] = mapped_column(String(255))
-    address_display: Mapped[str | None] = mapped_column(String(255))
+    address_display: Mapped[str | None] = mapped_column(
+        String(255)
+    )  # TODO: make it required
 
     place: Mapped["PlaceModel"] = relationship(
         "PlaceModel",

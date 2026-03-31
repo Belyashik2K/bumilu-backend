@@ -16,7 +16,7 @@ class PlacesQueryHandlersProvider(Provider):
     @provide(scope=Scope.REQUEST)
     async def get_all_place_categories_handler(
         self, place_category_reader: IPlaceCategoryReader
-    ) -> "GetAllPlaceCategoriesQueryHandler":
+    ) -> GetAllPlaceCategoriesQueryHandler:
         return GetAllPlaceCategoriesQueryHandler(
             place_category_reader=place_category_reader,
         )
