@@ -1,4 +1,6 @@
+from geoalchemy2 import Geography
 from sqlalchemy import (
+    cast,
     func,
     select,
 )
@@ -26,7 +28,7 @@ class SQLAlchemyRouteReader(IRouteReader):
 
     @staticmethod
     def to_card_view(
-        route: RouteModel, *, distance_meters: float | None = None
+        route: RouteModel, *, total_places: int, distance_meters: float | None = None
     ) -> RouteCardView:
         translation = route.translations[0]
 
@@ -34,7 +36,7 @@ class SQLAlchemyRouteReader(IRouteReader):
             id=route.id,
             title=translation.title,
             short_description=translation.short_description,
-            total_places=len(route.points),
+            total_places=total_places,
             m_to_start_place=round(distance_meters)
             if distance_meters is not None
             else None,
@@ -56,6 +58,13 @@ class SQLAlchemyRouteReader(IRouteReader):
             RouteTranslationModel.language_code == translation_language,
         ]
 
+        total_places_subquery = (
+            select(func.count(RoutePointModel.id))
+            .where(RoutePointModel.route_id == RouteModel.id)
+            .correlate(RouteModel)
+            .scalar_subquery()
+        )
+
         items_stmt = (
             select(RouteModel)
             .join(RouteModel.translations)
@@ -63,6 +72,7 @@ class SQLAlchemyRouteReader(IRouteReader):
             .options(
                 contains_eager(RouteModel.translations),
             )
+            .add_columns(total_places_subquery.label("total_places"))
         )
 
         count_stmt = (
@@ -75,12 +85,15 @@ class SQLAlchemyRouteReader(IRouteReader):
         distance_expr = None
 
         if latitude is not None and longitude is not None:
-            user_point = func.ST_SetSRID(
-                func.ST_MakePoint(longitude, latitude),
-                4326,
+            user_point = cast(
+                func.ST_SetSRID(
+                    func.ST_MakePoint(longitude, latitude),
+                    4326,
+                ),
+                Geography,
             )
 
-            distance_expr = func.ST_DistanceSphere(
+            distance_expr = func.ST_Distance(
                 PlaceModel.location,
                 user_point,
             ).label("distance_meters")
@@ -141,12 +154,18 @@ class SQLAlchemyRouteReader(IRouteReader):
 
         for row in rows:
             if distance_expr is not None:
-                route, distance_meters, _total_count = row
+                route, total_places, distance_meters, _total_count = row
             else:
-                route, _total_count = row
+                route, total_places, _total_count = row
                 distance_meters = None
 
-            items.append(self.to_card_view(route, distance_meters=distance_meters))
+            items.append(
+                self.to_card_view(
+                    route,
+                    total_places=total_places,
+                    distance_meters=distance_meters,
+                )
+            )
 
         return RouteCardPage(
             items=items,
