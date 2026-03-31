@@ -12,6 +12,7 @@ from app.core.presentation.api.schemas.accept_language import AcceptLanguageDep
 from app.core.presentation.api.schemas.location import LocationDep
 from app.core.presentation.api.schemas.pagination import OffsetPaginationDep
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
+from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
 from app.modules.auth.shared.context import Principal
 from app.modules.routes.application.queries.get.handler import GetRouteQueryHandler
@@ -27,8 +28,7 @@ from app.modules.routes.presentation.api.schemas.main import (
 )
 
 routes_router = APIRouter(
-    prefix="/routes",
-    tags=["Routes"],
+    prefix="/routes", tags=["Routes"], dependencies=[Depends(security)]
 )
 
 
