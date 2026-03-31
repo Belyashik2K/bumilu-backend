@@ -5,6 +5,7 @@ from dataclasses import (
 from datetime import time
 from uuid import UUID
 
+from app.core.application.queries.pagination import OffsetPagination
 from app.modules.places.shared.enums import PlacePhoneTypeEnum
 
 
@@ -48,3 +49,32 @@ class PlaceView:
     weekly_working_hours: dict[str, list[PlaceWorkingHoursIntervalView]] = field(
         default_factory=dict
     )
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class PlaceCardCategoryView:
+    title: str
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class PlaceCardView:
+    id: UUID
+    title: str
+    short_description: str | None = field(default=None)
+    category: PlaceCardCategoryView
+    location: PlaceLocationView
+    today_working_hours: list[PlaceWorkingHoursIntervalView] = field(
+        default_factory=list
+    )
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class PlaceCardPage:
+    items: list[PlaceCardView]
+    total: int
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class PaginatedPlaceCardView:
+    places: list[PlaceCardView] = field(default_factory=list)
+    pagination: OffsetPagination
