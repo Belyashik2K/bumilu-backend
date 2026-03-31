@@ -1,4 +1,3 @@
-from pprint import pprint
 from typing import Annotated
 
 from dishka import FromDishka
@@ -24,6 +23,7 @@ from app.modules.routes.application.queries.get_all.query import GetAllRoutesQue
 from app.modules.routes.presentation.api.filters.route_sort import RouteSortFiltersDep
 from app.modules.routes.presentation.api.schemas.main import (
     PaginatedRouteCardsResponseSchema,
+    RouteSchema,
 )
 
 routes_router = APIRouter(
@@ -64,12 +64,11 @@ async def get_route_by_id(
     handler: FromDishka[GetRouteQueryHandler],
     principal: Annotated[Principal, Depends(get_user_principal)],
     accept_language: AcceptLanguageDep,
-) -> None:
+) -> RouteSchema:
     result = await handler(
         GetRouteQuery(
             route_id=route_id,
             language=accept_language.language,
         )
     )
-    pprint(result)
-    return None
+    return RouteSchema.model_validate(result, from_attributes=True)

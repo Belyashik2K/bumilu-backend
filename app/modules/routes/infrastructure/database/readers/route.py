@@ -47,8 +47,7 @@ class SQLAlchemyRouteReader(IRouteReader):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    @staticmethod
-    def to_view(route: RouteModel) -> RouteView:
+    def to_view(self, route: RouteModel) -> RouteView:
         translation = route.translations[0]
 
         points = []
@@ -59,19 +58,10 @@ class SQLAlchemyRouteReader(IRouteReader):
             points.append(
                 RoutePointView(
                     index=point.point_index,
-                    preview=PlaceCardView(
-                        id=place.id,
-                        title=place.translations[0].title,
-                        short_description=place.translations[0].short_description,
-                        timezone=place.timezone,
-                        category=PlaceCardCategoryView(
-                            name=place.category.translations[0].name,
-                        ),
-                        location=PlaceLocationView(
-                            latitude=location.y,  # type: ignore
-                            longitude=location.x,  # type: ignore
-                        ),
-                        today_working_hours=[],
+                    preview=self.to_place_card_view(
+                        place,
+                        latitude=location.y,  # type: ignore
+                        longitude=location.x,  # type: ignore
                     ),
                 )
             )
@@ -82,7 +72,7 @@ class SQLAlchemyRouteReader(IRouteReader):
             description=translation.description,
             short_description=translation.short_description,
             points=points,
-            total_places=len(points),
+            total_points=len(points),
         )
 
     @staticmethod
@@ -142,6 +132,8 @@ class SQLAlchemyRouteReader(IRouteReader):
         *,
         translation_language: LanguageEnum,
     ) -> RouteView | None:
+        place_loader = selectinload(RouteModel.points).joinedload(RoutePointModel.place)
+
         stmt = (
             select(RouteModel)
             .join(RouteModel.translations)
@@ -151,13 +143,11 @@ class SQLAlchemyRouteReader(IRouteReader):
             )
             .options(
                 contains_eager(RouteModel.translations),
-                selectinload(RouteModel.points)
-                .joinedload(RoutePointModel.place)
-                .selectinload(PlaceModel.translations),
-                selectinload(RouteModel.points)
-                .joinedload(RoutePointModel.place)
-                .joinedload(PlaceModel.category)
-                .selectinload(PlaceCategoryModel.translations),
+                place_loader.selectinload(PlaceModel.translations),
+                place_loader.joinedload(PlaceModel.category).selectinload(
+                    PlaceCategoryModel.translations
+                ),
+                place_loader.selectinload(PlaceModel.working_hours),
                 with_loader_criteria(
                     PlaceTranslationModel,
                     PlaceTranslationModel.language_code == translation_language,
