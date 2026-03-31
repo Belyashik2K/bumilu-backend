@@ -1,18 +1,18 @@
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from geoalchemy2 import Geography
+from geoalchemy2 import (
+    Geography,
+)
 from sqlalchemy import (
     UUID as _UUID,
 )
 from sqlalchemy import (
     ForeignKey,
     String,
-    func,
 )
 from sqlalchemy.orm import (
     Mapped,
-    column_property,
     mapped_column,
     relationship,
 )
@@ -83,6 +83,3 @@ class PlaceModel(PKUUIDMixin, TimestampMixin, BaseModel):
         back_populates="place",
         cascade="all, delete-orphan",
     )
-
-    latitude: Mapped[float] = column_property(func.ST_Y(location))
-    longitude: Mapped[float] = column_property(func.ST_X(location))
