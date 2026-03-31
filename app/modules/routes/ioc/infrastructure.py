@@ -1,0 +1,17 @@
+from dishka import (
+    Provider,
+    Scope,
+    provide,
+)
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.modules.routes.application.queries.shared.readers.route import IRouteReader
+from app.modules.routes.infrastructure.database.readers.route import (
+    SQLAlchemyRouteReader,
+)
+
+
+class RoutesInfrastructureProvider(Provider):
+    @provide(scope=Scope.REQUEST, provides=IRouteReader)
+    async def route_reader(self, session: AsyncSession) -> IRouteReader:
+        return SQLAlchemyRouteReader(session=session)

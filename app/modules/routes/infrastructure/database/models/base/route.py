@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 class RouteModel(PKUUIDMixin, TimestampMixin, BaseModel):
     __tablename__ = "routes"
 
-    translations: Mapped["RouteTranslationModel"] = relationship(
+    translations: Mapped[list["RouteTranslationModel"]] = relationship(
         "RouteTranslationModel",
         back_populates="route",
         cascade="all, delete-orphan",
