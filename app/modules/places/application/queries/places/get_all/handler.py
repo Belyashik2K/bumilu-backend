@@ -28,6 +28,7 @@ class GetAllPlacesQueryHandler(
             offset=query.offset,
             translation_language=query.language,
         )
+
         return PaginatedPlaceCardView(
             places=place_cards.items,
             pagination=OffsetPagination.create(
