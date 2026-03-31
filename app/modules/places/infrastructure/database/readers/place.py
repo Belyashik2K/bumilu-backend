@@ -177,6 +177,21 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         limit: int,
         offset: int,
     ) -> PlaceCardPage:
+        base_filters = [
+            PlaceTranslationModel.language_code == translation_language,
+            PlaceCategoryTranslationModel.language_code == translation_language,
+        ]
+
+        if title_like:
+            base_filters.append(
+                PlaceModel.translations.any(
+                    PlaceTranslationModel.title.ilike(f"%{title_like}%")
+                )
+            )
+
+        if category_id:
+            base_filters.append(PlaceModel.category_id == category_id)
+
         items_stmt = (
             select(
                 PlaceModel,
@@ -194,10 +209,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             .join(PlaceModel.translations)
             .join(PlaceModel.category)
             .join(PlaceCategoryModel.translations)
-            .where(
-                PlaceTranslationModel.language_code == translation_language,
-                PlaceCategoryTranslationModel.language_code == translation_language,
-            )
+            .where(*base_filters)
             .options(
                 selectinload(PlaceModel.working_hours),
                 contains_eager(PlaceModel.translations),
@@ -213,23 +225,8 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             .join(PlaceModel.translations)
             .join(PlaceModel.category)
             .join(PlaceCategoryModel.translations)
-            .where(
-                PlaceTranslationModel.language_code == translation_language,
-                PlaceCategoryTranslationModel.language_code == translation_language,
-            )
+            .where(*base_filters)
         )
-
-        if title_like:
-            title_filter = PlaceModel.translations.any(
-                PlaceTranslationModel.title.ilike(f"%{title_like}%")
-            )
-            items_stmt = items_stmt.where(title_filter)
-            count_stmt = count_stmt.where(title_filter)
-
-        if category_id:
-            category_filter = PlaceModel.category_id == category_id
-            items_stmt = items_stmt.where(category_filter)
-            count_stmt = count_stmt.where(category_filter)
 
         total_subquery = count_stmt.scalar_subquery()
 
@@ -244,17 +241,13 @@ class SQLAlchemyPlaceReader(IPlaceReader):
 
         if not rows:
             total = await self._session.scalar(count_stmt)
-            return PlaceCardPage(
-                items=[],
-                total=total or 0,
-            )
+            return PlaceCardPage(items=[], total=total or 0)
 
         total = rows[0].total_count or 0
-        places = []
 
-        for row in rows:
-            place, latitude, longitude, _ = row
-            places.append(
+        items = []
+        for place, latitude, longitude, _ in rows:
+            items.append(
                 self.to_card_view(
                     place,
                     latitude=float(latitude),
@@ -263,6 +256,6 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             )
 
         return PlaceCardPage(
-            items=places,
+            items=items,
             total=total,
         )
