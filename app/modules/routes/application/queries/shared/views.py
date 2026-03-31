@@ -44,4 +44,4 @@ class RouteView:
     description: str | None = field(default=None)
     short_description: str | None = field(default=None)
     points: list[RoutePointView] = field(default_factory=list)
-    total_places: int
+    total_points: int

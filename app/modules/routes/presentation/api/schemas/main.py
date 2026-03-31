@@ -5,6 +5,7 @@ from pydantic import (
 )
 
 from app.core.presentation.api.schemas.pagination import OffsetPaginationSchema
+from app.modules.routes.presentation.api.schemas.point import RoutePointSchema
 
 UUID_EXAMPLE = "123e4567-e89b-12d3-a456-426614174000"
 TITLE_EXAMPLE = "Best massage parlors in St. Petersburg"
@@ -47,4 +48,36 @@ class PaginatedRouteCardsResponseSchema(BaseModel):
     pagination: OffsetPaginationSchema = Field(
         ...,
         description="Pagination information for the retrieved route cards",
+    )
+
+
+class RouteSchema(BaseModel):
+    id: UUID7 = Field(
+        ...,
+        description="Unique identifier of the route",
+        examples=[UUID_EXAMPLE],
+    )
+    title: str = Field(
+        ...,
+        description="Title of the route",
+        examples=[TITLE_EXAMPLE],
+    )
+    description: str | None = Field(
+        None,
+        description="Detailed description of the route",
+        examples=[SHORT_DESCRIPTION_EXAMPLE],
+    )
+    short_description: str | None = Field(
+        None,
+        description="Short description of the route",
+        examples=[SHORT_DESCRIPTION_EXAMPLE],
+    )
+    points: list[RoutePointSchema] = Field(
+        default_factory=list,
+        description="Ordered list of points included in the route, where each point represents a place",
+    )
+    total_points: int = Field(
+        ...,
+        description="Total number of points included in the route",
+        examples=[5],
     )
