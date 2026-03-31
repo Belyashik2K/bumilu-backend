@@ -10,6 +10,12 @@ from app.modules.places.application.queries.categories.get_all.handler import (
 from app.modules.places.application.queries.categories.shared.readers.place_category import (
     IPlaceCategoryReader,
 )
+from app.modules.places.application.queries.places.get.handler import (
+    GetPlaceQueryHandler,
+)
+from app.modules.places.application.queries.places.shared.readers.place import (
+    IPlaceReader,
+)
 
 
 class PlacesQueryHandlersProvider(Provider):
@@ -19,4 +25,12 @@ class PlacesQueryHandlersProvider(Provider):
     ) -> GetAllPlaceCategoriesQueryHandler:
         return GetAllPlaceCategoriesQueryHandler(
             place_category_reader=place_category_reader,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def get_place_handler(
+        self, place_reader: IPlaceReader
+    ) -> GetPlaceQueryHandler:
+        return GetPlaceQueryHandler(
+            place_reader=place_reader,
         )
