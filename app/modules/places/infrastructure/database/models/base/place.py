@@ -3,6 +3,7 @@ from uuid import UUID
 
 from geoalchemy2 import (
     Geography,
+    WKBElement,
 )
 from sqlalchemy import (
     UUID as _UUID,
@@ -52,7 +53,7 @@ class PlaceModel(PKUUIDMixin, TimestampMixin, BaseModel):
             onupdate="CASCADE",
         ),
     )
-    location: Mapped[object] = mapped_column(
+    location: Mapped[WKBElement] = mapped_column(
         Geography(geometry_type="POINT", srid=4326, spatial_index=False)
     )
     timezone: Mapped[str] = mapped_column(String(64))
