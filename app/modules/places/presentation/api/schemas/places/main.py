@@ -4,8 +4,12 @@ from pydantic import (
     Field,
 )
 
+from app.core.presentation.api.schemas.pagination import OffsetPaginationSchema
 from app.modules.places.presentation.api.schemas.places.address import (
     PlaceAddressSchema,
+)
+from app.modules.places.presentation.api.schemas.places.category import (
+    PlaceCardCategorySchema,
 )
 from app.modules.places.presentation.api.schemas.places.location import (
     PlaceLocationSchema,
@@ -22,6 +26,55 @@ TITLE_EXAMPLE = 'Massage parlor "У Димасика"'
 DESCRIPTION_EXAMPLE = "A cozy massage parlor located in the Vyborgsky district of St. Petersburg, offering a variety of massage services to help you relax and rejuvenate. Our experienced therapists use high-quality oils and techniques to provide a personalized massage experience tailored to your needs. Whether you're looking for a deep tissue massage, a relaxing Swedish massage, or a therapeutic sports massage, we have the perfect treatment for you. Visit us today and let us help you unwind and feel your best!"
 SHORT_DESCRIPTION_EXAMPLE = "A cozy massage parlor located in the Vyborgsky district of St. Petersburg, offering a variety of massage services to help you relax and rejuvenate."
 TIMEZONE_EXAMPLE = "Europe/Moscow"
+
+WORKING_HOURS_INTERVAL_EXAMPLE = {"start": START_TIME_EXAMPLE, "end": END_TIME_EXAMPLE}
+
+
+class PlaceCardSchema(BaseModel):
+    id: UUID7 = Field(
+        ...,
+        description="Unique identifier of the place",
+        examples=[UUID_EXAMPLE],
+    )
+    title: str = Field(
+        ...,
+        description="Title of the place",
+        examples=[TITLE_EXAMPLE],
+    )
+    short_description: str | None = Field(
+        None,
+        description="Short description of the place",
+        examples=[SHORT_DESCRIPTION_EXAMPLE],
+    )
+    timezone: str = Field(
+        ...,
+        description="Timezone of the place",
+        examples=[TIMEZONE_EXAMPLE],
+    )
+    category: PlaceCardCategorySchema = Field(
+        ...,
+        description="Category of the place",
+    )
+    location: PlaceLocationSchema = Field(
+        ...,
+        description="Location of the place",
+    )
+    today_working_hours: list[PlaceWorkingHoursIntervalSchema] = Field(
+        default_factory=list,
+        description="Today's working hours intervals for the place.",
+        examples=[[WORKING_HOURS_INTERVAL_EXAMPLE]],
+    )
+
+
+class PaginatedPlaceCardsResponseSchema(BaseModel):
+    places: list[PlaceCardSchema] = Field(
+        default_factory=list,
+        description="A list of place cards",
+    )
+    pagination: OffsetPaginationSchema = Field(
+        ...,
+        description="Pagination information for the retrieved places.",
+    )
 
 
 class PlaceSchema(BaseModel):
@@ -73,29 +126,5 @@ class PlaceSchema(BaseModel):
             "Weekly working hours represented as a dictionary where the key is the day of the week "
             "(1 for Monday, 7 for Sunday) and the value is a list of working hours intervals for that day."
         ),
-        examples=[
-            {
-                "1": [
-                    {"start": START_TIME_EXAMPLE, "end": END_TIME_EXAMPLE},
-                ],
-                "2": [
-                    {"start": START_TIME_EXAMPLE, "end": END_TIME_EXAMPLE},
-                ],
-                "3": [
-                    {"start": START_TIME_EXAMPLE, "end": END_TIME_EXAMPLE},
-                ],
-                "4": [
-                    {"start": START_TIME_EXAMPLE, "end": END_TIME_EXAMPLE},
-                ],
-                "5": [
-                    {"start": START_TIME_EXAMPLE, "end": END_TIME_EXAMPLE},
-                ],
-                "6": [
-                    {"start": START_TIME_EXAMPLE, "end": END_TIME_EXAMPLE},
-                ],
-                "7": [
-                    {"start": START_TIME_EXAMPLE, "end": END_TIME_EXAMPLE},
-                ],
-            }
-        ],
+        examples=[{str(day): [WORKING_HOURS_INTERVAL_EXAMPLE] for day in range(1, 8)}],
     )

@@ -24,12 +24,48 @@ from app.modules.places.application.queries.places.get.handler import (
     GetPlaceQueryHandler,
 )
 from app.modules.places.application.queries.places.get.query import GetPlaceQuery
+from app.modules.places.application.queries.places.get_all.handler import (
+    GetAllPlacesQueryHandler,
+)
+from app.modules.places.application.queries.places.get_all.query import (
+    GetAllPlacesQuery,
+)
 from app.modules.places.presentation.api.schemas.categories.get import (
     PlaceCategoriesListResponseSchema,
 )
-from app.modules.places.presentation.api.schemas.places.main import PlaceSchema
+from app.modules.places.presentation.api.schemas.places.main import (
+    PaginatedPlaceCardsResponseSchema,
+    PlaceSchema,
+)
 
 places_router = APIRouter(prefix="/places", tags=["Places"])
+
+
+@places_router.get(
+    "",
+    responses=generate_responses_for_endpoint(),
+)
+@inject
+async def get_places(
+    handler: FromDishka[GetAllPlacesQueryHandler],
+    principal: Annotated[Principal, Depends(get_user_principal)],
+    pagination: OffsetPaginationDep,
+    accept_language: AcceptLanguageDep,
+    title_like: str | None = None,
+    category_id: UUID7 | None = None,
+) -> PaginatedPlaceCardsResponseSchema:
+    result = await handler(
+        GetAllPlacesQuery(
+            title_like=title_like,
+            category_id=category_id,
+            language=accept_language.language,
+            limit=pagination.limit,
+            offset=pagination.offset,
+        )
+    )
+    return PaginatedPlaceCardsResponseSchema.model_validate(
+        result, from_attributes=True
+    )
 
 
 @places_router.get(
