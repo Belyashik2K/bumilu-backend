@@ -45,6 +45,6 @@ class PlaceView:
     location: PlaceLocationView
     address: PlaceAddressView
     phones: list[PlacePhoneView] = field(default_factory=list)
-    working_hours: dict[int, list[PlaceWorkingHoursIntervalView]] = field(
+    weekly_working_hours: dict[str, list[PlaceWorkingHoursIntervalView]] = field(
         default_factory=dict
     )
