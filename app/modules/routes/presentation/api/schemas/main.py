@@ -30,10 +30,12 @@ class RouteCardSchema(BaseModel):
     total_places: int = Field(
         ...,
         description="Total number of places included in the route",
+        examples=[5],
     )
     m_to_start_place: float | None = Field(
         None,
         description="Distance in meters from the user's location to the starting place of the route",
+        examples=[1984.1984],
     )
 
 
