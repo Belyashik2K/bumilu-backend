@@ -104,7 +104,7 @@ async def get_place_categories(
 
 
 @places_router.get(
-    "/map/poi",
+    "/map/pois",
     responses=generate_responses_for_endpoint(),
 )
 @inject
