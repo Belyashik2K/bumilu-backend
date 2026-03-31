@@ -15,6 +15,7 @@ from app.core.presentation.api.schemas.accept_language import (
 from app.core.presentation.api.schemas.bbox import BBoxDep
 from app.core.presentation.api.schemas.pagination import OffsetPaginationDep
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
+from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
 from app.modules.auth.shared.context import Principal
 from app.modules.places.application.queries.categories.get_all.handler import (
@@ -50,7 +51,9 @@ from app.modules.places.presentation.api.schemas.places.main import (
     PlaceSchema,
 )
 
-places_router = APIRouter(prefix="/places", tags=["Places"])
+places_router = APIRouter(
+    prefix="/places", tags=["Places"], dependencies=[Depends(security)]
+)
 
 
 @places_router.get(
