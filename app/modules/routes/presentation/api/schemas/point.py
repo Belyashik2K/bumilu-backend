@@ -3,7 +3,7 @@ from pydantic import (
     Field,
 )
 
-from app.modules.places.application.queries.places.shared.views import PlaceCardView
+from app.modules.places.presentation.api.schemas.places.main import PlaceCardSchema
 
 
 class RoutePointSchema(BaseModel):
@@ -11,7 +11,7 @@ class RoutePointSchema(BaseModel):
         ...,
         description="Index of the point in the route.",
     )
-    preview: PlaceCardView = Field(
+    preview: PlaceCardSchema = Field(
         ...,
         description="Preview of the place at this point.",
     )
