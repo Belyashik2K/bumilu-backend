@@ -2,13 +2,14 @@ from dataclasses import (
     dataclass,
     field,
 )
+from uuid import UUID
 
 from app.core.application.queries.pagination import OffsetPagination
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class RouteCardView:
-    id: str
+    id: UUID
     title: str
     short_description: str | None = field(default=None)
     total_places: int
