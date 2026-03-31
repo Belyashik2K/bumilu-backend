@@ -15,6 +15,7 @@ from sqlalchemy.orm import (
 
 from app.core.enums import LanguageEnum
 from app.core.utils.datetime import get_current_dt_in_timezone
+from app.modules.places.application.queries.places.get_map_poi.query import BBox
 from app.modules.places.application.queries.places.shared.readers.place import (
     IPlaceReader,
 )
@@ -24,6 +25,8 @@ from app.modules.places.application.queries.places.shared.views import (
     PlaceCardPage,
     PlaceCardView,
     PlaceLocationView,
+    PlaceMapPOICategoryView,
+    PlaceMapPOIView,
     PlacePhoneView,
     PlaceView,
     PlaceWorkingHoursIntervalView,
@@ -121,6 +124,29 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             today_working_hours=today_working_hours,
         )
 
+    @staticmethod
+    async def to_map_poi_view(
+        place: PlaceModel,
+        latitude: float,
+        longitude: float,
+    ) -> PlaceMapPOIView:
+        place_translation = place.translations[0]
+        category_translation = place.category.translations[0]
+
+        return PlaceMapPOIView(
+            id=place.id,
+            title=place_translation.title,
+            category=PlaceMapPOICategoryView(
+                id=place.category.id,
+                name=category_translation.name,
+                icon_key=place.category.icon_key,
+            ),
+            location=PlaceLocationView(
+                latitude=float(latitude),
+                longitude=float(longitude),
+            ),
+        )
+
     async def get_by_id(
         self,
         place_id: UUID,
@@ -168,7 +194,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             longitude=float(longitude),
         )
 
-    async def list(
+    async def get_all(
         self,
         *,
         title_like: str | None,
@@ -259,3 +285,64 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             items=items,
             total=total,
         )
+
+    async def list_poi_in_bounds(
+        self,
+        *,
+        bounds: BBox,
+        translation_language: LanguageEnum,
+        limit: int,
+    ) -> list[PlaceMapPOIView]:
+        bbox = func.ST_MakeEnvelope(
+            bounds.west,
+            bounds.south,
+            bounds.east,
+            bounds.north,
+            4326,
+        )
+
+        stmt = (
+            select(
+                PlaceModel,
+                func.ST_Y(
+                    PlaceModel.location.cast(Geometry(geometry_type="POINT", srid=4326))
+                )
+                .cast(Float)
+                .label("latitude"),
+                func.ST_X(
+                    PlaceModel.location.cast(Geometry(geometry_type="POINT", srid=4326))
+                )
+                .cast(Float)
+                .label("longitude"),
+            )
+            .join(PlaceModel.translations)
+            .join(PlaceModel.category)
+            .join(PlaceCategoryModel.translations)
+            .where(
+                PlaceTranslationModel.language_code == translation_language,
+                PlaceCategoryTranslationModel.language_code == translation_language,
+                PlaceModel.location.op("&&")(bbox),
+                func.ST_Intersects(PlaceModel.location, bbox),
+            )
+            .options(
+                contains_eager(PlaceModel.translations),
+                contains_eager(PlaceModel.category).contains_eager(
+                    PlaceCategoryModel.translations
+                ),
+            )
+            .limit(limit)
+        )
+
+        result = await self._session.execute(stmt)
+        rows = result.unique().all()
+
+        items: list[PlaceMapPOIView] = [
+            await self.to_map_poi_view(
+                place=row.PlaceModel,
+                latitude=float(row.latitude),
+                longitude=float(row.longitude),
+            )
+            for row in rows
+        ]
+
+        return items

@@ -5,8 +5,10 @@ from abc import (
 from uuid import UUID
 
 from app.core.enums import LanguageEnum
+from app.modules.places.application.queries.places.get_map_poi.query import BBox
 from app.modules.places.application.queries.places.shared.views import (
     PlaceCardPage,
+    PlaceMapPOIView,
     PlaceView,
 )
 
@@ -18,7 +20,7 @@ class IPlaceReader(ABC):
     ) -> PlaceView | None: ...
 
     @abstractmethod
-    async def list(
+    async def get_all(
         self,
         *,
         title_like: str | None,
@@ -27,3 +29,12 @@ class IPlaceReader(ABC):
         limit: int,
         offset: int,
     ) -> PlaceCardPage: ...
+
+    @abstractmethod
+    async def list_poi_in_bounds(
+        self,
+        *,
+        bounds: BBox,
+        translation_language: LanguageEnum,
+        limit: int,
+    ) -> list[PlaceMapPOIView]: ...
