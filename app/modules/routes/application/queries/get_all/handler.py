@@ -13,16 +13,20 @@ class GetAllRoutesQueryHandler(
         self._route_reader = route_reader
 
     async def handle(self, query: GetAllRoutesQuery) -> PaginatedRouteCardView:
-        if not query.latitude or not query.longitude:
-            query.latitude = None
-            query.longitude = None
-            query.sort_by = RouteSortByEnum.NEW
+        latitude = query.latitude
+        longitude = query.longitude
+        sort_by = query.sort_by
+
+        if not latitude or not longitude:
+            latitude = None
+            longitude = None
+            sort_by = sort_by if sort_by != RouteSortByEnum.NEAREST else None
 
         routes_cards = await self._route_reader.get_all(
             translation_language=query.language,
-            latitude=query.latitude,
-            longitude=query.longitude,
-            sort_by=query.sort_by,
+            latitude=latitude,
+            longitude=longitude,
+            sort_by=sort_by,
             limit=query.limit,
             offset=query.offset,
         )

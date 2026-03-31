@@ -8,7 +8,7 @@ from app.core.application.queries.pagination import OffsetPaginationMixin
 from app.modules.places.shared.enums.route_sort import RouteSortByEnum
 
 
-@dataclass(slots=True, kw_only=True)
+@dataclass(frozen=True, slots=True, kw_only=True)
 class GetAllRoutesQuery(LanguageMixin, OffsetPaginationMixin):
     latitude: float | None = field(default=None)
     longitude: float | None = field(default=None)

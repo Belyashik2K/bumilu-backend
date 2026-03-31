@@ -7,13 +7,26 @@ from fastapi import (
 from pydantic import (
     BaseModel,
 )
+from pydantic.v1 import Field
 
 
 class BBoxQuery(BaseModel):
-    south: float
-    west: float
-    north: float
-    east: float
+    south: float = Field(
+        ...,
+        description="Southern latitude of the map bounds.",
+    )
+    west: float = Field(
+        ...,
+        description="Western longitude of the map bounds.",
+    )
+    north: float = Field(
+        ...,
+        description="Northern latitude of the map bounds.",
+    )
+    east: float = Field(
+        ...,
+        description="Eastern longitude of the map bounds.",
+    )
 
 
 def get_bbox(
