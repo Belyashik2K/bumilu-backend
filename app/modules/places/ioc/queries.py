@@ -16,6 +16,9 @@ from app.modules.places.application.queries.places.get.handler import (
 from app.modules.places.application.queries.places.get_all.handler import (
     GetAllPlacesQueryHandler,
 )
+from app.modules.places.application.queries.places.get_map_poi.handler import (
+    GetPlacesMapPOIQueryHandler,
+)
 from app.modules.places.application.queries.places.shared.readers.place import (
     IPlaceReader,
 )
@@ -43,5 +46,13 @@ class PlacesQueryHandlersProvider(Provider):
         self, place_reader: IPlaceReader
     ) -> GetAllPlacesQueryHandler:
         return GetAllPlacesQueryHandler(
+            place_reader=place_reader,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def get_places_map_poi_handler(
+        self, place_reader: IPlaceReader
+    ) -> GetPlacesMapPOIQueryHandler:
+        return GetPlacesMapPOIQueryHandler(
             place_reader=place_reader,
         )

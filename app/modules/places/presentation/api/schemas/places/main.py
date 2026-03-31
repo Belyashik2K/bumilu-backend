@@ -10,6 +10,7 @@ from app.modules.places.presentation.api.schemas.places.address import (
 )
 from app.modules.places.presentation.api.schemas.places.category import (
     PlaceCardCategorySchema,
+    PlaceMapPOICategorySchema,
 )
 from app.modules.places.presentation.api.schemas.places.location import (
     PlaceLocationSchema,
@@ -28,6 +29,34 @@ SHORT_DESCRIPTION_EXAMPLE = "A cozy massage parlor located in the Vyborgsky dist
 TIMEZONE_EXAMPLE = "Europe/Moscow"
 
 WORKING_HOURS_INTERVAL_EXAMPLE = {"start": START_TIME_EXAMPLE, "end": END_TIME_EXAMPLE}
+
+
+class PlaceMapPOISchema(BaseModel):
+    id: UUID7 = Field(
+        ...,
+        description="Unique identifier of the place",
+        examples=[UUID_EXAMPLE],
+    )
+    title: str = Field(
+        ...,
+        description="Title of the place",
+        examples=[TITLE_EXAMPLE],
+    )
+    category: PlaceMapPOICategorySchema = Field(
+        ...,
+        description="Category of the place",
+    )
+    location: PlaceLocationSchema = Field(
+        ...,
+        description="Location of the place",
+    )
+
+
+class GetPlaceMapPOIsResponseSchema(BaseModel):
+    pois: list[PlaceMapPOISchema] = Field(
+        default_factory=list,
+        description="A list of places formatted as POIs for map display.",
+    )
 
 
 class PlaceCardSchema(BaseModel):
