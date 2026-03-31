@@ -53,7 +53,7 @@ class PlaceView:
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class PlaceCardCategoryView:
-    title: str
+    name: str
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -61,6 +61,7 @@ class PlaceCardView:
     id: UUID
     title: str
     short_description: str | None = field(default=None)
+    timezone: str
     category: PlaceCardCategoryView
     location: PlaceLocationView
     today_working_hours: list[PlaceWorkingHoursIntervalView] = field(
