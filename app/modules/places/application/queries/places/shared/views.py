@@ -79,3 +79,18 @@ class PlaceCardPage:
 class PaginatedPlaceCardView:
     places: list[PlaceCardView] = field(default_factory=list)
     pagination: OffsetPagination
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class PlaceMapPOICategoryView:
+    id: UUID
+    name: str
+    icon_key: str
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class PlaceMapPOIView:
+    id: UUID
+    title: str
+    category: PlaceMapPOICategoryView
+    location: PlaceLocationView
