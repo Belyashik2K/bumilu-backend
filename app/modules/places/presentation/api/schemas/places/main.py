@@ -16,6 +16,7 @@ from app.modules.places.presentation.api.schemas.places.location import (
     PlaceLocationSchema,
 )
 from app.modules.places.presentation.api.schemas.places.phone import PlacePhoneSchema
+from app.modules.places.presentation.api.schemas.places.rating import PlaceRatingSchema
 from app.modules.places.presentation.api.schemas.places.working_hours import (
     END_TIME_EXAMPLE,
     START_TIME_EXAMPLE,
@@ -140,6 +141,10 @@ class PlaceSchema(BaseModel):
     address: PlaceAddressSchema = Field(
         ...,
         description="Address of the place",
+    )
+    rating: PlaceRatingSchema = Field(
+        ...,
+        description="Rating of the place",
     )
     location: PlaceLocationSchema = Field(
         ...,

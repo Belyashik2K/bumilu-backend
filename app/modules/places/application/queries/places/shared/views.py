@@ -36,6 +36,12 @@ class PlaceWorkingHoursIntervalView:
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
+class PlaceRatingView:
+    average: float | None = field(default=None)
+    reviews_count: int = field(default=0)
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
 class PlaceView:
     id: UUID
     category_id: UUID
@@ -45,6 +51,7 @@ class PlaceView:
     timezone: str
     location: PlaceLocationView
     address: PlaceAddressView
+    rating: PlaceRatingView
     phones: list[PlacePhoneView] = field(default_factory=list)
     weekly_working_hours: dict[str, list[PlaceWorkingHoursIntervalView]] = field(
         default_factory=dict
@@ -64,6 +71,7 @@ class PlaceCardView:
     timezone: str
     category: PlaceCardCategoryView
     location: PlaceLocationView
+    # rating: PlaceRatingView
     today_working_hours: list[PlaceWorkingHoursIntervalView] = field(
         default_factory=list
     )

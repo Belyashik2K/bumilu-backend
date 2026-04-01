@@ -28,6 +28,7 @@ from app.modules.places.application.queries.places.shared.views import (
     PlaceMapPOICategoryView,
     PlaceMapPOIView,
     PlacePhoneView,
+    PlaceRatingView,
     PlaceView,
     PlaceWorkingHoursIntervalView,
 )
@@ -37,6 +38,8 @@ from app.modules.places.infrastructure.database.models import (
     PlaceModel,
     PlaceTranslationModel,
 )
+from app.modules.reviews.infrastructure.database.models import ReviewModel
+from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
 
 class SQLAlchemyPlaceReader(IPlaceReader):
@@ -49,6 +52,8 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         *,
         latitude: float,
         longitude: float,
+        rating_average: int | None = None,
+        reviews_count: int | None = None,
     ) -> PlaceView:
         translation = place.translations[0]
 
@@ -68,6 +73,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 taxi=place.address_taxi,
                 taxi_comment=place.address_taxi_comment,
             ),
+            rating=PlaceRatingView(reviews_count=reviews_count, average=rating_average),
             phones=[
                 PlacePhoneView(
                     number=phone.number,
@@ -152,6 +158,17 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         place_id: UUID,
         translation_language: LanguageEnum,
     ) -> PlaceView | None:
+        reviews_subq = (
+            select(
+                ReviewModel.entity_id.label("place_id"),
+                func.avg(ReviewModel.rating).cast(Float).label("rating_average"),
+                func.count(ReviewModel.id).label("reviews_count"),
+            )
+            .where(ReviewModel.entity_type == ReviewEntityTypeEnum.PLACE)
+            .group_by(ReviewModel.entity_id)
+            .subquery()
+        )
+
         stmt = (
             select(
                 PlaceModel,
@@ -165,8 +182,11 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 )
                 .cast(Float)
                 .label("longitude"),
+                reviews_subq.c.rating_average,
+                func.coalesce(reviews_subq.c.reviews_count, 0).label("reviews_count"),
             )
             .join(PlaceModel.translations)
+            .outerjoin(reviews_subq, reviews_subq.c.place_id == PlaceModel.id)
             .where(
                 and_(
                     PlaceTranslationModel.language_code == translation_language,
@@ -186,12 +206,14 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         if row is None:
             return None
 
-        place, latitude, longitude = row
+        place, latitude, longitude, rating_average, reviews_count = row
 
         return self.to_view(
             place,
             latitude=float(latitude),
             longitude=float(longitude),
+            rating_average=rating_average,
+            reviews_count=reviews_count,
         )
 
     async def get_all(
