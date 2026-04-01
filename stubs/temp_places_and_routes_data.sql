@@ -17,26 +17,30 @@ WITH lang_list AS (SELECT *
                                      ) AS phone_type),
 
      category_seed AS (SELECT *
-                       FROM (VALUES ('cafe', 'coffee', 'Кафе', 'Cafe', '咖啡馆'),
-                                    ('museum', 'museum', 'Музей', 'Museum', '博物馆'),
-                                    ('park', 'park', 'Парк', 'Park', '公园'),
-                                    ('landmark', 'landmark', 'Достопримечательность', 'Landmark', '地标'),
-                                    ('viewpoint', 'viewpoint', 'Смотровая площадка', 'Viewpoint',
-                                     '观景点')) AS t(slug, icon_key, name_ru, name_en, name_zh)),
+                       FROM (VALUES ('cafe', 'coffee', '#C67C4E', 'Кафе', 'Cafe', '咖啡馆'),
+                                    ('museum', 'museum', '#3B82F6', 'Музей', 'Museum', '博物馆'),
+                                    ('park', 'park', '#22C55E', 'Парк', 'Park', '公园'),
+                                    ('landmark', 'landmark', '#F59E0B', 'Достопримечательность', 'Landmark', '地标'),
+                                    ('viewpoint', 'viewpoint', '#8B5CF6', 'Смотровая площадка', 'Viewpoint',
+                                     '观景点')) AS t(slug, icon_key, marker_color, name_ru, name_en, name_zh)),
 
      ins_categories AS (
-         INSERT
-             INTO place_categories (id,
-                                    slug,
-                                    icon_key,
-                                    created_at,
-                                    updated_at)
-                 SELECT uuidv7(),
-                        cs.slug,
-                        cs.icon_key,
-                        now(),
-                        now()
-                 FROM category_seed cs RETURNING
+         INSERT INTO place_categories (
+                                       id,
+                                       slug,
+                                       icon_key,
+                                       marker_color,
+                                       created_at,
+                                       updated_at
+             )
+             SELECT uuidv7(),
+                    cs.slug,
+                    cs.icon_key,
+                    cs.marker_color,
+                    now(),
+                    now()
+             FROM category_seed cs
+             RETURNING
                  place_categories.id AS category_id,
                  place_categories.slug AS category_slug),
 

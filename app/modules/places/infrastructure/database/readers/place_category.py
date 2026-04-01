@@ -33,6 +33,7 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
             id=category.id,
             slug=category.slug,
             icon_key=category.icon_key,
+            marker_color=category.marker_color,
             name=category.translations[0].name,
         )
 
