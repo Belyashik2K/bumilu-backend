@@ -149,6 +149,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 id=place.category.id,
                 name=category_translation.name,
                 icon_key=place.category.icon_key,
+                marker_color=place.category.marker_color,
             ),
             location=PlaceLocationView(
                 latitude=float(latitude),
