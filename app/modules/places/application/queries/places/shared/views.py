@@ -94,6 +94,7 @@ class PlaceMapPOICategoryView:
     id: UUID
     name: str
     icon_key: str
+    marker_color: str
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

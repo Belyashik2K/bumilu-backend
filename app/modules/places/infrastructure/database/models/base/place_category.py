@@ -26,7 +26,9 @@ class PlaceCategoryModel(PKUUIDMixin, TimestampMixin, BaseModel):
     __tablename__ = "place_categories"
 
     slug: Mapped[str] = mapped_column(String(64), unique=True)
-    icon_key: Mapped[str] = mapped_column(String(128))
+    icon_key: Mapped[str] = mapped_column(
+        String(128)
+    )  # Icon key for frontend from Lucide Icons (e.g. "landmark", "park", "museum")
     marker_color: Mapped[str] = mapped_column(
         String(7)
     )  # Hex color code (e.g. "#FF0000")
