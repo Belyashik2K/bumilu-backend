@@ -20,6 +20,7 @@ from app.modules.places.application.queries.places.shared.views import (
     PlaceCardCategoryView,
     PlaceCardView,
     PlaceLocationView,
+    PlaceRatingView,
     PlaceWorkingHoursIntervalView,
 )
 from app.modules.places.infrastructure.database.models import (
@@ -122,6 +123,10 @@ class SQLAlchemyRouteReader(IRouteReader):
             location=PlaceLocationView(
                 latitude=latitude,
                 longitude=longitude,
+            ),
+            rating=PlaceRatingView(
+                average=place.rating_average,
+                reviews_count=place.rating_reviews_count,
             ),
             today_working_hours=today_working_hours,
         )
