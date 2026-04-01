@@ -4,9 +4,10 @@ from pydantic import (
 )
 
 from app.modules.reviews.presentation.api.schemas.common import (
+    RATING_FIELD,
     REVIEW_RATING_EXAMPLE,
     REVIEW_TEXT_EXAMPLE,
-    BaseReviewInfoSchema,
+    TEXT_FIELD,
 )
 
 
@@ -27,4 +28,6 @@ class UpdateReviewRequestSchema(BaseModel):
     )
 
 
-class UpdateReviewResponseSchema(BaseReviewInfoSchema): ...
+class UpdateReviewResponseSchema(BaseModel):
+    text: str | None = TEXT_FIELD
+    rating: int = RATING_FIELD
