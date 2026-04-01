@@ -3,10 +3,10 @@ logging:
   format: "%(asctime)s | %(levelname)-8s | %(request_id)s | %(name)s:%(lineno)d - %(message)s"
   datetime_format: "%d.%m.%Y at %H:%M:%S"
 docs:
-  title: "BumiLu users-service API"
+  title: "BumiLu API"
   description: >
-    This is the API documentation for the BumiLu users-service.
-    It provides endpoints for authentication, chat, favorites and reviews management.
+    This is the API documentation for the BumiLu application.
+    It provides endpoints for authentication, places, routes, chats, and more.
   version: "1.0.0"
   urls:
     openapi: "/docs/openapi.json"
