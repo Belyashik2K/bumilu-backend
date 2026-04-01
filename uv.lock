@@ -242,7 +242,7 @@ wheels = [
 ]
 
 [[package]]
-name = "bumilu-users-service"
+name = "bumilu-backend"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
