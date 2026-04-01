@@ -46,6 +46,8 @@ class SQLAlchemyReviewReader(IReviewReader):
             ),
             author=ReviewAuthorInfoView(
                 id=review.author_id,
+                name=review.author.email,
+                # Using email as a placeholder for the author's name, replace with actual name if available
             ),
             text=review.text,
             rating=review.rating,
