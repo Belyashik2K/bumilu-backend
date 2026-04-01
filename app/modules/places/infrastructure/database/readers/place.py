@@ -101,6 +101,8 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         *,
         latitude: float,
         longitude: float,
+        rating_average: int | None = None,
+        reviews_count: int | None = None,
     ) -> PlaceCardView:
         translation = place.translations[0]
 
@@ -123,6 +125,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             category=PlaceCardCategoryView(
                 name=place.category.translations[0].name,
             ),
+            rating=PlaceRatingView(reviews_count=reviews_count, average=rating_average),
             location=PlaceLocationView(
                 latitude=latitude,
                 longitude=longitude,
@@ -240,6 +243,17 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         if category_id:
             base_filters.append(PlaceModel.category_id == category_id)
 
+        reviews_subq = (
+            select(
+                ReviewModel.entity_id.label("place_id"),
+                func.avg(ReviewModel.rating).cast(Float).label("rating_average"),
+                func.count(ReviewModel.id).label("reviews_count"),
+            )
+            .where(ReviewModel.entity_type == ReviewEntityTypeEnum.PLACE)
+            .group_by(ReviewModel.entity_id)
+            .subquery()
+        )
+
         items_stmt = (
             select(
                 PlaceModel,
@@ -253,10 +267,13 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 )
                 .cast(Float)
                 .label("longitude"),
+                reviews_subq.c.rating_average,
+                func.coalesce(reviews_subq.c.reviews_count, 0).label("reviews_count"),
             )
             .join(PlaceModel.translations)
             .join(PlaceModel.category)
             .join(PlaceCategoryModel.translations)
+            .outerjoin(reviews_subq, reviews_subq.c.place_id == PlaceModel.id)
             .where(*base_filters)
             .options(
                 selectinload(PlaceModel.working_hours),
@@ -294,12 +311,14 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         total = rows[0].total_count or 0
 
         items = []
-        for place, latitude, longitude, _ in rows:
+        for place, latitude, longitude, rating_average, reviews_count, _ in rows:
             items.append(
                 self.to_card_view(
                     place,
                     latitude=float(latitude),
                     longitude=float(longitude),
+                    rating_average=rating_average,
+                    reviews_count=reviews_count,
                 )
             )
 

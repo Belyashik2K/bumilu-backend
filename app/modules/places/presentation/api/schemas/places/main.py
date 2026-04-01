@@ -85,6 +85,10 @@ class PlaceCardSchema(BaseModel):
         ...,
         description="Category of the place",
     )
+    rating: PlaceRatingSchema = Field(
+        ...,
+        description="Rating of the place",
+    )
     location: PlaceLocationSchema = Field(
         ...,
         description="Location of the place",
