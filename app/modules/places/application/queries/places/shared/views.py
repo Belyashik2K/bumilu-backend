@@ -71,7 +71,7 @@ class PlaceCardView:
     timezone: str
     category: PlaceCardCategoryView
     location: PlaceLocationView
-    # rating: PlaceRatingView
+    rating: PlaceRatingView
     today_working_hours: list[PlaceWorkingHoursIntervalView] = field(
         default_factory=list
     )
