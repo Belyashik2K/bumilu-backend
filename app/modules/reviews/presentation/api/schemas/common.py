@@ -25,6 +25,7 @@ ENTITY_ID_EXAMPLE = (
 ENTITY_TYPE_EXAMPLE = ReviewEntityTypeEnum.PLACE
 ENTITY_TYPE_PATH_EXAMPLE = ReviewEntityPathEnum.PLACES
 AUTHOR_ID_EXAMPLE = USER_ID_EXAMPLE
+REVIEW_AUTHOR_NAME_EXAMPLE = "Belyashik2K"
 REVIEW_TEXT_EXAMPLE = "idk how to describe this place, but... sorry, i have no time."
 REVIEW_RATING_EXAMPLE = 5
 
@@ -48,6 +49,7 @@ REVIEW_ID_PATH = Path(
     description="ID of the review",
     example=REVIEW_ID_EXAMPLE,
 )
+
 ENTITY_TYPE_PATH = Path(
     ...,
     description="Type of the entity the review is for",
@@ -68,6 +70,11 @@ USER_ID_PATH = Path(
 class ReviewAuthorInfoSchema(BaseModel):
     id: UUID7 = Field(
         ..., description="Review author's ID", examples=[AUTHOR_ID_EXAMPLE]
+    )
+    name: str | None = Field(
+        None,
+        description="Review author's name",
+        examples=[REVIEW_AUTHOR_NAME_EXAMPLE],
     )
 
 

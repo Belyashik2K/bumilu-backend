@@ -11,6 +11,7 @@ from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 @dataclass(frozen=True, slots=True, kw_only=True)
 class ReviewAuthorInfoView:
     id: UUID
+    name: str | None = field(default=None)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
