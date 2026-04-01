@@ -8,9 +8,12 @@ from app.core.presentation.exceptions.response import (
 )
 
 mapped_code_to_exception = {
-    status.HTTP_200_OK: (ErrorResponseSchema, "Successful request"),
-    status.HTTP_201_CREATED: (ErrorResponseSchema, "Resource created successfully"),
-    status.HTTP_204_NO_CONTENT: (ErrorResponseSchema, "Resource deleted successfully"),
+    status.HTTP_200_OK: (None, "Successful request"),
+    status.HTTP_201_CREATED: (None, "Resource created successfully"),
+    status.HTTP_204_NO_CONTENT: (
+        None,
+        "Server successfully processed the request, but is not returning any content",
+    ),
     status.HTTP_400_BAD_REQUEST: (ErrorResponseSchema, "Bad request error occurred"),
     status.HTTP_401_UNAUTHORIZED: (ErrorResponseSchema, "Unauthorized access"),
     status.HTTP_403_FORBIDDEN: (ErrorResponseSchema, "Forbidden access"),

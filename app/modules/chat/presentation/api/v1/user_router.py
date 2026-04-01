@@ -7,6 +7,7 @@ from fastapi import (
     Depends,
 )
 from starlette import status
+from starlette.responses import Response
 
 from app.core.presentation.api.schemas.pagination import (
     OffsetPaginationDep,
@@ -45,7 +46,7 @@ user_chat_router = APIRouter(tags=["Chat"], dependencies=[Depends(security)])
 
 @user_chat_router.post(
     "/users/me/chat",
-    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+    responses=generate_responses_for_endpoint(),
 )
 @inject
 async def submit_user_message(
@@ -66,35 +67,33 @@ async def submit_user_message(
 
 @user_chat_router.get(
     "/users/me/chat",
-    responses=generate_responses_for_endpoint(),
+    responses=generate_responses_for_endpoint(status.HTTP_204_NO_CONTENT),
 )
 @inject
 async def get_recent_user_chat(
     handler: FromDishka[GetUserRecentChatQueryHandler],
     principal: Annotated[Principal, Depends(get_user_principal)],
-) -> GetChatInfoResponseSchema | dict:
+) -> GetChatInfoResponseSchema | None:
     result = await handler(
         GetUserRecentChatQuery(
             user_id=principal.id.value,
         )
     )
-    return (
-        GetChatInfoResponseSchema.model_validate(result, from_attributes=True)
-        if result
-        else {}
-    )
+    if not result:
+        return Response(status_code=status.HTTP_204_NO_CONTENT)  # type: ignore
+    return GetChatInfoResponseSchema.model_validate(result, from_attributes=True)
 
 
 @user_chat_router.get(
     "/users/me/chat/messages",
-    responses=generate_responses_for_endpoint(),
+    responses=generate_responses_for_endpoint(status.HTTP_204_NO_CONTENT),
 )
 @inject
 async def get_recent_user_chat_messages(
     handler: FromDishka[GetUserRecentChatMessagesQueryHandler],
     principal: Annotated[Principal, Depends(get_user_principal)],
     pagination: OffsetPaginationDep,
-) -> GetChatMessagesResponseSchema | dict:
+) -> GetChatMessagesResponseSchema | None:
     result = await handler(
         GetUserRecentChatMessagesQuery(
             user_id=principal.id.value,
@@ -102,8 +101,6 @@ async def get_recent_user_chat_messages(
             offset=pagination.offset,
         )
     )
-    return (
-        GetChatMessagesResponseSchema.model_validate(result, from_attributes=True)
-        if result
-        else {}
-    )
+    if not result:
+        return Response(status_code=status.HTTP_204_NO_CONTENT)  # type: ignore
+    return GetChatMessagesResponseSchema.model_validate(result, from_attributes=True)
