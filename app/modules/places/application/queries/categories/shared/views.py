@@ -12,6 +12,7 @@ class PlaceCategoryView:
     id: UUID
     slug: str
     icon_key: str
+    marker_color: str
     name: str
 
 

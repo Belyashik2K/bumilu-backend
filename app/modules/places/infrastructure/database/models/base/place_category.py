@@ -27,6 +27,9 @@ class PlaceCategoryModel(PKUUIDMixin, TimestampMixin, BaseModel):
 
     slug: Mapped[str] = mapped_column(String(64), unique=True)
     icon_key: Mapped[str] = mapped_column(String(128))
+    marker_color: Mapped[str] = mapped_column(
+        String(7)
+    )  # Hex color code (e.g. "#FF0000")
 
     translations: Mapped[list["PlaceCategoryTranslationModel"]] = relationship(
         "PlaceCategoryTranslationModel",
