@@ -9,11 +9,17 @@ from sqlalchemy import (
     UUID as _UUID,
 )
 from sqlalchemy import (
+    Float,
     ForeignKey,
     String,
+    and_,
+    func,
+    select,
 )
 from sqlalchemy.orm import (
     Mapped,
+    column_property,
+    declared_attr,
     mapped_column,
     relationship,
 )
@@ -23,6 +29,8 @@ from app.core.infrastructure.database.mixins import (
     PKUUIDMixin,
     TimestampMixin,
 )
+from app.modules.reviews.infrastructure.database.models import ReviewModel
+from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 from app.modules.routes.infrastructure.database.models.base.route_point import (
     RoutePointModel,
 )
@@ -59,6 +67,34 @@ class PlaceModel(PKUUIDMixin, TimestampMixin, BaseModel):
     timezone: Mapped[str] = mapped_column(String(64))
     address_taxi: Mapped[str | None] = mapped_column(String(255))
     address_taxi_comment: Mapped[str | None] = mapped_column(String(255))
+
+    @declared_attr
+    def rating_average(self):
+        return column_property(
+            select(func.avg(ReviewModel.rating).cast(Float))
+            .where(
+                and_(
+                    ReviewModel.entity_id == self.id,
+                    ReviewModel.entity_type == ReviewEntityTypeEnum.PLACE,
+                )
+            )
+            .correlate_except(ReviewModel)
+            .scalar_subquery()
+        )
+
+    @declared_attr
+    def rating_reviews_count(self):
+        return column_property(
+            select(func.count(ReviewModel.id))
+            .where(
+                and_(
+                    ReviewModel.entity_id == self.id,
+                    ReviewModel.entity_type == ReviewEntityTypeEnum.PLACE,
+                )
+            )
+            .correlate_except(ReviewModel)
+            .scalar_subquery()
+        )
 
     category: Mapped["PlaceCategoryModel"] = relationship(
         "PlaceCategoryModel",
