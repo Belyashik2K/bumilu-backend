@@ -6,6 +6,9 @@ from datetime import time
 from uuid import UUID
 
 from app.core.application.queries.pagination import OffsetPagination
+from app.modules.places.application.queries.categories.shared.models.place_category import (
+    LocalizedPlaceCategoryReadModel,
+)
 from app.modules.places.application.queries.places.shared.models.place_address import (
     PlaceAddressReadModel,
 )
@@ -18,27 +21,12 @@ from app.modules.places.application.queries.places.shared.models.place_phone imp
 from app.modules.places.application.queries.places.shared.models.place_rating import (
     PlaceRatingReadModel,
 )
-from app.modules.places.shared.enums import PlacePhoneTypeEnum
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class PlaceLocationView:
     latitude: float
     longitude: float
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class PlacePhoneView:
-    number: str
-    type: PlacePhoneTypeEnum
-    primary: bool
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class PlaceAddressView:
-    display: str
-    taxi: str | None = field(default=None)
-    taxi_comment: str | None = field(default=None)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -81,18 +69,12 @@ class PlaceCardView:
     title: str
     short_description: str | None = field(default=None)
     timezone: str
-    category: PlaceCardCategoryView
-    location: PlaceLocationView
-    rating: PlaceRatingView
+    category: LocalizedPlaceCategoryReadModel
+    location: PlaceLocationReadModel
+    rating: PlaceRatingReadModel
     today_working_hours: list[PlaceWorkingHoursIntervalView] = field(
         default_factory=list
     )
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class PlaceCardPage:
-    items: list[PlaceCardView]
-    total: int
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

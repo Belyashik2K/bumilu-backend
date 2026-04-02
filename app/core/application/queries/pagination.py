@@ -2,7 +2,19 @@ from dataclasses import (
     dataclass,
     field,
 )
-from typing import Self
+from typing import (
+    Generic,
+    Self,
+    TypeVar,
+)
+
+T = TypeVar("T")
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class PageReadModel(Generic[T]):
+    items: list[T]
+    total: int
 
 
 @dataclass(frozen=True, kw_only=True)
