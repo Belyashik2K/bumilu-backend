@@ -12,11 +12,17 @@ from sqlalchemy.orm import (
     selectinload,
 )
 
+from app.core.application.queries.pagination import PageReadModel
 from app.core.enums import LanguageEnum
-from app.core.utils.datetime import get_current_dt_in_timezone
+from app.modules.places.application.queries.categories.shared.models.place_category import (
+    LocalizedPlaceCategoryReadModel,
+)
 from app.modules.places.application.queries.places.get_map_poi.query import BBox
 from app.modules.places.application.queries.places.shared.models.place_address import (
     PlaceAddressReadModel,
+)
+from app.modules.places.application.queries.places.shared.models.place_card import (
+    PlaceCardReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_details import (
     PlaceDetailsReadModel,
@@ -37,14 +43,9 @@ from app.modules.places.application.queries.places.shared.readers.place import (
     IPlaceReader,
 )
 from app.modules.places.application.queries.places.shared.views import (
-    PlaceCardCategoryView,
-    PlaceCardPage,
-    PlaceCardView,
     PlaceLocationView,
     PlaceMapPOICategoryView,
     PlaceMapPOIView,
-    PlaceRatingView,
-    PlaceWorkingHoursIntervalView,
 )
 from app.modules.places.infrastructure.database.models import (
     PlaceCategoryModel,
@@ -59,42 +60,6 @@ from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 class SQLAlchemyPlaceReader(IPlaceReader):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
-
-    @staticmethod
-    def to_card_view(
-        place: PlaceModel,
-        *,
-        rating_average: int | None = None,
-        reviews_count: int | None = None,
-    ) -> PlaceCardView:
-        translation = place.translations[0]
-
-        today_working_hours = []
-        for wh in place.working_hours:
-            now = get_current_dt_in_timezone(place.timezone)
-            if wh.weekday == now.weekday() + 1:
-                today_working_hours.append(
-                    PlaceWorkingHoursIntervalView(
-                        start=wh.start_time,
-                        end=wh.end_time,
-                    )
-                )
-
-        return PlaceCardView(
-            id=place.id,
-            title=translation.title,
-            short_description=translation.short_description,
-            timezone=place.timezone,
-            category=PlaceCardCategoryView(
-                name=place.category.translations[0].name,
-            ),
-            rating=PlaceRatingView(reviews_count=reviews_count, average=rating_average),
-            location=PlaceLocationView(
-                latitude=place.latitude,
-                longitude=place.longitude,
-            ),
-            today_working_hours=today_working_hours,
-        )
 
     @staticmethod
     async def to_map_poi_view(
@@ -194,7 +159,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         translation_language: LanguageEnum,
         limit: int,
         offset: int,
-    ) -> PlaceCardPage:
+    ) -> PageReadModel[PlaceCardReadModel]:
         base_filters = [
             PlaceTranslationModel.language_code == translation_language,
             PlaceCategoryTranslationModel.language_code == translation_language,
@@ -263,21 +228,46 @@ class SQLAlchemyPlaceReader(IPlaceReader):
 
         if not rows:
             total = await self._session.scalar(count_stmt)
-            return PlaceCardPage(items=[], total=total or 0)
+            return PageReadModel(items=[], total=total or 0)
 
         total = rows[0].total_count or 0
 
         items = []
+
         for place, rating_average, reviews_count, _ in rows:
             items.append(
-                self.to_card_view(
-                    place,
-                    rating_average=rating_average,
-                    reviews_count=reviews_count,
+                PlaceCardReadModel(
+                    id=place.id,
+                    title=place.translations[0].title,
+                    short_description=place.translations[0].short_description,
+                    timezone=place.timezone,
+                    category=LocalizedPlaceCategoryReadModel(
+                        id=place.category.id,
+                        slug=place.category.slug,
+                        name=place.category.translations[0].name,
+                        icon_key=place.category.icon_key,
+                        marker_color=place.category.marker_color,
+                    ),
+                    location=PlaceLocationReadModel(
+                        latitude=place.latitude,
+                        longitude=place.longitude,
+                    ),
+                    rating=PlaceRatingReadModel(
+                        average=rating_average,
+                        reviews_count=reviews_count,
+                    ),
+                    working_hours=[
+                        PlaceWorkingHourReadModel(
+                            weekday=wh.weekday,
+                            start_time=wh.start_time,
+                            end_time=wh.end_time,
+                        )
+                        for wh in place.working_hours
+                    ],
                 )
             )
 
-        return PlaceCardPage(
+        return PageReadModel(
             items=items,
             total=total,
         )

@@ -4,13 +4,16 @@ from abc import (
 )
 from uuid import UUID
 
+from app.core.application.queries.pagination import PageReadModel
 from app.core.enums import LanguageEnum
 from app.modules.places.application.queries.places.get_map_poi.query import BBox
+from app.modules.places.application.queries.places.shared.models.place_card import (
+    PlaceCardReadModel,
+)
 from app.modules.places.application.queries.places.shared.models.place_details import (
     PlaceDetailsReadModel,
 )
 from app.modules.places.application.queries.places.shared.views import (
-    PlaceCardPage,
     PlaceMapPOIView,
 )
 
@@ -30,7 +33,7 @@ class IPlaceReader(ABC):
         translation_language: LanguageEnum,
         limit: int,
         offset: int,
-    ) -> PlaceCardPage: ...
+    ) -> PageReadModel[PlaceCardReadModel]: ...
 
     @abstractmethod
     async def list_poi_in_bounds(
