@@ -3,6 +3,7 @@ from uuid import UUID
 
 from geoalchemy2 import (
     Geography,
+    Geometry,
     WKBElement,
 )
 from sqlalchemy import (
@@ -13,6 +14,7 @@ from sqlalchemy import (
     ForeignKey,
     String,
     and_,
+    cast,
     func,
     select,
 )
@@ -67,6 +69,14 @@ class PlaceModel(PKUUIDMixin, TimestampMixin, BaseModel):
     timezone: Mapped[str] = mapped_column(String(64))
     address_taxi: Mapped[str | None] = mapped_column(String(255))
     address_taxi_comment: Mapped[str | None] = mapped_column(String(255))
+
+    @declared_attr
+    def latitude(self):
+        return column_property(func.ST_Y(cast(self.location, Geometry)).cast(Float))
+
+    @declared_attr
+    def longitude(self):
+        return column_property(func.ST_X(cast(self.location, Geometry)).cast(Float))
 
     @declared_attr
     def rating_average(self):

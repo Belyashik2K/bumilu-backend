@@ -49,11 +49,11 @@ class SQLAlchemyPlaceReader(IPlaceReader):
     @staticmethod
     def to_view(
         place: PlaceModel,
-        *,
-        latitude: float,
-        longitude: float,
-        rating_average: int | None = None,
-        reviews_count: int | None = None,
+        # *,
+        # latitude: float,
+        # longitude: float,
+        # rating_average: int | None = None,
+        # reviews_count: int | None = None,
     ) -> PlaceView:
         translation = place.translations[0]
 
@@ -65,15 +65,17 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             short_description=translation.short_description,
             timezone=place.timezone,
             location=PlaceLocationView(
-                latitude=latitude,
-                longitude=longitude,
+                latitude=place.latitude,
+                longitude=place.longitude,
             ),
             address=PlaceAddressView(
                 display=translation.address_display,
                 taxi=place.address_taxi,
                 taxi_comment=place.address_taxi_comment,
             ),
-            rating=PlaceRatingView(reviews_count=reviews_count, average=rating_average),
+            rating=PlaceRatingView(
+                reviews_count=place.rating_reviews_count, average=place.rating_average
+            ),
             phones=[
                 PlacePhoneView(
                     number=phone.number,
@@ -162,35 +164,11 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         place_id: UUID,
         translation_language: LanguageEnum,
     ) -> PlaceView | None:
-        reviews_subq = (
-            select(
-                ReviewModel.entity_id.label("place_id"),
-                func.avg(ReviewModel.rating).cast(Float).label("rating_average"),
-                func.count(ReviewModel.id).label("reviews_count"),
-            )
-            .where(ReviewModel.entity_type == ReviewEntityTypeEnum.PLACE)
-            .group_by(ReviewModel.entity_id)
-            .subquery()
-        )
-
         stmt = (
             select(
                 PlaceModel,
-                func.ST_Y(
-                    PlaceModel.location.cast(Geometry(geometry_type="POINT", srid=4326))
-                )
-                .cast(Float)
-                .label("latitude"),
-                func.ST_X(
-                    PlaceModel.location.cast(Geometry(geometry_type="POINT", srid=4326))
-                )
-                .cast(Float)
-                .label("longitude"),
-                reviews_subq.c.rating_average,
-                func.coalesce(reviews_subq.c.reviews_count, 0).label("reviews_count"),
             )
             .join(PlaceModel.translations)
-            .outerjoin(reviews_subq, reviews_subq.c.place_id == PlaceModel.id)
             .where(
                 and_(
                     PlaceTranslationModel.language_code == translation_language,
@@ -205,19 +183,13 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         )
 
         result = await self._session.execute(stmt)
-        row = result.unique().one_or_none()
+        place = result.unique().scalar_one_or_none()
 
-        if row is None:
+        if place is None:
             return None
-
-        place, latitude, longitude, rating_average, reviews_count = row
 
         return self.to_view(
             place,
-            latitude=float(latitude),
-            longitude=float(longitude),
-            rating_average=rating_average,
-            reviews_count=reviews_count,
         )
 
     async def get_all(
