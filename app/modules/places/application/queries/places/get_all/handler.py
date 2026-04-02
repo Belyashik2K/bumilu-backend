@@ -27,7 +27,7 @@ class GetAllPlacesQueryHandler(
     async def handle(self, query: GetAllPlacesQuery) -> PaginatedPlaceCardView:
         place_cards = await self._place_reader.get_all(
             title_like=query.title_like,
-            category_id=query.category_id,
+            category_slug=query.category_slug,
             limit=query.limit,
             offset=query.offset,
             translation_language=query.language,

@@ -84,7 +84,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         self,
         *,
         title_like: str | None,
-        category_id: UUID | None,
+        category_slug: str | None,
         translation_language: LanguageEnum,
         limit: int,
         offset: int,
@@ -101,8 +101,8 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 )
             )
 
-        if category_id:
-            base_filters.append(PlaceModel.category_id == category_id)
+        if category_slug:
+            base_filters.append(PlaceCategoryModel.slug == category_slug)
 
         reviews_subq = (
             select(

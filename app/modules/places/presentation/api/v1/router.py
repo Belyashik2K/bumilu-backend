@@ -67,12 +67,12 @@ async def get_places(
     pagination: OffsetPaginationDep,
     accept_language: AcceptLanguageDep,
     title_like: str | None = None,
-    category_id: UUID7 | None = None,
+    category_slug: str | None = None,
 ) -> PaginatedPlaceCardsResponseSchema:
     result = await handler(
         GetAllPlacesQuery(
             title_like=title_like,
-            category_id=category_id,
+            category_slug=category_slug,
             language=accept_language.language,
             limit=pagination.limit,
             offset=pagination.offset,
