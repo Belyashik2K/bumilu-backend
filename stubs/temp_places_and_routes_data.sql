@@ -21,7 +21,7 @@ WITH lang_list AS (SELECT *
                                     ('museum', 'landmark', '#3B82F6', 'Музей', 'Museum', '博物馆'),
                                     ('park', 'trees', '#22C55E', 'Парк', 'Park', '公园'),
                                     ('landmark', 'star', '#F59E0B', 'Достопримечательность', 'Landmark', '地标'),
-                                    ('binoculars', 'viewpoint', '#8B5CF6', 'Смотровая площадка', 'Viewpoint',
+                                    ('viewpoint', 'binoculars', '#8B5CF6', 'Смотровая площадка', 'Viewpoint',
                                      '观景点')) AS t(slug, icon_key, marker_color, name_ru, name_en, name_zh)),
 
      ins_categories AS (
