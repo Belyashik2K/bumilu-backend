@@ -54,16 +54,22 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 PlaceModel,
             )
             .join(PlaceModel.translations)
+            .join(PlaceModel.category)
+            .join(PlaceCategoryModel.translations)
             .where(
                 and_(
                     PlaceTranslationModel.language_code == translation_language,
+                    PlaceCategoryTranslationModel.language_code == translation_language,
                     PlaceModel.id == place_id,
                 )
             )
             .options(
-                contains_eager(PlaceModel.translations),
                 selectinload(PlaceModel.phones),
                 selectinload(PlaceModel.working_hours),
+                contains_eager(PlaceModel.translations),
+                contains_eager(PlaceModel.category).contains_eager(
+                    PlaceCategoryModel.translations
+                ),
             )
         )
 

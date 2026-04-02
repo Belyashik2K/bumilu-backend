@@ -24,31 +24,19 @@ from app.modules.places.application.queries.places.shared.models.place_rating im
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class PlaceLocationView:
-    latitude: float
-    longitude: float
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
 class PlaceWorkingHoursIntervalView:
     start: time
     end: time
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class PlaceRatingView:
-    average: float | None = field(default=None)
-    reviews_count: int = field(default=0)
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
 class PlaceView:
     id: UUID
-    category_id: UUID
     title: str
     description: str | None = field(default=None)
     short_description: str | None = field(default=None)
     timezone: str
+    category: LocalizedPlaceCategoryReadModel
     address: PlaceAddressReadModel
     location: PlaceLocationReadModel
     rating: PlaceRatingReadModel
@@ -56,11 +44,6 @@ class PlaceView:
     weekly_working_hours: dict[str, list[PlaceWorkingHoursIntervalView]] = field(
         default_factory=dict
     )
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class PlaceCardCategoryView:
-    name: str
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
