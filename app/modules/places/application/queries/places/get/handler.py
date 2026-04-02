@@ -21,5 +21,4 @@ class GetPlaceQueryHandler(
         )
         if place is None:
             raise ValueError("Place not found")  # TODO: custom exception
-        print(place.rating)
         return place
