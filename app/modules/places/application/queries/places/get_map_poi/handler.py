@@ -5,7 +5,10 @@ from app.modules.places.application.queries.places.get_map_poi.query import (
 from app.modules.places.application.queries.places.shared.readers.place import (
     IPlaceReader,
 )
-from app.modules.places.application.queries.places.shared.views import PlaceMapPOIView
+from app.modules.places.application.queries.places.shared.views import (
+    PlaceMapPOICategoryView,
+    PlaceMapPOIView,
+)
 
 
 class GetPlacesMapPOIQueryHandler(
@@ -22,8 +25,24 @@ class GetPlacesMapPOIQueryHandler(
 
     async def handle(self, query: GetPlacesMapPOIQuery) -> list[PlaceMapPOIView]:
         query.bounds.validate()
-        return await self._place_reader.list_poi_in_bounds(
+
+        pois = await self._place_reader.list_poi_in_bounds(
             bounds=query.bounds,
             translation_language=query.language,
             limit=query.limit,
         )
+
+        return [
+            PlaceMapPOIView(
+                id=poi.id,
+                category=PlaceMapPOICategoryView(
+                    id=poi.category.id,
+                    name=poi.category.name,
+                    marker_color=poi.category.marker_color,
+                    icon_key=poi.category.icon_key,
+                ),
+                title=poi.title,
+                location=poi.location,
+            )
+            for poi in pois
+        ]
