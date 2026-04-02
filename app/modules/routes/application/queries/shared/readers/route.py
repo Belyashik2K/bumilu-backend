@@ -4,11 +4,14 @@ from abc import (
 )
 from uuid import UUID
 
+from app.core.application.queries.pagination import PageReadModel
 from app.core.enums import LanguageEnum
 from app.modules.places.shared.enums.route_sort import RouteSortByEnum
-from app.modules.routes.application.queries.shared.views import (
-    RouteCardPage,
-    RouteView,
+from app.modules.routes.application.queries.shared.models.route_card import (
+    RouteCardReadModel,
+)
+from app.modules.routes.application.queries.shared.models.route_details import (
+    RouteDetailsReadModel,
 )
 
 
@@ -19,7 +22,7 @@ class IRouteReader(ABC):
         route_id: UUID,
         *,
         translation_language: LanguageEnum,
-    ) -> RouteView | None: ...
+    ) -> RouteDetailsReadModel | None: ...
 
     @abstractmethod
     async def get_all(
@@ -31,4 +34,4 @@ class IRouteReader(ABC):
         latitude: float | None = None,
         longitude: float | None = None,
         sort_by: RouteSortByEnum | None = None,
-    ) -> RouteCardPage: ...
+    ) -> PageReadModel[RouteCardReadModel]: ...

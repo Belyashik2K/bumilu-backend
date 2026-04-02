@@ -1,7 +1,14 @@
 from app.core.application.queries import IQueryHandler
+from app.modules.places.application.queries.places.shared.utils.working_hours import (
+    extract_today_working_hours,
+)
+from app.modules.places.application.queries.places.shared.views import PlaceCardView
 from app.modules.routes.application.queries.get.query import GetRouteQuery
 from app.modules.routes.application.queries.shared.readers.route import IRouteReader
-from app.modules.routes.application.queries.shared.views import RouteView
+from app.modules.routes.application.queries.shared.views import (
+    RoutePointView,
+    RouteView,
+)
 
 
 class GetRouteQueryHandler(IQueryHandler[GetRouteQuery, RouteView]):
@@ -18,4 +25,30 @@ class GetRouteQueryHandler(IQueryHandler[GetRouteQuery, RouteView]):
         )
         if not route:
             raise ValueError("Route not found")
-        return route
+
+        return RouteView(
+            id=route.id,
+            title=route.title,
+            description=route.description,
+            short_description=route.short_description,
+            points=[
+                RoutePointView(
+                    index=point.index,
+                    preview=PlaceCardView(
+                        id=point.preview.id,
+                        title=point.preview.title,
+                        short_description=point.preview.short_description,
+                        timezone=point.preview.timezone,
+                        category=point.preview.category,
+                        location=point.preview.location,
+                        rating=point.preview.rating,
+                        today_working_hours=extract_today_working_hours(
+                            timezone=point.preview.timezone,
+                            working_hours=point.preview.working_hours,
+                        ),
+                    ),
+                )
+                for point in sorted(route.points, key=lambda p: p.index)
+            ],
+            total_points=route.total_points,
+        )
