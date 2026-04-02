@@ -29,7 +29,7 @@ class IPlaceReader(ABC):
         self,
         *,
         title_like: str | None,
-        category_id: UUID | None,
+        category_slug: str | None,
         translation_language: LanguageEnum,
         limit: int,
         offset: int,
