@@ -1,6 +1,5 @@
 from uuid import UUID
 
-from geoalchemy2 import Geometry
 from sqlalchemy import (
     Float,
     and_,
@@ -49,11 +48,6 @@ class SQLAlchemyPlaceReader(IPlaceReader):
     @staticmethod
     def to_view(
         place: PlaceModel,
-        # *,
-        # latitude: float,
-        # longitude: float,
-        # rating_average: int | None = None,
-        # reviews_count: int | None = None,
     ) -> PlaceView:
         translation = place.translations[0]
 
@@ -101,8 +95,6 @@ class SQLAlchemyPlaceReader(IPlaceReader):
     def to_card_view(
         place: PlaceModel,
         *,
-        latitude: float,
-        longitude: float,
         rating_average: int | None = None,
         reviews_count: int | None = None,
     ) -> PlaceCardView:
@@ -129,8 +121,8 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             ),
             rating=PlaceRatingView(reviews_count=reviews_count, average=rating_average),
             location=PlaceLocationView(
-                latitude=latitude,
-                longitude=longitude,
+                latitude=place.latitude,
+                longitude=place.longitude,
             ),
             today_working_hours=today_working_hours,
         )
@@ -138,8 +130,6 @@ class SQLAlchemyPlaceReader(IPlaceReader):
     @staticmethod
     async def to_map_poi_view(
         place: PlaceModel,
-        latitude: float,
-        longitude: float,
     ) -> PlaceMapPOIView:
         place_translation = place.translations[0]
         category_translation = place.category.translations[0]
@@ -154,8 +144,8 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 marker_color=place.category.marker_color,
             ),
             location=PlaceLocationView(
-                latitude=float(latitude),
-                longitude=float(longitude),
+                latitude=place.latitude,
+                longitude=place.longitude,
             ),
         )
 
@@ -230,16 +220,6 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         items_stmt = (
             select(
                 PlaceModel,
-                func.ST_Y(
-                    PlaceModel.location.cast(Geometry(geometry_type="POINT", srid=4326))
-                )
-                .cast(Float)
-                .label("latitude"),
-                func.ST_X(
-                    PlaceModel.location.cast(Geometry(geometry_type="POINT", srid=4326))
-                )
-                .cast(Float)
-                .label("longitude"),
                 reviews_subq.c.rating_average,
                 func.coalesce(reviews_subq.c.reviews_count, 0).label("reviews_count"),
             )
@@ -284,12 +264,10 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         total = rows[0].total_count or 0
 
         items = []
-        for place, latitude, longitude, rating_average, reviews_count, _ in rows:
+        for place, rating_average, reviews_count, _ in rows:
             items.append(
                 self.to_card_view(
                     place,
-                    latitude=float(latitude),
-                    longitude=float(longitude),
                     rating_average=rating_average,
                     reviews_count=reviews_count,
                 )
@@ -318,16 +296,6 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         stmt = (
             select(
                 PlaceModel,
-                func.ST_Y(
-                    PlaceModel.location.cast(Geometry(geometry_type="POINT", srid=4326))
-                )
-                .cast(Float)
-                .label("latitude"),
-                func.ST_X(
-                    PlaceModel.location.cast(Geometry(geometry_type="POINT", srid=4326))
-                )
-                .cast(Float)
-                .label("longitude"),
             )
             .join(PlaceModel.translations)
             .join(PlaceModel.category)
@@ -353,8 +321,6 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         items: list[PlaceMapPOIView] = [
             await self.to_map_poi_view(
                 place=row.PlaceModel,
-                latitude=float(row.latitude),
-                longitude=float(row.longitude),
             )
             for row in rows
         ]
