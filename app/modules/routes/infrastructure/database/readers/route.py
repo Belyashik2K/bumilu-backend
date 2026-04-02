@@ -13,6 +13,7 @@ from sqlalchemy.orm import (
     with_loader_criteria,
 )
 
+from app.core.application.queries.pagination import PageReadModel
 from app.core.enums import LanguageEnum
 from app.modules.places.application.queries.places.shared.mappers import (
     PlaceReadModelMapper,
@@ -24,13 +25,16 @@ from app.modules.places.infrastructure.database.models import (
     PlaceTranslationModel,
 )
 from app.modules.places.shared.enums.route_sort import RouteSortByEnum
-from app.modules.routes.application.queries.shared.readers.route import IRouteReader
-from app.modules.routes.application.queries.shared.views import (
-    RouteCardPage,
-    RouteCardView,
-    RoutePointView,
-    RouteView,
+from app.modules.routes.application.queries.shared.models.route_card import (
+    RouteCardReadModel,
 )
+from app.modules.routes.application.queries.shared.models.route_details import (
+    RouteDetailsReadModel,
+)
+from app.modules.routes.application.queries.shared.models.route_point import (
+    RoutePointReadModel,
+)
+from app.modules.routes.application.queries.shared.readers.route import IRouteReader
 from app.modules.routes.infrastructure.database.models import (
     RouteModel,
     RoutePointModel,
@@ -42,53 +46,12 @@ class SQLAlchemyRouteReader(IRouteReader):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    @staticmethod
-    def to_view(route: RouteModel) -> RouteView:
-        translation = route.translations[0]
-
-        points = [
-            RoutePointView(
-                index=point.point_index,
-                preview=PlaceReadModelMapper.map_card(
-                    point.place,
-                    rating_average=point.place.rating_average,
-                    reviews_count=point.place.rating_reviews_count,
-                ),
-            )
-            for point in sorted(route.points, key=lambda p: p.point_index)
-        ]
-
-        return RouteView(
-            id=route.id,
-            title=translation.title,
-            description=translation.description,
-            short_description=translation.short_description,
-            points=points,
-            total_points=len(points),
-        )
-
-    @staticmethod
-    def to_card_view(
-        route: RouteModel, *, total_places: int, distance_meters: float | None = None
-    ) -> RouteCardView:
-        translation = route.translations[0]
-
-        return RouteCardView(
-            id=route.id,
-            title=translation.title,
-            short_description=translation.short_description,
-            total_places=total_places,
-            m_to_start_place=round(distance_meters)
-            if distance_meters is not None
-            else None,
-        )
-
     async def get_by_id(
         self,
         route_id: UUID,
         *,
         translation_language: LanguageEnum,
-    ) -> RouteView | None:
+    ) -> RouteDetailsReadModel | None:
         place_loader = selectinload(RouteModel.points).joinedload(RoutePointModel.place)
 
         stmt = (
@@ -123,7 +86,24 @@ class SQLAlchemyRouteReader(IRouteReader):
         if route is None:
             return None
 
-        return self.to_view(route)
+        return RouteDetailsReadModel(
+            id=route.id,
+            title=route.translations[0].title,
+            description=route.translations[0].description,
+            short_description=route.translations[0].short_description,
+            points=[
+                RoutePointReadModel(
+                    index=point.point_index,
+                    preview=PlaceReadModelMapper.map_card(
+                        place=point.place,
+                        rating_average=point.place.rating_average,
+                        reviews_count=point.place.rating_reviews_count,
+                    ),
+                )
+                for point in route.points
+            ],
+            total_points=len(route.points),
+        )
 
     async def get_all(
         self,
@@ -134,9 +114,8 @@ class SQLAlchemyRouteReader(IRouteReader):
         latitude: float | None = None,
         longitude: float | None = None,
         sort_by: RouteSortByEnum | None = None,
-    ) -> (
-        RouteCardPage
-    ):  # TODO: refactor to use separate queries for different sort_by values
+    ) -> PageReadModel[RouteCardReadModel]:
+        # TODO: refactor to use separate queries for different sort_by values
         base_filters = [
             RouteTranslationModel.language_code == translation_language,
         ]
@@ -227,13 +206,13 @@ class SQLAlchemyRouteReader(IRouteReader):
 
         if not rows:
             total = await self._session.scalar(count_stmt)
-            return RouteCardPage(
+            return PageReadModel(
                 items=[],
                 total=total or 0,
             )
 
         total = rows[0].total_count or 0
-        items: list[RouteCardView] = []
+        items: list[RouteCardReadModel] = []
 
         for row in rows:
             if distance_expr is not None:
@@ -243,14 +222,16 @@ class SQLAlchemyRouteReader(IRouteReader):
                 distance_meters = None
 
             items.append(
-                self.to_card_view(
-                    route,
+                RouteCardReadModel(
+                    id=route.id,
+                    title=route.translations[0].title,
+                    short_description=route.translations[0].short_description,
                     total_places=total_places,
-                    distance_meters=distance_meters,
+                    m_to_start_place=distance_meters,
                 )
             )
 
-        return RouteCardPage(
+        return PageReadModel(
             items=items,
             total=total,
         )
