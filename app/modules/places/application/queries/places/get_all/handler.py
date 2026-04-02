@@ -40,6 +40,7 @@ class GetAllPlacesQueryHandler(
                 short_description=place_card.short_description,
                 timezone=place_card.timezone,
                 category=place_card.category,
+                photos=place_card.photos[:4],  # TODO: configurable number of photos
                 location=place_card.location,
                 rating=place_card.rating,
                 today_working_hours=extract_today_working_hours(

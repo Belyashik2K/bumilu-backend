@@ -32,6 +32,7 @@ class GetPlaceQueryHandler(
             short_description=place.short_description,
             timezone=place.timezone,
             category=place.category,
+            photos=place.photos,
             address=place.address,
             location=place.location,
             rating=place.rating,

@@ -16,6 +16,7 @@ from app.modules.places.presentation.api.schemas.places.location import (
     PlaceLocationSchema,
 )
 from app.modules.places.presentation.api.schemas.places.phone import PlacePhoneSchema
+from app.modules.places.presentation.api.schemas.places.photo import PlacePhotoSchema
 from app.modules.places.presentation.api.schemas.places.rating import PlaceRatingSchema
 from app.modules.places.presentation.api.schemas.places.working_hours import (
     END_TIME_EXAMPLE,
@@ -85,6 +86,10 @@ class PlaceCardSchema(BaseModel):
         ...,
         description="Category of the place",
     )
+    photos: list[PlacePhotoSchema] = Field(
+        default_factory=list,
+        description="List of place photos. Maximum of 4 photos are allowed for the place card.",
+    )
     rating: PlaceRatingSchema = Field(
         ...,
         description="Rating of the place",
@@ -140,6 +145,10 @@ class PlaceSchema(BaseModel):
     category: PlaceCardCategorySchema = Field(
         ...,
         description="Category of the place",
+    )
+    photos: list[PlacePhotoSchema] = Field(
+        default_factory=list,
+        description="List of place photos",
     )
     address: PlaceAddressSchema = Field(
         ...,

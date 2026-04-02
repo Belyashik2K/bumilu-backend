@@ -19,6 +19,9 @@ from app.modules.places.application.queries.places.shared.models.place_map_poi i
 from app.modules.places.application.queries.places.shared.models.place_phone import (
     PlacePhoneReadModel,
 )
+from app.modules.places.application.queries.places.shared.models.place_photo import (
+    PlacePhotoReadModel,
+)
 from app.modules.places.application.queries.places.shared.models.place_rating import (
     PlaceRatingReadModel,
 )
@@ -103,11 +106,12 @@ class PlaceReadModelMapper:
 
         return PlaceDetailsReadModel(
             id=place.id,
-            category=cls.map_localized_category(place.category),
             title=translation.title,
             description=translation.description,
             short_description=translation.short_description,
             timezone=place.timezone,
+            category=cls.map_localized_category(place.category),
+            photos=cls.map_photos(place),
             location=cls.map_location(place),
             address=cls.map_address(place),
             rating=cls.map_rating(
@@ -134,6 +138,7 @@ class PlaceReadModelMapper:
             short_description=translation.short_description,
             timezone=place.timezone,
             category=cls.map_localized_category(place.category),
+            photos=cls.map_photos(place),
             location=cls.map_location(place),
             rating=cls.map_rating(
                 average=rating_average,
@@ -152,3 +157,10 @@ class PlaceReadModelMapper:
             category=cls.map_localized_category(place.category),
             location=cls.map_location(place),
         )
+
+    @classmethod
+    def map_photos(cls, place: PlaceModel) -> list[PlacePhotoReadModel]:
+        photo_url = "https://media.bumilu.ru/banner.jpg"  # TODO: add real photo url from place.photos
+        thumbnail_url = "https://media.bumilu.ru/banner_thumbnail.jpg"
+
+        return [PlacePhotoReadModel(url=photo_url, thumbnail_url=thumbnail_url)]

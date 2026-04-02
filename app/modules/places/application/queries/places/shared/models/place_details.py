@@ -16,6 +16,9 @@ from app.modules.places.application.queries.places.shared.models.place_location 
 from app.modules.places.application.queries.places.shared.models.place_phone import (
     PlacePhoneReadModel,
 )
+from app.modules.places.application.queries.places.shared.models.place_photo import (
+    PlacePhotoReadModel,
+)
 from app.modules.places.application.queries.places.shared.models.place_rating import (
     PlaceRatingReadModel,
 )
@@ -32,6 +35,7 @@ class PlaceDetailsReadModel:
     short_description: str | None = field(default=None)
     timezone: str
     category: LocalizedPlaceCategoryReadModel
+    photos: list[PlacePhotoReadModel]
     address: PlaceAddressReadModel
     location: PlaceLocationReadModel
     rating: PlaceRatingReadModel
