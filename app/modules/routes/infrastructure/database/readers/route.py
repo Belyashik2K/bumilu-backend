@@ -14,13 +14,8 @@ from sqlalchemy.orm import (
 )
 
 from app.core.enums import LanguageEnum
-from app.core.utils.datetime import get_current_dt_in_timezone
-from app.modules.places.application.queries.places.shared.views import (
-    PlaceCardCategoryView,
-    PlaceCardView,
-    PlaceLocationView,
-    PlaceRatingView,
-    PlaceWorkingHoursIntervalView,
+from app.modules.places.application.queries.places.shared.mappers import (
+    PlaceReadModelMapper,
 )
 from app.modules.places.infrastructure.database.models import (
     PlaceCategoryModel,
@@ -47,23 +42,21 @@ class SQLAlchemyRouteReader(IRouteReader):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    def to_view(self, route: RouteModel) -> RouteView:
+    @staticmethod
+    def to_view(route: RouteModel) -> RouteView:
         translation = route.translations[0]
 
-        points = []
-        for point in sorted(route.points, key=lambda p: p.point_index):
-            place = point.place
-
-            points.append(
-                RoutePointView(
-                    index=point.point_index,
-                    preview=self.to_place_card_view(
-                        place,
-                        latitude=place.latitude,
-                        longitude=place.longitude,
-                    ),
-                )
+        points = [
+            RoutePointView(
+                index=point.point_index,
+                preview=PlaceReadModelMapper.map_card(
+                    point.place,
+                    rating_average=point.place.rating_average,
+                    reviews_count=point.place.rating_reviews_count,
+                ),
             )
+            for point in sorted(route.points, key=lambda p: p.point_index)
+        ]
 
         return RouteView(
             id=route.id,
@@ -88,45 +81,6 @@ class SQLAlchemyRouteReader(IRouteReader):
             m_to_start_place=round(distance_meters)
             if distance_meters is not None
             else None,
-        )
-
-    @staticmethod
-    def to_place_card_view(  # TODO: DRY
-        place: PlaceModel,
-        *,
-        latitude: float,
-        longitude: float,
-    ) -> PlaceCardView:
-        translation = place.translations[0]
-
-        today_working_hours = []
-        for wh in place.working_hours:
-            now = get_current_dt_in_timezone(place.timezone)
-            if wh.weekday == now.weekday() + 1:
-                today_working_hours.append(
-                    PlaceWorkingHoursIntervalView(
-                        start=wh.start_time,
-                        end=wh.end_time,
-                    )
-                )
-
-        return PlaceCardView(
-            id=place.id,
-            title=translation.title,
-            short_description=translation.short_description,
-            timezone=place.timezone,
-            category=PlaceCardCategoryView(
-                name=place.category.translations[0].name,
-            ),
-            location=PlaceLocationView(
-                latitude=latitude,
-                longitude=longitude,
-            ),
-            rating=PlaceRatingView(
-                average=place.rating_average,
-                reviews_count=place.rating_reviews_count,
-            ),
-            today_working_hours=today_working_hours,
         )
 
     async def get_by_id(

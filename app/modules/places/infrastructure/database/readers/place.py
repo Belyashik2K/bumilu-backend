@@ -14,12 +14,9 @@ from sqlalchemy.orm import (
 
 from app.core.application.queries.pagination import PageReadModel
 from app.core.enums import LanguageEnum
-from app.modules.places.application.queries.categories.shared.models.place_category import (
-    LocalizedPlaceCategoryReadModel,
-)
 from app.modules.places.application.queries.places.get_map_poi.query import BBox
-from app.modules.places.application.queries.places.shared.models.place_address import (
-    PlaceAddressReadModel,
+from app.modules.places.application.queries.places.shared.mappers import (
+    PlaceReadModelMapper,
 )
 from app.modules.places.application.queries.places.shared.models.place_card import (
     PlaceCardReadModel,
@@ -27,28 +24,11 @@ from app.modules.places.application.queries.places.shared.models.place_card impo
 from app.modules.places.application.queries.places.shared.models.place_details import (
     PlaceDetailsReadModel,
 )
-from app.modules.places.application.queries.places.shared.models.place_location import (
-    PlaceLocationReadModel,
-)
 from app.modules.places.application.queries.places.shared.models.place_map_poi import (
     PlaceMapPOIReadModel,
 )
-from app.modules.places.application.queries.places.shared.models.place_phone import (
-    PlacePhoneReadModel,
-)
-from app.modules.places.application.queries.places.shared.models.place_rating import (
-    PlaceRatingReadModel,
-)
-from app.modules.places.application.queries.places.shared.models.place_working_hour import (
-    PlaceWorkingHourReadModel,
-)
 from app.modules.places.application.queries.places.shared.readers.place import (
     IPlaceReader,
-)
-from app.modules.places.application.queries.places.shared.views import (
-    PlaceLocationView,
-    PlaceMapPOICategoryView,
-    PlaceMapPOIView,
 )
 from app.modules.places.infrastructure.database.models import (
     PlaceCategoryModel,
@@ -63,28 +43,6 @@ from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 class SQLAlchemyPlaceReader(IPlaceReader):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
-
-    @staticmethod
-    async def to_map_poi_view(
-        place: PlaceModel,
-    ) -> PlaceMapPOIView:
-        place_translation = place.translations[0]
-        category_translation = place.category.translations[0]
-
-        return PlaceMapPOIView(
-            id=place.id,
-            title=place_translation.title,
-            category=PlaceMapPOICategoryView(
-                id=place.category.id,
-                name=category_translation.name,
-                icon_key=place.category.icon_key,
-                marker_color=place.category.marker_color,
-            ),
-            location=PlaceLocationView(
-                latitude=place.latitude,
-                longitude=place.longitude,
-            ),
-        )
 
     async def get_by_id(
         self,
@@ -114,45 +72,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
 
         if place is None:
             return None
-
-        translation = place.translations[0]
-
-        return PlaceDetailsReadModel(
-            id=place.id,
-            category_id=place.category_id,
-            title=translation.title,
-            description=translation.description,
-            short_description=translation.short_description,
-            timezone=place.timezone,
-            location=PlaceLocationReadModel(
-                latitude=place.latitude,
-                longitude=place.longitude,
-            ),
-            address=PlaceAddressReadModel(
-                display=translation.address_display,
-                taxi=place.address_taxi,
-                taxi_comment=place.address_taxi_comment,
-            ),
-            rating=PlaceRatingReadModel(
-                reviews_count=place.rating_reviews_count, average=place.rating_average
-            ),
-            phones=[
-                PlacePhoneReadModel(
-                    number=phone.number,
-                    type=phone.type,
-                    primary=phone.is_primary,
-                )
-                for phone in place.phones
-            ],
-            working_hours=[
-                PlaceWorkingHourReadModel(
-                    weekday=wh.weekday,
-                    start_time=wh.start_time,
-                    end_time=wh.end_time,
-                )
-                for wh in place.working_hours
-            ],
-        )
+        return PlaceReadModelMapper.map_details(place=place)
 
     async def get_all(
         self,
@@ -235,43 +155,15 @@ class SQLAlchemyPlaceReader(IPlaceReader):
 
         total = rows[0].total_count or 0
 
-        items = []
-
-        for place, rating_average, reviews_count, _ in rows:
-            items.append(
-                PlaceCardReadModel(
-                    id=place.id,
-                    title=place.translations[0].title,
-                    short_description=place.translations[0].short_description,
-                    timezone=place.timezone,
-                    category=LocalizedPlaceCategoryReadModel(
-                        id=place.category.id,
-                        slug=place.category.slug,
-                        name=place.category.translations[0].name,
-                        icon_key=place.category.icon_key,
-                        marker_color=place.category.marker_color,
-                    ),
-                    location=PlaceLocationReadModel(
-                        latitude=place.latitude,
-                        longitude=place.longitude,
-                    ),
-                    rating=PlaceRatingReadModel(
-                        average=rating_average,
-                        reviews_count=reviews_count,
-                    ),
-                    working_hours=[
-                        PlaceWorkingHourReadModel(
-                            weekday=wh.weekday,
-                            start_time=wh.start_time,
-                            end_time=wh.end_time,
-                        )
-                        for wh in place.working_hours
-                    ],
-                )
-            )
-
         return PageReadModel(
-            items=items,
+            items=[
+                PlaceReadModelMapper.map_card(
+                    place=place,
+                    rating_average=rating_average,
+                    reviews_count=reviews_count,
+                )
+                for place, rating_average, reviews_count, _ in rows
+            ],
             total=total,
         )
 
@@ -315,25 +207,4 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         result = await self._session.execute(stmt)
         rows = result.unique().all()
 
-        pois = []
-        for row in rows:
-            place = row.PlaceModel
-            pois.append(
-                PlaceMapPOIReadModel(
-                    id=place.id,
-                    title=place.translations[0].title,
-                    category=LocalizedPlaceCategoryReadModel(
-                        id=place.category.id,
-                        slug=place.category.slug,
-                        name=place.category.translations[0].name,
-                        icon_key=place.category.icon_key,
-                        marker_color=place.category.marker_color,
-                    ),
-                    location=PlaceLocationReadModel(
-                        latitude=place.latitude,
-                        longitude=place.longitude,
-                    ),
-                )
-            )
-
-        return pois
+        return [PlaceReadModelMapper.map_poi(place=row.PlaceModel) for row in rows]

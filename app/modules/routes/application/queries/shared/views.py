@@ -5,8 +5,8 @@ from dataclasses import (
 from uuid import UUID
 
 from app.core.application.queries.pagination import OffsetPagination
-from app.modules.places.application.queries.places.shared.views import (
-    PlaceCardView,
+from app.modules.places.application.queries.places.shared.models.place_card import (
+    PlaceCardReadModel,
 )
 
 
@@ -34,7 +34,7 @@ class PaginatedRouteCardView:
 @dataclass(frozen=True, slots=True, kw_only=True)
 class RoutePointView:
     index: int
-    preview: PlaceCardView
+    preview: PlaceCardReadModel
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
