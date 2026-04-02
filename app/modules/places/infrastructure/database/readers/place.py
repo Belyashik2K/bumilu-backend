@@ -15,20 +15,35 @@ from sqlalchemy.orm import (
 from app.core.enums import LanguageEnum
 from app.core.utils.datetime import get_current_dt_in_timezone
 from app.modules.places.application.queries.places.get_map_poi.query import BBox
+from app.modules.places.application.queries.places.shared.models.place_address import (
+    PlaceAddressReadModel,
+)
+from app.modules.places.application.queries.places.shared.models.place_details import (
+    PlaceDetailsReadModel,
+)
+from app.modules.places.application.queries.places.shared.models.place_location import (
+    PlaceLocationReadModel,
+)
+from app.modules.places.application.queries.places.shared.models.place_phone import (
+    PlacePhoneReadModel,
+)
+from app.modules.places.application.queries.places.shared.models.place_rating import (
+    PlaceRatingReadModel,
+)
+from app.modules.places.application.queries.places.shared.models.place_working_hour import (
+    PlaceWorkingHourReadModel,
+)
 from app.modules.places.application.queries.places.shared.readers.place import (
     IPlaceReader,
 )
 from app.modules.places.application.queries.places.shared.views import (
-    PlaceAddressView,
     PlaceCardCategoryView,
     PlaceCardPage,
     PlaceCardView,
     PlaceLocationView,
     PlaceMapPOICategoryView,
     PlaceMapPOIView,
-    PlacePhoneView,
     PlaceRatingView,
-    PlaceView,
     PlaceWorkingHoursIntervalView,
 )
 from app.modules.places.infrastructure.database.models import (
@@ -44,52 +59,6 @@ from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 class SQLAlchemyPlaceReader(IPlaceReader):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
-
-    @staticmethod
-    def to_view(
-        place: PlaceModel,
-    ) -> PlaceView:
-        translation = place.translations[0]
-
-        return PlaceView(
-            id=place.id,
-            category_id=place.category_id,
-            title=translation.title,
-            description=translation.description,
-            short_description=translation.short_description,
-            timezone=place.timezone,
-            location=PlaceLocationView(
-                latitude=place.latitude,
-                longitude=place.longitude,
-            ),
-            address=PlaceAddressView(
-                display=translation.address_display,
-                taxi=place.address_taxi,
-                taxi_comment=place.address_taxi_comment,
-            ),
-            rating=PlaceRatingView(
-                reviews_count=place.rating_reviews_count, average=place.rating_average
-            ),
-            phones=[
-                PlacePhoneView(
-                    number=phone.number,
-                    type=phone.type,
-                    primary=phone.is_primary,
-                )
-                for phone in place.phones
-            ],
-            weekly_working_hours={
-                str(day): [
-                    PlaceWorkingHoursIntervalView(
-                        start=wh.start_time,
-                        end=wh.end_time,
-                    )
-                    for wh in place.working_hours
-                    if wh.weekday == day
-                ]
-                for day in range(1, 8)
-            },
-        )
 
     @staticmethod
     def to_card_view(
@@ -153,7 +122,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         self,
         place_id: UUID,
         translation_language: LanguageEnum,
-    ) -> PlaceView | None:
+    ) -> PlaceDetailsReadModel | None:
         stmt = (
             select(
                 PlaceModel,
@@ -178,8 +147,43 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         if place is None:
             return None
 
-        return self.to_view(
-            place,
+        translation = place.translations[0]
+
+        return PlaceDetailsReadModel(
+            id=place.id,
+            category_id=place.category_id,
+            title=translation.title,
+            description=translation.description,
+            short_description=translation.short_description,
+            timezone=place.timezone,
+            location=PlaceLocationReadModel(
+                latitude=place.latitude,
+                longitude=place.longitude,
+            ),
+            address=PlaceAddressReadModel(
+                display=translation.address_display,
+                taxi=place.address_taxi,
+                taxi_comment=place.address_taxi_comment,
+            ),
+            rating=PlaceRatingReadModel(
+                reviews_count=place.rating_reviews_count, average=place.rating_average
+            ),
+            phones=[
+                PlacePhoneReadModel(
+                    number=phone.number,
+                    type=phone.type,
+                    primary=phone.is_primary,
+                )
+                for phone in place.phones
+            ],
+            working_hours=[
+                PlaceWorkingHourReadModel(
+                    weekday=wh.weekday,
+                    start_time=wh.start_time,
+                    end_time=wh.end_time,
+                )
+                for wh in place.working_hours
+            ],
         )
 
     async def get_all(
