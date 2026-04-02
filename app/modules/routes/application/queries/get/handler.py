@@ -40,6 +40,9 @@ class GetRouteQueryHandler(IQueryHandler[GetRouteQuery, RouteView]):
                         short_description=point.preview.short_description,
                         timezone=point.preview.timezone,
                         category=point.preview.category,
+                        photos=point.preview.photos[
+                            :4
+                        ],  # TODO: configurable number of photos
                         location=point.preview.location,
                         rating=point.preview.rating,
                         today_working_hours=extract_today_working_hours(

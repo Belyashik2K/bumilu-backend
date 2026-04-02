@@ -18,6 +18,9 @@ from app.modules.places.application.queries.places.shared.models.place_location 
 from app.modules.places.application.queries.places.shared.models.place_phone import (
     PlacePhoneReadModel,
 )
+from app.modules.places.application.queries.places.shared.models.place_photo import (
+    PlacePhotoReadModel,
+)
 from app.modules.places.application.queries.places.shared.models.place_rating import (
     PlaceRatingReadModel,
 )
@@ -37,10 +40,11 @@ class PlaceView:
     short_description: str | None = field(default=None)
     timezone: str
     category: LocalizedPlaceCategoryReadModel
+    photos: list[PlacePhotoReadModel] = field(default_factory=list)
     address: PlaceAddressReadModel
     location: PlaceLocationReadModel
     rating: PlaceRatingReadModel
-    phones: list[PlacePhoneReadModel]
+    phones: list[PlacePhoneReadModel] = field(default_factory=list)
     weekly_working_hours: dict[str, list[PlaceWorkingHoursIntervalView]] = field(
         default_factory=dict
     )
@@ -53,6 +57,7 @@ class PlaceCardView:
     short_description: str | None = field(default=None)
     timezone: str
     category: LocalizedPlaceCategoryReadModel
+    photos: list[PlacePhotoReadModel] = field(default_factory=list)
     location: PlaceLocationReadModel
     rating: PlaceRatingReadModel
     today_working_hours: list[PlaceWorkingHoursIntervalView] = field(
