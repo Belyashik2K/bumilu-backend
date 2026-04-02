@@ -163,4 +163,4 @@ class PlaceReadModelMapper:
         photo_url = "https://media.bumilu.ru/banner.jpg"  # TODO: add real photo url from place.photos
         thumbnail_url = "https://media.bumilu.ru/banner_thumbnail.jpg"
 
-        return [PlacePhotoReadModel(url=photo_url, thumbnail_url=thumbnail_url)]
+        return [PlacePhotoReadModel(url=photo_url, thumbnail_url=thumbnail_url)] * 5
