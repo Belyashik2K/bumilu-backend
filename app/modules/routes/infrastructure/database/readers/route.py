@@ -1,7 +1,6 @@
 from uuid import UUID
 
 from geoalchemy2 import Geography
-from geoalchemy2.shape import to_shape
 from sqlalchemy import (
     cast,
     func,
@@ -54,15 +53,14 @@ class SQLAlchemyRouteReader(IRouteReader):
         points = []
         for point in sorted(route.points, key=lambda p: p.point_index):
             place = point.place
-            location = to_shape(place.location)
 
             points.append(
                 RoutePointView(
                     index=point.point_index,
                     preview=self.to_place_card_view(
                         place,
-                        latitude=location.y,  # type: ignore
-                        longitude=location.x,  # type: ignore
+                        latitude=place.latitude,
+                        longitude=place.longitude,
                     ),
                 )
             )
