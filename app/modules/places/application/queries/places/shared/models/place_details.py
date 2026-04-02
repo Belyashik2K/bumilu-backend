@@ -4,6 +4,9 @@ from dataclasses import (
 )
 from uuid import UUID
 
+from app.modules.places.application.queries.categories.shared.models.place_category import (
+    LocalizedPlaceCategoryReadModel,
+)
 from app.modules.places.application.queries.places.shared.models.place_address import (
     PlaceAddressReadModel,
 )
@@ -24,11 +27,11 @@ from app.modules.places.application.queries.places.shared.models.place_working_h
 @dataclass(frozen=True, slots=True, kw_only=True)
 class PlaceDetailsReadModel:
     id: UUID
-    category_id: UUID
     title: str
     description: str | None = field(default=None)
     short_description: str | None = field(default=None)
     timezone: str
+    category: LocalizedPlaceCategoryReadModel
     address: PlaceAddressReadModel
     location: PlaceLocationReadModel
     rating: PlaceRatingReadModel

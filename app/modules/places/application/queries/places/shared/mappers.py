@@ -103,7 +103,7 @@ class PlaceReadModelMapper:
 
         return PlaceDetailsReadModel(
             id=place.id,
-            category_id=place.category_id,
+            category=cls.map_localized_category(place.category),
             title=translation.title,
             description=translation.description,
             short_description=translation.short_description,

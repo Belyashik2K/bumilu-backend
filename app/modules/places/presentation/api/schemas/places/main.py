@@ -117,11 +117,6 @@ class PlaceSchema(BaseModel):
         description="Unique identifier of the place",
         examples=[UUID_EXAMPLE],
     )
-    category_id: UUID7 = Field(
-        ...,
-        description="Unique identifier of the place category",
-        examples=[UUID_EXAMPLE],
-    )
     title: str = Field(
         ...,
         description="Title of the place",
@@ -141,6 +136,10 @@ class PlaceSchema(BaseModel):
         ...,
         description="Timezone of the place",
         examples=[TIMEZONE_EXAMPLE],
+    )
+    category: PlaceCardCategorySchema = Field(
+        ...,
+        description="Category of the place",
     )
     address: PlaceAddressSchema = Field(
         ...,

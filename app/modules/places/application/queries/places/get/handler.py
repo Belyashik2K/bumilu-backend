@@ -27,11 +27,11 @@ class GetPlaceQueryHandler(
 
         return PlaceView(
             id=place.id,
-            category_id=place.category_id,
             title=place.title,
             description=place.description,
             short_description=place.short_description,
             timezone=place.timezone,
+            category=place.category,
             address=place.address,
             location=place.location,
             rating=place.rating,
