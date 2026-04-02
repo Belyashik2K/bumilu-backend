@@ -38,7 +38,7 @@ class RoutePointView:
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class RouteView:
+class RouteView:  # TODO: Create a separate RouteReadModel
     id: UUID
     title: str
     description: str | None = field(default=None)
