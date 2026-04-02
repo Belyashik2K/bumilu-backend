@@ -6,6 +6,18 @@ from datetime import time
 from uuid import UUID
 
 from app.core.application.queries.pagination import OffsetPagination
+from app.modules.places.application.queries.places.shared.models.place_address import (
+    PlaceAddressReadModel,
+)
+from app.modules.places.application.queries.places.shared.models.place_location import (
+    PlaceLocationReadModel,
+)
+from app.modules.places.application.queries.places.shared.models.place_phone import (
+    PlacePhoneReadModel,
+)
+from app.modules.places.application.queries.places.shared.models.place_rating import (
+    PlaceRatingReadModel,
+)
 from app.modules.places.shared.enums import PlacePhoneTypeEnum
 
 
@@ -49,10 +61,10 @@ class PlaceView:
     description: str | None = field(default=None)
     short_description: str | None = field(default=None)
     timezone: str
-    location: PlaceLocationView
-    address: PlaceAddressView
-    rating: PlaceRatingView
-    phones: list[PlacePhoneView] = field(default_factory=list)
+    address: PlaceAddressReadModel
+    location: PlaceLocationReadModel
+    rating: PlaceRatingReadModel
+    phones: list[PlacePhoneReadModel]
     weekly_working_hours: dict[str, list[PlaceWorkingHoursIntervalView]] = field(
         default_factory=dict
     )
