@@ -13,8 +13,8 @@ from app.modules.places.application.queries.places.shared.models.place_card impo
 from app.modules.places.application.queries.places.shared.models.place_details import (
     PlaceDetailsReadModel,
 )
-from app.modules.places.application.queries.places.shared.views import (
-    PlaceMapPOIView,
+from app.modules.places.application.queries.places.shared.models.place_map_poi import (
+    PlaceMapPOIReadModel,
 )
 
 
@@ -42,4 +42,4 @@ class IPlaceReader(ABC):
         bounds: BBox,
         translation_language: LanguageEnum,
         limit: int,
-    ) -> list[PlaceMapPOIView]: ...
+    ) -> list[PlaceMapPOIReadModel]: ...

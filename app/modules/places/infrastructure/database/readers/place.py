@@ -30,6 +30,9 @@ from app.modules.places.application.queries.places.shared.models.place_details i
 from app.modules.places.application.queries.places.shared.models.place_location import (
     PlaceLocationReadModel,
 )
+from app.modules.places.application.queries.places.shared.models.place_map_poi import (
+    PlaceMapPOIReadModel,
+)
 from app.modules.places.application.queries.places.shared.models.place_phone import (
     PlacePhoneReadModel,
 )
@@ -278,7 +281,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         bounds: BBox,
         translation_language: LanguageEnum,
         limit: int,
-    ) -> list[PlaceMapPOIView]:
+    ) -> list[PlaceMapPOIReadModel]:
         bbox = func.ST_MakeEnvelope(
             bounds.west,
             bounds.south,
@@ -312,11 +315,25 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         result = await self._session.execute(stmt)
         rows = result.unique().all()
 
-        items: list[PlaceMapPOIView] = [
-            await self.to_map_poi_view(
-                place=row.PlaceModel,
+        pois = []
+        for row in rows:
+            place = row.PlaceModel
+            pois.append(
+                PlaceMapPOIReadModel(
+                    id=place.id,
+                    title=place.translations[0].title,
+                    category=LocalizedPlaceCategoryReadModel(
+                        id=place.category.id,
+                        slug=place.category.slug,
+                        name=place.category.translations[0].name,
+                        icon_key=place.category.icon_key,
+                        marker_color=place.category.marker_color,
+                    ),
+                    location=PlaceLocationReadModel(
+                        latitude=place.latitude,
+                        longitude=place.longitude,
+                    ),
+                )
             )
-            for row in rows
-        ]
 
-        return items
+        return pois

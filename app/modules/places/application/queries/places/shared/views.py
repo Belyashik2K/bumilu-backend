@@ -96,4 +96,4 @@ class PlaceMapPOIView:
     id: UUID
     title: str
     category: PlaceMapPOICategoryView
-    location: PlaceLocationView
+    location: PlaceLocationReadModel
