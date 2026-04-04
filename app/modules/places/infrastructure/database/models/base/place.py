@@ -38,6 +38,9 @@ from app.modules.routes.infrastructure.database.models.base.route_point import (
 )
 
 if TYPE_CHECKING:
+    from app.modules.favourites.infrastructure.database.models.place_favourite import (
+        PlaceFavouriteModel,
+    )
     from app.modules.places.infrastructure.database.models.base.place_category import (
         PlaceCategoryModel,
     )
@@ -136,6 +139,11 @@ class PlaceModel(PKUUIDMixin, TimestampMixin, BaseModel):
     )
     route_points: Mapped[list["RoutePointModel"]] = relationship(
         "RoutePointModel",
+        back_populates="place",
+        cascade="all, delete-orphan",
+    )
+    favourites: Mapped[list["PlaceFavouriteModel"]] = relationship(
+        "PlaceFavouriteModel",
         back_populates="place",
         cascade="all, delete-orphan",
     )

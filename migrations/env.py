@@ -92,16 +92,8 @@ def include_object(object_, name: Any, type_: Any, reflected: Any, compare_to: A
 
     if schema in EXCLUDED_SCHEMAS:
         return False
-
     if name in EXCLUDED_TABLES or table_name in EXCLUDED_TABLES:
         return False
-
-    if reflected and compare_to is None:
-        if table_name and table_name not in OWN_TABLES:
-            return False
-        if type_ == "table" and name not in OWN_TABLES:
-            return False
-
     return True
 
 
