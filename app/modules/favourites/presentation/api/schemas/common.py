@@ -37,7 +37,9 @@ USER_ID_PATH = Path(
     example=USER_ID_EXAMPLE,
 )
 
-FavouriteEntityPreview = PlaceCardSchema
+FavouriteEntityPreview = (
+    PlaceCardSchema  # TODO: Add more preview schemas and make it a union of them
+)
 
 
 class FavouriteEntityInfoSchema(BaseModel):
@@ -53,8 +55,7 @@ class FavouriteEntityInfoSchema(BaseModel):
     )
     preview: FavouriteEntityPreview = Field(
         ...,
-        description="Preview of the entity which is added to favourites. The content of the preview depends on the "
-        "type of the entity. Now it can be only place card preview, but when route favourites will be implemented, it can also be route card ",
+        description="Preview of the entity which is added to favourites. Now it can be only place card preview.",
     )
 
 
@@ -62,7 +63,6 @@ class FavouriteItemInfoSchema(BaseModel):
     entity: FavouriteEntityInfoSchema = Field(
         ...,
         description="Info about entity which is added to favourites.",
-        examples=[ENTITY_ID_EXAMPLE],
     )
     created_at: datetime = Field(
         ...,
