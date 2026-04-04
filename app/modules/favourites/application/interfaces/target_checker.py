@@ -3,14 +3,14 @@ from abc import (
     abstractmethod,
 )
 
-from app.core.application.interfaces.entity_resolver import IEntityResolver
+from app.core.application.interfaces.entity_resolver import ITargetChecker
 from app.core.domain.value_objects.id import IdVO
 from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
 
 
-class IFavouriteEntityResolver(IEntityResolver, ABC):
+class IFavouriteTargetChecker(ITargetChecker, ABC):
     @abstractmethod
-    async def resolve(
+    async def exists(
         self,
         entity_type: FavouriteEntityTypeEnum,
         entity_id: IdVO,

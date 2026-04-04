@@ -20,6 +20,9 @@ from app.modules.places.application.queries.places.shared.models.place_map_poi i
 
 class IPlaceReader(ABC):
     @abstractmethod
+    async def exists(self, place_id: UUID) -> bool: ...
+
+    @abstractmethod
     async def get_by_id(
         self, place_id: UUID, translation_language: LanguageEnum
     ) -> PlaceDetailsReadModel | None: ...

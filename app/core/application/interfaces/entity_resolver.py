@@ -5,6 +5,6 @@ from abc import (
 from typing import Any
 
 
-class IEntityResolver(ABC):
+class ITargetChecker(ABC):
     @abstractmethod
-    async def resolve(self, *args: Any, **kwargs: Any) -> bool: ...
+    async def exists(self, *args: Any, **kwargs: Any) -> bool: ...
