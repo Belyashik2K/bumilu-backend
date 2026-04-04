@@ -3,9 +3,10 @@ from abc import (
     abstractmethod,
 )
 
+from app.core.application.queries.pagination import PageReadModel
 from app.core.enums import LanguageEnum
-from app.modules.places.application.queries.categories.shared.views import (
-    PlaceCategoriesPage,
+from app.modules.places.application.queries.categories.shared.models.place_category import (
+    LocalizedPlaceCategoryReadModel,
 )
 
 
@@ -16,4 +17,4 @@ class IPlaceCategoryReader(ABC):
         limit: int,
         offset: int,
         translation_language: LanguageEnum,
-    ) -> PlaceCategoriesPage: ...
+    ) -> PageReadModel[LocalizedPlaceCategoryReadModel]: ...

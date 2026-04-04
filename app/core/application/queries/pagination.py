@@ -13,8 +13,8 @@ T = TypeVar("T")
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class PageReadModel(Generic[T]):
-    items: list[T]
-    total: int
+    items: list[T] = field(default_factory=list)
+    total: int = field(default=0)
 
 
 @dataclass(frozen=True, kw_only=True)
