@@ -1,4 +1,5 @@
 from app.core.application.queries import IQueryHandler
+from app.modules.places.application.exceptions.place import PlaceNotFound
 from app.modules.places.application.queries.places.get.query import GetPlaceQuery
 from app.modules.places.application.queries.places.shared.readers.place import (
     IPlaceReader,
@@ -23,7 +24,7 @@ class GetPlaceQueryHandler(
             place_id=query.place_id, translation_language=query.language
         )
         if place is None:
-            raise ValueError("Place not found")  # TODO: custom exception
+            raise PlaceNotFound(place_id=query.place_id)
 
         return PlaceView(
             id=place.id,

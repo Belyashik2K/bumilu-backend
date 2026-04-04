@@ -3,6 +3,7 @@ from app.modules.places.application.queries.places.shared.utils.working_hours im
     extract_today_working_hours,
 )
 from app.modules.places.application.queries.places.shared.views import PlaceCardView
+from app.modules.routes.application.exceptions.route import RouteNotFound
 from app.modules.routes.application.queries.get.query import GetRouteQuery
 from app.modules.routes.application.queries.shared.readers.route import IRouteReader
 from app.modules.routes.application.queries.shared.views import (
@@ -24,7 +25,7 @@ class GetRouteQueryHandler(IQueryHandler[GetRouteQuery, RouteView]):
             translation_language=query.language,
         )
         if not route:
-            raise ValueError("Route not found")
+            raise RouteNotFound(route_id=query.route_id)
 
         return RouteView(
             id=route.id,
