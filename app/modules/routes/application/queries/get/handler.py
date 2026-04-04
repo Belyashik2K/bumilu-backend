@@ -1,7 +1,4 @@
 from app.core.application.queries import IQueryHandler
-from app.modules.places.application.queries.places.shared.utils.working_hours import (
-    extract_today_working_hours,
-)
 from app.modules.places.application.queries.places.shared.views import PlaceCardView
 from app.modules.routes.application.exceptions.route import RouteNotFound
 from app.modules.routes.application.queries.get.query import GetRouteQuery
@@ -35,22 +32,7 @@ class GetRouteQueryHandler(IQueryHandler[GetRouteQuery, RouteView]):
             points=[
                 RoutePointView(
                     index=point.index,
-                    preview=PlaceCardView(
-                        id=point.preview.id,
-                        title=point.preview.title,
-                        short_description=point.preview.short_description,
-                        timezone=point.preview.timezone,
-                        category=point.preview.category,
-                        photos=point.preview.photos[
-                            :4
-                        ],  # TODO: configurable number of photos
-                        location=point.preview.location,
-                        rating=point.preview.rating,
-                        today_working_hours=extract_today_working_hours(
-                            timezone=point.preview.timezone,
-                            working_hours=point.preview.working_hours,
-                        ),
-                    ),
+                    preview=PlaceCardView.from_read_model(point.preview),
                 )
                 for point in sorted(route.points, key=lambda p: p.index)
             ],

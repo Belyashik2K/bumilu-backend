@@ -25,6 +25,9 @@ from app.modules.places.application.queries.places.shared.models.place_photo imp
 from app.modules.places.application.queries.places.shared.models.place_rating import (
     PlaceRatingReadModel,
 )
+from app.modules.places.application.queries.places.shared.models.place_user_context import (
+    PlaceUserContextReadModel,
+)
 from app.modules.places.application.queries.places.shared.models.place_working_hour import (
     PlaceWorkingHourReadModel,
 )
@@ -34,6 +37,14 @@ from app.modules.places.infrastructure.database.models import (
 
 
 class PlaceReadModelMapper:
+    @staticmethod
+    def map_user_context(
+        is_favorite: bool,
+    ) -> PlaceUserContextReadModel:
+        return PlaceUserContextReadModel(
+            is_favorite=is_favorite,
+        )
+
     @staticmethod
     def map_location(place: PlaceModel) -> PlaceLocationReadModel:
         return PlaceLocationReadModel(
@@ -87,7 +98,11 @@ class PlaceReadModelMapper:
         )
 
     @classmethod
-    def map_details(cls, place: PlaceModel) -> PlaceDetailsReadModel:
+    def map_details(
+        cls,
+        place: PlaceModel,
+        is_favorite: bool,
+    ) -> PlaceDetailsReadModel:
         translation = place.translations[0]
 
         return PlaceDetailsReadModel(
@@ -106,6 +121,7 @@ class PlaceReadModelMapper:
             ),
             phones=cls.map_phones(place),
             working_hours=cls.map_working_hours(place),
+            user_context=cls.map_user_context(is_favorite=is_favorite),
         )
 
     @classmethod

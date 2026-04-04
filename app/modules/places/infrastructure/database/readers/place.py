@@ -2,7 +2,6 @@ from uuid import UUID
 
 from sqlalchemy import (
     Float,
-    and_,
     func,
     select,
 )
@@ -14,6 +13,7 @@ from sqlalchemy.orm import (
 
 from app.core.application.queries.pagination import PageReadModel
 from app.core.enums import LanguageEnum
+from app.modules.favourites.infrastructure.database.models import PlaceFavouriteModel
 from app.modules.places.application.queries.places.get_map_poi.query import BBox
 from app.modules.places.application.queries.places.shared.mappers import (
     PlaceReadModelMapper,
@@ -56,22 +56,32 @@ class SQLAlchemyPlaceReader(IPlaceReader):
 
     async def get_by_id(
         self,
+        *,
+        actor_id: UUID | None = None,
         place_id: UUID,
         translation_language: LanguageEnum,
     ) -> PlaceDetailsReadModel | None:
+        is_favorite_subquery = (
+            select(PlaceFavouriteModel.user_id)
+            .where(
+                PlaceFavouriteModel.place_id == PlaceModel.id,
+                PlaceFavouriteModel.user_id == actor_id,
+            )
+            .exists()
+        )
+
         stmt = (
             select(
                 PlaceModel,
+                is_favorite_subquery.label("is_favorite"),
             )
             .join(PlaceModel.translations)
             .join(PlaceModel.category)
             .join(PlaceCategoryModel.translations)
             .where(
-                and_(
-                    PlaceTranslationModel.language_code == translation_language,
-                    PlaceCategoryTranslationModel.language_code == translation_language,
-                    PlaceModel.id == place_id,
-                )
+                PlaceTranslationModel.language_code == translation_language,
+                PlaceCategoryTranslationModel.language_code == translation_language,
+                PlaceModel.id == place_id,
             )
             .options(
                 selectinload(PlaceModel.phones),
@@ -84,11 +94,11 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         )
 
         result = await self._session.execute(stmt)
-        place = result.unique().scalar_one_or_none()
+        place, is_favorite = result.unique().one()
 
         if place is None:
             return None
-        return PlaceReadModelMapper.map_details(place=place)
+        return PlaceReadModelMapper.map_details(place=place, is_favorite=is_favorite)
 
     async def get_cards_by_ids(
         self,

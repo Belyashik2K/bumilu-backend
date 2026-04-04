@@ -21,7 +21,9 @@ class GetPlaceQueryHandler(
 
     async def handle(self, query: GetPlaceQuery) -> PlaceView:
         place = await self._place_reader.get_by_id(
-            place_id=query.place_id, translation_language=query.language
+            actor_id=query.actor_id,
+            place_id=query.place_id,
+            translation_language=query.language,
         )
         if place is None:
             raise PlaceNotFound(place_id=query.place_id)
@@ -39,4 +41,5 @@ class GetPlaceQueryHandler(
             rating=place.rating,
             phones=place.phones,
             weekly_working_hours=group_working_hours_by_day(place.working_hours),
+            user_context=place.user_context,
         )

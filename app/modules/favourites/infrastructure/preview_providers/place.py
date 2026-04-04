@@ -5,12 +5,10 @@ from app.modules.favourites.application.interfaces.preview_provider import (
     IFavouritePreviewProvider,
 )
 from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
-from app.modules.places.application.queries.places.shared.models.place_card import (
-    PlaceCardReadModel,
-)
 from app.modules.places.application.queries.places.shared.readers.place import (
     IPlaceReader,
 )
+from app.modules.places.application.queries.places.shared.views import PlaceCardView
 
 
 class PlaceFavouritePreviewProvider(IFavouritePreviewProvider):
@@ -21,9 +19,9 @@ class PlaceFavouritePreviewProvider(IFavouritePreviewProvider):
 
     async def load_many(
         self, ids: list[UUID], translation_language: LanguageEnum
-    ) -> dict[UUID, PlaceCardReadModel]:
+    ) -> dict[UUID, PlaceCardView]:
         place_cards = await self._place_reader.get_cards_by_ids(
             ids, translation_language
         )
 
-        return {card.id: card for card in place_cards}
+        return {card.id: PlaceCardView.from_read_model(card) for card in place_cards}
