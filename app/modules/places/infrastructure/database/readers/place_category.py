@@ -7,13 +7,16 @@ from sqlalchemy.orm import (
     contains_eager,
 )
 
+from app.core.application.queries.pagination import PageReadModel
 from app.core.enums import LanguageEnum
+from app.modules.places.application.queries.categories.shared.mappers import (
+    PlaceCategoryMapper,
+)
+from app.modules.places.application.queries.categories.shared.models.place_category import (
+    LocalizedPlaceCategoryReadModel,
+)
 from app.modules.places.application.queries.categories.shared.readers.place_category import (
     IPlaceCategoryReader,
-)
-from app.modules.places.application.queries.categories.shared.views import (
-    PlaceCategoriesPage,
-    PlaceCategoryView,
 )
 from app.modules.places.infrastructure.database.models import (
     PlaceCategoryModel,
@@ -25,24 +28,12 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    @staticmethod
-    def to_view(
-        category: PlaceCategoryModel,
-    ) -> PlaceCategoryView:
-        return PlaceCategoryView(
-            id=category.id,
-            slug=category.slug,
-            icon_key=category.icon_key,
-            marker_color=category.marker_color,
-            name=category.translations[0].name,
-        )
-
     async def list(
         self,
         limit: int,
         offset: int,
         translation_language: LanguageEnum,
-    ) -> PlaceCategoriesPage:
+    ) -> PageReadModel[LocalizedPlaceCategoryReadModel]:
         count_stmt = (
             select(func.count(func.distinct(PlaceCategoryModel.id)))
             .select_from(PlaceCategoryModel)
@@ -70,15 +61,15 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
 
         if not rows:
             total = await self._session.scalar(count_stmt)
-            return PlaceCategoriesPage(
-                items=[],
-                total=total or 0,
-            )
+            return PageReadModel(total=total)
 
         categories: list[PlaceCategoryModel] = [row.PlaceCategoryModel for row in rows]
         total = rows[0].total_count
 
-        return PlaceCategoriesPage(
-            items=[self.to_view(category) for category in categories],
+        return PageReadModel(
+            items=[
+                PlaceCategoryMapper.map_localized_category(category)
+                for category in categories
+            ],
             total=total,
         )

@@ -1,5 +1,5 @@
-from app.modules.places.application.queries.categories.shared.models.place_category import (
-    LocalizedPlaceCategoryReadModel,
+from app.modules.places.application.queries.categories.shared.mappers import (
+    PlaceCategoryMapper,
 )
 from app.modules.places.application.queries.places.shared.models.place_address import (
     PlaceAddressReadModel,
@@ -29,7 +29,6 @@ from app.modules.places.application.queries.places.shared.models.place_working_h
     PlaceWorkingHourReadModel,
 )
 from app.modules.places.infrastructure.database.models import (
-    PlaceCategoryModel,
     PlaceModel,
 )
 
@@ -77,19 +76,6 @@ class PlaceReadModelMapper:
             reviews_count=reviews_count,
         )
 
-    @staticmethod
-    def map_localized_category(
-        category: PlaceCategoryModel,
-    ) -> LocalizedPlaceCategoryReadModel:
-        translation = category.translations[0]
-        return LocalizedPlaceCategoryReadModel(
-            id=category.id,
-            slug=category.slug,
-            name=translation.name,
-            icon_key=category.icon_key,
-            marker_color=category.marker_color,
-        )
-
     @classmethod
     def map_address(cls, place: PlaceModel) -> PlaceAddressReadModel:
         translation = place.translations[0]
@@ -110,7 +96,7 @@ class PlaceReadModelMapper:
             description=translation.description,
             short_description=translation.short_description,
             timezone=place.timezone,
-            category=cls.map_localized_category(place.category),
+            category=PlaceCategoryMapper.map_localized_category(place.category),
             photos=cls.map_photos(place),
             location=cls.map_location(place),
             address=cls.map_address(place),
@@ -137,7 +123,7 @@ class PlaceReadModelMapper:
             title=translation.title,
             short_description=translation.short_description,
             timezone=place.timezone,
-            category=cls.map_localized_category(place.category),
+            category=PlaceCategoryMapper.map_localized_category(place.category),
             photos=cls.map_photos(place),
             location=cls.map_location(place),
             rating=cls.map_rating(
@@ -154,7 +140,7 @@ class PlaceReadModelMapper:
         return PlaceMapPOIReadModel(
             id=place.id,
             title=translation.title,
-            category=cls.map_localized_category(place.category),
+            category=PlaceCategoryMapper.map_localized_category(place.category),
             location=cls.map_location(place),
         )
 
