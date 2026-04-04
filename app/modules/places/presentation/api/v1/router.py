@@ -151,6 +151,7 @@ async def get_place_by_id(
         GetPlaceQuery(
             place_id=place_id,
             language=accept_language.language,
+            actor_id=principal.id.value,
         )
     )
     return PlaceSchema.model_validate(result, from_attributes=True)

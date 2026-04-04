@@ -2,9 +2,7 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
-from app.modules.places.application.queries.places.shared.models.place_card import (
-    PlaceCardReadModel,
-)
+from app.modules.places.application.queries.places.shared.views import PlaceCardView
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -15,7 +13,7 @@ class RawFavouriteEntityReadModel:
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class FavouritePlaceEntityReadModel(RawFavouriteEntityReadModel):
-    preview: PlaceCardReadModel
+    preview: PlaceCardView
 
 
 FavouriteEntityReadModel = FavouritePlaceEntityReadModel

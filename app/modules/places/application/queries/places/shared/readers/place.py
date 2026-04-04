@@ -24,7 +24,11 @@ class IPlaceReader(ABC):
 
     @abstractmethod
     async def get_by_id(
-        self, place_id: UUID, translation_language: LanguageEnum
+        self,
+        *,
+        actor_id: UUID | None = None,
+        place_id: UUID,
+        translation_language: LanguageEnum,
     ) -> PlaceDetailsReadModel | None: ...
 
     @abstractmethod

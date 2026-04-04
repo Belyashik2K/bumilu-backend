@@ -18,6 +18,9 @@ from app.modules.places.presentation.api.schemas.places.location import (
 from app.modules.places.presentation.api.schemas.places.phone import PlacePhoneSchema
 from app.modules.places.presentation.api.schemas.places.photo import PlacePhotoSchema
 from app.modules.places.presentation.api.schemas.places.rating import PlaceRatingSchema
+from app.modules.places.presentation.api.schemas.places.user_context import (
+    PlaceUserContextSchema,
+)
 from app.modules.places.presentation.api.schemas.places.working_hours import (
     END_TIME_EXAMPLE,
     START_TIME_EXAMPLE,
@@ -173,4 +176,8 @@ class PlaceSchema(BaseModel):
             "(1 for Monday, 7 for Sunday) and the value is a list of working hours intervals for that day."
         ),
         examples=[{str(day): [WORKING_HOURS_INTERVAL_EXAMPLE] for day in range(1, 8)}],
+    )
+    user_context: PlaceUserContextSchema = Field(
+        ...,
+        description="User-specific context for the place, such as whether it's in the user's favorites.",
     )
