@@ -4,8 +4,9 @@ from abc import (
 )
 from uuid import UUID
 
-from app.modules.favourites.application.queries.get_all_by_user.view import (
-    FavouritesPage,
+from app.core.application.queries.pagination import PageReadModel
+from app.modules.favourites.application.queries.shared.models.favourite_record import (
+    RawFavouriteRecordReadModel,
 )
 from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
 
@@ -18,4 +19,4 @@ class IFavouriteReader(ABC):
         limit: int | None = None,
         offset: int | None = None,
         entity_type: FavouriteEntityTypeEnum | None = None,
-    ) -> FavouritesPage: ...
+    ) -> PageReadModel[RawFavouriteRecordReadModel]: ...

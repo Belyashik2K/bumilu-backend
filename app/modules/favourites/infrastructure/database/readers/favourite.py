@@ -8,15 +8,15 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.favourites.application.queries.get_all_by_user.view import (
-    FavouritesPage,
+from app.core.application.queries.pagination import PageReadModel
+from app.modules.favourites.application.queries.shared.models.favourite_entity import (
+    RawFavouriteEntityReadModel,
+)
+from app.modules.favourites.application.queries.shared.models.favourite_record import (
+    RawFavouriteRecordReadModel,
 )
 from app.modules.favourites.application.queries.shared.readers import (
     IFavouriteReader,
-)
-from app.modules.favourites.application.queries.shared.views import (
-    FavouriteEntityInfoView,
-    FavouriteView,
 )
 from app.modules.favourites.infrastructure.database.models import PlaceFavouriteModel
 from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
@@ -50,48 +50,43 @@ class SQLAlchemyFavouriteReader(IFavouriteReader):
         limit: int | None = None,
         offset: int | None = None,
         entity_type: FavouriteEntityTypeEnum | None = None,
-    ) -> FavouritesPage:
+    ) -> PageReadModel[RawFavouriteRecordReadModel]:
         favourites_subquery = self._build_favourites_union(
             user_id=user_id,
             entity_type=entity_type,
         )
 
         count_stmt = select(func.count()).select_from(favourites_subquery)
+        total = await self._session.scalar(count_stmt) or 0
 
-        stmt = (
+        items_stmt = (
             select(
                 favourites_subquery.c.entity_id,
                 favourites_subquery.c.entity_type,
                 favourites_subquery.c.created_at,
-                count_stmt.scalar_subquery().label("total_count"),
             )
             .select_from(favourites_subquery)
             .order_by(favourites_subquery.c.created_at.desc())
         )
 
         if limit is not None:
-            stmt = stmt.limit(limit)
+            items_stmt = items_stmt.limit(limit)
 
         if offset is not None:
-            stmt = stmt.offset(offset)
+            items_stmt = items_stmt.offset(offset)
 
-        result = await self._session.execute(stmt)
+        result = await self._session.execute(items_stmt)
         rows = result.all()
 
-        if not rows:
-            total = await self._session.scalar(count_stmt)
-            return FavouritesPage(items=[], total=total or 0)
-
-        return FavouritesPage(
+        return PageReadModel(
             items=[
-                FavouriteView(
-                    entity=FavouriteEntityInfoView(
-                        id=row.entity_id,
-                        type=FavouriteEntityTypeEnum(row.entity_type),
+                RawFavouriteRecordReadModel(
+                    entity=RawFavouriteEntityReadModel(
+                        id=row.entity_id, type=FavouriteEntityTypeEnum(row.entity_type)
                     ),
                     created_at=row.created_at,
                 )
                 for row in rows
             ],
-            total=rows[0].total_count or 0,
+            total=total,
         )

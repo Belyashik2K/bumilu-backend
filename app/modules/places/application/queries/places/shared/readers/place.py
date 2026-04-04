@@ -28,6 +28,13 @@ class IPlaceReader(ABC):
     ) -> PlaceDetailsReadModel | None: ...
 
     @abstractmethod
+    async def get_cards_by_ids(
+        self,
+        place_ids: list[UUID],
+        translation_language: LanguageEnum,
+    ) -> list[PlaceCardReadModel]: ...
+
+    @abstractmethod
     async def get_all(
         self,
         *,

@@ -9,6 +9,9 @@ from fastapi import (
 from pydantic import UUID7
 from starlette import status
 
+from app.core.presentation.api.schemas.accept_language import (
+    AcceptLanguageDep,
+)
 from app.core.presentation.api.schemas.pagination import (
     OffsetPaginationDep,
 )
@@ -57,6 +60,7 @@ favourites_router = APIRouter(
 async def get_my_favourites(
     handler: FromDishka[GetAllFavouritesByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_user_principal)],
+    accept_language: AcceptLanguageDep,
     filters: FavouritesFiltersDep,
     pagination: OffsetPaginationDep,
 ) -> GetAllFavouritesByUserResponseSchema:
@@ -67,6 +71,7 @@ async def get_my_favourites(
             limit=pagination.limit,
             offset=pagination.offset,
             entity_type=filters.entity_type,
+            language=accept_language.language,
         )
     )
     return GetAllFavouritesByUserResponseSchema.model_validate(
@@ -84,6 +89,7 @@ async def get_my_favourites(
 async def get_favourites_by_user_id(
     uc: FromDishka[GetAllFavouritesByUserQueryHandler],
     principal: Annotated[Principal, Depends(get_user_principal)],
+    accept_language: AcceptLanguageDep,
     filters: FavouritesFiltersDep,
     pagination: OffsetPaginationDep,
     user_id: UUID7 = USER_ID_PATH,
@@ -95,6 +101,7 @@ async def get_favourites_by_user_id(
             limit=pagination.limit,
             offset=pagination.offset,
             entity_type=filters.entity_type,
+            language=accept_language.language,
         )
     )
     return GetAllFavouritesByUserResponseSchema.model_validate(

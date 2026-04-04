@@ -5,17 +5,13 @@ from dataclasses import (
 from uuid import UUID
 
 from app.core.application.queries.pagination import OffsetPagination
-from app.modules.favourites.application.queries.shared.views import FavouriteView
+from app.modules.favourites.application.queries.shared.models.favourite_record import (
+    FavouriteRecordReadModel,
+)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class FavouritesPage:
-    items: list[FavouriteView]
-    total: int
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class PaginatedFavouritesView:
+class PaginatedFavouriteRecordsView:
     user_id: UUID
-    favourites: list[FavouriteView] = field(default_factory=list)
+    favourites: list[FavouriteRecordReadModel] = field(default_factory=list)
     pagination: OffsetPagination
