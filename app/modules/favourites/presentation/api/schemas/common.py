@@ -2,7 +2,6 @@ from datetime import datetime
 
 from fastapi import Path
 from pydantic import (
-    UUID7,
     BaseModel,
     Field,
 )
@@ -43,11 +42,6 @@ FavouriteEntityPreview = (
 
 
 class FavouriteEntityInfoSchema(BaseModel):
-    id: UUID7 = Field(
-        ...,
-        description="ID of the entity which is added to favourites.",
-        examples=[ENTITY_ID_EXAMPLE],
-    )
     type: FavouriteEntityTypeEnum = Field(
         ...,
         description="Type of the entity which is added to favourites.",
