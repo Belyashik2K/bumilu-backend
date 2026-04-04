@@ -11,6 +11,7 @@ from app.modules.favourites.shared.enums import (
     FavouriteEntityPathEnum,
     FavouriteEntityTypeEnum,
 )
+from app.modules.places.presentation.api.schemas.places.main import PlaceCardSchema
 from app.modules.users.presentation.api.schemas.common import USER_ID_EXAMPLE
 
 ENTITY_ID_EXAMPLE = (
@@ -36,6 +37,8 @@ USER_ID_PATH = Path(
     example=USER_ID_EXAMPLE,
 )
 
+FavouriteEntityPreview = PlaceCardSchema
+
 
 class FavouriteEntityInfoSchema(BaseModel):
     id: UUID7 = Field(
@@ -47,6 +50,11 @@ class FavouriteEntityInfoSchema(BaseModel):
         ...,
         description="Type of the entity which is added to favourites.",
         examples=[ENTITY_TYPE_EXAMPLE],
+    )
+    preview: FavouriteEntityPreview = Field(
+        ...,
+        description="Preview of the entity which is added to favourites. The content of the preview depends on the "
+        "type of the entity. Now it can be only place card preview, but when route favourites will be implemented, it can also be route card ",
     )
 
 

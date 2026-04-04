@@ -4,12 +4,13 @@ from dataclasses import (
 )
 from uuid import UUID
 
+from app.core.application.queries.language import LanguageMixin
 from app.core.application.queries.pagination import OffsetPaginationMixin
 from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetAllFavouritesByUserQuery(OffsetPaginationMixin):
+class GetAllFavouritesByUserQuery(OffsetPaginationMixin, LanguageMixin):
     actor_id: UUID
     user_id: UUID
     entity_type: FavouriteEntityTypeEnum | None = field(default=None)

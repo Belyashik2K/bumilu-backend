@@ -90,6 +90,68 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             return None
         return PlaceReadModelMapper.map_details(place=place)
 
+    async def get_cards_by_ids(
+        self,
+        place_ids: list[UUID],
+        translation_language: LanguageEnum,
+    ) -> list[PlaceCardReadModel]:
+        if not place_ids:
+            return []
+
+        reviews_subq = (
+            select(
+                ReviewModel.entity_id.label("place_id"),
+                func.avg(ReviewModel.rating).cast(Float).label("rating_average"),
+                func.count(ReviewModel.id).label("reviews_count"),
+            )
+            .where(
+                ReviewModel.entity_type == ReviewEntityTypeEnum.PLACE,
+                ReviewModel.entity_id.in_(place_ids),
+            )
+            .group_by(ReviewModel.entity_id)
+            .subquery()
+        )
+
+        stmt = (
+            select(
+                PlaceModel,
+                reviews_subq.c.rating_average,
+                func.coalesce(reviews_subq.c.reviews_count, 0).label("reviews_count"),
+            )
+            .join(PlaceModel.translations)
+            .join(PlaceModel.category)
+            .join(PlaceCategoryModel.translations)
+            .outerjoin(reviews_subq, reviews_subq.c.place_id == PlaceModel.id)
+            .where(
+                PlaceModel.id.in_(place_ids),
+                PlaceTranslationModel.language_code == translation_language,
+                PlaceCategoryTranslationModel.language_code == translation_language,
+            )
+            .options(
+                selectinload(PlaceModel.working_hours),
+                contains_eager(PlaceModel.translations),
+                contains_eager(PlaceModel.category).contains_eager(
+                    PlaceCategoryModel.translations
+                ),
+            )
+        )
+
+        result = await self._session.execute(stmt)
+        rows = result.unique().all()
+
+        cards_by_id: dict[UUID, PlaceCardReadModel] = {
+            place.id: PlaceReadModelMapper.map_card(
+                place=place,
+                rating_average=rating_average,
+                reviews_count=reviews_count,
+            )
+            for place, rating_average, reviews_count in rows
+        }
+
+        return [
+            cards_by_id[place_id] for place_id in place_ids if place_id in cards_by_id
+        ]
+
     async def get_all(
         self,
         *,

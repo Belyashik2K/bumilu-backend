@@ -12,6 +12,9 @@ from app.modules.favourites.application.commands.add import (
 from app.modules.favourites.application.commands.remove import (
     RemoveFromFavouritesCommandHandler,
 )
+from app.modules.favourites.application.interfaces.preview_enricher import (
+    IFavouritePreviewEnricher,
+)
 from app.modules.favourites.application.interfaces.repositories.place_favourite import (
     IPlaceFavouriteRepository,
 )
@@ -35,6 +38,12 @@ from app.modules.favourites.infrastructure.database.repositories.place_favourite
 )
 from app.modules.favourites.infrastructure.database.writers.favourite import (
     FavouriteWriter,
+)
+from app.modules.favourites.infrastructure.preview_enricher import (
+    FavouritePreviewEnricher,
+)
+from app.modules.favourites.infrastructure.preview_providers.place import (
+    PlaceFavouritePreviewProvider,
 )
 from app.modules.favourites.infrastructure.target_checker import (
     FavouriteTargetChecker,
@@ -63,6 +72,26 @@ class FavouriteProvider(Provider):
     ) -> FavouriteTargetChecker:
         return FavouriteTargetChecker(place_reader=place_reader)
 
+    @provide(scope=Scope.REQUEST)
+    async def place_preview_provider(
+        self,
+        place_reader: IPlaceReader,
+    ) -> PlaceFavouritePreviewProvider:
+        return PlaceFavouritePreviewProvider(
+            place_reader=place_reader,
+        )
+
+    @provide(scope=Scope.REQUEST, provides=IFavouritePreviewEnricher)
+    async def favourite_preview_enricher(
+        self,
+        place_preview_provider: PlaceFavouritePreviewProvider,
+    ) -> IFavouritePreviewEnricher:
+        return FavouritePreviewEnricher(
+            providers=[
+                place_preview_provider,
+            ]
+        )
+
     @provide(scope=Scope.REQUEST, provides=IFavouriteReader)
     async def favourite_reader(
         self, session: AsyncSession
@@ -80,11 +109,15 @@ class FavouriteProvider(Provider):
 
     @provide(scope=Scope.REQUEST)
     async def get_favourites_by_user_handler(
-        self, favourite_reader: IFavouriteReader, user_reader: IUserReader
+        self,
+        favourite_reader: IFavouriteReader,
+        user_reader: IUserReader,
+        preview_enricher: IFavouritePreviewEnricher,
     ) -> GetAllFavouritesByUserQueryHandler:
         return GetAllFavouritesByUserQueryHandler(
             favourite_reader=favourite_reader,
             user_reader=user_reader,
+            preview_enricher=preview_enricher,
         )
 
     @provide(scope=Scope.REQUEST)
