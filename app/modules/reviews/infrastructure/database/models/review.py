@@ -31,6 +31,17 @@ if TYPE_CHECKING:
 
 class ReviewModel(PKUUIDMixin, TimestampMixin, BaseModel):
     __tablename__ = "reviews"
+    __table_args__ = (
+        Index(
+            "ix_reviews_entity",
+            "entity_type",
+            "entity_id",
+        ),
+        UniqueConstraint(
+            "entity_type", "entity_id", "author_id", name="uq_reviews_entity_author"
+        ),
+        CheckConstraint("rating >= 1 AND rating <= 5", name="ck_reviews_rating_range"),
+    )
 
     author_id: Mapped[UUID] = mapped_column(
         _UUID,
@@ -47,16 +58,4 @@ class ReviewModel(PKUUIDMixin, TimestampMixin, BaseModel):
 
     author: Mapped["UserModel"] = relationship(
         "UserModel", back_populates="reviews", lazy="raise"
-    )
-
-    __table_args__ = (
-        Index(
-            "ix_reviews_entity",
-            "entity_type",
-            "entity_id",
-        ),
-        UniqueConstraint(
-            "entity_type", "entity_id", "author_id", name="uq_reviews_entity_author"
-        ),
-        CheckConstraint("rating >= 1 AND rating <= 5", name="ck_reviews_rating_range"),
     )

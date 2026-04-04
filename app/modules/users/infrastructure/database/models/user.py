@@ -34,6 +34,9 @@ if TYPE_CHECKING:
 
 if TYPE_CHECKING:
     from app.modules.auth.infrastructure.database.models import PrincipalModel
+    from app.modules.favourites.infrastructure.database.models import (
+        PlaceFavouriteModel,
+    )
 
 
 class UserModel(TimestampMixin, BaseModel):
@@ -57,6 +60,12 @@ class UserModel(TimestampMixin, BaseModel):
     )
     chats: Mapped[list["ChatModel"]] = relationship(
         "ChatModel",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="raise",
+    )
+    favourite_places: Mapped[list["PlaceFavouriteModel"]] = relationship(
+        "PlaceFavouriteModel",
         back_populates="user",
         cascade="all, delete-orphan",
         lazy="raise",

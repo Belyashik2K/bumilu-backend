@@ -1,1 +1,1 @@
-from .favourite import FavouriteModel
+from .place_favourite import PlaceFavouriteModel
