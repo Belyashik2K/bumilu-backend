@@ -44,6 +44,16 @@ class SQLAlchemyPlaceReader(IPlaceReader):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
+    async def exists(self, place_id: UUID) -> bool:
+        stmt = (
+            select(func.count())
+            .select_from(PlaceModel)
+            .where(PlaceModel.id == place_id)
+        )
+        result = await self._session.execute(stmt)
+        count = result.scalar_one()
+        return count > 0
+
     async def get_by_id(
         self,
         place_id: UUID,
