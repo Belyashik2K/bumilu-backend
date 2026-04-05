@@ -28,6 +28,15 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
+    async def exists(self, slug: str) -> bool:
+        stmt = (
+            select(func.count())
+            .select_from(PlaceCategoryModel)
+            .where(PlaceCategoryModel.slug == slug)
+        )
+        result = await self._session.execute(stmt)
+        return result.scalar_one() > 0
+
     async def list(
         self,
         limit: int,
