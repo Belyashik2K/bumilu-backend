@@ -1,10 +1,10 @@
 from app.core.application.queries import IQueryHandler
 from app.core.application.queries.pagination import OffsetPagination
+from app.modules.places.application.interfaces.readers.place import (
+    IPlaceReader,
+)
 from app.modules.places.application.queries.places.get_all.query import (
     GetAllPlacesQuery,
-)
-from app.modules.places.application.queries.places.shared.readers.place import (
-    IPlaceReader,
 )
 from app.modules.places.application.queries.places.shared.views import (
     PaginatedPlaceCardView,

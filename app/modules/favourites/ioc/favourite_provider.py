@@ -48,7 +48,7 @@ from app.modules.favourites.infrastructure.preview_providers.place import (
 from app.modules.favourites.infrastructure.target_checker import (
     FavouriteTargetChecker,
 )
-from app.modules.places.application.queries.places.shared.readers.place import (
+from app.modules.places.application.interfaces.readers.place import (
     IPlaceReader,
 )
 from app.modules.users.application.interfaces.repositories.user import IUserRepository

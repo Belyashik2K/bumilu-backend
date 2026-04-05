@@ -4,6 +4,9 @@ from dishka import (
     provide,
 )
 
+from app.modules.places.application.interfaces.readers.place import (
+    IPlaceReader,
+)
 from app.modules.places.application.queries.categories.get_all.handler import (
     GetAllPlaceCategoriesQueryHandler,
 )
@@ -18,9 +21,6 @@ from app.modules.places.application.queries.places.get_all.handler import (
 )
 from app.modules.places.application.queries.places.get_map_poi.handler import (
     GetPlacesMapPOIQueryHandler,
-)
-from app.modules.places.application.queries.places.shared.readers.place import (
-    IPlaceReader,
 )
 
 

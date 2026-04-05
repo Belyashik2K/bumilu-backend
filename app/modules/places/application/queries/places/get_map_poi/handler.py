@@ -1,9 +1,9 @@
 from app.core.application.queries import IQueryHandler
+from app.modules.places.application.interfaces.readers.place import (
+    IPlaceReader,
+)
 from app.modules.places.application.queries.places.get_map_poi.query import (
     GetPlacesMapPOIQuery,
-)
-from app.modules.places.application.queries.places.shared.readers.place import (
-    IPlaceReader,
 )
 from app.modules.places.application.queries.places.shared.views import (
     PlaceMapPOICategoryView,

@@ -1,9 +1,9 @@
 from app.core.application.queries import IQueryHandler
 from app.modules.places.application.exceptions.place import PlaceNotFound
-from app.modules.places.application.queries.places.get.query import GetPlaceQuery
-from app.modules.places.application.queries.places.shared.readers.place import (
+from app.modules.places.application.interfaces.readers.place import (
     IPlaceReader,
 )
+from app.modules.places.application.queries.places.get.query import GetPlaceQuery
 from app.modules.places.application.queries.places.shared.utils.working_hours import (
     group_working_hours_by_day,
 )

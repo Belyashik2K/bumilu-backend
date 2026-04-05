@@ -12,6 +12,9 @@ from app.modules.places.application.queries.categories.shared.models.place_categ
 
 class IPlaceCategoryReader(ABC):
     @abstractmethod
+    async def exists(self, slug: str) -> bool: ...
+
+    @abstractmethod
     async def list(
         self,
         limit: int,
