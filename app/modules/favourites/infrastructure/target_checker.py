@@ -3,7 +3,7 @@ from app.modules.favourites.application.interfaces.target_checker import (
     IFavouriteTargetChecker,
 )
 from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
-from app.modules.places.application.queries.places.shared.readers.place import (
+from app.modules.places.application.interfaces.readers.place import (
     IPlaceReader,
 )
 

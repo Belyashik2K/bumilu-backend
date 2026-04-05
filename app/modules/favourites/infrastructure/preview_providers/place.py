@@ -5,7 +5,7 @@ from app.modules.favourites.application.interfaces.preview_provider import (
     IFavouritePreviewProvider,
 )
 from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
-from app.modules.places.application.queries.places.shared.readers.place import (
+from app.modules.places.application.interfaces.readers.place import (
     IPlaceReader,
 )
 from app.modules.places.application.queries.places.shared.views import PlaceCardView

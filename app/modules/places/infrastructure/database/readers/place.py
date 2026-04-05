@@ -14,6 +14,9 @@ from sqlalchemy.orm import (
 from app.core.application.queries.pagination import PageReadModel
 from app.core.enums import LanguageEnum
 from app.modules.favourites.infrastructure.database.models import PlaceFavouriteModel
+from app.modules.places.application.interfaces.readers.place import (
+    IPlaceReader,
+)
 from app.modules.places.application.queries.places.get_map_poi.query import BBox
 from app.modules.places.application.queries.places.shared.mappers import (
     PlaceReadModelMapper,
@@ -26,9 +29,6 @@ from app.modules.places.application.queries.places.shared.models.place_details i
 )
 from app.modules.places.application.queries.places.shared.models.place_map_poi import (
     PlaceMapPOIReadModel,
-)
-from app.modules.places.application.queries.places.shared.readers.place import (
-    IPlaceReader,
 )
 from app.modules.places.infrastructure.database.models import (
     PlaceCategoryModel,

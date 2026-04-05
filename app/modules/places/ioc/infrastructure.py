@@ -5,11 +5,11 @@ from dishka import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.places.application.interfaces.readers.place import (
+    IPlaceReader,
+)
 from app.modules.places.application.queries.categories.shared.readers.place_category import (
     IPlaceCategoryReader,
-)
-from app.modules.places.application.queries.places.shared.readers.place import (
-    IPlaceReader,
 )
 from app.modules.places.infrastructure.database.readers.place import (
     SQLAlchemyPlaceReader,
