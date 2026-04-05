@@ -1,7 +1,11 @@
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.domain.value_objects.id import PlaceCategoryIdVO
 from app.core.infrastructure.database import SQLAlchemyBaseRepository
+from app.core.infrastructure.database.exception_catcher import (
+    sqlalchemy_exception_catcher,
+)
 from app.modules.places.application.interfaces.repositories.place_category import (
     IPlaceCategoryRepository,
 )
@@ -25,6 +29,18 @@ class SQLAlchemyPlaceCategoryRepository(
             session=session,
             model_class=PlaceCategoryModel,
         )
+
+    @sqlalchemy_exception_catcher
+    async def save(self, entity: PlaceCategory) -> PlaceCategory:
+        data = self._to_data(entity)
+        merged_data = await self.session.merge(data)
+        await self.session.flush()
+
+        stmt = select(PlaceCategoryModel).where(PlaceCategoryModel.id == merged_data.id)
+        result = await self.session.execute(stmt)
+        model = result.scalar_one()
+
+        return self._to_entity(model)
 
     def _to_data(self, entity: PlaceCategory) -> PlaceCategoryModel:
         return PlaceCategoryModel(
