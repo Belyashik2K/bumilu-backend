@@ -3,13 +3,13 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True)
 class PlaceCategorySlugVO:
-    slug: str
+    value: str
 
     def _is_valid_slug(self) -> bool:
-        if not self.slug:
+        if not self.value:
             return False
 
-        return self.slug.isalpha()
+        return self.value.isalpha()
 
     def __post_init__(self) -> None:
         if not self._is_valid_slug():
