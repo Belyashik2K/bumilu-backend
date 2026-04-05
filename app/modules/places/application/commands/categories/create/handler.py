@@ -77,6 +77,6 @@ class CreatePlaceCategoryCommandHandler(
         )
 
         await self._category_repository.save(category)
-        await self._category_translation_repository.save_many(created_translations)
+        await self._category_translation_repository.batch_save(created_translations)
 
         return CreatePlaceCategoryCommandResult(id=category.id.value)

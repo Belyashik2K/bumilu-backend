@@ -3,13 +3,13 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True)
 class PlaceCategoryMarkerColorVO:
-    hex_code: str
+    value: str
 
     def __post_init__(self):
-        if not self.hex_code.startswith("#") or len(self.hex_code) != 7:
-            raise ValueError(f"Invalid hex code: {self.hex_code}")
+        if not self.value.startswith("#") or len(self.value) != 7:
+            raise ValueError(f"Invalid hex code: {self.value}")
 
     @property
     def rgb(self) -> tuple[int, ...]:
-        hex_code = self.hex_code.lstrip("#")
+        hex_code = self.value.lstrip("#")
         return tuple(int(hex_code[i : i + 2], 16) for i in (0, 2, 4))
