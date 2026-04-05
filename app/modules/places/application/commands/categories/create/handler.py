@@ -4,6 +4,9 @@ from app.modules.places.application.commands.categories.create.command import (
     CreatePlaceCategoryCommand,
     CreatePlaceCategoryCommandResult,
 )
+from app.modules.places.application.exceptions.place_category import (
+    PlaceCategoryAlreadyExists,
+)
 from app.modules.places.application.interfaces.repositories.place_category import (
     IPlaceCategoryRepository,
 )
@@ -52,9 +55,7 @@ class CreatePlaceCategoryCommandHandler(
         command: CreatePlaceCategoryCommand,
     ) -> CreatePlaceCategoryCommandResult:
         if await self._category_reader.exists(slug=command.slug):
-            raise ValueError(
-                f"Place category with slug '{command.slug}' already exists"
-            )  # TODO: custom exception
+            raise PlaceCategoryAlreadyExists(slug=command.slug)
 
         slug = PlaceCategorySlugVO(command.slug)
         icon_key = PlaceCategoryIconKeyVO(command.icon_key)
