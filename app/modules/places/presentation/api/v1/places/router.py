@@ -18,12 +18,6 @@ from app.core.presentation.endpoint_responses import generate_responses_for_endp
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
 from app.modules.auth.shared.context import Principal
-from app.modules.places.application.queries.categories.get_all.handler import (
-    GetAllPlaceCategoriesQueryHandler,
-)
-from app.modules.places.application.queries.categories.get_all.query import (
-    GetAllPlaceCategoriesQuery,
-)
 from app.modules.places.application.queries.places.get.handler import (
     GetPlaceQueryHandler,
 )
@@ -41,9 +35,6 @@ from app.modules.places.application.queries.places.get_map_poi.query import (
     BBox,
     GetPlacesMapPOIQuery,
 )
-from app.modules.places.presentation.api.schemas.categories.get import (
-    PlaceCategoriesListResponseSchema,
-)
 from app.modules.places.presentation.api.schemas.places.main import (
     GetPlaceMapPOIsResponseSchema,
     PaginatedPlaceCardsResponseSchema,
@@ -51,12 +42,12 @@ from app.modules.places.presentation.api.schemas.places.main import (
     PlaceSchema,
 )
 
-places_router = APIRouter(
+user_places_router = APIRouter(
     prefix="/places", tags=["Places"], dependencies=[Depends(security)]
 )
 
 
-@places_router.get(
+@user_places_router.get(
     "",
     responses=generate_responses_for_endpoint(),
 )
@@ -83,30 +74,7 @@ async def get_places(
     )
 
 
-@places_router.get(
-    "/categories",
-    responses=generate_responses_for_endpoint(),
-)
-@inject
-async def get_place_categories(
-    handler: FromDishka[GetAllPlaceCategoriesQueryHandler],
-    principal: Annotated[Principal, Depends(get_user_principal)],
-    pagination: OffsetPaginationDep,
-    accept_language: AcceptLanguageDep,
-) -> PlaceCategoriesListResponseSchema:
-    result = await handler(
-        GetAllPlaceCategoriesQuery(
-            language=accept_language.language,
-            limit=pagination.limit,
-            offset=pagination.offset,
-        )
-    )
-    return PlaceCategoriesListResponseSchema.model_validate(
-        result, from_attributes=True
-    )
-
-
-@places_router.get(
+@user_places_router.get(
     "/map/pois",
     responses=generate_responses_for_endpoint(),
 )
@@ -136,7 +104,7 @@ async def get_place_map_pois(
     )
 
 
-@places_router.get(
+@user_places_router.get(
     "/{place_id}",
     responses=generate_responses_for_endpoint(status.HTTP_404_NOT_FOUND),
 )

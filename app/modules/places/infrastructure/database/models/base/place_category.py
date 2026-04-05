@@ -18,13 +18,13 @@ from app.core.infrastructure.database.mixins import (
     PKUUIDMixin,
     TimestampMixin,
 )
+from app.modules.places.infrastructure.database.models.translations.category import (
+    PlaceCategoryTranslationModel,
+)
 
 if TYPE_CHECKING:
     from app.modules.places.infrastructure.database.models.base.place import (
         PlaceModel,
-    )
-    from app.modules.places.infrastructure.database.models.translations.category import (
-        PlaceCategoryTranslationModel,
     )
 
 
