@@ -10,6 +10,7 @@ from fastapi import (
 from app.core.presentation.api.schemas.accept_language import AcceptLanguageDep
 from app.core.presentation.api.schemas.pagination import OffsetPaginationDep
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
+from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
 from app.modules.auth.shared.context import Principal
 from app.modules.places.application.queries.categories.get_all.handler import (
@@ -25,6 +26,7 @@ from app.modules.places.presentation.api.schemas.categories.get import (
 user_place_categories_router = APIRouter(
     prefix="/places/categories",
     tags=["Place Categories"],
+    dependencies=[Depends(security)],
 )
 
 
