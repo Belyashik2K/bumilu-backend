@@ -1,18 +1,18 @@
 from app.core.application.queries import IQueryHandler
 from app.modules.routing.application.interfaces.routing_gateway import IRoutingGateway
 from app.modules.routing.application.models.route_path import RoutePath
-from app.modules.routing.application.queries.get_route.query import (
-    GetRouteBetweenPointsQuery,
+from app.modules.routing.application.queries.build_route_path.query import (
+    BuildRoutePathBetweenPointsQuery,
 )
 
 
-class GetRouteBetweenPointsQueryHandler(
-    IQueryHandler[GetRouteBetweenPointsQuery, RoutePath]
+class BuildRoutePathBetweenPointsQueryHandler(
+    IQueryHandler[BuildRoutePathBetweenPointsQuery, RoutePath]
 ):
     def __init__(self, routing_gateway: IRoutingGateway) -> None:
         self._routing_gateway = routing_gateway
 
-    async def handle(self, query: GetRouteBetweenPointsQuery) -> RoutePath:
+    async def handle(self, query: BuildRoutePathBetweenPointsQuery) -> RoutePath:
         if len(query.points) < 2:
             raise ValueError("too few points for route")
 
@@ -24,6 +24,6 @@ class GetRouteBetweenPointsQueryHandler(
 
         return await self._routing_gateway.get_route(
             points=query.points,
-            mode=query.mode,
+            mode=query.travel_mode,
             translation_language=query.language,
         )

@@ -5,7 +5,7 @@ from abc import (
 
 from app.core.enums import LanguageEnum
 from app.modules.routing.application.models.route_path import RoutePath
-from app.modules.routing.application.queries.get_route.query import Waypoint
+from app.modules.routing.application.queries.build_route_path.query import Waypoint
 from app.modules.routing.shared.enums.travel_mode import TravelModeEnum
 
 

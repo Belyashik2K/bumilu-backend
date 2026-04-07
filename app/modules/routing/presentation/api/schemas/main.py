@@ -12,6 +12,6 @@ class GetRouteBetweenPointsRequestSchema(BaseModel):
         ...,
         description="List of waypoints that define the route. Each waypoint should include latitude and longitude.",
     )
-    mode: TravelModeEnum = Field(
+    travel_mode: TravelModeEnum = Field(
         ..., description="Travel mode for the route.", examples=[TravelModeEnum.WALK]
     )
