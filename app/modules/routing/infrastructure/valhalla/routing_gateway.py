@@ -7,7 +7,7 @@ from app.modules.routing.application.models.route_geometry import RouteGeometry
 from app.modules.routing.application.models.route_instruction import RouteInstruction
 from app.modules.routing.application.models.route_leg import RouteLeg
 from app.modules.routing.application.models.route_path import RoutePath
-from app.modules.routing.application.queries.get_route.query import Waypoint
+from app.modules.routing.application.queries.build_route_path.query import Waypoint
 from app.modules.routing.infrastructure.valhalla.client import ValhallaClient
 from app.modules.routing.shared.enums.route_geometry_format import (
     RouteGeometryFormatEnum,

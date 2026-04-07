@@ -6,6 +6,7 @@ from pydantic import (
 
 from app.core.presentation.api.schemas.pagination import OffsetPaginationSchema
 from app.modules.routes.presentation.api.schemas.point import RoutePointSchema
+from app.modules.routing.shared.enums.travel_mode import TravelModeEnum
 
 UUID_EXAMPLE = "123e4567-e89b-12d3-a456-426614174000"
 TITLE_EXAMPLE = "Best massage parlors in St. Petersburg"
@@ -80,4 +81,12 @@ class RouteSchema(BaseModel):
         ...,
         description="Total number of points included in the route",
         examples=[5],
+    )
+
+
+class BuildRoutePathForRouteRequestSchema(BaseModel):
+    travel_mode: TravelModeEnum = Field(
+        ...,
+        description="Travel mode for building the route path.",
+        examples=[TravelModeEnum.WALK],
     )

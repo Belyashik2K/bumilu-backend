@@ -5,8 +5,8 @@ from dishka import (
 )
 
 from app.modules.routing.application.interfaces.routing_gateway import IRoutingGateway
-from app.modules.routing.application.queries.get_route.handler import (
-    GetRouteBetweenPointsQueryHandler,
+from app.modules.routing.application.queries.build_route_path.handler import (
+    BuildRoutePathBetweenPointsQueryHandler,
 )
 
 
@@ -15,5 +15,5 @@ class RoutingQueryHandlersProvider(Provider):
     async def get_route_between_points_handler(
         self,
         routing_gateway: IRoutingGateway,
-    ) -> GetRouteBetweenPointsQueryHandler:
-        return GetRouteBetweenPointsQueryHandler(routing_gateway=routing_gateway)
+    ) -> BuildRoutePathBetweenPointsQueryHandler:
+        return BuildRoutePathBetweenPointsQueryHandler(routing_gateway=routing_gateway)

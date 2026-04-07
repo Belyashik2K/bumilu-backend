@@ -19,6 +19,6 @@ class Waypoint:
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetRouteBetweenPointsQuery(LanguageMixin):
+class BuildRoutePathBetweenPointsQuery(LanguageMixin):
     points: list[Waypoint] = field(default_factory=list)
-    mode: TravelModeEnum
+    travel_mode: TravelModeEnum

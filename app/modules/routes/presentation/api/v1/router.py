@@ -16,6 +16,12 @@ from app.core.presentation.endpoint_responses import generate_responses_for_endp
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
 from app.modules.auth.shared.context import Principal
+from app.modules.routes.application.queries.build_route_path.handler import (
+    BuildRoutePathForRouteQueryHandler,
+)
+from app.modules.routes.application.queries.build_route_path.query import (
+    BuildRoutePathForRouteQuery,
+)
 from app.modules.routes.application.queries.get.handler import GetRouteQueryHandler
 from app.modules.routes.application.queries.get.query import GetRouteQuery
 from app.modules.routes.application.queries.get_all.handler import (
@@ -24,9 +30,11 @@ from app.modules.routes.application.queries.get_all.handler import (
 from app.modules.routes.application.queries.get_all.query import GetAllRoutesQuery
 from app.modules.routes.presentation.api.filters.route_sort import RouteSortFiltersDep
 from app.modules.routes.presentation.api.schemas.main import (
+    BuildRoutePathForRouteRequestSchema,
     PaginatedRouteCardsResponseSchema,
     RouteSchema,
 )
+from app.modules.routing.presentation.api.schemas.path import RoutePathSchema
 
 routes_router = APIRouter(
     prefix="/routes", tags=["Routes"], dependencies=[Depends(security)]
@@ -80,8 +88,18 @@ async def get_route_by_id(
     responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
 )
 @inject
-async def get_route_route_by_id(
+async def build_route_path_for_route(
     route_id: UUID7,
+    handler: FromDishka[BuildRoutePathForRouteQueryHandler],
     principal: Annotated[Principal, Depends(get_user_principal)],
-) -> None:
-    raise NotImplementedError("Route route endpoint is not implemented yet")
+    data: BuildRoutePathForRouteRequestSchema,
+    accept_language: AcceptLanguageDep,
+) -> RoutePathSchema:
+    result = await handler(
+        BuildRoutePathForRouteQuery(
+            route_id=route_id,
+            travel_mode=data.travel_mode,
+            language=accept_language.language,
+        )
+    )
+    return RoutePathSchema.model_validate(result, from_attributes=True)

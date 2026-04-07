@@ -9,6 +9,7 @@ from sqlalchemy import (
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import (
     contains_eager,
+    joinedload,
     selectinload,
     with_loader_criteria,
 )
@@ -33,6 +34,7 @@ from app.modules.routes.application.queries.shared.models.route_details import (
 )
 from app.modules.routes.application.queries.shared.models.route_point import (
     RoutePointReadModel,
+    RouteWaypointModel,
 )
 from app.modules.routes.application.queries.shared.readers.route import IRouteReader
 from app.modules.routes.infrastructure.database.models import (
@@ -104,6 +106,33 @@ class SQLAlchemyRouteReader(IRouteReader):
             ],
             total_points=len(route.points),
         )
+
+    async def get_route_points(
+        self,
+        route_id: UUID,
+    ) -> list[RouteWaypointModel]:
+        stmt = (
+            select(RoutePointModel)
+            .where(RoutePointModel.route_id == route_id)
+            .options(
+                joinedload(
+                    RoutePointModel.place,
+                )
+            )
+            .order_by(RoutePointModel.point_index.asc())
+        )
+
+        result = await self._session.execute(stmt)
+        points = result.scalars().all()
+
+        return [
+            RouteWaypointModel(
+                index=point.point_index,
+                latitude=point.place.latitude,
+                longitude=point.place.longitude,
+            )
+            for point in points
+        ]
 
     async def get_all(
         self,
