@@ -8,6 +8,7 @@ from fastapi import (
 )
 
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
+from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.staff.deps import get_staff_principal
 from app.modules.auth.shared.context import Principal
 from app.modules.places.application.commands.categories.create.command import (
@@ -27,6 +28,7 @@ from app.modules.places.presentation.api.schemas.categories.create import (
 admin_place_categories_router = APIRouter(
     prefix="/admin/places/categories",
     tags=["Admin Place Categories"],
+    dependencies=[Depends(security)],
 )
 
 

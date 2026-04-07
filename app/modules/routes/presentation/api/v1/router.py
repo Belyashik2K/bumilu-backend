@@ -7,6 +7,7 @@ from fastapi import (
     Depends,
 )
 from pydantic import UUID7
+from starlette import status
 
 from app.core.presentation.api.schemas.accept_language import AcceptLanguageDep
 from app.core.presentation.api.schemas.location import LocationDep
@@ -72,3 +73,15 @@ async def get_route_by_id(
         )
     )
     return RouteSchema.model_validate(result, from_attributes=True)
+
+
+@routes_router.get(
+    "/{route_id}/geometry",
+    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+)
+@inject
+async def get_route_geometry_by_id(
+    route_id: UUID7,
+    principal: Annotated[Principal, Depends(get_user_principal)],
+) -> None:
+    raise NotImplementedError("Route geometry endpoint is not implemented yet")
