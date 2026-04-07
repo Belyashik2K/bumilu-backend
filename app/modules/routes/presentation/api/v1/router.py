@@ -76,12 +76,12 @@ async def get_route_by_id(
 
 
 @routes_router.get(
-    "/{route_id}/geometry",
+    "/{route_id}/route",
     responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
 )
 @inject
-async def get_route_geometry_by_id(
+async def get_route_route_by_id(
     route_id: UUID7,
     principal: Annotated[Principal, Depends(get_user_principal)],
 ) -> None:
-    raise NotImplementedError("Route geometry endpoint is not implemented yet")
+    raise NotImplementedError("Route route endpoint is not implemented yet")
