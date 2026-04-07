@@ -94,6 +94,7 @@ services:
       - bumilu
 networks:
   bumilu:
+    external: true
 volumes:
   postgres_data:
   redis_data:

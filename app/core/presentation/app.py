@@ -40,6 +40,7 @@ from app.modules.favourites.ioc import FavouriteProvider
 from app.modules.places.ioc import PLACES_PROVIDERS
 from app.modules.reviews.ioc import ReviewProvider
 from app.modules.routes.ioc import ROUTES_PROVIDERS
+from app.modules.routing.ioc import ROUTING_PROVIDERS
 from app.modules.staff.ioc import StaffProvider
 from app.modules.users.ioc import UserProvider
 
@@ -108,6 +109,7 @@ def create_app() -> FastAPI:
         StaffProvider(),
         *PLACES_PROVIDERS,
         *ROUTES_PROVIDERS,
+        *ROUTING_PROVIDERS,
         FastapiProvider(),
     )
     setup_dishka_fastapi(container=container, app=app)

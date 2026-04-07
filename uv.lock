@@ -256,6 +256,7 @@ dependencies = [
     { name = "geoalchemy2", extra = ["shapely"] },
     { name = "httpx" },
     { name = "openai" },
+    { name = "polyline" },
     { name = "pwdlib", extra = ["argon2"] },
     { name = "pydantic-settings", extra = ["yaml"] },
     { name = "pyjwt" },
@@ -289,6 +290,7 @@ requires-dist = [
     { name = "geoalchemy2", extras = ["shapely"], specifier = ">=0.18.4" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "openai", specifier = ">=2.26.0" },
+    { name = "polyline", specifier = ">=2.0.4" },
     { name = "pwdlib", extras = ["argon2"], specifier = ">=0.3.0" },
     { name = "pydantic-settings", extras = ["yaml"], specifier = ">=2.13.0" },
     { name = "pyjwt", specifier = ">=2.11.0" },
@@ -1046,6 +1048,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f9/e2/3e91f31a7d2b083fe6ef3fa267035b518369d9511ffab804f839851d2779/pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3", size = 69412, upload-time = "2025-05-15T12:30:07.975Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746", size = 20538, upload-time = "2025-05-15T12:30:06.134Z" },
+]
+
+[[package]]
+name = "polyline"
+version = "2.0.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/2c/c1/1a6ee4f9f02a55b2a9241bbadd342970160f7e42423307f21ee8f5530d4e/polyline-2.0.4.tar.gz", hash = "sha256:f05ade694522bf1720febebe1672f820f43a13c6a1664751e7769d47e8ca9b1b", size = 8261, upload-time = "2025-12-02T17:55:22.735Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/34/a8/4ebd3cb31d380e018efb1c8bf92664b196a41aba19506015b682af2587b9/polyline-2.0.4-py3-none-any.whl", hash = "sha256:a4e0c15b8ecb32915559f8cf210f1f8c2f5cc53d3cd32c91d7c1668d6e936e10", size = 7167, upload-time = "2025-12-02T17:55:20.323Z" },
 ]
 
 [[package]]

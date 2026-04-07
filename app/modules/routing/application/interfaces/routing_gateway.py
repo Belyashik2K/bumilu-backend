@@ -3,6 +3,7 @@ from abc import (
     abstractmethod,
 )
 
+from app.core.enums import LanguageEnum
 from app.modules.routing.application.models.route_path import RoutePath
 from app.modules.routing.application.queries.get_route.query import Waypoint
 from app.modules.routing.shared.enums.travel_mode import TravelModeEnum
@@ -14,4 +15,5 @@ class IRoutingGateway(ABC):
         self,
         points: list[Waypoint],
         mode: TravelModeEnum,
+        translation_language: LanguageEnum,
     ) -> RoutePath: ...

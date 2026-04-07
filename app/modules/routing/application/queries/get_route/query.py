@@ -3,6 +3,7 @@ from dataclasses import (
     field,
 )
 
+from app.core.application.queries.language import LanguageMixin
 from app.modules.routing.shared.enums.travel_mode import TravelModeEnum
 
 
@@ -18,6 +19,6 @@ class Waypoint:
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetRouteQuery:
+class GetRouteBetweenPointsQuery(LanguageMixin):
     points: list[Waypoint] = field(default_factory=list)
     mode: TravelModeEnum
