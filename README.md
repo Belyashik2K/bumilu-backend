@@ -67,8 +67,20 @@ docker-compose -f docker-compose.dev.yml -f docker-compose.yml down --rmi all
 docker-compose -f docker-compose.dev.yml -f docker-compose.yml down -v
 ```
 
+### 2.75 Интеграция с Valhalla
+
+Предварительно необходимо запустить [spb-map-service](https://github.com/BumiLuDev/spb-map-service)
+
+_Пропускаем этот шаг, если не используются функции роутинга_
+
 ### 3. Запуск
 
+1. Создание external сети
+```
+docker network create bumilu
+```
+
+2. Развёртывние
 ```bash
 docker-compose -f docker-compose.dev.yml -f docker-compose.yml up --build
 ```
