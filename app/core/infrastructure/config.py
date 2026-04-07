@@ -182,6 +182,22 @@ class ChatConfig(BaseModel):
 
 # ================================
 
+
+# ========= RoutingConfig ========
+
+
+class ValhallaConfig(BaseModel):
+    base_url: str
+    timeout_sec: int
+
+
+class RoutingConfig(BaseModel):
+    valhalla: ValhallaConfig
+
+
+# ================================
+
+
 # ======== AppConfig ========
 
 
@@ -200,6 +216,7 @@ class AppConfig(BaseSettings):
     auth: AuthConfig
     cors: CORSConfig
     chat: ChatConfig
+    routing: RoutingConfig
 
     @classmethod
     def settings_customise_sources(

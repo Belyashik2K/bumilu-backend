@@ -1,7 +1,7 @@
-from .infrastructure import RoutesInfrastructureProvider
+from .persistence import RoutesPersistenceProvider
 from .queries import RoutesQueryHandlersProvider
 
 ROUTES_PROVIDERS = [
-    RoutesInfrastructureProvider(),
+    RoutesPersistenceProvider(),
     RoutesQueryHandlersProvider(),
 ]

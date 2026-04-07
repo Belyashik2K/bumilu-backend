@@ -11,7 +11,7 @@ from app.modules.routes.infrastructure.database.readers.route import (
 )
 
 
-class RoutesInfrastructureProvider(Provider):
+class RoutesPersistenceProvider(Provider):
     @provide(scope=Scope.REQUEST, provides=IRouteReader)
     async def route_reader(self, session: AsyncSession) -> IRouteReader:
         return SQLAlchemyRouteReader(session=session)
