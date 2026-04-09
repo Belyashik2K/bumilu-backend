@@ -17,7 +17,7 @@ class NewPlaceCategoryTranslation:
     name: PlaceCategoryNameVO
 
 
-@dataclass(frozen=True, slots=True, kw_only=True)
+@dataclass(slots=True, kw_only=True)
 class PlaceCategoryTranslation:
     id: PlaceCategoryTranslationIdVO
     category_id: PlaceCategoryIdVO
@@ -36,3 +36,10 @@ class PlaceCategoryTranslation:
             language_code=data.language_code,
             name=data.name,
         )
+
+    def update(
+        self,
+        name: PlaceCategoryNameVO | None = None,
+    ) -> None:
+        if name is not None and name != self.name:
+            self.name = name
