@@ -19,7 +19,7 @@ from app.modules.places.presentation.api.schemas.categories.translation import (
 )
 
 
-class CreatePlaceCategoryRequestSchema(BaseModel):
+class PlaceCategoryBaseSchema(BaseModel):
     slug: str = Field(
         ...,
         description="Unique slug for the place category",
@@ -35,6 +35,9 @@ class CreatePlaceCategoryRequestSchema(BaseModel):
         description="Hex color code for the marker",
         examples=[MARKER_COLOR_EXAMPLE],
     )
+
+
+class CreatePlaceCategoryRequestSchema(PlaceCategoryBaseSchema):
     translations: list[PlaceCategoryTranslationSchema] = Field(
         ...,
         description="List of translations for the place category",
@@ -49,26 +52,11 @@ class CreatePlaceCategoryResponseSchema(BaseModel):
     )
 
 
-class PlaceCategorySchema(BaseModel):
+class PlaceCategorySchema(PlaceCategoryBaseSchema):
     id: UUID7 = Field(
         ...,
         description="The unique identifier of the place category.",
         examples=[UUID_EXAMPLE],
-    )
-    slug: str = Field(
-        ...,
-        description="A unique slug representing the place category.",
-        examples=[SLUG_EXAMPLE],
-    )
-    icon_key: str = Field(
-        ...,
-        description="The key for the icon associated with the place category.",
-        examples=[ICON_KEY_EXAMPLE],
-    )
-    marker_color: str = Field(
-        ...,
-        description="The color of the marker associated with the place category, represented as a hex code.",
-        examples=[MARKER_COLOR_EXAMPLE],
     )
     name: str = Field(
         ...,
@@ -80,17 +68,17 @@ class PlaceCategorySchema(BaseModel):
 class UpdatePlaceCategoryRequestSchema(BaseModel):
     slug: str | None = Field(
         None,
-        description="New unique slug for the place category",
+        description="Unique slug for the place category",
         examples=[SLUG_EXAMPLE],
     )
     icon_key: str | None = Field(
         None,
-        description="New icon key for frontend from Lucide Icons",
+        description="Icon key for frontend from Lucide Icons",
         examples=[ICON_KEY_EXAMPLE],
     )
     marker_color: str | None = Field(
         None,
-        description="New hex color code for the marker",
+        description="Hex color code for the marker",
         examples=[MARKER_COLOR_EXAMPLE],
     )
 
@@ -100,13 +88,3 @@ PlaceCategoriesListResponseSchema = make_paginated_response_schema(
     description="Response schema for a paginated list of place categories.",
     serialization_alias="categories",
 )
-
-# class PlaceCategoriesListResponseSchema(BaseModel):
-#     categories: list[PlaceCategorySchema] = Field(
-#         ...,
-#         description="A list of chat previews that match the specified filters and pagination parameters.",
-#     )
-#     pagination: OffsetPaginationSchema = Field(
-#         ...,
-#         description="Pagination information for the retrieved list of place categories.",
-#     )
