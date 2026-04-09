@@ -5,8 +5,8 @@ from app.modules.places.application.exceptions.place_category import (
 from app.modules.places.application.queries.categories.admin.get.query import (
     GetAdminPlaceCategoryQuery,
 )
-from app.modules.places.application.queries.categories.admin.get.view import (
-    AdminPlaceCategoryView,
+from app.modules.places.application.queries.categories.shared.models.place_category import (
+    PlaceCategoryReadModel,
 )
 from app.modules.places.application.queries.categories.shared.readers.place_category import (
     IPlaceCategoryReader,
@@ -16,7 +16,7 @@ from app.modules.places.application.queries.categories.shared.readers.place_cate
 class GetAdminPlaceCategoryQueryHandler(
     IQueryHandler[
         GetAdminPlaceCategoryQuery,
-        AdminPlaceCategoryView,
+        PlaceCategoryReadModel,
     ]
 ):
     def __init__(
@@ -25,10 +25,10 @@ class GetAdminPlaceCategoryQueryHandler(
     ) -> None:
         self._place_category_reader = place_category_reader
 
-    async def handle(self, query: GetAdminPlaceCategoryQuery) -> AdminPlaceCategoryView:
+    async def handle(self, query: GetAdminPlaceCategoryQuery) -> PlaceCategoryReadModel:
         category = await self._place_category_reader.get_by_id(
             category_id=query.category_id
         )
         if category is None:
             raise PlaceCategoryNotFound(category_id=query.category_id)
-        return category  # type: ignore
+        return category
