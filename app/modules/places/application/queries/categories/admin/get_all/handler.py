@@ -2,7 +2,7 @@ from app.core.application.queries import IQueryHandler
 from app.core.application.queries.pagination import OffsetPagination
 from app.core.enums import LanguageEnum
 from app.modules.places.application.queries.categories.admin.get_all.query import (
-    GetAdminCategoriesListQuery,
+    GetAdminPlaceCategoriesListQuery,
 )
 from app.modules.places.application.queries.categories.admin.get_all.view import (
     PaginatedAdminPlaceCategoriesView,
@@ -12,14 +12,14 @@ from app.modules.places.application.queries.categories.shared.readers.place_cate
 )
 
 
-class GetAdminCategoriesListQueryHandler(
-    IQueryHandler[GetAdminCategoriesListQuery, PaginatedAdminPlaceCategoriesView]
+class GetAdminPlaceCategoriesListQueryHandler(
+    IQueryHandler[GetAdminPlaceCategoriesListQuery, PaginatedAdminPlaceCategoriesView]
 ):
     def __init__(self, place_category_reader: IPlaceCategoryReader) -> None:
         self._place_category_reader = place_category_reader
 
     async def handle(
-        self, query: GetAdminCategoriesListQuery
+        self, query: GetAdminPlaceCategoriesListQuery
     ) -> PaginatedAdminPlaceCategoriesView:
         # TODO: add more information to the view, e.g. number of places in each category
         categories = await self._place_category_reader.list(

@@ -5,5 +5,5 @@ from app.core.application.queries.pagination import OffsetPaginationMixin
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetAdminCategoriesListQuery(OffsetPaginationMixin):
+class GetAdminPlaceCategoriesListQuery(OffsetPaginationMixin):
     actor_id: UUID
