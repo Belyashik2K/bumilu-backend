@@ -19,7 +19,7 @@ from app.modules.places.application.queries.categories.user.get_all.handler impo
 from app.modules.places.application.queries.categories.user.get_all.query import (
     GetAllPlaceCategoriesQuery,
 )
-from app.modules.places.presentation.api.schemas.categories.get import (
+from app.modules.places.presentation.api.schemas.categories.category import (
     PlaceCategoriesListResponseSchema,
 )
 
