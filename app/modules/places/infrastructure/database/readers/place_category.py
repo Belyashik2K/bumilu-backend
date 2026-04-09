@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy import (
     func,
     select,
@@ -14,6 +16,7 @@ from app.modules.places.application.queries.categories.shared.mappers import (
 )
 from app.modules.places.application.queries.categories.shared.models.place_category import (
     LocalizedPlaceCategoryReadModel,
+    PlaceCategoryReadModel,
 )
 from app.modules.places.application.queries.categories.shared.readers.place_category import (
     IPlaceCategoryReader,
@@ -36,6 +39,17 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
         )
         result = await self._session.execute(stmt)
         return result.scalar_one() > 0
+
+    async def get_by_id(
+        self,
+        category_id: UUID,
+    ) -> PlaceCategoryReadModel | None:
+        stmt = select(PlaceCategoryModel).where(PlaceCategoryModel.id == category_id)
+        result = await self._session.execute(stmt)
+        category = result.scalar_one_or_none()
+        if category is None:
+            return None
+        return PlaceCategoryMapper.map_category(category)
 
     async def list(
         self,

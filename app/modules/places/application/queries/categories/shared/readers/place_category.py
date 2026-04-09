@@ -17,15 +17,15 @@ class IPlaceCategoryReader(ABC):
     async def exists(self, slug: str) -> bool: ...
 
     @abstractmethod
+    async def get_by_id(
+        self,
+        category_id: UUID,
+    ) -> PlaceCategoryReadModel | None: ...
+
+    @abstractmethod
     async def list(
         self,
         limit: int,
         offset: int,
         translation_language: LanguageEnum,
     ) -> PageReadModel[LocalizedPlaceCategoryReadModel]: ...
-
-    @abstractmethod
-    async def get_by_id(
-        self,
-        category_id: UUID,
-    ) -> PlaceCategoryReadModel | None: ...

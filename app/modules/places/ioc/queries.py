@@ -7,10 +7,25 @@ from dishka import (
 from app.modules.places.application.interfaces.readers.place import (
     IPlaceReader,
 )
+from app.modules.places.application.queries.categories.admin.get.handler import (
+    GetAdminPlaceCategoryQueryHandler,
+)
+from app.modules.places.application.queries.categories.admin.get_all.handler import (
+    GetAdminPlaceCategoriesListQueryHandler,
+)
+from app.modules.places.application.queries.categories.admin.get_all_translations.handler import (
+    GetAdminPlaceCategoryTranslationsListQueryHandler,
+)
+from app.modules.places.application.queries.categories.admin.get_translation.handler import (
+    GetAdminPlaceCategoryTranslationQueryHandler,
+)
 from app.modules.places.application.queries.categories.shared.readers.place_category import (
     IPlaceCategoryReader,
 )
-from app.modules.places.application.queries.categories.user.get_all import (
+from app.modules.places.application.queries.categories.shared.readers.place_category_translation import (
+    IPlaceCategoryTranslationReader,
+)
+from app.modules.places.application.queries.categories.user.get_all.handler import (
     GetAllPlaceCategoriesQueryHandler,
 )
 from app.modules.places.application.queries.places.get.handler import (
@@ -55,4 +70,36 @@ class PlacesQueryHandlersProvider(Provider):
     ) -> GetPlacesMapPOIQueryHandler:
         return GetPlacesMapPOIQueryHandler(
             place_reader=place_reader,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def get_admin_place_categories_handler(
+        self, place_category_reader: IPlaceCategoryReader
+    ) -> GetAdminPlaceCategoriesListQueryHandler:
+        return GetAdminPlaceCategoriesListQueryHandler(
+            place_category_reader=place_category_reader,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def get_admin_place_category_handler(
+        self, place_category_reader: IPlaceCategoryReader
+    ) -> GetAdminPlaceCategoryQueryHandler:
+        return GetAdminPlaceCategoryQueryHandler(
+            place_category_reader=place_category_reader,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def get_admin_place_category_translations_handler(
+        self, place_category_translation_reader: IPlaceCategoryTranslationReader
+    ) -> GetAdminPlaceCategoryTranslationsListQueryHandler:
+        return GetAdminPlaceCategoryTranslationsListQueryHandler(
+            place_category_translation_reader=place_category_translation_reader,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def get_admin_place_category_translation_handler(
+        self, place_category_translation_reader: IPlaceCategoryTranslationReader
+    ) -> GetAdminPlaceCategoryTranslationQueryHandler:
+        return GetAdminPlaceCategoryTranslationQueryHandler(
+            place_category_translation_reader=place_category_translation_reader,
         )
