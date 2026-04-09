@@ -54,6 +54,16 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         count = result.scalar_one()
         return count > 0
 
+    async def count_by_category_id(self, category_id: UUID) -> int:
+        stmt = (
+            select(func.count())
+            .select_from(PlaceModel)
+            .where(PlaceModel.category_id == category_id)
+        )
+        result = await self._session.execute(stmt)
+        count = result.scalar_one()
+        return count
+
     async def get_by_id(
         self,
         *,
