@@ -68,9 +68,6 @@ from app.modules.places.application.queries.categories.admin.get_all.handler imp
 from app.modules.places.application.queries.categories.admin.get_all.query import (
     GetAdminPlaceCategoriesListQuery,
 )
-from app.modules.places.application.queries.categories.admin.get_all.view import (
-    PaginatedAdminPlaceCategoriesView,
-)
 from app.modules.places.application.queries.categories.admin.get_all_translations.handler import (
     GetAdminPlaceCategoryTranslationsListQueryHandler,
 )
@@ -91,6 +88,7 @@ from app.modules.places.application.queries.categories.shared.models.place_categ
     PlaceCategoryTranslationReadModel,
 )
 from app.modules.places.presentation.api.schemas.categories.category import (
+    AdminPlaceCategoriesListResponseSchema,
     CreatePlaceCategoryRequestSchema,
     CreatePlaceCategoryResponseSchema,
     UpdatePlaceCategoryRequestSchema,
@@ -116,13 +114,16 @@ async def get_place_categories(
     handler: FromDishka[GetAdminPlaceCategoriesListQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
     pagination: OffsetPaginationDep,
-) -> PaginatedAdminPlaceCategoriesView:
-    return await handler(
+) -> AdminPlaceCategoriesListResponseSchema:
+    result = await handler(
         GetAdminPlaceCategoriesListQuery(
             actor_id=principal.id.value,
             limit=pagination.limit,
             offset=pagination.offset,
         )
+    )
+    return AdminPlaceCategoriesListResponseSchema.model_validate(
+        result, from_attributes=True
     )
 
 
