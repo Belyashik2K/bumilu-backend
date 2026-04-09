@@ -4,6 +4,9 @@ from app.core.domain.value_objects.id import PlaceCategoryIdVO
 from app.modules.places.application.commands.categories.create_translation.command import (
     CreatePlaceCategoryTranslationCommand,
 )
+from app.modules.places.application.exceptions.place_category import (
+    PlaceCategoryNotFound,
+)
 from app.modules.places.application.interfaces.repositories.place_category import (
     IPlaceCategoryRepository,
 )
@@ -40,7 +43,7 @@ class CreatePlaceCategoryTranslationCommandHandler(
         category_id = PlaceCategoryIdVO.from_uuid(command.category_id)
         category = await self._place_category_repository.get_by_id(category_id)
         if category is None:
-            raise ValueError(f"Place category with id {category_id} not found")
+            raise PlaceCategoryNotFound(category_id=category_id.value)
 
         new_translation = category.create_translation(
             data=NewPlaceCategoryTranslation(
