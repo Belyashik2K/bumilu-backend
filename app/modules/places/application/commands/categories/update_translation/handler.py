@@ -6,6 +6,10 @@ from app.core.domain.value_objects.id import (
 from app.modules.places.application.commands.categories.update_translation.command import (
     UpdateCategoryTranslationCommand,
 )
+from app.modules.places.application.exceptions.place_category import (
+    PlaceCategoryNotFound,
+    PlaceCategoryTranslationNotFound,
+)
 from app.modules.places.application.interfaces.repositories.place_category import (
     IPlaceCategoryRepository,
 )
@@ -36,14 +40,15 @@ class UpdateCategoryTranslationCommandHandler(
         category_id = PlaceCategoryIdVO.from_uuid(command.category_id)
         category = await self._place_category_repository.get_by_id(category_id)
         if category is None:
-            raise ValueError(f"Place category with id {category_id} not found")
+            raise PlaceCategoryNotFound(category_id=category_id.value)
 
         translation = await self._place_category_translation_repository.get_by_category_id_and_language_code(
             category_id, command.language_code
         )
         if translation is None:
-            raise ValueError(
-                f"Translation for place category with id {category_id} and language code {command.language_code} not found"
+            raise PlaceCategoryTranslationNotFound(
+                category_id=category_id.value,
+                language_code=command.language_code,
             )
 
         new_name = (

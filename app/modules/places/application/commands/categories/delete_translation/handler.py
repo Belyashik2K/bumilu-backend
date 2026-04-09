@@ -4,6 +4,10 @@ from app.core.domain.value_objects.id import PlaceCategoryIdVO
 from app.modules.places.application.commands.categories.delete_translation.command import (
     DeleteCategoryTranslationCommand,
 )
+from app.modules.places.application.exceptions.place_category import (
+    PlaceCategoryNotFound,
+    PlaceCategoryTranslationNotFound,
+)
 from app.modules.places.application.interfaces.repositories.place_category import (
     IPlaceCategoryRepository,
 )
@@ -31,15 +35,16 @@ class DeleteCategoryTranslationCommandHandler(
         category_id = PlaceCategoryIdVO.from_uuid(command.category_id)
         category = await self._place_category_repository.get_by_id(category_id)
         if category is None:
-            raise ValueError(f"Place category with id {category_id} not found")
+            raise PlaceCategoryNotFound(category_id=category_id.value)
 
         category_translation = await self._place_category_translation_repository.get_by_category_id_and_language_code(
             category_id=category_id,
             language_code=command.language_code,
         )
         if category_translation is None:
-            raise ValueError(
-                f"Translation for place category with id {category_id} and language code {command.language_code} not found"
+            raise PlaceCategoryTranslationNotFound(
+                category_id=category_id.value,
+                language_code=command.language_code,
             )
 
         category.ensure_translation_can_be_deleted(language_code=command.language_code)

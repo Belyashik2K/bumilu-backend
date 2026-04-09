@@ -4,6 +4,10 @@ from app.core.domain.value_objects.id import PlaceCategoryIdVO
 from app.modules.places.application.commands.categories.update.command import (
     UpdatePlaceCategoryCommand,
 )
+from app.modules.places.application.exceptions.place_category import (
+    PlaceCategoryAlreadyExists,
+    PlaceCategoryNotFound,
+)
 from app.modules.places.application.interfaces.repositories.place_category import (
     IPlaceCategoryRepository,
 )
@@ -35,7 +39,7 @@ class UpdatePlaceCategoryCommandHandler(ICommandHandler[UpdatePlaceCategoryComma
 
         category = await self._place_category_repository.get_by_id(category_id)
         if category is None:
-            raise ValueError(f"Place category with id {category_id} not found")
+            raise PlaceCategoryNotFound(category_id=category_id.value)
 
         new_slug = (
             PlaceCategorySlugVO(command.slug) if command.slug is not None else None
@@ -45,7 +49,7 @@ class UpdatePlaceCategoryCommandHandler(ICommandHandler[UpdatePlaceCategoryComma
                 new_slug
             )
             if category_with_slug and category_with_slug.id != category_id:
-                raise ValueError(f"Place category with slug {new_slug} already exists")
+                raise PlaceCategoryAlreadyExists(slug=new_slug.value)
 
         new_icon_key = (
             PlaceCategoryIconKeyVO(command.icon_key)

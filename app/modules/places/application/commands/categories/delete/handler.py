@@ -4,6 +4,10 @@ from app.core.domain.value_objects.id import PlaceCategoryIdVO
 from app.modules.places.application.commands.categories.delete.command import (
     DeletePlaceCategoryCommand,
 )
+from app.modules.places.application.exceptions.place_category import (
+    PlaceCategoryNotEmpty,
+    PlaceCategoryNotFound,
+)
 from app.modules.places.application.interfaces.readers.place import IPlaceReader
 from app.modules.places.application.interfaces.repositories.place_category import (
     IPlaceCategoryRepository,
@@ -25,14 +29,15 @@ class DeletePlaceCategoryCommandHandler(ICommandHandler[DeletePlaceCategoryComma
         category_id = PlaceCategoryIdVO.from_uuid(command.category_id)
         category = await self._place_category_repository.get_by_id(category_id)
         if category is None:
-            raise ValueError(f"Place category with id {category_id} not found")
+            raise PlaceCategoryNotFound(category_id=category_id.value)
 
         places_count = await self._place_reader.count_by_category_id(
             category_id.value
         )  # TODO: migrate to VO
         if places_count != 0:
-            raise ValueError(
-                f"Cannot delete place category with id {category_id} because there are {places_count} places assigned to it"
+            raise PlaceCategoryNotEmpty(
+                category_id=category_id.value,
+                places_count=places_count,
             )
 
         await self._place_category_repository.delete_by_id(category.id)
