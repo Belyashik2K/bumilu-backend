@@ -4,10 +4,12 @@ from pydantic import (
     Field,
 )
 
-UUID_EXAMPLE = "123e4567-e89b-12d3-a456-426614174000"
-NAME_EXAMPLE = "What they don't talk about in polite society"
-ICON_KEY_EXAMPLE = "unknown"
-MARKER_COLOR_EXAMPLE = "#F59E0B"
+from app.modules.places.presentation.api.schemas.places.examples import (
+    ICON_KEY_EXAMPLE,
+    MARKER_COLOR_EXAMPLE,
+    NAME_EXAMPLE,
+    UUID_EXAMPLE,
+)
 
 
 class PlaceMapPOICategorySchema(BaseModel):

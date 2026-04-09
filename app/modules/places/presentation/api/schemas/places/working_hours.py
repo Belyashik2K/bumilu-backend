@@ -5,8 +5,10 @@ from pydantic import (
     Field,
 )
 
-START_TIME_EXAMPLE = time(0, 0, 0)
-END_TIME_EXAMPLE = time(23, 59, 59)
+from app.modules.places.presentation.api.schemas.places.examples import (
+    END_TIME_EXAMPLE,
+    START_TIME_EXAMPLE,
+)
 
 
 class PlaceWorkingHoursIntervalSchema(BaseModel):

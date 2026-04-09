@@ -3,8 +3,10 @@ from pydantic import (
     Field,
 )
 
-LATITUDE_EXAMPLE = 60.002598
-LONGITUDE_EXAMPLE = 30.330861
+from app.modules.places.presentation.api.schemas.places.examples import (
+    LATITUDE_EXAMPLE,
+    LONGITUDE_EXAMPLE,
+)
 
 
 class PlaceLocationSchema(BaseModel):

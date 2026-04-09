@@ -3,10 +3,11 @@ from pydantic import (
     Field,
 )
 
+from app.modules.places.presentation.api.schemas.places.examples import (
+    NUMBER_EXAMPLE,
+    PHONE_TYPE_EXAMPLE,
+)
 from app.modules.places.shared.enums import PlacePhoneTypeEnum
-
-NUMBER_EXAMPLE = "+79999991984"
-PHONE_TYPE_EXAMPLE = PlacePhoneTypeEnum.MOBILE
 
 
 class PlacePhoneSchema(BaseModel):

@@ -12,6 +12,14 @@ from app.modules.places.presentation.api.schemas.places.category import (
     PlaceCardCategorySchema,
     PlaceMapPOICategorySchema,
 )
+from app.modules.places.presentation.api.schemas.places.examples import (
+    DESCRIPTION_EXAMPLE,
+    SHORT_DESCRIPTION_EXAMPLE,
+    TIMEZONE_EXAMPLE,
+    TITLE_EXAMPLE,
+    UUID_EXAMPLE,
+    WORKING_HOURS_INTERVAL_EXAMPLE,
+)
 from app.modules.places.presentation.api.schemas.places.location import (
     PlaceLocationSchema,
 )
@@ -22,18 +30,8 @@ from app.modules.places.presentation.api.schemas.places.user_context import (
     PlaceUserContextSchema,
 )
 from app.modules.places.presentation.api.schemas.places.working_hours import (
-    END_TIME_EXAMPLE,
-    START_TIME_EXAMPLE,
     PlaceWorkingHoursIntervalSchema,
 )
-
-UUID_EXAMPLE = "123e4567-e89b-12d3-a456-426614174000"
-TITLE_EXAMPLE = 'Massage parlor "У Димасика"'
-DESCRIPTION_EXAMPLE = "A cozy massage parlor located in the Vyborgsky district of St. Petersburg, offering a variety of massage services to help you relax and rejuvenate. Our experienced therapists use high-quality oils and techniques to provide a personalized massage experience tailored to your needs. Whether you're looking for a deep tissue massage, a relaxing Swedish massage, or a therapeutic sports massage, we have the perfect treatment for you. Visit us today and let us help you unwind and feel your best!"
-SHORT_DESCRIPTION_EXAMPLE = "A cozy massage parlor located in the Vyborgsky district of St. Petersburg, offering a variety of massage services to help you relax and rejuvenate."
-TIMEZONE_EXAMPLE = "Europe/Moscow"
-
-WORKING_HOURS_INTERVAL_EXAMPLE = {"start": START_TIME_EXAMPLE, "end": END_TIME_EXAMPLE}
 
 
 class PlaceMapPOISchema(BaseModel):
