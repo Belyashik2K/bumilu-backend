@@ -72,3 +72,17 @@ class PlaceCategory:
         self.translation_language_codes.add(data.language_code)
 
         return translation
+
+    def update(
+        self,
+        *,
+        slug: PlaceCategorySlugVO | None = None,
+        icon_key: PlaceCategoryIconKeyVO | None = None,
+        marker_color: PlaceCategoryMarkerColorVO | None = None,
+    ) -> None:
+        if slug is not None and slug != self.slug:
+            self.slug = slug
+        if icon_key is not None and icon_key != self.icon_key:
+            self.icon_key = icon_key
+        if marker_color is not None and marker_color != self.marker_color:
+            self.marker_color = marker_color
