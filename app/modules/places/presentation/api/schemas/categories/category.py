@@ -89,12 +89,10 @@ class UpdatePlaceCategoryRequestSchema(BaseModel):
 PlaceCategoriesListResponseSchema = make_paginated_response_schema(
     item_type=LocalizedPlaceCategorySchema,
     description="Response schema for a paginated list of place categories.",
-    serialization_alias="categories",
     validation_alias="categories",
 )
 AdminPlaceCategoriesListResponseSchema = make_paginated_response_schema(
     item_type=PlaceCategorySchema,
     description="Response schema for a paginated list of place categories for admin users",
-    serialization_alias="categories",
     validation_alias="categories",
 )

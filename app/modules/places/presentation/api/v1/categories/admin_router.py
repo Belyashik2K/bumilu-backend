@@ -74,26 +74,21 @@ from app.modules.places.application.queries.categories.admin.get_all_translation
 from app.modules.places.application.queries.categories.admin.get_all_translations.query import (
     GetAdminPlaceCategoryTranslationsListQuery,
 )
-from app.modules.places.application.queries.categories.admin.get_all_translations.view import (
-    PaginatedAdminPlaceCategoryTranslationsView,
-)
 from app.modules.places.application.queries.categories.admin.get_translation.handler import (
     GetAdminPlaceCategoryTranslationQueryHandler,
 )
 from app.modules.places.application.queries.categories.admin.get_translation.query import (
     GetAdminPlaceCategoryTranslationQuery,
 )
-from app.modules.places.application.queries.categories.shared.models.place_category import (
-    PlaceCategoryReadModel,
-    PlaceCategoryTranslationReadModel,
-)
 from app.modules.places.presentation.api.schemas.categories.category import (
     AdminPlaceCategoriesListResponseSchema,
     CreatePlaceCategoryRequestSchema,
     CreatePlaceCategoryResponseSchema,
+    PlaceCategorySchema,
     UpdatePlaceCategoryRequestSchema,
 )
 from app.modules.places.presentation.api.schemas.categories.translation import (
+    PaginatedAdminPlaceCategoryTranslationsResponseSchema,
     PlaceCategoryTranslationSchema,
     UpdatePlaceCategoryTranslationRequestSchema,
 )
@@ -162,13 +157,14 @@ async def get_place_category(
     category_id: UUID7,
     handler: FromDishka[GetAdminPlaceCategoryQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> PlaceCategoryReadModel:
-    return await handler(
+) -> PlaceCategorySchema:
+    result = await handler(
         GetAdminPlaceCategoryQuery(
             category_id=category_id,
             actor_id=principal.id.value,
         )
     )
+    return PlaceCategorySchema.model_validate(result, from_attributes=True)
 
 
 @admin_place_categories_router.patch(
@@ -223,14 +219,17 @@ async def get_place_category_translations(
     handler: FromDishka[GetAdminPlaceCategoryTranslationsListQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
     pagination: OffsetPaginationDep,
-) -> PaginatedAdminPlaceCategoryTranslationsView:
-    return await handler(
+) -> PaginatedAdminPlaceCategoryTranslationsResponseSchema:
+    result = await handler(
         GetAdminPlaceCategoryTranslationsListQuery(
             category_id=category_id,
             actor_id=principal.id.value,
             limit=pagination.limit,
             offset=pagination.offset,
         )
+    )
+    return PaginatedAdminPlaceCategoryTranslationsResponseSchema.model_validate(
+        result, from_attributes=True
     )
 
 
@@ -266,14 +265,15 @@ async def get_place_category_translation(
     language_code: LanguageEnum,
     handler: FromDishka[GetAdminPlaceCategoryTranslationQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> PlaceCategoryTranslationReadModel:
-    return await handler(
+) -> PlaceCategoryTranslationSchema:
+    result = await handler(
         GetAdminPlaceCategoryTranslationQuery(
             category_id=category_id,
             language_code=language_code,
             actor_id=principal.id.value,
         )
     )
+    return PlaceCategoryTranslationSchema.model_validate(result, from_attributes=True)
 
 
 @admin_place_categories_router.patch(
