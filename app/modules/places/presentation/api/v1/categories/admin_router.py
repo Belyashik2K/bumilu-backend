@@ -109,7 +109,7 @@ admin_place_categories_router = APIRouter(
 
 @admin_place_categories_router.get(
     "",
-    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+    responses=generate_responses_for_endpoint(),
 )
 @inject
 async def get_place_categories(
@@ -154,7 +154,7 @@ async def create_place_category(
 
 @admin_place_categories_router.get(
     "/{category_id}",
-    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+    responses=generate_responses_for_endpoint(status.HTTP_404_NOT_FOUND),
 )
 @inject
 async def get_place_category(
@@ -214,7 +214,7 @@ async def delete_place_category(
 
 @admin_place_categories_router.get(
     "/{category_id}/translations",
-    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+    responses=generate_responses_for_endpoint(status.HTTP_404_NOT_FOUND),
 )
 @inject
 async def get_place_category_translations(
@@ -257,7 +257,7 @@ async def add_place_category_translation(
 
 @admin_place_categories_router.get(
     "/{category_id}/translations/{language_code}",
-    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+    responses=generate_responses_for_endpoint(status.HTTP_404_NOT_FOUND),
 )
 @inject
 async def get_place_category_translation(
