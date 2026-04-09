@@ -1,4 +1,7 @@
-from sqlalchemy import select
+from sqlalchemy import (
+    delete,
+    select,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.domain.value_objects.id import PlaceCategoryIdVO
@@ -58,3 +61,16 @@ class SQLAlchemyPlaceCategoryRepository(
             marker_color=PlaceCategoryMarkerColorVO(model.marker_color),
             translation_language_codes=set(model.translation_language_codes or []),
         )
+
+    async def get_by_slug(self, slug: PlaceCategorySlugVO) -> PlaceCategory | None:
+        stmt = select(PlaceCategoryModel).where(PlaceCategoryModel.slug == slug.value)
+        result = await self.session.execute(stmt)
+        model = result.scalar_one_or_none()
+        return self._to_entity(model) if model else None
+
+    async def delete_by_id(self, category_id: PlaceCategoryIdVO) -> None:
+        stmt = delete(
+            PlaceCategoryModel,
+        ).where(PlaceCategoryModel.id == category_id.value)
+        await self.session.execute(stmt)
+        await self.session.flush()
