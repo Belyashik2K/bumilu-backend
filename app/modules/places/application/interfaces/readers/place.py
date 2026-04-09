@@ -23,6 +23,9 @@ class IPlaceReader(ABC):
     async def exists(self, place_id: UUID) -> bool: ...
 
     @abstractmethod
+    async def count_by_category_id(self, category_id: UUID) -> int: ...
+
+    @abstractmethod
     async def get_by_id(
         self,
         *,
