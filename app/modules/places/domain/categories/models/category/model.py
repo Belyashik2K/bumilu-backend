@@ -57,6 +57,20 @@ class PlaceCategory:
         ]
         return category, created_translations
 
+    def update(
+        self,
+        *,
+        slug: PlaceCategorySlugVO | None = None,
+        icon_key: PlaceCategoryIconKeyVO | None = None,
+        marker_color: PlaceCategoryMarkerColorVO | None = None,
+    ) -> None:
+        if slug is not None and slug != self.slug:
+            self.slug = slug
+        if icon_key is not None and icon_key != self.icon_key:
+            self.icon_key = icon_key
+        if marker_color is not None and marker_color != self.marker_color:
+            self.marker_color = marker_color
+
     def create_translation(
         self, data: NewPlaceCategoryTranslation
     ) -> PlaceCategoryTranslation:
@@ -73,16 +87,12 @@ class PlaceCategory:
 
         return translation
 
-    def update(
-        self,
-        *,
-        slug: PlaceCategorySlugVO | None = None,
-        icon_key: PlaceCategoryIconKeyVO | None = None,
-        marker_color: PlaceCategoryMarkerColorVO | None = None,
-    ) -> None:
-        if slug is not None and slug != self.slug:
-            self.slug = slug
-        if icon_key is not None and icon_key != self.icon_key:
-            self.icon_key = icon_key
-        if marker_color is not None and marker_color != self.marker_color:
-            self.marker_color = marker_color
+    def ensure_translation_can_be_deleted(self, language_code: LanguageEnum) -> None:
+        if language_code not in self.translation_language_codes:
+            raise ValueError(f"Translation for language {language_code} does not exist")
+
+        if len(self.translation_language_codes) == 1:
+            raise ValueError("Cannot delete the only translation of a category")
+
+    def unregister_translation_language(self, language_code: LanguageEnum) -> None:
+        self.translation_language_codes.remove(language_code)
