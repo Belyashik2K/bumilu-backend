@@ -70,6 +70,16 @@ admin_place_categories_router = APIRouter(
 )
 
 
+@admin_place_categories_router.get(
+    "",
+    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+)
+async def get_place_categories(
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+) -> None:
+    raise NotImplementedError()
+
+
 @admin_place_categories_router.post("", responses=generate_responses_for_endpoint())
 @inject
 async def create_place_category(
@@ -94,6 +104,17 @@ async def create_place_category(
     return CreatePlaceCategoryResponseSchema.model_validate(
         result, from_attributes=True
     )
+
+
+@admin_place_categories_router.get(
+    "/{category_id}",
+    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+)
+async def get_place_category(
+    category_id: UUID7,
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+) -> None:
+    raise NotImplementedError()
 
 
 @admin_place_categories_router.patch(
@@ -138,6 +159,17 @@ async def delete_place_category(
     )
 
 
+@admin_place_categories_router.get(
+    "/{category_id}/translations",
+    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+)
+async def get_place_category_translations(
+    category_id: UUID7,
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+) -> None:
+    raise NotImplementedError()
+
+
 @admin_place_categories_router.post(
     "/{category_id}/translations",
     responses=generate_responses_for_endpoint(
@@ -158,6 +190,18 @@ async def add_place_category_translation(
             name=data.name,
         )
     )
+
+
+@admin_place_categories_router.get(
+    "/{category_id}/translations/{language_code}",
+    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+)
+async def get_place_category_translation(
+    category_id: UUID7,
+    language_code: LanguageEnum,
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+) -> None:
+    raise NotImplementedError()
 
 
 @admin_place_categories_router.patch(
