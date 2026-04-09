@@ -13,9 +13,11 @@ from app.core.presentation.endpoint_responses import generate_responses_for_endp
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
 from app.modules.auth.shared.context import Principal
-from app.modules.places.application.queries.categories.user.get_all import (
-    GetAllPlaceCategoriesQuery,
+from app.modules.places.application.queries.categories.user.get_all.handler import (
     GetAllPlaceCategoriesQueryHandler,
+)
+from app.modules.places.application.queries.categories.user.get_all.query import (
+    GetAllPlaceCategoriesQuery,
 )
 from app.modules.places.presentation.api.schemas.categories.get import (
     PlaceCategoriesListResponseSchema,

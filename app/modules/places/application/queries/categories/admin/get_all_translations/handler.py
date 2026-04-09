@@ -1,9 +1,10 @@
 from app.core.application.queries import IQueryHandler
+from app.core.application.queries.pagination import OffsetPagination
 from app.modules.places.application.queries.categories.admin.get_all_translations.query import (
     GetAdminPlaceCategoryTranslationsListQuery,
 )
-from app.modules.places.application.queries.categories.shared.models.place_category import (
-    PlaceCategoryTranslationReadModel,
+from app.modules.places.application.queries.categories.admin.get_all_translations.view import (
+    PaginatedAdminPlaceCategoryTranslationsView,
 )
 from app.modules.places.application.queries.categories.shared.readers.place_category_translation import (
     IPlaceCategoryTranslationReader,
@@ -13,7 +14,7 @@ from app.modules.places.application.queries.categories.shared.readers.place_cate
 class GetAdminPlaceCategoryTranslationsListQueryHandler(
     IQueryHandler[
         GetAdminPlaceCategoryTranslationsListQuery,
-        list[PlaceCategoryTranslationReadModel],
+        PaginatedAdminPlaceCategoryTranslationsView,
     ]
 ):
     def __init__(
@@ -23,10 +24,19 @@ class GetAdminPlaceCategoryTranslationsListQueryHandler(
 
     async def handle(
         self, query: GetAdminPlaceCategoryTranslationsListQuery
-    ) -> list[PlaceCategoryTranslationReadModel]:
+    ) -> PaginatedAdminPlaceCategoryTranslationsView:
         translations = (
             await self._place_category_translation_reader.list_by_category_id(
-                category_id=query.category_id
+                category_id=query.category_id,
+                limit=query.limit,
+                offset=query.offset,
             )
         )
-        return translations
+        return PaginatedAdminPlaceCategoryTranslationsView(
+            translations=translations.items,
+            pagination=OffsetPagination.create(
+                total=translations.total,
+                limit=query.limit,
+                offset=query.offset,
+            ),
+        )

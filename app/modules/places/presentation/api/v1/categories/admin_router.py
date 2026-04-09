@@ -1,4 +1,6 @@
-from typing import Annotated
+from typing import (
+    Annotated,
+)
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
@@ -10,6 +12,7 @@ from pydantic import UUID7
 from starlette import status
 
 from app.core.enums import LanguageEnum
+from app.core.presentation.api.schemas.pagination import OffsetPaginationDep
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.staff.deps import get_staff_principal
@@ -53,6 +56,40 @@ from app.modules.places.application.commands.categories.update_translation.comma
 from app.modules.places.application.commands.categories.update_translation.handler import (
     UpdatePlaceCategoryTranslationCommandHandler,
 )
+from app.modules.places.application.queries.categories.admin.get.handler import (
+    GetAdminPlaceCategoryQueryHandler,
+)
+from app.modules.places.application.queries.categories.admin.get.query import (
+    GetAdminPlaceCategoryQuery,
+)
+from app.modules.places.application.queries.categories.admin.get_all.handler import (
+    GetAdminPlaceCategoriesListQueryHandler,
+)
+from app.modules.places.application.queries.categories.admin.get_all.query import (
+    GetAdminPlaceCategoriesListQuery,
+)
+from app.modules.places.application.queries.categories.admin.get_all.view import (
+    PaginatedAdminPlaceCategoriesView,
+)
+from app.modules.places.application.queries.categories.admin.get_all_translations.handler import (
+    GetAdminPlaceCategoryTranslationsListQueryHandler,
+)
+from app.modules.places.application.queries.categories.admin.get_all_translations.query import (
+    GetAdminPlaceCategoryTranslationsListQuery,
+)
+from app.modules.places.application.queries.categories.admin.get_all_translations.view import (
+    PaginatedAdminPlaceCategoryTranslationsView,
+)
+from app.modules.places.application.queries.categories.admin.get_translation.handler import (
+    GetAdminPlaceCategoryTranslationQueryHandler,
+)
+from app.modules.places.application.queries.categories.admin.get_translation.query import (
+    GetAdminPlaceCategoryTranslationQuery,
+)
+from app.modules.places.application.queries.categories.shared.models.place_category import (
+    PlaceCategoryReadModel,
+    PlaceCategoryTranslationReadModel,
+)
 from app.modules.places.presentation.api.schemas.categories.create import (
     CreatePlaceCategoryRequestSchema,
     CreatePlaceCategoryResponseSchema,
@@ -74,10 +111,19 @@ admin_place_categories_router = APIRouter(
     "",
     responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
 )
+@inject
 async def get_place_categories(
+    handler: FromDishka[GetAdminPlaceCategoriesListQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> None:
-    raise NotImplementedError()
+    pagination: OffsetPaginationDep,
+) -> PaginatedAdminPlaceCategoriesView:
+    return await handler(
+        GetAdminPlaceCategoriesListQuery(
+            actor_id=principal.id.value,
+            limit=pagination.limit,
+            offset=pagination.offset,
+        )
+    )
 
 
 @admin_place_categories_router.post("", responses=generate_responses_for_endpoint())
@@ -110,11 +156,18 @@ async def create_place_category(
     "/{category_id}",
     responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
 )
+@inject
 async def get_place_category(
     category_id: UUID7,
+    handler: FromDishka[GetAdminPlaceCategoryQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> None:
-    raise NotImplementedError()
+) -> PlaceCategoryReadModel:
+    return await handler(
+        GetAdminPlaceCategoryQuery(
+            category_id=category_id,
+            actor_id=principal.id.value,
+        )
+    )
 
 
 @admin_place_categories_router.patch(
@@ -163,11 +216,21 @@ async def delete_place_category(
     "/{category_id}/translations",
     responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
 )
+@inject
 async def get_place_category_translations(
     category_id: UUID7,
+    handler: FromDishka[GetAdminPlaceCategoryTranslationsListQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> None:
-    raise NotImplementedError()
+    pagination: OffsetPaginationDep,
+) -> PaginatedAdminPlaceCategoryTranslationsView:
+    return await handler(
+        GetAdminPlaceCategoryTranslationsListQuery(
+            category_id=category_id,
+            actor_id=principal.id.value,
+            limit=pagination.limit,
+            offset=pagination.offset,
+        )
+    )
 
 
 @admin_place_categories_router.post(
@@ -196,12 +259,20 @@ async def add_place_category_translation(
     "/{category_id}/translations/{language_code}",
     responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
 )
+@inject
 async def get_place_category_translation(
     category_id: UUID7,
     language_code: LanguageEnum,
+    handler: FromDishka[GetAdminPlaceCategoryTranslationQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> None:
-    raise NotImplementedError()
+) -> PlaceCategoryTranslationReadModel:
+    return await handler(
+        GetAdminPlaceCategoryTranslationQuery(
+            category_id=category_id,
+            language_code=language_code,
+            actor_id=principal.id.value,
+        )
+    )
 
 
 @admin_place_categories_router.patch(
