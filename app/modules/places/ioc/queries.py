@@ -7,11 +7,11 @@ from dishka import (
 from app.modules.places.application.interfaces.readers.place import (
     IPlaceReader,
 )
-from app.modules.places.application.queries.categories.get_all.handler import (
-    GetAllPlaceCategoriesQueryHandler,
-)
 from app.modules.places.application.queries.categories.shared.readers.place_category import (
     IPlaceCategoryReader,
+)
+from app.modules.places.application.queries.categories.user.get_all import (
+    GetAllPlaceCategoriesQueryHandler,
 )
 from app.modules.places.application.queries.places.get.handler import (
     GetPlaceQueryHandler,

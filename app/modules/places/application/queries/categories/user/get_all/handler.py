@@ -1,12 +1,12 @@
 from app.core.application.queries import IQueryHandler
 from app.core.application.queries.pagination import OffsetPagination
-from app.modules.places.application.queries.categories.get_all.query import (
-    GetAllPlaceCategoriesQuery,
-)
 from app.modules.places.application.queries.categories.shared.readers.place_category import (
     IPlaceCategoryReader,
 )
-from app.modules.places.application.queries.categories.shared.views import (
+from app.modules.places.application.queries.categories.user.get_all.query import (
+    GetAllPlaceCategoriesQuery,
+)
+from app.modules.places.application.queries.categories.user.get_all.view import (
     PaginatedPlaceCategoriesView,
 )
 
