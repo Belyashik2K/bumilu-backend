@@ -90,13 +90,13 @@ from app.modules.places.application.queries.categories.shared.models.place_categ
     PlaceCategoryReadModel,
     PlaceCategoryTranslationReadModel,
 )
-from app.modules.places.presentation.api.schemas.categories.create import (
+from app.modules.places.presentation.api.schemas.categories.category import (
     CreatePlaceCategoryRequestSchema,
     CreatePlaceCategoryResponseSchema,
-    NewPlaceCategoryTranslationSchema,
-)
-from app.modules.places.presentation.api.schemas.categories.update import (
     UpdatePlaceCategoryRequestSchema,
+)
+from app.modules.places.presentation.api.schemas.categories.translation import (
+    PlaceCategoryTranslationSchema,
     UpdatePlaceCategoryTranslationRequestSchema,
 )
 
@@ -244,7 +244,7 @@ async def add_place_category_translation(
     category_id: UUID7,
     handler: FromDishka[CreatePlaceCategoryTranslationCommandHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-    data: NewPlaceCategoryTranslationSchema,
+    data: PlaceCategoryTranslationSchema,
 ) -> None:
     await handler(
         CreatePlaceCategoryTranslationCommand(

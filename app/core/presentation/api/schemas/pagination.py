@@ -1,9 +1,14 @@
-from typing import Annotated
+from typing import (
+    Annotated,
+    Generic,
+    TypeVar,
+)
 
 from fastapi import Query
 from fastapi.params import Depends
 from pydantic import (
     BaseModel,
+    ConfigDict,
     Field,
 )
 
@@ -18,6 +23,8 @@ DEFAULT_OFFSET = 0
 TOTAL_EXAMPLE = 100
 NEXT_OFFSET_EXAMPLE = 20
 PREV_OFFSET_EXAMPLE = 0
+
+T = TypeVar("T")
 
 
 class OffsetPaginationQuery(BaseModel):
@@ -80,6 +87,50 @@ def get_offset_pagination(
     ] = DEFAULT_OFFSET,
 ) -> OffsetPaginationQuery:
     return OffsetPaginationQuery(limit=limit, offset=offset)
+
+
+class BasePaginatedResponseSchema(BaseModel, Generic[T]):
+    model_config = ConfigDict(populate_by_name=True)
+
+    data: list[T] = Field(
+        ...,
+        description="Dynamic field containing the list of items. The name of this field is determined by the 'json_key' parameter when creating the schema.",
+    )
+    pagination: OffsetPaginationSchema = Field(
+        ...,
+        description="Pagination metadata.",
+    )
+
+
+# TODO: Replace all manually defined paginated response schemas with dynamically generated ones using this function
+def make_paginated_response_schema(
+    item_type: type[T],
+    *,
+    description: str | None = None,
+    serialization_alias: str | None = None,
+    validation_alias: str | None = None,
+) -> type[BasePaginatedResponseSchema[T]]:
+    model_name = f"Paginated{item_type.__name__.rstrip("Schema")}ResponseSchema"
+
+    class ConcretePaginatedResponseSchema(BasePaginatedResponseSchema[item_type]):  # type: ignore
+        model_config = ConfigDict(
+            title=model_name,
+            validate_by_name=True,
+            validate_by_alias=True,
+        )
+
+        data: list[item_type] = Field(  # type: ignore
+            ...,
+            description=description or f"List of {item_type.__name__} items.",
+            serialization_alias=serialization_alias,
+            validation_alias=validation_alias,
+        )
+
+    ConcretePaginatedResponseSchema.__name__ = model_name
+    ConcretePaginatedResponseSchema.__qualname__ = model_name
+    ConcretePaginatedResponseSchema.model_rebuild(force=True)
+
+    return ConcretePaginatedResponseSchema
 
 
 OffsetPaginationDep = Annotated[OffsetPaginationQuery, Depends(get_offset_pagination)]
