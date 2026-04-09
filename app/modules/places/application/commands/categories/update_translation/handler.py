@@ -21,7 +21,7 @@ from app.modules.places.domain.categories.value_objects.name.object import (
 )
 
 
-class UpdateCategoryTranslationCommandHandler(
+class UpdatePlaceCategoryTranslationCommandHandler(
     ICommandHandler[UpdateCategoryTranslationCommand]
 ):
     def __init__(

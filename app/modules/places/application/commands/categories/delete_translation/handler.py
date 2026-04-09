@@ -2,7 +2,7 @@ from app.core.application.commands import ICommandHandler
 from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.domain.value_objects.id import PlaceCategoryIdVO
 from app.modules.places.application.commands.categories.delete_translation.command import (
-    DeleteCategoryTranslationCommand,
+    DeletePlaceCategoryTranslationCommand,
 )
 from app.modules.places.application.exceptions.place_category import (
     PlaceCategoryNotFound,
@@ -16,22 +16,20 @@ from app.modules.places.application.interfaces.repositories.place_category_trans
 )
 
 
-class DeleteCategoryTranslationCommandHandler(
-    ICommandHandler[DeleteCategoryTranslationCommand]
+class DeletePlaceCategoryTranslationCommandHandler(
+    ICommandHandler[DeletePlaceCategoryTranslationCommand]
 ):
     def __init__(
         self,
         transaction_manager: ITransactionManager,
-        place_category_repository: IPlaceCategoryRepository,
-        place_category_translation_repository: IPlaceCategoryTranslationRepository,
+        category_repository: IPlaceCategoryRepository,
+        category_translation_repository: IPlaceCategoryTranslationRepository,
     ) -> None:
         super().__init__(transaction_manager)
-        self._place_category_repository = place_category_repository
-        self._place_category_translation_repository = (
-            place_category_translation_repository
-        )
+        self._place_category_repository = category_repository
+        self._place_category_translation_repository = category_translation_repository
 
-    async def handle(self, command: DeleteCategoryTranslationCommand) -> None:
+    async def handle(self, command: DeletePlaceCategoryTranslationCommand) -> None:
         category_id = PlaceCategoryIdVO.from_uuid(command.category_id)
         category = await self._place_category_repository.get_by_id(category_id)
         if category is None:

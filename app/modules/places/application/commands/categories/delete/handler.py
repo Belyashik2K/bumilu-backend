@@ -18,11 +18,11 @@ class DeletePlaceCategoryCommandHandler(ICommandHandler[DeletePlaceCategoryComma
     def __init__(
         self,
         transaction_manager: ITransactionManager,
-        place_category_repository: IPlaceCategoryRepository,
+        category_repository: IPlaceCategoryRepository,
         place_reader: IPlaceReader,
     ) -> None:
         super().__init__(transaction_manager)
-        self._place_category_repository = place_category_repository
+        self._place_category_repository = category_repository
         self._place_reader = place_reader
 
     async def handle(self, command: DeletePlaceCategoryCommand) -> None:
