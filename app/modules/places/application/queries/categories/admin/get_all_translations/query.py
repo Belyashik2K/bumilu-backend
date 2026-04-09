@@ -3,6 +3,6 @@ from uuid import UUID
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetAdminPlaceCategoryQuery:
+class GetAdminPlaceCategoryTranslationsListQuery:
     actor_id: UUID
     category_id: UUID
