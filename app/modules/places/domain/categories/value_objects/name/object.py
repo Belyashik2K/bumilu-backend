@@ -1,5 +1,9 @@
 from dataclasses import dataclass
 
+from app.modules.places.domain.categories.value_objects.name.exceptions import (
+    PlaceCategoryNameCannotBeEmpty,
+)
+
 
 @dataclass(frozen=True, slots=True)
 class PlaceCategoryNameVO:
@@ -7,4 +11,4 @@ class PlaceCategoryNameVO:
 
     def __post_init__(self) -> None:
         if not self.value:
-            raise ValueError("Place category name cannot be empty")
+            raise PlaceCategoryNameCannotBeEmpty()

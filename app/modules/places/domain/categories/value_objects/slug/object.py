@@ -1,5 +1,9 @@
 from dataclasses import dataclass
 
+from app.modules.places.domain.categories.value_objects.slug.exceptions import (
+    InvalidSlug,
+)
+
 
 @dataclass(frozen=True, slots=True)
 class PlaceCategorySlugVO:
@@ -13,4 +17,4 @@ class PlaceCategorySlugVO:
 
     def __post_init__(self) -> None:
         if not self._is_valid_slug():
-            raise ValueError(f"Invalid slug: {self}")
+            raise InvalidSlug(slug=self.value)

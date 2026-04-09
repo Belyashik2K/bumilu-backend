@@ -1,5 +1,9 @@
 from dataclasses import dataclass
 
+from app.modules.places.domain.categories.value_objects.marker_color.exceptions import (
+    InvalidMarkerColor,
+)
+
 
 @dataclass(frozen=True, slots=True)
 class PlaceCategoryMarkerColorVO:
@@ -7,7 +11,9 @@ class PlaceCategoryMarkerColorVO:
 
     def __post_init__(self):
         if not self.value.startswith("#") or len(self.value) != 7:
-            raise ValueError(f"Invalid hex code: {self.value}")
+            raise InvalidMarkerColor(
+                color=self.value,
+            )
 
     @property
     def rgb(self) -> tuple[int, ...]:
