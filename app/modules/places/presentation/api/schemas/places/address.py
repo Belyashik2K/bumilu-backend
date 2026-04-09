@@ -3,9 +3,11 @@ from pydantic import (
     Field,
 )
 
-DISPLAY_ADDRESS_EXAMPLE = "Saint-Petersburg, 2 Murinskiy Prospekt, 3"
-TAXI_ADDRESS_EXAMPLE = "Россия, Санкт-Петербург, 2-й Муринский проспект, 3"
-TAXI_COMMENT_EXAMPLE = "Подъезд сразу узнаете, там короче табличка массажки"
+from app.modules.places.presentation.api.schemas.places.examples import (
+    DISPLAY_ADDRESS_EXAMPLE,
+    TAXI_ADDRESS_EXAMPLE,
+    TAXI_COMMENT_EXAMPLE,
+)
 
 
 class PlaceAddressSchema(BaseModel):
