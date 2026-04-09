@@ -4,7 +4,7 @@ from app.core.domain.value_objects.id import (
     PlaceCategoryIdVO,
 )
 from app.modules.places.application.commands.categories.update_translation.command import (
-    UpdateCategoryTranslationCommand,
+    UpdatePlaceCategoryTranslationCommand,
 )
 from app.modules.places.application.exceptions.place_category import (
     PlaceCategoryNotFound,
@@ -22,7 +22,7 @@ from app.modules.places.domain.categories.value_objects.name.object import (
 
 
 class UpdatePlaceCategoryTranslationCommandHandler(
-    ICommandHandler[UpdateCategoryTranslationCommand]
+    ICommandHandler[UpdatePlaceCategoryTranslationCommand]
 ):
     def __init__(
         self,
@@ -36,7 +36,7 @@ class UpdatePlaceCategoryTranslationCommandHandler(
             place_category_translation_repository
         )
 
-    async def handle(self, command: UpdateCategoryTranslationCommand) -> None:
+    async def handle(self, command: UpdatePlaceCategoryTranslationCommand) -> None:
         category_id = PlaceCategoryIdVO.from_uuid(command.category_id)
         category = await self._place_category_repository.get_by_id(category_id)
         if category is None:

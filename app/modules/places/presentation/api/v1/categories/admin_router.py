@@ -6,7 +6,10 @@ from fastapi import (
     APIRouter,
     Depends,
 )
+from pydantic import UUID7
+from starlette import status
 
+from app.core.enums import LanguageEnum
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.staff.deps import get_staff_principal
@@ -17,12 +20,47 @@ from app.modules.places.application.commands.categories.create.command import (
 from app.modules.places.application.commands.categories.create.handler import (
     CreatePlaceCategoryCommandHandler,
 )
+from app.modules.places.application.commands.categories.create_translation.command import (
+    CreatePlaceCategoryTranslationCommand,
+)
+from app.modules.places.application.commands.categories.create_translation.handler import (
+    CreatePlaceCategoryTranslationCommandHandler,
+)
+from app.modules.places.application.commands.categories.delete.command import (
+    DeletePlaceCategoryCommand,
+)
+from app.modules.places.application.commands.categories.delete.handler import (
+    DeletePlaceCategoryCommandHandler,
+)
+from app.modules.places.application.commands.categories.delete_translation.command import (
+    DeletePlaceCategoryTranslationCommand,
+)
+from app.modules.places.application.commands.categories.delete_translation.handler import (
+    DeletePlaceCategoryTranslationCommandHandler,
+)
 from app.modules.places.application.commands.categories.shared.dtos import (
     NewPlaceCategoryTranslation,
+)
+from app.modules.places.application.commands.categories.update.command import (
+    UpdatePlaceCategoryCommand,
+)
+from app.modules.places.application.commands.categories.update.handler import (
+    UpdatePlaceCategoryCommandHandler,
+)
+from app.modules.places.application.commands.categories.update_translation.command import (
+    UpdatePlaceCategoryTranslationCommand,
+)
+from app.modules.places.application.commands.categories.update_translation.handler import (
+    UpdatePlaceCategoryTranslationCommandHandler,
 )
 from app.modules.places.presentation.api.schemas.categories.create import (
     CreatePlaceCategoryRequestSchema,
     CreatePlaceCategoryResponseSchema,
+    NewPlaceCategoryTranslationSchema,
+)
+from app.modules.places.presentation.api.schemas.categories.update import (
+    UpdatePlaceCategoryRequestSchema,
+    UpdatePlaceCategoryTranslationRequestSchema,
 )
 
 admin_place_categories_router = APIRouter(
@@ -55,4 +93,112 @@ async def create_place_category(
     )
     return CreatePlaceCategoryResponseSchema.model_validate(
         result, from_attributes=True
+    )
+
+
+@admin_place_categories_router.patch(
+    "/{category_id}",
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND, status.HTTP_409_CONFLICT
+    ),
+)
+@inject
+async def update_place_category(
+    category_id: UUID7,
+    handler: FromDishka[UpdatePlaceCategoryCommandHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+    data: UpdatePlaceCategoryRequestSchema,
+) -> None:
+    await handler(
+        UpdatePlaceCategoryCommand(
+            category_id=category_id,
+            slug=data.slug,
+            icon_key=data.icon_key,
+            marker_color=data.marker_color,
+        )
+    )
+
+
+@admin_place_categories_router.delete(
+    "/{category_id}",
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND, status.HTTP_409_CONFLICT
+    ),
+)
+@inject
+async def delete_place_category(
+    category_id: UUID7,
+    handler: FromDishka[DeletePlaceCategoryCommandHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+) -> None:
+    await handler(
+        DeletePlaceCategoryCommand(
+            category_id=category_id,
+        )
+    )
+
+
+@admin_place_categories_router.post(
+    "/{category_id}/translations",
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND, status.HTTP_409_CONFLICT
+    ),
+)
+@inject
+async def add_place_category_translation(
+    category_id: UUID7,
+    handler: FromDishka[CreatePlaceCategoryTranslationCommandHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+    data: NewPlaceCategoryTranslationSchema,
+) -> None:
+    await handler(
+        CreatePlaceCategoryTranslationCommand(
+            category_id=category_id,
+            language_code=data.language_code,
+            name=data.name,
+        )
+    )
+
+
+@admin_place_categories_router.patch(
+    "/{category_id}/translations/{language_code}",
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND, status.HTTP_409_CONFLICT
+    ),
+)
+@inject
+async def update_place_category_translation(
+    category_id: UUID7,
+    language_code: LanguageEnum,
+    handler: FromDishka[UpdatePlaceCategoryTranslationCommandHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+    data: UpdatePlaceCategoryTranslationRequestSchema,
+) -> None:
+    await handler(
+        UpdatePlaceCategoryTranslationCommand(
+            category_id=category_id,
+            language_code=language_code,
+            name=data.name,
+        )
+    )
+
+
+@admin_place_categories_router.delete(
+    "/{category_id}/translations/{language_code}",
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND,
+    ),
+)
+@inject
+async def delete_place_category_translation(
+    category_id: UUID7,
+    language_code: LanguageEnum,
+    handler: FromDishka[DeletePlaceCategoryTranslationCommandHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+) -> None:
+    await handler(
+        DeletePlaceCategoryTranslationCommand(
+            category_id=category_id,
+            language_code=language_code,
+        )
     )
