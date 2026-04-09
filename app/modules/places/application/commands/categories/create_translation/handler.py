@@ -27,21 +27,19 @@ class CreatePlaceCategoryTranslationCommandHandler(
     def __init__(
         self,
         transaction_manager: ITransactionManager,
-        place_category_repository: IPlaceCategoryRepository,
-        place_category_translation_repository: IPlaceCategoryTranslationRepository,
+        category_repository: IPlaceCategoryRepository,
+        category_translation_repository: IPlaceCategoryTranslationRepository,
     ) -> None:
         super().__init__(transaction_manager)
-        self._place_category_repository = place_category_repository
-        self._place_category_translation_repository = (
-            place_category_translation_repository
-        )
+        self._category_repository = category_repository
+        self._category_translation_repository = category_translation_repository
 
     async def handle(
         self,
         command: CreatePlaceCategoryTranslationCommand,
     ) -> None:
         category_id = PlaceCategoryIdVO.from_uuid(command.category_id)
-        category = await self._place_category_repository.get_by_id(category_id)
+        category = await self._category_repository.get_by_id(category_id)
         if category is None:
             raise PlaceCategoryNotFound(category_id=category_id.value)
 
@@ -52,5 +50,5 @@ class CreatePlaceCategoryTranslationCommandHandler(
             )
         )
 
-        await self._place_category_translation_repository.save(new_translation)
-        await self._place_category_repository.save(category)
+        await self._category_translation_repository.save(new_translation)
+        await self._category_repository.save(category)
