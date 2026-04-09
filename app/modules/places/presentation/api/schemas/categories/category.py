@@ -37,6 +37,22 @@ class PlaceCategoryBaseSchema(BaseModel):
     )
 
 
+class PlaceCategorySchema(PlaceCategoryBaseSchema):
+    id: UUID7 = Field(
+        ...,
+        description="Unique identifier of the place category",
+        examples=[UUID_EXAMPLE],
+    )
+
+
+class LocalizedPlaceCategorySchema(PlaceCategorySchema):
+    name: str = Field(
+        ...,
+        description="The localized name of the place category.",
+        examples=[NAME_EXAMPLE],
+    )
+
+
 class CreatePlaceCategoryRequestSchema(PlaceCategoryBaseSchema):
     translations: list[PlaceCategoryTranslationSchema] = Field(
         ...,
@@ -49,19 +65,6 @@ class CreatePlaceCategoryResponseSchema(BaseModel):
         ...,
         description="ID of the created place category",
         examples=[UUID_EXAMPLE],
-    )
-
-
-class PlaceCategorySchema(PlaceCategoryBaseSchema):
-    id: UUID7 = Field(
-        ...,
-        description="The unique identifier of the place category.",
-        examples=[UUID_EXAMPLE],
-    )
-    name: str = Field(
-        ...,
-        description="The localized name of the place category.",
-        examples=[NAME_EXAMPLE],
     )
 
 
@@ -84,7 +87,14 @@ class UpdatePlaceCategoryRequestSchema(BaseModel):
 
 
 PlaceCategoriesListResponseSchema = make_paginated_response_schema(
-    item_type=PlaceCategorySchema,
+    item_type=LocalizedPlaceCategorySchema,
     description="Response schema for a paginated list of place categories.",
     serialization_alias="categories",
+    validation_alias="categories",
+)
+AdminPlaceCategoriesListResponseSchema = make_paginated_response_schema(
+    item_type=PlaceCategorySchema,
+    description="Response schema for a paginated list of place categories for admin users",
+    serialization_alias="categories",
+    validation_alias="categories",
 )
