@@ -192,6 +192,7 @@ async def update_place_category(
 
 @admin_place_categories_router.delete(
     "/{category_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
     responses=generate_responses_for_endpoint(
         status.HTTP_404_NOT_FOUND, status.HTTP_409_CONFLICT
     ),
@@ -301,6 +302,7 @@ async def update_place_category_translation(
 
 @admin_place_categories_router.delete(
     "/{category_id}/translations/{language_code}",
+    status_code=status.HTTP_204_NO_CONTENT,
     responses=generate_responses_for_endpoint(
         status.HTTP_404_NOT_FOUND,
     ),
