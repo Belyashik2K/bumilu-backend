@@ -8,6 +8,13 @@ from app.core.domain.value_objects.id import (
     PlaceCategoryIdVO,
 )
 from app.core.enums import LanguageEnum
+from app.modules.places.domain.categories.models.category.exceptions import (
+    CannotDeleteOnlyPlaceCategoryTranslation,
+    DuplicatePlaceCategoryTranslationLanguageCodes,
+    PlaceCategoryMustHaveAtLeastOneTranslation,
+    PlaceCategoryTranslationAlreadyExists,
+    PlaceCategoryTranslationNotFound,
+)
 from app.modules.places.domain.categories.models.category_translation.model import (
     NewPlaceCategoryTranslation,
     PlaceCategoryTranslation,
@@ -38,7 +45,7 @@ class PlaceCategory:
         translations: list[NewPlaceCategoryTranslation],
     ) -> tuple[Self, list[PlaceCategoryTranslation]]:
         if not translations:
-            raise ValueError("Place category must have at least one translation")
+            raise PlaceCategoryMustHaveAtLeastOneTranslation()
 
         category = PlaceCategory(
             id=PlaceCategoryIdVO.new(),
@@ -49,7 +56,9 @@ class PlaceCategory:
 
         language_codes = [translation.language_code for translation in translations]
         if len(language_codes) != len(set(language_codes)):
-            raise ValueError("Translation language codes must be unique")
+            raise DuplicatePlaceCategoryTranslationLanguageCodes(
+                language_codes=language_codes
+            )
 
         created_translations = [
             category.create_translation(data=translation)
@@ -75,8 +84,9 @@ class PlaceCategory:
         self, data: NewPlaceCategoryTranslation
     ) -> PlaceCategoryTranslation:
         if data.language_code in self.translation_language_codes:
-            raise ValueError(
-                f"Translation for language {data.language_code} already exists"
+            raise PlaceCategoryTranslationAlreadyExists(
+                category_id=self.id,
+                language_code=data.language_code,
             )
 
         translation = PlaceCategoryTranslation.create(
@@ -89,10 +99,16 @@ class PlaceCategory:
 
     def ensure_translation_can_be_deleted(self, language_code: LanguageEnum) -> None:
         if language_code not in self.translation_language_codes:
-            raise ValueError(f"Translation for language {language_code} does not exist")
+            raise PlaceCategoryTranslationNotFound(
+                category_id=self.id,
+                language_code=language_code,
+            )
 
         if len(self.translation_language_codes) == 1:
-            raise ValueError("Cannot delete the only translation of a category")
+            raise CannotDeleteOnlyPlaceCategoryTranslation(
+                category_id=self.id,
+                language_code=language_code,
+            )
 
     def unregister_translation_language(self, language_code: LanguageEnum) -> None:
         self.translation_language_codes.remove(language_code)
