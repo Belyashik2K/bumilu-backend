@@ -5,7 +5,7 @@ from app.modules.places.application.commands.categories.delete.command import (
     DeletePlaceCategoryCommand,
 )
 from app.modules.places.application.exceptions.place_category import (
-    PlaceCategoryNotEmpty,
+    PlaceCategoryInUse,
     PlaceCategoryNotFound,
 )
 from app.modules.places.application.interfaces.readers.place import IPlaceReader
@@ -35,7 +35,7 @@ class DeletePlaceCategoryCommandHandler(ICommandHandler[DeletePlaceCategoryComma
             category_id.value
         )  # TODO: migrate to VO
         if places_count != 0:
-            raise PlaceCategoryNotEmpty(
+            raise PlaceCategoryInUse(
                 category_id=category_id.value,
                 places_count=places_count,
             )

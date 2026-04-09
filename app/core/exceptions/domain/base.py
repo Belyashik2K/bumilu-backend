@@ -46,3 +46,10 @@ class DomainConflictException(BaseDomainException):
         super().__init__(
             message=message, code=DomainErrorCodeEnum.CONFLICT, details=details
         )
+
+
+class DomainNotFoundException(BaseDomainException):
+    def __init__(self, message: str, details: Mapping[str, Any] | None = None) -> None:
+        super().__init__(
+            message=message, code=DomainErrorCodeEnum.NOT_FOUND, details=details
+        )

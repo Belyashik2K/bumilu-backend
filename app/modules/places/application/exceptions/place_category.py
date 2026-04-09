@@ -12,7 +12,7 @@ class PlaceCategoryAlreadyExists(ApplicationConflictException):
         super().__init__(message=f"Place category with slug '{slug}' already exists.")
 
 
-class PlaceCategoryNotEmpty(ApplicationConflictException):
+class PlaceCategoryInUse(ApplicationConflictException):
     def __init__(self, category_id: UUID, places_count: int) -> None:
         super().__init__(
             message=(
