@@ -10,6 +10,7 @@ from sqlalchemy import (
     UUID as _UUID,
 )
 from sqlalchemy import (
+    Enum,
     Float,
     ForeignKey,
     String,
@@ -31,6 +32,7 @@ from app.core.infrastructure.database.mixins import (
     PKUUIDMixin,
     TimestampMixin,
 )
+from app.modules.places.shared.enums.place_status import PlaceStatusEnum
 from app.modules.reviews.infrastructure.database.models import ReviewModel
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 from app.modules.routes.infrastructure.database.models.base.route_point import (
@@ -75,6 +77,9 @@ class PlaceModel(PKUUIDMixin, TimestampMixin, BaseModel):
     timezone: Mapped[str] = mapped_column(String(64))
     address_taxi: Mapped[str | None] = mapped_column(String(255))
     address_taxi_comment: Mapped[str | None] = mapped_column(String(255))
+    status: Mapped[PlaceStatusEnum] = mapped_column(
+        Enum(PlaceStatusEnum, name="place_status_enum")
+    )
 
     @declared_attr
     def latitude(self):
