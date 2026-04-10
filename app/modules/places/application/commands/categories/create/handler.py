@@ -17,17 +17,11 @@ from app.modules.places.application.queries.categories.shared.readers.place_cate
     IPlaceCategoryReader,
 )
 from app.modules.places.domain.categories.models.category.model import PlaceCategory
-from app.modules.places.domain.categories.models.category_translation.model import (
-    NewPlaceCategoryTranslation,
-)
 from app.modules.places.domain.categories.value_objects.icon_key import (
     PlaceCategoryIconKeyVO,
 )
 from app.modules.places.domain.categories.value_objects.marker_color.object import (
     PlaceCategoryMarkerColorVO,
-)
-from app.modules.places.domain.categories.value_objects.name.object import (
-    PlaceCategoryNameVO,
 )
 from app.modules.places.domain.categories.value_objects.slug import PlaceCategorySlugVO
 
@@ -61,22 +55,11 @@ class CreatePlaceCategoryCommandHandler(
         icon_key = PlaceCategoryIconKeyVO(command.icon_key)
         marker_color = PlaceCategoryMarkerColorVO(command.marker_color)
 
-        translations = [
-            NewPlaceCategoryTranslation(
-                language_code=translation.language_code,
-                name=PlaceCategoryNameVO(translation.name),
-            )
-            for translation in command.translations
-        ]
-
-        category, created_translations = PlaceCategory.create(
+        category = PlaceCategory.create(
             slug=slug,
             icon_key=icon_key,
             marker_color=marker_color,
-            translations=translations,
         )
-
         await self._category_repository.save(category)
-        await self._category_translation_repository.batch_save(created_translations)
 
         return CreatePlaceCategoryCommandResult(id=category.id.value)

@@ -51,6 +51,7 @@ class SQLAlchemyPlaceCategoryRepository(
             slug=entity.slug.value,
             icon_key=entity.icon_key.value,
             marker_color=entity.marker_color.value,
+            status=entity.status,
         )
 
     def _to_entity(self, model: PlaceCategoryModel) -> PlaceCategory:
@@ -59,6 +60,7 @@ class SQLAlchemyPlaceCategoryRepository(
             slug=PlaceCategorySlugVO(model.slug),
             icon_key=PlaceCategoryIconKeyVO(model.icon_key),
             marker_color=PlaceCategoryMarkerColorVO(model.marker_color),
+            status=model.status,
             translation_language_codes=set(model.translation_language_codes or []),
         )
 

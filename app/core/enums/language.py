@@ -10,3 +10,6 @@ class LanguageEnum(StrEnum):
     @classmethod
     def default(cls) -> Self:
         return cls.EN
+
+
+REQUIRED_LANGUAGES = {LanguageEnum.RU, LanguageEnum.EN, LanguageEnum.ZH}

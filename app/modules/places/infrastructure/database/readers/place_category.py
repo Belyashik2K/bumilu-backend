@@ -25,6 +25,9 @@ from app.modules.places.infrastructure.database.models import (
     PlaceCategoryModel,
     PlaceCategoryTranslationModel,
 )
+from app.modules.places.shared.enums.place_category_status import (
+    PlaceCategoryStatusEnum,
+)
 
 
 class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
@@ -56,6 +59,7 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
         limit: int,
         offset: int,
         translation_language: LanguageEnum,
+        status: PlaceCategoryStatusEnum | None = None,
     ) -> PageReadModel[LocalizedPlaceCategoryReadModel]:
         count_stmt = (
             select(func.count(func.distinct(PlaceCategoryModel.id)))
@@ -70,6 +74,10 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
             .where(PlaceCategoryTranslationModel.language_code == translation_language)
             .options(contains_eager(PlaceCategoryModel.translations))
         )
+
+        if status is not None:
+            count_stmt = count_stmt.where(PlaceCategoryModel.status == status)
+            items_stmt = items_stmt.where(PlaceCategoryModel.status == status)
 
         total_subquery = count_stmt.scalar_subquery()
 

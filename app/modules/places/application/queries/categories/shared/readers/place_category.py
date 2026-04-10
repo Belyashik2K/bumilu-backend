@@ -10,6 +10,9 @@ from app.modules.places.application.queries.categories.shared.models.place_categ
     LocalizedPlaceCategoryReadModel,
     PlaceCategoryReadModel,
 )
+from app.modules.places.shared.enums.place_category_status import (
+    PlaceCategoryStatusEnum,
+)
 
 
 class IPlaceCategoryReader(ABC):
@@ -28,4 +31,5 @@ class IPlaceCategoryReader(ABC):
         limit: int,
         offset: int,
         translation_language: LanguageEnum,
+        status: PlaceCategoryStatusEnum | None = None,
     ) -> PageReadModel[LocalizedPlaceCategoryReadModel]: ...

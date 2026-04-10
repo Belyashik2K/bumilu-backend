@@ -8,10 +8,11 @@ from app.core.domain.value_objects.id import (
     PlaceCategoryIdVO,
 )
 from app.core.enums import LanguageEnum
+from app.core.enums.language import REQUIRED_LANGUAGES
 from app.modules.places.domain.categories.models.category.exceptions import (
-    CannotDeleteOnlyPlaceCategoryTranslation,
-    DuplicatePlaceCategoryTranslationLanguageCodes,
-    PlaceCategoryMustHaveAtLeastOneTranslation,
+    CannotPublishPlaceCategoryMissingTranslations,
+    InvalidPlaceCategoryStatusTransition,
+    PlaceCategoryIsNotEditable,
     PlaceCategoryTranslationAlreadyExists,
     PlaceCategoryTranslationNotFound,
 )
@@ -26,6 +27,9 @@ from app.modules.places.domain.categories.value_objects.marker_color.object impo
     PlaceCategoryMarkerColorVO,
 )
 from app.modules.places.domain.categories.value_objects.slug import PlaceCategorySlugVO
+from app.modules.places.shared.enums.place_category_status import (
+    PlaceCategoryStatusEnum,
+)
 
 
 @dataclass(slots=True, kw_only=True)
@@ -34,7 +38,20 @@ class PlaceCategory:
     slug: PlaceCategorySlugVO
     icon_key: PlaceCategoryIconKeyVO
     marker_color: PlaceCategoryMarkerColorVO
+    status: PlaceCategoryStatusEnum = field(default=PlaceCategoryStatusEnum.DRAFT)
     translation_language_codes: set[LanguageEnum] = field(default_factory=set)
+
+    def is_draft(self) -> bool:
+        return self.status == PlaceCategoryStatusEnum.DRAFT
+
+    def is_hidden(self) -> bool:
+        return self.status == PlaceCategoryStatusEnum.HIDDEN
+
+    def is_published(self) -> bool:
+        return self.status == PlaceCategoryStatusEnum.PUBLISHED
+
+    def is_editable(self) -> bool:
+        return self.is_draft() or self.is_hidden()
 
     @classmethod
     def create(
@@ -42,29 +59,13 @@ class PlaceCategory:
         slug: PlaceCategorySlugVO,
         icon_key: PlaceCategoryIconKeyVO,
         marker_color: PlaceCategoryMarkerColorVO,
-        translations: list[NewPlaceCategoryTranslation],
-    ) -> tuple[Self, list[PlaceCategoryTranslation]]:
-        if not translations:
-            raise PlaceCategoryMustHaveAtLeastOneTranslation()
-
-        category = PlaceCategory(
+    ) -> Self:
+        return PlaceCategory(
             id=PlaceCategoryIdVO.new(),
             slug=slug,
             icon_key=icon_key,
             marker_color=marker_color,
         )
-
-        language_codes = [translation.language_code for translation in translations]
-        if len(language_codes) != len(set(language_codes)):
-            raise DuplicatePlaceCategoryTranslationLanguageCodes(
-                language_codes=language_codes
-            )
-
-        created_translations = [
-            category.create_translation(data=translation)
-            for translation in translations
-        ]
-        return category, created_translations
 
     def update(
         self,
@@ -73,6 +74,11 @@ class PlaceCategory:
         icon_key: PlaceCategoryIconKeyVO | None = None,
         marker_color: PlaceCategoryMarkerColorVO | None = None,
     ) -> None:
+        if not self.is_editable():
+            raise PlaceCategoryIsNotEditable(
+                category_id=self.id,
+            )
+
         if slug is not None and slug != self.slug:
             self.slug = slug
         if icon_key is not None and icon_key != self.icon_key:
@@ -83,6 +89,11 @@ class PlaceCategory:
     def create_translation(
         self, data: NewPlaceCategoryTranslation
     ) -> PlaceCategoryTranslation:
+        if not self.is_editable():
+            raise PlaceCategoryIsNotEditable(
+                category_id=self.id,
+            )
+
         if data.language_code in self.translation_language_codes:
             raise PlaceCategoryTranslationAlreadyExists(
                 category_id=self.id,
@@ -97,18 +108,42 @@ class PlaceCategory:
 
         return translation
 
+    def publish(self) -> None:
+        if self.is_published():
+            return
+
+        missing = REQUIRED_LANGUAGES - self.translation_language_codes
+        if missing:
+            raise CannotPublishPlaceCategoryMissingTranslations(
+                category_id=self.id,
+                missing_languages=missing,
+            )
+        self.status = PlaceCategoryStatusEnum.PUBLISHED
+
+    def hide(self) -> None:
+        if not self.is_published():
+            raise InvalidPlaceCategoryStatusTransition(
+                category_id=self.id,
+                from_status=self.status,
+                to_status=PlaceCategoryStatusEnum.HIDDEN,
+            )
+        self.status = PlaceCategoryStatusEnum.HIDDEN
+
     def ensure_translation_can_be_deleted(self, language_code: LanguageEnum) -> None:
+        if not self.is_editable():
+            raise PlaceCategoryIsNotEditable(
+                category_id=self.id,
+            )
+
         if language_code not in self.translation_language_codes:
             raise PlaceCategoryTranslationNotFound(
                 category_id=self.id,
                 language_code=language_code,
             )
 
-        if len(self.translation_language_codes) == 1:
-            raise CannotDeleteOnlyPlaceCategoryTranslation(
-                category_id=self.id,
-                language_code=language_code,
-            )
-
-    def unregister_translation_language(self, language_code: LanguageEnum) -> None:
+    def remove_translation(
+        self,
+        language_code: LanguageEnum,
+    ) -> None:
+        self.ensure_translation_can_be_deleted(language_code=language_code)
         self.translation_language_codes.remove(language_code)
