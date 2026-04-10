@@ -26,7 +26,7 @@ dependencies = [
     "sqlalchemy[postgresql-asyncpg]>=2.0.46",
     "taskiq>=0.12.1",
     "taskiq-redis>=1.2.2",
-    "timezonefinder>=8.2.2",
+    "timezonefinder[numba]>=8.2.2",
     "uuid6>=2025.0.1",
 ]
 
