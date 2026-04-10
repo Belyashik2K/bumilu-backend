@@ -5,7 +5,7 @@ from dishka import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.routes.application.interfaces.readers import IRouteReader
+from app.modules.routes.application.interfaces.readers.route import IRouteReader
 from app.modules.routes.infrastructure.database.readers.route import (
     SQLAlchemyRouteReader,
 )

@@ -17,7 +17,6 @@ from app.modules.places.application.interfaces.repositories.place_category impor
 from app.modules.places.domain.categories.value_objects.slug import PlaceCategorySlugVO
 from app.modules.places.domain.places.models.place.model import Place
 from app.modules.places.domain.places.value_objects.address.object import AddressVO
-from app.modules.places.domain.places.value_objects.timezone.object import TimezoneVO
 
 
 class CreatePlaceCommandHandler(
@@ -42,14 +41,9 @@ class CreatePlaceCommandHandler(
         place = Place.create(
             category_id=category.id,
             location=LocationVO(latitude=command.latitude, longitude=command.longitude),
-            timezone=TimezoneVO.from_coordinates(
-                latitude=command.latitude,
-                longitude=command.longitude,
-            ),
             address_taxi=AddressVO(command.address_taxi),
             address_taxi_comment=command.address_taxi_comment,
         )
-
         await self._place_repository.save(place)
 
         return CreatePlaceCommandResult(id=place.id.value)

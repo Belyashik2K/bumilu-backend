@@ -29,6 +29,12 @@ from app.modules.places.application.commands.categories.update_translation.handl
 from app.modules.places.application.commands.places.create.handler import (
     CreatePlaceCommandHandler,
 )
+from app.modules.places.application.commands.places.delete.handler import (
+    DeletePlaceCommandHandler,
+)
+from app.modules.places.application.commands.places.update.handler import (
+    UpdatePlaceCommandHandler,
+)
 from app.modules.places.application.interfaces.readers.place import IPlaceReader
 from app.modules.places.application.interfaces.repositories.place import (
     IPlaceRepository,
@@ -42,6 +48,7 @@ from app.modules.places.application.interfaces.repositories.place_category_trans
 from app.modules.places.application.queries.categories.shared.readers.place_category import (
     IPlaceCategoryReader,
 )
+from app.modules.routes.application.interfaces.readers.route import IRouteReader
 
 
 class PlacesCommandHandlersProvider(Provider):
@@ -147,4 +154,30 @@ class PlacesCommandHandlersProvider(Provider):
             transaction_manager=transaction_manager,
             place_repository=place_repository,
             place_category_repository=place_category_repository,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def update_place_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        place_repository: IPlaceRepository,
+        place_category_repository: IPlaceCategoryRepository,
+    ) -> UpdatePlaceCommandHandler:
+        return UpdatePlaceCommandHandler(
+            transaction_manager=transaction_manager,
+            place_repository=place_repository,
+            place_category_repository=place_category_repository,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def delete_place_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        place_repository: IPlaceRepository,
+        route_reader: IRouteReader,
+    ) -> DeletePlaceCommandHandler:
+        return DeletePlaceCommandHandler(
+            transaction_manager=transaction_manager,
+            place_repository=place_repository,
+            route_reader=route_reader,
         )

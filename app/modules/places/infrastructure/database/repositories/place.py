@@ -4,6 +4,7 @@ from geoalchemy2.shape import (
     to_shape,
 )
 from shapely.geometry import Point
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.domain.value_objects.id import (
@@ -58,3 +59,8 @@ class SQLAlchemyPlaceRepository(
             address_taxi_comment=model.address_taxi_comment,
             status=model.status,
         )
+
+    async def delete_by_id(self, place_id: PlaceIdVO) -> None:
+        stmt = delete(PlaceModel).where(PlaceModel.id == place_id.value)
+        await self.session.execute(stmt)
+        await self.session.flush()
