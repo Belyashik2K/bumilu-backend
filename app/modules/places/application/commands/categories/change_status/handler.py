@@ -4,6 +4,9 @@ from app.core.domain.value_objects.id import PlaceCategoryIdVO
 from app.modules.places.application.commands.categories.change_status.query import (
     ChangePlaceCategoryStatusCommand,
 )
+from app.modules.places.application.exceptions.place_category import (
+    PlaceCategoryNotFound,
+)
 from app.modules.places.application.interfaces.repositories.place_category import (
     IPlaceCategoryRepository,
 )
@@ -25,7 +28,7 @@ class ChangePlaceCategoryStatusCommandHandler(
 
         category = await self._place_category_repository.get_by_id(category_id)
         if category is None:
-            return
+            raise PlaceCategoryNotFound(category_id=category_id.value)
 
         category.change_status(command.status)
         await self._place_category_repository.save(category)
