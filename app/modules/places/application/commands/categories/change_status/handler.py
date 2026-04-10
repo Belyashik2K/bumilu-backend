@@ -1,7 +1,7 @@
 from app.core.application.commands import ICommandHandler
 from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.domain.value_objects.id import PlaceCategoryIdVO
-from app.modules.places.application.commands.categories.change_status.query import (
+from app.modules.places.application.commands.categories.change_status.command import (
     ChangePlaceCategoryStatusCommand,
 )
 from app.modules.places.application.exceptions.place_category import (
