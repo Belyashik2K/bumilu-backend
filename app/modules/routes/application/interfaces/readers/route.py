@@ -28,6 +28,9 @@ class IRouteReader(ABC):
     ) -> RouteDetailsReadModel | None: ...
 
     @abstractmethod
+    async def count_by_place_id(self, category_id: UUID) -> int: ...
+
+    @abstractmethod
     async def get_route_points(
         self,
         route_id: UUID,

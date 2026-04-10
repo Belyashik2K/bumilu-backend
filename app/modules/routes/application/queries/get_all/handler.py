@@ -1,8 +1,8 @@
 from app.core.application.queries import IQueryHandler
 from app.core.application.queries.pagination import OffsetPagination
 from app.modules.places.shared.enums.route_sort import RouteSortByEnum
+from app.modules.routes.application.interfaces.readers import IRouteReader
 from app.modules.routes.application.queries.get_all.query import GetAllRoutesQuery
-from app.modules.routes.application.queries.shared.readers.route import IRouteReader
 from app.modules.routes.application.queries.shared.views import PaginatedRouteCardView
 
 
