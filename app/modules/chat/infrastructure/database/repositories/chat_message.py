@@ -8,12 +8,12 @@ from app.core.domain.value_objects.id import (
     ChatMessageIdVO,
     PrincipalIdVO,
 )
+from app.core.domain.value_objects.location import LocationVO
 from app.core.infrastructure.database import SQLAlchemyBaseRepository
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
 )
 from app.modules.chat.domain.models.chat_message import ChatMessage
-from app.modules.chat.domain.value_objects.location import LocationVO
 from app.modules.chat.domain.value_objects.message_text import MessageTextVO
 from app.modules.chat.infrastructure.database.models import ChatMessageModel
 

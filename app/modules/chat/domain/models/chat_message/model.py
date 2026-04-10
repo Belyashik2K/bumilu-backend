@@ -9,7 +9,7 @@ from app.core.domain.value_objects.id import (
     ChatMessageIdVO,
     PrincipalIdVO,
 )
-from app.modules.chat.domain.value_objects.location import LocationVO
+from app.core.domain.value_objects.location import LocationVO
 from app.modules.chat.domain.value_objects.message_text import MessageTextVO
 from app.modules.chat.shared.enums.author_type import AuthorTypeEnum
 

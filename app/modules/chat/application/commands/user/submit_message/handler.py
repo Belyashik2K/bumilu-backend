@@ -1,6 +1,7 @@
 from app.core.application.commands import ICommandHandlerWithResult
 from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.domain.value_objects.id import PrincipalIdVO
+from app.core.domain.value_objects.location import LocationVO
 from app.core.enums import LanguageEnum
 from app.core.utils import get_current_dt
 from app.modules.chat.application.commands.user.submit_message import (
@@ -15,7 +16,6 @@ from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
 )
 from app.modules.chat.domain.models.chat import Chat
-from app.modules.chat.domain.value_objects.location import LocationVO
 from app.modules.chat.domain.value_objects.message_text import MessageTextVO
 from app.modules.users.application.interfaces.repositories.user import IUserRepository
 from app.modules.users.application.queries.get.exceptions import UserNotFound
