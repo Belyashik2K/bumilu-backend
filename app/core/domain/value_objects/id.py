@@ -56,6 +56,10 @@ class PrincipalIdVO(IdVO): ...
 
 
 @dataclass(frozen=True, slots=True)
+class PlaceIdVO(IdVO): ...
+
+
+@dataclass(frozen=True, slots=True)
 class PlaceCategoryIdVO(IdVO): ...
 
 

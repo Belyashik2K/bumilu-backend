@@ -9,10 +9,10 @@ from app.core.domain.value_objects.id import (
     ChatIdVO,
     PrincipalIdVO,
 )
+from app.core.domain.value_objects.location import LocationVO
 from app.core.enums import LanguageEnum
 from app.modules.chat.domain.models.chat.exceptions import ChatNotEscalatedToAdmin
 from app.modules.chat.domain.models.chat_message.model import ChatMessage
-from app.modules.chat.domain.value_objects.location import LocationVO
 from app.modules.chat.domain.value_objects.message_text import MessageTextVO
 from app.modules.chat.shared.enums import (
     ChatCloseReasonEnum,

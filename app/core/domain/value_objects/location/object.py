@@ -4,7 +4,7 @@ from typing import (
     Self,
 )
 
-from app.modules.chat.domain.value_objects.location.exceptions import (
+from app.core.domain.value_objects.location.exceptions import (
     InvalidLatitude,
     InvalidLongitude,
 )

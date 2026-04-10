@@ -7,10 +7,10 @@ from app.core.domain.value_objects.id import (
     ChatIdVO,
     PrincipalIdVO,
 )
+from app.core.domain.value_objects.location import LocationVO
 from app.core.infrastructure.database import SQLAlchemyBaseRepository
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.domain.models.chat import Chat
-from app.modules.chat.domain.value_objects.location import LocationVO
 from app.modules.chat.domain.value_objects.message_text import MessageTextVO
 from app.modules.chat.infrastructure.database.models import ChatModel
 from app.modules.chat.shared.enums import ChatStatusEnum
