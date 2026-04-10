@@ -17,6 +17,12 @@ from app.core.presentation.endpoint_responses import generate_responses_for_endp
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.staff.deps import get_staff_principal
 from app.modules.auth.shared.context import Principal
+from app.modules.places.application.commands.categories.change_status.handler import (
+    ChangePlaceCategoryStatusCommandHandler,
+)
+from app.modules.places.application.commands.categories.change_status.query import (
+    ChangePlaceCategoryStatusCommand,
+)
 from app.modules.places.application.commands.categories.create.command import (
     CreatePlaceCategoryCommand,
 )
@@ -79,6 +85,7 @@ from app.modules.places.application.queries.categories.admin.get_translation.que
 )
 from app.modules.places.presentation.api.schemas.categories.category import (
     AdminPlaceCategoriesListResponseSchema,
+    ChangePlaceCategoryStatusRequestSchema,
     CreatePlaceCategoryRequestSchema,
     CreatePlaceCategoryResponseSchema,
     PlaceCategorySchema,
@@ -176,6 +183,28 @@ async def update_place_category(
             slug=data.slug,
             icon_key=data.icon_key,
             marker_color=data.marker_color,
+        )
+    )
+
+
+@admin_place_categories_router.patch(
+    "/{category_id}/status",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND, status.HTTP_409_CONFLICT
+    ),
+)
+@inject
+async def change_place_category_status(
+    category_id: UUID7,
+    handler: FromDishka[ChangePlaceCategoryStatusCommandHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+    data: ChangePlaceCategoryStatusRequestSchema,
+) -> None:
+    await handler(
+        ChangePlaceCategoryStatusCommand(
+            category_id=category_id,
+            status=data.status,
         )
     )
 

@@ -5,6 +5,9 @@ from dishka import (
 )
 
 from app.core.application.interfaces.transaction_manager import ITransactionManager
+from app.modules.places.application.commands.categories.change_status.handler import (
+    ChangePlaceCategoryStatusCommandHandler,
+)
 from app.modules.places.application.commands.categories.create.handler import (
     CreatePlaceCategoryCommandHandler,
 )
@@ -113,5 +116,16 @@ class PlacesCommandHandlersProvider(Provider):
         return UpdatePlaceCategoryTranslationCommandHandler(
             place_category_repository=category_repository,
             place_category_translation_repository=category_translation_repository,
+            transaction_manager=transaction_manager,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def change_place_category_status_handler(
+        self,
+        category_repository: IPlaceCategoryRepository,
+        transaction_manager: ITransactionManager,
+    ) -> ChangePlaceCategoryStatusCommandHandler:
+        return ChangePlaceCategoryStatusCommandHandler(
+            place_category_repository=category_repository,
             transaction_manager=transaction_manager,
         )
