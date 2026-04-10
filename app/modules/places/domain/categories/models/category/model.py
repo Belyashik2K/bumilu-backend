@@ -108,6 +108,21 @@ class PlaceCategory:
 
         return translation
 
+    def change_status(
+        self,
+        new_status: PlaceCategoryStatusEnum,
+    ) -> None:
+        if new_status == PlaceCategoryStatusEnum.PUBLISHED:
+            self.publish()
+        elif new_status == PlaceCategoryStatusEnum.HIDDEN:
+            self.hide()
+        else:
+            raise InvalidPlaceCategoryStatusTransition(
+                category_id=self.id,
+                from_status=self.status,
+                to_status=new_status,
+            )
+
     def publish(self) -> None:
         if self.is_published():
             return
