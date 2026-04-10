@@ -126,6 +126,7 @@ async def get_chat_messages(
 
 @admin_chat_router.post(
     "/{chat_id}/close",
+    status_code=status.HTTP_204_NO_CONTENT,
     responses=generate_responses_for_endpoint(status.HTTP_404_NOT_FOUND),
 )
 @inject
@@ -137,7 +138,11 @@ async def close_chat_as_admin(
     await handler(CloseChatAsAdminCommand(actor_id=principal.id.value, chat_id=chat_id))
 
 
-@admin_chat_router.post("/{chat_id}/messages")
+@admin_chat_router.post(
+    "/{chat_id}/messages",
+    status_code=status.HTTP_201_CREATED,
+    responses=generate_responses_for_endpoint(status.HTTP_404_NOT_FOUND),
+)
 @inject
 async def reply_to_chat_as_admin(
     handler: FromDishka[SubmitAdminMessageCommandHandler],

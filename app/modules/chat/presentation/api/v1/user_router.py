@@ -46,6 +46,7 @@ user_chat_router = APIRouter(tags=["Chat"], dependencies=[Depends(security)])
 
 @user_chat_router.post(
     "/users/me/chat",
+    status_code=status.HTTP_201_CREATED,
     responses=generate_responses_for_endpoint(),
 )
 @inject
