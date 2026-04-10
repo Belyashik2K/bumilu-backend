@@ -26,7 +26,13 @@ from app.modules.places.application.commands.categories.update.handler import (
 from app.modules.places.application.commands.categories.update_translation.handler import (
     UpdatePlaceCategoryTranslationCommandHandler,
 )
+from app.modules.places.application.commands.places.create.handler import (
+    CreatePlaceCommandHandler,
+)
 from app.modules.places.application.interfaces.readers.place import IPlaceReader
+from app.modules.places.application.interfaces.repositories.place import (
+    IPlaceRepository,
+)
 from app.modules.places.application.interfaces.repositories.place_category import (
     IPlaceCategoryRepository,
 )
@@ -128,4 +134,17 @@ class PlacesCommandHandlersProvider(Provider):
         return ChangePlaceCategoryStatusCommandHandler(
             place_category_repository=category_repository,
             transaction_manager=transaction_manager,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def create_place_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        place_repository: IPlaceRepository,
+        place_category_repository: IPlaceCategoryRepository,
+    ) -> CreatePlaceCommandHandler:
+        return CreatePlaceCommandHandler(
+            transaction_manager=transaction_manager,
+            place_repository=place_repository,
+            place_category_repository=place_category_repository,
         )

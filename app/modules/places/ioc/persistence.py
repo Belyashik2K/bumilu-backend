@@ -6,6 +6,9 @@ from dishka import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.places.application.interfaces.readers.place import IPlaceReader
+from app.modules.places.application.interfaces.repositories.place import (
+    IPlaceRepository,
+)
 from app.modules.places.application.interfaces.repositories.place_category import (
     IPlaceCategoryRepository,
 )
@@ -27,6 +30,9 @@ from app.modules.places.infrastructure.database.readers.place_category import (
 from app.modules.places.infrastructure.database.readers.place_category_translation import (
     SQLAlchemyPlaceCategoryTranslationReader,
 )
+from app.modules.places.infrastructure.database.repositories.place import (
+    SQLAlchemyPlaceRepository,
+)
 from app.modules.places.infrastructure.database.repositories.place_category import (
     SQLAlchemyPlaceCategoryRepository,
 )
@@ -39,6 +45,12 @@ class PlacesPersistenceProvider(Provider):
     @provide(scope=Scope.REQUEST, provides=IPlaceReader)
     async def place_reader(self, session: AsyncSession) -> SQLAlchemyPlaceReader:
         return SQLAlchemyPlaceReader(session=session)
+
+    @provide(scope=Scope.REQUEST, provides=IPlaceRepository)
+    async def place_repository(
+        self, session: AsyncSession
+    ) -> SQLAlchemyPlaceRepository:
+        return SQLAlchemyPlaceRepository(session=session)
 
     @provide(scope=Scope.REQUEST, provides=IPlaceCategoryReader)
     async def place_category_reader(
