@@ -1,5 +1,8 @@
 from geoalchemy2 import WKBElement
-from geoalchemy2.shape import from_shape
+from geoalchemy2.shape import (
+    from_shape,
+    to_shape,
+)
 from shapely.geometry import Point
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -31,8 +34,8 @@ class SQLAlchemyPlaceRepository(
 
     @staticmethod
     def wkb_to_location_vo(wkb: WKBElement) -> LocationVO:
-        point = Point(wkb.data)
-        return LocationVO(latitude=point.y, longitude=point.x)
+        point = to_shape(wkb)
+        return LocationVO(latitude=point.y, longitude=point.x)  # type: ignore
 
     def _to_data(self, entity: Place) -> PlaceModel:
         return PlaceModel(
@@ -42,6 +45,7 @@ class SQLAlchemyPlaceRepository(
             timezone=entity.timezone.value,
             address_taxi=entity.address_taxi.value,
             address_taxi_comment=entity.address_taxi_comment,
+            status=entity.status,
         )
 
     def _to_entity(self, model: PlaceModel) -> Place:
