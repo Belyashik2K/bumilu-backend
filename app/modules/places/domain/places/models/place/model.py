@@ -11,6 +11,7 @@ from app.core.domain.value_objects.id import (
 from app.core.domain.value_objects.location import LocationVO
 from app.modules.places.domain.places.value_objects.address.object import AddressVO
 from app.modules.places.domain.places.value_objects.timezone.object import TimezoneVO
+from app.modules.places.shared.enums.place_status import PlaceStatusEnum
 
 
 @dataclass(slots=True, kw_only=True)
@@ -21,6 +22,7 @@ class Place:
     timezone: TimezoneVO
     address_taxi: AddressVO
     address_taxi_comment: str | None = field(default=None)
+    status: PlaceStatusEnum = field(default=PlaceStatusEnum.DRAFT)
 
     @classmethod
     def create(
