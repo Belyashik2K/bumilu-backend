@@ -14,6 +14,9 @@ from app.modules.places.presentation.api.schemas.categories.examples import (
     SLUG_EXAMPLE,
     UUID_EXAMPLE,
 )
+from app.modules.places.shared.enums.place_category_status import (
+    PlaceCategoryStatusEnum,
+)
 
 
 class PlaceCategoryBaseSchema(BaseModel):
@@ -76,6 +79,14 @@ class UpdatePlaceCategoryRequestSchema(BaseModel):
         None,
         description="Hex color code for the marker",
         examples=[MARKER_COLOR_EXAMPLE],
+    )
+
+
+class ChangePlaceCategoryStatusRequestSchema(BaseModel):
+    status: PlaceCategoryStatusEnum = Field(
+        ...,
+        description="New status for the place category",
+        examples=[PlaceCategoryStatusEnum.PUBLISHED],
     )
 
 
