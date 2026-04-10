@@ -4,7 +4,7 @@ from dishka import (
     provide,
 )
 
-from app.modules.routes.application.interfaces.readers import IRouteReader
+from app.modules.routes.application.interfaces.readers.route import IRouteReader
 from app.modules.routes.application.queries.build_route_path.handler import (
     BuildRoutePathForRouteQueryHandler,
 )

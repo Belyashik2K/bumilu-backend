@@ -26,7 +26,7 @@ from app.modules.places.infrastructure.database.models import (
     PlaceTranslationModel,
 )
 from app.modules.places.shared.enums.route_sort import RouteSortByEnum
-from app.modules.routes.application.interfaces.readers import IRouteReader
+from app.modules.routes.application.interfaces.readers.route import IRouteReader
 from app.modules.routes.application.queries.shared.models.route_card import (
     RouteCardReadModel,
 )
@@ -106,6 +106,14 @@ class SQLAlchemyRouteReader(IRouteReader):
             ],
             total_points=len(route.points),
         )
+
+    async def count_by_place_id(self, place_id: UUID) -> int:
+        stmt = select(func.count(RoutePointModel.id)).where(
+            RoutePointModel.place_id == place_id
+        )
+
+        result = await self._session.execute(stmt)
+        return result.scalar_one()
 
     async def get_route_points(
         self,

@@ -212,3 +212,25 @@ class CreatePlaceResponseSchema(BaseModel):
         description="Unique identifier of the created place",
         examples=[UUID_EXAMPLE],
     )
+
+
+class UpdatePlaceRequestSchema(BaseModel):
+    category_slug: str | None = Field(
+        None,
+        description="Slug of the place category",
+        examples=[SLUG_EXAMPLE],
+    )
+    location: PlaceLocationSchema | None = Field(
+        None,
+        description="Location of the place",
+    )
+    address_taxi: str | None = Field(
+        None,
+        description="Taxi address of the place",
+        examples=[TAXI_ADDRESS_EXAMPLE],
+    )
+    address_taxi_comment: str | None = Field(
+        None,
+        description="Optional comment for the taxi address",
+        examples=[TAXI_COMMENT_EXAMPLE],
+    )

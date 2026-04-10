@@ -1,7 +1,7 @@
 from app.core.application.queries import IQueryHandler
 from app.modules.places.application.queries.places.shared.views import PlaceCardView
 from app.modules.routes.application.exceptions.route import RouteNotFound
-from app.modules.routes.application.interfaces.readers import IRouteReader
+from app.modules.routes.application.interfaces.readers.route import IRouteReader
 from app.modules.routes.application.queries.get.query import GetRouteQuery
 from app.modules.routes.application.queries.shared.views import (
     RoutePointView,

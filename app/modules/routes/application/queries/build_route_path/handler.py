@@ -1,6 +1,6 @@
 from app.core.application.queries import IQueryHandler
 from app.modules.routes.application.exceptions.route import RouteNotFound
-from app.modules.routes.application.interfaces.readers import IRouteReader
+from app.modules.routes.application.interfaces.readers.route import IRouteReader
 from app.modules.routes.application.queries.build_route_path.query import (
     BuildRoutePathForRouteQuery,
 )
