@@ -55,17 +55,7 @@ CHAT__AI_ASSISTANT__OPENAI__API_KEY=sk-or-v1-c11dac415471ad79f6ec1a5ba24957588c6
 
 ### 2.5 Миграция с прошлой версии
 
-1. Удалить все контейнеры и образы:
-
-```bash
-docker-compose -f docker-compose.dev.yml -f docker-compose.yml down --rmi all
-```
-
-2. Удалить все тома:
-
-```bash
-docker-compose -f docker-compose.dev.yml -f docker-compose.yml down -v
-```
+_**Невозможно, только вручную удалить все связанные данные с bumilu-users-service и запустить уже обновлённый backend**_
 
 ### 2.75 Интеграция с Valhalla
 
