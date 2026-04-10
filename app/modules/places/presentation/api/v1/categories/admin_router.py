@@ -41,9 +41,6 @@ from app.modules.places.application.commands.categories.delete_translation.comma
 from app.modules.places.application.commands.categories.delete_translation.handler import (
     DeletePlaceCategoryTranslationCommandHandler,
 )
-from app.modules.places.application.commands.categories.shared.dtos import (
-    NewPlaceCategoryTranslation,
-)
 from app.modules.places.application.commands.categories.update.command import (
     UpdatePlaceCategoryCommand,
 )
@@ -134,13 +131,6 @@ async def create_place_category(
             slug=data.slug,
             icon_key=data.icon_key,
             marker_color=data.marker_color,
-            translations=[
-                NewPlaceCategoryTranslation(
-                    language_code=translation.language_code,
-                    name=translation.name,
-                )
-                for translation in data.translations
-            ],
         )
     )
     return CreatePlaceCategoryResponseSchema.model_validate(

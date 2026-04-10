@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
+    Enum,
     String,
     func,
     select,
@@ -21,6 +22,9 @@ from app.core.infrastructure.database.mixins import (
 from app.modules.places.infrastructure.database.models.translations.category import (
     PlaceCategoryTranslationModel,
 )
+from app.modules.places.shared.enums.place_category_status import (
+    PlaceCategoryStatusEnum,
+)
 
 if TYPE_CHECKING:
     from app.modules.places.infrastructure.database.models.base.place import (
@@ -38,6 +42,9 @@ class PlaceCategoryModel(PKUUIDMixin, TimestampMixin, BaseModel):
     marker_color: Mapped[str] = mapped_column(
         String(7)
     )  # Hex color code (e.g. "#FF0000")
+    status: Mapped[PlaceCategoryStatusEnum] = mapped_column(
+        Enum(PlaceCategoryStatusEnum, name="place_category_status_enum"),
+    )
 
     @declared_attr
     def translation_language_codes(self):

@@ -45,11 +45,8 @@ class DeletePlaceCategoryTranslationCommandHandler(
                 language_code=command.language_code,
             )
 
-        category.ensure_translation_can_be_deleted(language_code=command.language_code)
+        category.remove_translation(language_code=command.language_code)
         await self._place_category_translation_repository.delete_by_id(
             category_translation.id
         )
-        category.unregister_translation_language(
-            language_code=command.language_code
-        )  # TODO: think about moving this logic to domain service
         await self._place_category_repository.save(category)

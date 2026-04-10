@@ -14,9 +14,6 @@ from app.modules.places.presentation.api.schemas.categories.examples import (
     SLUG_EXAMPLE,
     UUID_EXAMPLE,
 )
-from app.modules.places.presentation.api.schemas.categories.translation import (
-    PlaceCategoryTranslationSchema,
-)
 
 
 class PlaceCategoryBaseSchema(BaseModel):
@@ -53,11 +50,7 @@ class LocalizedPlaceCategorySchema(PlaceCategorySchema):
     )
 
 
-class CreatePlaceCategoryRequestSchema(PlaceCategoryBaseSchema):
-    translations: list[PlaceCategoryTranslationSchema] = Field(
-        ...,
-        description="List of translations for the place category",
-    )
+class CreatePlaceCategoryRequestSchema(PlaceCategoryBaseSchema): ...
 
 
 class CreatePlaceCategoryResponseSchema(BaseModel):

@@ -9,6 +9,9 @@ from app.modules.places.application.queries.categories.user.get_all.query import
 from app.modules.places.application.queries.categories.user.get_all.view import (
     PaginatedPlaceCategoriesView,
 )
+from app.modules.places.shared.enums.place_category_status import (
+    PlaceCategoryStatusEnum,
+)
 
 
 class GetAllPlaceCategoriesQueryHandler(
@@ -24,6 +27,7 @@ class GetAllPlaceCategoriesQueryHandler(
             limit=query.limit,
             offset=query.offset,
             translation_language=query.language,
+            status=PlaceCategoryStatusEnum.PUBLISHED,
         )
 
         return PaginatedPlaceCategoriesView(
