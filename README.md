@@ -12,8 +12,8 @@ Backend for mobile ans web application BumiLu (不迷路), PAB project
 ### 1. Клонирование
 
 ```bash
-git clone https://github.com/BumiLuDev/users-service.git
-cd users-service
+git clone https://github.com/BumiLuDev/backend.git
+cd backend
 git checkout feat/places-and-routes-module
 ```
 
