@@ -104,7 +104,12 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         )
 
         result = await self._session.execute(stmt)
-        place, is_favorite = result.unique().one()
+        row = result.unique().one_or_none()
+
+        if row is None:
+            return None
+
+        place, is_favorite = row
 
         if place is None:
             return None
