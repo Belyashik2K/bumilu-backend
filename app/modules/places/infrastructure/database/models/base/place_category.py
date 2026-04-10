@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 from sqlalchemy import (
     Enum,
     String,
@@ -19,17 +17,15 @@ from app.core.infrastructure.database.mixins import (
     PKUUIDMixin,
     TimestampMixin,
 )
+from app.modules.places.infrastructure.database.models.base.place import (
+    PlaceModel,
+)
 from app.modules.places.infrastructure.database.models.translations.category import (
     PlaceCategoryTranslationModel,
 )
 from app.modules.places.shared.enums.place_category_status import (
     PlaceCategoryStatusEnum,
 )
-
-if TYPE_CHECKING:
-    from app.modules.places.infrastructure.database.models.base.place import (
-        PlaceModel,
-    )
 
 
 class PlaceCategoryModel(PKUUIDMixin, TimestampMixin, BaseModel):
@@ -52,6 +48,15 @@ class PlaceCategoryModel(PKUUIDMixin, TimestampMixin, BaseModel):
             select(func.array_agg(PlaceCategoryTranslationModel.language_code))
             .where(PlaceCategoryTranslationModel.category_id == self.id)
             .correlate_except(PlaceCategoryTranslationModel)
+            .scalar_subquery()
+        )
+
+    @declared_attr
+    def total_places(self):
+        return column_property(
+            select(func.count())
+            .where(PlaceModel.category_id == self.id)
+            .correlate_except(PlaceModel)
             .scalar_subquery()
         )
 

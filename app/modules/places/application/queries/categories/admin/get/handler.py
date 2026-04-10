@@ -6,7 +6,7 @@ from app.modules.places.application.queries.categories.admin.get.query import (
     GetAdminPlaceCategoryQuery,
 )
 from app.modules.places.application.queries.categories.shared.models.place_category import (
-    PlaceCategoryReadModel,
+    AdminPlaceCategoryReadModel,
 )
 from app.modules.places.application.queries.categories.shared.readers.place_category import (
     IPlaceCategoryReader,
@@ -16,7 +16,7 @@ from app.modules.places.application.queries.categories.shared.readers.place_cate
 class GetAdminPlaceCategoryQueryHandler(
     IQueryHandler[
         GetAdminPlaceCategoryQuery,
-        PlaceCategoryReadModel,
+        AdminPlaceCategoryReadModel,
     ]
 ):
     def __init__(
@@ -25,8 +25,10 @@ class GetAdminPlaceCategoryQueryHandler(
     ) -> None:
         self._place_category_reader = place_category_reader
 
-    async def handle(self, query: GetAdminPlaceCategoryQuery) -> PlaceCategoryReadModel:
-        category = await self._place_category_reader.get_by_id(
+    async def handle(
+        self, query: GetAdminPlaceCategoryQuery
+    ) -> AdminPlaceCategoryReadModel:
+        category = await self._place_category_reader.get_admin_by_id(
             category_id=query.category_id
         )
         if category is None:
