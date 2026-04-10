@@ -4,6 +4,7 @@ from dishka import (
     provide,
 )
 
+from app.modules.routes.application.interfaces.readers import IRouteReader
 from app.modules.routes.application.queries.build_route_path.handler import (
     BuildRoutePathForRouteQueryHandler,
 )
@@ -11,7 +12,6 @@ from app.modules.routes.application.queries.get.handler import GetRouteQueryHand
 from app.modules.routes.application.queries.get_all.handler import (
     GetAllRoutesQueryHandler,
 )
-from app.modules.routes.application.queries.shared.readers.route import IRouteReader
 from app.modules.routing.application.interfaces.routing_gateway import IRoutingGateway
 
 

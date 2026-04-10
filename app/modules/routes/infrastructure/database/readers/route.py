@@ -26,6 +26,7 @@ from app.modules.places.infrastructure.database.models import (
     PlaceTranslationModel,
 )
 from app.modules.places.shared.enums.route_sort import RouteSortByEnum
+from app.modules.routes.application.interfaces.readers import IRouteReader
 from app.modules.routes.application.queries.shared.models.route_card import (
     RouteCardReadModel,
 )
@@ -36,7 +37,6 @@ from app.modules.routes.application.queries.shared.models.route_point import (
     RoutePointReadModel,
     RouteWaypointModel,
 )
-from app.modules.routes.application.queries.shared.readers.route import IRouteReader
 from app.modules.routes.infrastructure.database.models import (
     RouteModel,
     RoutePointModel,

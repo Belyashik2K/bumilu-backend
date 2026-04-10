@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+from uuid import UUID
 
 from sqlalchemy import (
     UUID as _UUID,
@@ -33,7 +34,7 @@ class RoutePointModel(PKUUIDMixin, TimestampMixin, BaseModel):
     __tablename__ = "route_points"
     __table_args__ = (UniqueConstraint("route_id", "point_index"),)
 
-    route_id: Mapped[_UUID] = mapped_column(
+    route_id: Mapped[UUID] = mapped_column(
         _UUID(),
         ForeignKey(
             "routes.id",
@@ -41,11 +42,11 @@ class RoutePointModel(PKUUIDMixin, TimestampMixin, BaseModel):
             onupdate="CASCADE",
         ),
     )
-    place_id: Mapped[_UUID] = mapped_column(
+    place_id: Mapped[UUID] = mapped_column(
         _UUID(),
         ForeignKey(
             "places.id",
-            ondelete="CASCADE",
+            ondelete="RESTRICT",
             onupdate="CASCADE",
         ),
     )
