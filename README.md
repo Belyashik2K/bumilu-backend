@@ -55,17 +55,7 @@ CHAT__AI_ASSISTANT__OPENAI__API_KEY=REDACTED_OPENROUTER_API_KEY
 
 ### 2.5 Миграция с прошлой версии
 
-1. Удалить все контейнеры и образы:
-
-```bash
-docker-compose -f docker-compose.dev.yml -f docker-compose.yml down --rmi all
-```
-
-2. Удалить все тома:
-
-```bash
-docker-compose -f docker-compose.dev.yml -f docker-compose.yml down -v
-```
+_**Невозможно, только вручную удалить все связанные данные с bumilu-users-service и запустить уже обновлённый backend**_
 
 ### 2.75 Интеграция с Valhalla
 
