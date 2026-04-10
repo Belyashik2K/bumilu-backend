@@ -1,5 +1,3 @@
-from pprint import pprint
-
 from app.core.application.queries import IQueryHandler
 from app.core.application.queries.pagination import OffsetPagination
 from app.modules.places.application.queries.categories.admin.get_all.query import (
@@ -27,8 +25,6 @@ class GetAdminPlaceCategoriesListQueryHandler(
             offset=query.offset,
             status=None,  # TODO: add filtering by status (e.g. only published categories)
         )
-
-        pprint(categories.items)
 
         return PaginatedAdminPlaceCategoriesView(
             categories=categories.items,
