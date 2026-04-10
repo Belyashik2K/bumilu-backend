@@ -1,4 +1,5 @@
 from app.modules.places.application.queries.categories.shared.models.place_category import (
+    AdminPlaceCategoryReadModel,
     LocalizedPlaceCategoryReadModel,
     PlaceCategoryReadModel,
 )
@@ -28,4 +29,17 @@ class PlaceCategoryMapper:
             name=translation.name,
             icon_key=category.icon_key,
             marker_color=category.marker_color,
+        )
+
+    @staticmethod
+    def map_admin_category(
+        category: PlaceCategoryModel,
+    ) -> AdminPlaceCategoryReadModel:
+        return AdminPlaceCategoryReadModel(
+            id=category.id,
+            slug=category.slug,
+            icon_key=category.icon_key,
+            marker_color=category.marker_color,
+            status=category.status,
+            total_places=category.total_places,
         )

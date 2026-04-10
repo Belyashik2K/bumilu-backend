@@ -15,6 +15,7 @@ from app.modules.places.application.queries.categories.shared.mappers import (
     PlaceCategoryMapper,
 )
 from app.modules.places.application.queries.categories.shared.models.place_category import (
+    AdminPlaceCategoryReadModel,
     LocalizedPlaceCategoryReadModel,
     PlaceCategoryReadModel,
 )
@@ -60,7 +61,7 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
         result = await self._session.execute(stmt)
         return result.scalar_one() > 0
 
-    async def get_by_id(
+    async def get_public_by_id(
         self,
         category_id: UUID,
     ) -> PlaceCategoryReadModel | None:
@@ -71,7 +72,22 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
             return None
         return PlaceCategoryMapper.map_category(category)
 
-    async def list_localized(
+    async def get_admin_by_id(
+        self,
+        category_id: UUID,
+    ) -> AdminPlaceCategoryReadModel | None:
+        stmt = (
+            select(PlaceCategoryModel)
+            .where(PlaceCategoryModel.id == category_id)
+            .options(contains_eager(PlaceCategoryModel.translations))
+        )
+        result = await self._session.execute(stmt)
+        category = result.unique().scalar_one_or_none()
+        if category is None:
+            return None
+        return PlaceCategoryMapper.map_admin_category(category)
+
+    async def list_public_localized(
         self,
         limit: int,
         offset: int,
@@ -106,7 +122,7 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
             total=total or 0,
         )
 
-    async def list_plain(
+    async def list_public(
         self,
         limit: int,
         offset: int,
@@ -131,6 +147,36 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
         return PageReadModel(
             items=[
                 PlaceCategoryMapper.map_category(category) for category in categories
+            ],
+            total=total or 0,
+        )
+
+    async def list_admin(
+        self,
+        limit: int,
+        offset: int,
+        status: PlaceCategoryStatusEnum | None = None,
+    ) -> PageReadModel[AdminPlaceCategoryReadModel]:
+        count_stmt = self._apply_filters(
+            select(func.count(PlaceCategoryModel.id)).select_from(PlaceCategoryModel),
+            status=status,
+        )
+
+        items_stmt = self._apply_filters(
+            select(PlaceCategoryModel),
+            status=status,
+        ).options(contains_eager(PlaceCategoryModel.translations))
+
+        total = await self._session.scalar(count_stmt)
+
+        stmt = items_stmt.limit(limit).offset(offset)
+        result = await self._session.execute(stmt)
+        categories = result.unique().scalars().all()
+
+        return PageReadModel(
+            items=[
+                PlaceCategoryMapper.map_admin_category(category)
+                for category in categories
             ],
             total=total or 0,
         )

@@ -85,10 +85,10 @@ from app.modules.places.application.queries.categories.admin.get_translation.que
 )
 from app.modules.places.presentation.api.schemas.categories.category import (
     AdminPlaceCategoriesListResponseSchema,
+    AdminPlaceCategorySchema,
     ChangePlaceCategoryStatusRequestSchema,
     CreatePlaceCategoryRequestSchema,
     CreatePlaceCategoryResponseSchema,
-    PlaceCategorySchema,
     UpdatePlaceCategoryRequestSchema,
 )
 from app.modules.places.presentation.api.schemas.categories.translation import (
@@ -126,7 +126,9 @@ async def get_place_categories(
     )
 
 
-@admin_place_categories_router.post("", responses=generate_responses_for_endpoint())
+@admin_place_categories_router.post(
+    "", status_code=status.HTTP_201_CREATED, responses=generate_responses_for_endpoint()
+)
 @inject
 async def create_place_category(
     handler: FromDishka[CreatePlaceCategoryCommandHandler],
@@ -154,18 +156,19 @@ async def get_place_category(
     category_id: UUID7,
     handler: FromDishka[GetAdminPlaceCategoryQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> PlaceCategorySchema:
+) -> AdminPlaceCategorySchema:
     result = await handler(
         GetAdminPlaceCategoryQuery(
             category_id=category_id,
             actor_id=principal.id.value,
         )
     )
-    return PlaceCategorySchema.model_validate(result, from_attributes=True)
+    return AdminPlaceCategorySchema.model_validate(result, from_attributes=True)
 
 
 @admin_place_categories_router.patch(
     "/{category_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
     responses=generate_responses_for_endpoint(
         status.HTTP_404_NOT_FOUND, status.HTTP_409_CONFLICT
     ),
@@ -255,6 +258,7 @@ async def get_place_category_translations(
 
 @admin_place_categories_router.post(
     "/{category_id}/translations",
+    status_code=status.HTTP_201_CREATED,
     responses=generate_responses_for_endpoint(
         status.HTTP_404_NOT_FOUND, status.HTTP_409_CONFLICT
     ),
@@ -298,6 +302,7 @@ async def get_place_category_translation(
 
 @admin_place_categories_router.patch(
     "/{category_id}/translations/{language_code}",
+    status_code=status.HTTP_204_NO_CONTENT,
     responses=generate_responses_for_endpoint(
         status.HTTP_404_NOT_FOUND, status.HTTP_409_CONFLICT
     ),

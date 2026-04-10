@@ -12,6 +12,7 @@ from app.modules.places.presentation.api.schemas.categories.examples import (
     MARKER_COLOR_EXAMPLE,
     NAME_EXAMPLE,
     SLUG_EXAMPLE,
+    TOTAL_PLACES_EXAMPLE,
     UUID_EXAMPLE,
 )
 from app.modules.places.shared.enums.place_category_status import (
@@ -50,6 +51,19 @@ class LocalizedPlaceCategorySchema(PlaceCategorySchema):
         ...,
         description="The localized name of the place category.",
         examples=[NAME_EXAMPLE],
+    )
+
+
+class AdminPlaceCategorySchema(PlaceCategorySchema):
+    total_places: int = Field(
+        ...,
+        description="Total number of places associated with this category",
+        examples=[TOTAL_PLACES_EXAMPLE],
+    )
+    status: PlaceCategoryStatusEnum = Field(
+        ...,
+        description="Current status of the place category",
+        examples=[PlaceCategoryStatusEnum.PUBLISHED],
     )
 
 
@@ -96,7 +110,7 @@ PlaceCategoriesListResponseSchema = make_paginated_response_schema(
     validation_alias="categories",
 )
 AdminPlaceCategoriesListResponseSchema = make_paginated_response_schema(
-    item_type=PlaceCategorySchema,
+    item_type=AdminPlaceCategorySchema,
     description="Response schema for a paginated list of place categories for admin users",
     validation_alias="categories",
 )
