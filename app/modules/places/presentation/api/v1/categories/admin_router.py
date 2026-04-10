@@ -17,11 +17,11 @@ from app.core.presentation.endpoint_responses import generate_responses_for_endp
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.staff.deps import get_staff_principal
 from app.modules.auth.shared.context import Principal
+from app.modules.places.application.commands.categories.change_status.command import (
+    ChangePlaceCategoryStatusCommand,
+)
 from app.modules.places.application.commands.categories.change_status.handler import (
     ChangePlaceCategoryStatusCommandHandler,
-)
-from app.modules.places.application.commands.categories.change_status.query import (
-    ChangePlaceCategoryStatusCommand,
 )
 from app.modules.places.application.commands.categories.create.command import (
     CreatePlaceCategoryCommand,

@@ -27,6 +27,11 @@ class PlaceCategoryNotFound(ApplicationNotFoundException):
         super().__init__(message=f"Place category with id '{category_id}' not found.")
 
 
+class PlaceCategorySlugNotFound(ApplicationNotFoundException):
+    def __init__(self, slug: str) -> None:
+        super().__init__(message=f"Place category with slug '{slug}' not found.")
+
+
 class PlaceCategoryTranslationNotFound(ApplicationNotFoundException):
     def __init__(self, category_id: UUID, language_code: LanguageEnum) -> None:
         super().__init__(
