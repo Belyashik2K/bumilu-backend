@@ -26,10 +26,18 @@ class IPlaceCategoryReader(ABC):
     ) -> PlaceCategoryReadModel | None: ...
 
     @abstractmethod
-    async def list(
+    async def list_localized(
         self,
         limit: int,
         offset: int,
         translation_language: LanguageEnum,
         status: PlaceCategoryStatusEnum | None = None,
     ) -> PageReadModel[LocalizedPlaceCategoryReadModel]: ...
+
+    @abstractmethod
+    async def list_plain(
+        self,
+        limit: int,
+        offset: int,
+        status: PlaceCategoryStatusEnum | None = None,
+    ) -> PageReadModel[PlaceCategoryReadModel]: ...

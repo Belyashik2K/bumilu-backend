@@ -23,7 +23,7 @@ class GetAllPlaceCategoriesQueryHandler(
     async def handle(
         self, query: GetAllPlaceCategoriesQuery
     ) -> PaginatedPlaceCategoriesView:
-        categories = await self._place_category_reader.list(
+        categories = await self._place_category_reader.list_localized(
             limit=query.limit,
             offset=query.offset,
             translation_language=query.language,
