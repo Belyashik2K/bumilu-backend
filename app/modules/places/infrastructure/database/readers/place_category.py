@@ -30,6 +30,8 @@ from app.modules.places.shared.enums.place_category_status import (
     PlaceCategoryStatusEnum,
 )
 
+COMMON_SELECT = select(PlaceCategoryModel).order_by(PlaceCategoryModel.slug.asc())
+
 
 class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
     def __init__(self, session: AsyncSession) -> None:
@@ -103,7 +105,7 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
         )
 
         items_stmt = self._apply_filters(
-            select(PlaceCategoryModel),
+            COMMON_SELECT,
             translation_language=translation_language,
             status=status,
         ).options(contains_eager(PlaceCategoryModel.translations))
@@ -134,7 +136,7 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
         )
 
         items_stmt = self._apply_filters(
-            select(PlaceCategoryModel),
+            COMMON_SELECT,
             status=status,
         )
 
@@ -163,9 +165,9 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
         )
 
         items_stmt = self._apply_filters(
-            select(PlaceCategoryModel),
+            COMMON_SELECT,
             status=status,
-        ).options(contains_eager(PlaceCategoryModel.translations))
+        )
 
         total = await self._session.scalar(count_stmt)
 
