@@ -5,6 +5,7 @@ from pydantic import (
 )
 
 from app.core.presentation.api.schemas.pagination import OffsetPaginationSchema
+from app.modules.places.presentation.api.schemas.categories.examples import SLUG_EXAMPLE
 from app.modules.places.presentation.api.schemas.places.address import (
     PlaceAddressSchema,
 )
@@ -15,6 +16,8 @@ from app.modules.places.presentation.api.schemas.places.category import (
 from app.modules.places.presentation.api.schemas.places.examples import (
     DESCRIPTION_EXAMPLE,
     SHORT_DESCRIPTION_EXAMPLE,
+    TAXI_ADDRESS_EXAMPLE,
+    TAXI_COMMENT_EXAMPLE,
     TIMEZONE_EXAMPLE,
     TITLE_EXAMPLE,
     UUID_EXAMPLE,
@@ -178,4 +181,34 @@ class PlaceSchema(BaseModel):
     user_context: PlaceUserContextSchema = Field(
         ...,
         description="User-specific context for the place, such as whether it's in the user's favorites.",
+    )
+
+
+class CreatePlaceRequestSchema(BaseModel):
+    category_slug: str = Field(
+        ...,
+        description="Slug of the place category",
+        examples=[SLUG_EXAMPLE],
+    )
+    location: PlaceLocationSchema = Field(
+        ...,
+        description="Location of the place",
+    )
+    address_taxi: str = Field(
+        ...,
+        description="Taxi address of the place",
+        examples=[TAXI_ADDRESS_EXAMPLE],
+    )
+    address_taxi_comment: str | None = Field(
+        None,
+        description="Optional comment for the taxi address",
+        examples=[TAXI_COMMENT_EXAMPLE],
+    )
+
+
+class CreatePlaceResponseSchema(BaseModel):
+    id: UUID7 = Field(
+        ...,
+        description="Unique identifier of the created place",
+        examples=[UUID_EXAMPLE],
     )
