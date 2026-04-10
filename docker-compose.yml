@@ -1,4 +1,4 @@
-name: bumilu-users-service
+name: bumilu-backend
 services:
   postgres:
     image: postgis/postgis:18-3.6
