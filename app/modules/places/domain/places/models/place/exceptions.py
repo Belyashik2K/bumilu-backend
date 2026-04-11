@@ -10,6 +10,7 @@ from app.core.exceptions.domain.base import (
 from app.modules.places.domain.places.value_objects.phone_number.object import (
     PlacePhoneNumberVO,
 )
+from app.modules.places.domain.places.value_objects.weekday.object import WeekdayVO
 
 
 class PlaceIsNotEditable(DomainInvariantViolationException):
@@ -44,4 +45,11 @@ class PlacePhoneNotFound(DomainNotFoundException):
     def __init__(self, place_id: PlaceIdVO, phone_id: PlacePhoneIdVO) -> None:
         super().__init__(
             message=f"Phone with id {phone_id} not found for place with id {place_id}",
+        )
+
+
+class PlaceWorkingDayNotFound(DomainNotFoundException):
+    def __init__(self, place_id: PlaceIdVO, weekday: WeekdayVO) -> None:
+        super().__init__(
+            message=f"Working day with day_of_week {weekday} not found for place with id {place_id}",
         )

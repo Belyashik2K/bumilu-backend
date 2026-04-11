@@ -15,6 +15,11 @@ class IPlaceRepository(ABC):
     async def get_by_id_with_phones(self, place_id: PlaceIdVO) -> Place | None: ...
 
     @abstractmethod
+    async def get_by_id_with_working_days(
+        self, place_id: PlaceIdVO
+    ) -> Place | None: ...
+
+    @abstractmethod
     async def save(self, entity: Place) -> Place: ...
 
     @abstractmethod
