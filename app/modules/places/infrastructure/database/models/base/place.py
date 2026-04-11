@@ -123,7 +123,8 @@ class PlaceModel(PKUUIDMixin, TimestampMixin, BaseModel):
             select(func.array_agg(PlaceTranslationModel.language_code))
             .where(PlaceTranslationModel.place_id == self.id)
             .correlate_except(PlaceTranslationModel)
-            .scalar_subquery()
+            .scalar_subquery(),
+            expire_on_flush=False,
         )
 
     category: Mapped["PlaceCategoryModel"] = relationship(

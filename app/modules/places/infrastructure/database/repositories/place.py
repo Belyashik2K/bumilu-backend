@@ -99,7 +99,7 @@ class SQLAlchemyPlaceRepository(IPlaceRepository):
     def _to_entity_core(self, model: PlaceModel) -> Place:
         return Place(
             id=PlaceIdVO.from_uuid(model.id),
-            category_id=PlaceCategoryIdVO(model.category_id),
+            category_id=PlaceCategoryIdVO.from_uuid(model.category_id),
             location=self.wkb_to_location_vo(model.location),
             timezone=TimezoneVO(model.timezone),
             address_taxi=PlaceTaxiAddressVO(model.address_taxi),

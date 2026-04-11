@@ -26,3 +26,5 @@ class PlaceTaxiAddressVO(BaseStringVO):
                 message="Address must contain more than just the city name",
                 address=value,
             )
+
+        return value
