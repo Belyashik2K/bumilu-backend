@@ -25,8 +25,8 @@ from app.modules.places.application.queries.places.shared.models.place_rating im
 from app.modules.places.application.queries.places.shared.models.place_user_context import (
     PlaceUserContextReadModel,
 )
-from app.modules.places.application.queries.places.shared.models.place_working_hour import (
-    PlaceWorkingHourReadModel,
+from app.modules.places.application.queries.places.shared.models.place_working_day import (
+    PlaceWorkingDayReadModel,
 )
 
 
@@ -43,5 +43,5 @@ class PlaceDetailsReadModel:
     location: PlaceLocationReadModel
     rating: PlaceRatingReadModel
     phones: list[PlacePhoneReadModel] = field(default_factory=list)
-    working_hours: list[PlaceWorkingHourReadModel] = field(default_factory=list)
+    working_days: list[PlaceWorkingDayReadModel] = field(default_factory=list)
     user_context: PlaceUserContextReadModel

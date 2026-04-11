@@ -111,7 +111,7 @@ class PlaceWorkingDay:
 
             sorted_intervals = sorted(
                 self.intervals,
-                key=lambda interval: interval.start_time,
+                key=lambda interval: interval.start,
             )
 
             unique_intervals: set[tuple[time, time]] = set()

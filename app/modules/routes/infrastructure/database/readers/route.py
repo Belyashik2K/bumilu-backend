@@ -24,6 +24,7 @@ from app.modules.places.infrastructure.database.models import (
     PlaceCategoryTranslationModel,
     PlaceModel,
     PlaceTranslationModel,
+    PlaceWorkingDayModel,
 )
 from app.modules.places.shared.enums.route_sort import RouteSortByEnum
 from app.modules.routes.application.interfaces.readers.route import IRouteReader
@@ -69,7 +70,9 @@ class SQLAlchemyRouteReader(IRouteReader):
                 place_loader.joinedload(PlaceModel.category).selectinload(
                     PlaceCategoryModel.translations
                 ),
-                place_loader.selectinload(PlaceModel.working_hours),
+                place_loader.selectinload(PlaceModel.working_days).selectinload(
+                    PlaceWorkingDayModel.working_hours
+                ),
                 with_loader_criteria(
                     PlaceTranslationModel,
                     PlaceTranslationModel.language_code == translation_language,

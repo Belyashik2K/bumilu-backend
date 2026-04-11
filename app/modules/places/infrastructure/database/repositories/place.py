@@ -137,7 +137,7 @@ class SQLAlchemyPlaceRepository(IPlaceRepository):
                 self._working_hour_to_entity(interval)
                 for interval in sorted(
                     model.working_hours,
-                    key=lambda x: (x.start_time, x.end_time),
+                    key=lambda x: (x.start, x.end),
                 )
             ],
         )
@@ -171,8 +171,8 @@ class SQLAlchemyPlaceRepository(IPlaceRepository):
             address_taxi_comment=model.address_taxi_comment,
             status=model.status,
             translation_language_codes=set(model.translation_language_codes or []),
-            phones=[],
-            working_days=[],
+            phones=None,
+            working_days=None,
         )
 
     def _to_entity_with_phones(self, model: PlaceModel) -> Place:
@@ -355,8 +355,10 @@ class SQLAlchemyPlaceRepository(IPlaceRepository):
             return self._to_entity_with_phones_and_working_days(model)
 
         self._update_model(model, entity)
-        self._sync_phones(model, entity)
-        self._sync_working_days(model, entity)
+        if entity.phones is not None:
+            self._sync_phones(model, entity)
+        if entity.working_days is not None:
+            self._sync_working_days(model, entity)
 
         await self.session.flush()
         return self._to_entity_with_phones_and_working_days(model)

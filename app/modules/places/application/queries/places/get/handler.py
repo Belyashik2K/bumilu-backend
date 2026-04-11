@@ -4,9 +4,6 @@ from app.modules.places.application.interfaces.readers.place import (
     IPlaceReader,
 )
 from app.modules.places.application.queries.places.get.query import GetPlaceQuery
-from app.modules.places.application.queries.places.shared.utils.working_hours import (
-    group_working_hours_by_day,
-)
 from app.modules.places.application.queries.places.shared.views import PlaceView
 
 
@@ -40,6 +37,6 @@ class GetPlaceQueryHandler(
             location=place.location,
             rating=place.rating,
             phones=place.phones,
-            weekly_working_hours=group_working_hours_by_day(place.working_hours),
+            working_days=place.working_days,
             user_context=place.user_context,
         )

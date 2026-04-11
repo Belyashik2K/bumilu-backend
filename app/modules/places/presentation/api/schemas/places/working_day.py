@@ -11,7 +11,7 @@ from app.modules.places.shared.enums.place_working_day_status import (
 )
 
 
-class PlaceWorkingDaySchema(BaseModel):
+class ReplacePlaceWorkingDaySchema(BaseModel):
     status: PlaceWorkingDayStatusEnum = Field(
         ...,
         description=(
@@ -26,4 +26,17 @@ class PlaceWorkingDaySchema(BaseModel):
             "The list of working intervals for the day. It should be empty when the status is "
             "UNSPECIFIED, CLOSED, or ALL_DAY, and should not be empty when the status is OPEN."
         ),
+    )
+
+
+class PlaceWorkingDaySchema(ReplacePlaceWorkingDaySchema):
+    weekday: int = Field(
+        ...,
+        description=(
+            "The weekday for which the working day information is provided. It should be an integer "
+            "representing the day of the week, where 1 corresponds to Monday and 7 corresponds to Sunday."
+        ),
+        examples=[1],
+        ge=1,
+        le=7,
     )

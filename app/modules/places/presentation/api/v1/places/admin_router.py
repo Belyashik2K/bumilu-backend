@@ -98,7 +98,7 @@ from app.modules.places.presentation.api.schemas.places.translation import (
     UpdatePlaceTranslationRequestSchema,
 )
 from app.modules.places.presentation.api.schemas.places.working_day import (
-    PlaceWorkingDaySchema,
+    ReplacePlaceWorkingDaySchema,
 )
 
 admin_places_router = APIRouter(
@@ -376,7 +376,7 @@ async def replace_place_working_day(
     weekday: int,
     handler: FromDishka[ReplacePlaceWorkingDayCommandHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-    data: PlaceWorkingDaySchema,
+    data: ReplacePlaceWorkingDaySchema,
 ) -> None:
     await handler(
         ReplacePlaceWorkingDayCommand(

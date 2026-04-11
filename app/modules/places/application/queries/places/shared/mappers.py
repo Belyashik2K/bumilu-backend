@@ -28,6 +28,9 @@ from app.modules.places.application.queries.places.shared.models.place_rating im
 from app.modules.places.application.queries.places.shared.models.place_user_context import (
     PlaceUserContextReadModel,
 )
+from app.modules.places.application.queries.places.shared.models.place_working_day import (
+    PlaceWorkingDayReadModel,
+)
 from app.modules.places.application.queries.places.shared.models.place_working_hour import (
     PlaceWorkingHourReadModel,
 )
@@ -53,16 +56,22 @@ class PlaceReadModelMapper:
         )
 
     @staticmethod
-    def map_working_hours(
+    def map_working_days(
         place: PlaceModel,
-    ) -> list[PlaceWorkingHourReadModel]:
+    ) -> list[PlaceWorkingDayReadModel]:
         return [
-            PlaceWorkingHourReadModel(
-                weekday=wh.weekday,
-                start_time=wh.start_time,
-                end_time=wh.end_time,
+            PlaceWorkingDayReadModel(
+                weekday=wd.weekday,
+                status=wd.status,
+                intervals=[
+                    PlaceWorkingHourReadModel(
+                        start=wh.start_time,
+                        end=wh.end_time,
+                    )
+                    for wh in wd.working_hours
+                ],
             )
-            for wh in place.working_hours
+            for wd in place.working_days
         ]
 
     @staticmethod
@@ -120,7 +129,7 @@ class PlaceReadModelMapper:
                 reviews_count=place.rating_reviews_count,
             ),
             phones=cls.map_phones(place),
-            working_hours=cls.map_working_hours(place),
+            working_days=cls.map_working_days(place),
             user_context=cls.map_user_context(is_favorite=is_favorite),
         )
 
@@ -146,7 +155,7 @@ class PlaceReadModelMapper:
                 average=rating_average,
                 reviews_count=reviews_count,
             ),
-            working_hours=cls.map_working_hours(place),
+            working_days=cls.map_working_days(place),
         )
 
     @classmethod

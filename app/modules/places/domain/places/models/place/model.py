@@ -68,10 +68,8 @@ class Place:
     status: PlaceStatusEnum = field(default=PlaceStatusEnum.DRAFT)
     translation_language_codes: set[LanguageEnum] = field(default_factory=set)
 
-    phones: list[PlacePhone] = field(default_factory=list)
-    working_days: list[PlaceWorkingDay] = field(
-        default_factory=make_all_working_days_unspecified
-    )
+    phones: list[PlacePhone] | None = field(default=None)
+    working_days: list[PlaceWorkingDay] | None = field(default=None)
 
     def is_draft(self) -> bool:
         return self.status == PlaceStatusEnum.DRAFT
@@ -100,6 +98,8 @@ class Place:
             timezone=TimezoneVO.from_location(location),
             address_taxi=address_taxi,
             address_taxi_comment=address_taxi_comment,
+            phones=[],
+            working_days=make_all_working_days_unspecified(),
         )
 
     def update(

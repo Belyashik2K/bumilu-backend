@@ -21,7 +21,6 @@ from app.modules.places.presentation.api.schemas.places.examples import (
     TIMEZONE_EXAMPLE,
     TITLE_EXAMPLE,
     UUID_EXAMPLE,
-    WORKING_HOURS_INTERVAL_EXAMPLE,
 )
 from app.modules.places.presentation.api.schemas.places.location import (
     PlaceLocationSchema,
@@ -32,8 +31,8 @@ from app.modules.places.presentation.api.schemas.places.rating import PlaceRatin
 from app.modules.places.presentation.api.schemas.places.user_context import (
     PlaceUserContextSchema,
 )
-from app.modules.places.presentation.api.schemas.places.working_hours import (
-    PlaceWorkingHoursIntervalSchema,
+from app.modules.places.presentation.api.schemas.places.working_day import (
+    PlaceWorkingDaySchema,
 )
 
 
@@ -102,10 +101,9 @@ class PlaceCardSchema(BaseModel):
         ...,
         description="Location of the place",
     )
-    today_working_hours: list[PlaceWorkingHoursIntervalSchema] = Field(
+    working_days: list[PlaceWorkingDaySchema] = Field(
         default_factory=list,
-        description="Today's working hours intervals for the place.",
-        examples=[[WORKING_HOURS_INTERVAL_EXAMPLE]],
+        description="List of working days for the place.",
     )
 
 
@@ -170,13 +168,9 @@ class PlaceSchema(BaseModel):
         default_factory=list,
         description="List of place phones",
     )
-    weekly_working_hours: dict[str, list[PlaceWorkingHoursIntervalSchema]] = Field(
-        default_factory=dict,
-        description=(
-            "Weekly working hours represented as a dictionary where the key is the day of the week "
-            "(1 for Monday, 7 for Sunday) and the value is a list of working hours intervals for that day."
-        ),
-        examples=[{str(day): [WORKING_HOURS_INTERVAL_EXAMPLE] for day in range(1, 8)}],
+    working_days: list[PlaceWorkingDaySchema] = Field(
+        default_factory=list,
+        description="List of working days for the place.",
     )
     user_context: PlaceUserContextSchema = Field(
         ...,

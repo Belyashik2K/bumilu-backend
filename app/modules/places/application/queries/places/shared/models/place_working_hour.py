@@ -4,6 +4,5 @@ from datetime import time
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class PlaceWorkingHourReadModel:
-    weekday: int
-    start_time: time
-    end_time: time
+    start: time
+    end: time
