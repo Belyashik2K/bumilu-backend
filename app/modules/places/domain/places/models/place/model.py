@@ -7,22 +7,30 @@ from typing import Self
 from app.core.domain.value_objects.id import (
     PlaceCategoryIdVO,
     PlaceIdVO,
+    PlacePhoneIdVO,
 )
 from app.core.domain.value_objects.location import LocationVO
 from app.core.enums import LanguageEnum
 from app.modules.places.domain.places.models.place.exceptions import (
     PlaceIsNotEditable,
+    PlacePhoneAlreadyExists,
+    PlacePhoneNotFound,
     PlaceTranslationAlreadyExists,
     PlaceTranslationNotFound,
 )
+from app.modules.places.domain.places.models.place_phone.model import PlacePhone
 from app.modules.places.domain.places.models.place_translation.model import (
     PlaceTranslation,
     PlaceTranslationData,
+)
+from app.modules.places.domain.places.value_objects.phone_number.object import (
+    PlacePhoneNumberVO,
 )
 from app.modules.places.domain.places.value_objects.taxi_address.object import (
     PlaceTaxiAddressVO,
 )
 from app.modules.places.domain.places.value_objects.timezone.object import TimezoneVO
+from app.modules.places.shared.enums import PlacePhoneTypeEnum
 from app.modules.places.shared.enums.place_status import PlaceStatusEnum
 
 
@@ -36,6 +44,8 @@ class Place:
     address_taxi_comment: str | None = field(default=None)
     status: PlaceStatusEnum = field(default=PlaceStatusEnum.DRAFT)
     translation_language_codes: set[LanguageEnum] = field(default_factory=set)
+
+    phones: list[PlacePhone] = field(default_factory=list)
 
     def is_draft(self) -> bool:
         return self.status == PlaceStatusEnum.DRAFT
@@ -128,3 +138,117 @@ class Place:
     ) -> None:
         self.ensure_translation_can_be_deleted(language_code=language_code)
         self.translation_language_codes.remove(language_code)
+
+    def add_phone(
+        self,
+        *,
+        number: PlacePhoneNumberVO,
+        type: PlacePhoneTypeEnum,
+        is_primary: bool = False,
+    ) -> PlacePhone:
+        if not self.is_editable():
+            raise PlaceIsNotEditable(place_id=self.id)
+
+        if self._has_phone_number(number):
+            raise PlacePhoneAlreadyExists(
+                place_id=self.id,
+                phone_number=number,
+            )
+
+        if not self.phones:
+            is_primary = True
+
+        if is_primary:
+            self._drop_primary_phone()
+
+        phone = PlacePhone.create(
+            number=number,
+            type=type,
+            is_primary=is_primary,
+        )
+        self.phones.append(phone)
+
+        return phone
+
+    def update_phone(
+        self,
+        *,
+        phone_id: PlacePhoneIdVO,
+        number: PlacePhoneNumberVO | None = None,
+        type: PlacePhoneTypeEnum | None = None,
+    ) -> None:
+        if not self.is_editable():
+            raise PlaceIsNotEditable(place_id=self.id)
+
+        phone = self._get_phone(phone_id)
+
+        if (
+            number is not None
+            and number != phone.number
+            and self._has_phone_number(number, exclude_phone_id=phone.id)
+        ):
+            raise PlacePhoneAlreadyExists(
+                place_id=self.id,
+                phone_number=number,
+            )
+
+        phone.update(
+            number=number,
+            type=type,
+        )
+
+    def make_phone_primary(
+        self,
+        *,
+        phone_id: PlacePhoneIdVO,
+    ) -> None:
+        if not self.is_editable():
+            raise PlaceIsNotEditable(place_id=self.id)
+
+        target_phone = self._get_phone(phone_id)
+
+        for phone in self.phones:
+            phone.make_non_primary()
+
+        target_phone.make_primary()
+
+    def remove_phone(
+        self,
+        *,
+        phone_id: PlacePhoneIdVO,
+    ) -> None:
+        if not self.is_editable():
+            raise PlaceIsNotEditable(place_id=self.id)
+
+        phone = self._get_phone(phone_id)
+        was_primary = phone.is_primary
+
+        self.phones.remove(phone)
+
+        if was_primary and self.phones:
+            self.phones[0].make_primary()
+
+    def _get_phone(self, phone_id: PlacePhoneIdVO) -> PlacePhone:
+        for phone in self.phones:
+            if phone.id == phone_id:
+                return phone
+
+        raise PlacePhoneNotFound(
+            place_id=self.id,
+            phone_id=phone_id,
+        )
+
+    def _has_phone_number(
+        self,
+        number: PlacePhoneNumberVO,
+        *,
+        exclude_phone_id: PlacePhoneIdVO | None = None,
+    ) -> bool:
+        return any(
+            phone.number == number and phone.id != exclude_phone_id
+            for phone in self.phones
+        )
+
+    def _drop_primary_phone(self) -> None:
+        for phone in self.phones:
+            phone.make_non_primary()
