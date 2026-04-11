@@ -29,17 +29,17 @@ class PlaceTranslationData:
 @dataclass(slots=True, kw_only=True)
 class PlaceTranslation:
     id: PlaceTranslationIdVO
-    category_id: PlaceIdVO
+    place_id: PlaceIdVO
     data: PlaceTranslationData
 
     @classmethod
     def create(
         cls,
-        category_id: PlaceIdVO,
+        place_id: PlaceIdVO,
         data: PlaceTranslationData,
     ) -> "PlaceTranslation":
         return cls(
             id=PlaceTranslationIdVO.new(),
-            category_id=category_id,
+            place_id=place_id,
             data=data,
         )
