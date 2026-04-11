@@ -22,3 +22,12 @@ class PlacePhoneSchema(BaseModel):
         description="Whether this phone number is the primary contact number for the place.",
         examples=[True],
     )
+
+
+class UpdatePlacePhoneSchema(BaseModel):
+    number: str | None = Field(
+        None, description="The phone number of the place.", examples=[NUMBER_EXAMPLE]
+    )
+    type: PlacePhoneTypeEnum | None = Field(
+        None, description="The type of the phone number.", examples=[PHONE_TYPE_EXAMPLE]
+    )
