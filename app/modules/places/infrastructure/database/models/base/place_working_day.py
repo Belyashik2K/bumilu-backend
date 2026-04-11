@@ -55,7 +55,7 @@ class PlaceWorkingDayModel(PKUUIDMixin, TimestampMixin, BaseModel):
         "PlaceModel",
         back_populates="working_days",
     )
-    working_hours: Mapped["PlaceWorkingHourModel"] = relationship(
+    working_hours: Mapped[list["PlaceWorkingHourModel"]] = relationship(
         "PlaceWorkingHourModel",
         back_populates="working_day",
         cascade="all, delete-orphan",

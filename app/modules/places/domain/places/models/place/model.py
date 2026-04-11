@@ -17,11 +17,19 @@ from app.modules.places.domain.places.models.place.exceptions import (
     PlacePhoneNotFound,
     PlaceTranslationAlreadyExists,
     PlaceTranslationNotFound,
+    PlaceWorkingDayNotFound,
 )
 from app.modules.places.domain.places.models.place_phone.model import PlacePhone
 from app.modules.places.domain.places.models.place_translation.model import (
     PlaceTranslation,
     PlaceTranslationData,
+)
+from app.modules.places.domain.places.models.place_working_day.exceptions import (
+    UnsupportedPlaceWorkingDayStatus,
+)
+from app.modules.places.domain.places.models.place_working_day.model import (
+    PlaceWorkingDay,
+    PlaceWorkingDayData,
 )
 from app.modules.places.domain.places.value_objects.phone_number.object import (
     PlacePhoneNumberVO,
@@ -30,8 +38,23 @@ from app.modules.places.domain.places.value_objects.taxi_address.object import (
     PlaceTaxiAddressVO,
 )
 from app.modules.places.domain.places.value_objects.timezone.object import TimezoneVO
+from app.modules.places.domain.places.value_objects.weekday.object import WeekdayVO
 from app.modules.places.shared.enums import PlacePhoneTypeEnum
 from app.modules.places.shared.enums.place_status import PlaceStatusEnum
+from app.modules.places.shared.enums.place_working_day_status import (
+    PlaceWorkingDayStatusEnum,
+)
+
+
+def make_all_working_days_unspecified() -> list[PlaceWorkingDay]:
+    return [
+        PlaceWorkingDay.create(
+            weekday=WeekdayVO(value=weekday),
+            status=PlaceWorkingDayStatusEnum.UNSPECIFIED,
+            intervals=[],
+        )
+        for weekday in range(1, 8)
+    ]
 
 
 @dataclass(slots=True, kw_only=True)
@@ -46,6 +69,9 @@ class Place:
     translation_language_codes: set[LanguageEnum] = field(default_factory=set)
 
     phones: list[PlacePhone] = field(default_factory=list)
+    working_days: list[PlaceWorkingDay] = field(
+        default_factory=make_all_working_days_unspecified
+    )
 
     def is_draft(self) -> bool:
         return self.status == PlaceStatusEnum.DRAFT
@@ -252,3 +278,40 @@ class Place:
     def _drop_primary_phone(self) -> None:
         for phone in self.phones:
             phone.make_non_primary()
+
+    def replace_working_day(
+        self,
+        data: PlaceWorkingDayData,
+    ) -> None:
+        if not self.is_editable():
+            raise PlaceIsNotEditable(place_id=self.id)
+
+        day = self._get_working_day_by_weekday(data.weekday)
+
+        mapped_funcs = {
+            PlaceWorkingDayStatusEnum.UNSPECIFIED: day.replace_with_unspecified,
+            PlaceWorkingDayStatusEnum.CLOSED: day.replace_with_closed,
+            PlaceWorkingDayStatusEnum.ALL_DAY: day.replace_with_all_day,
+            PlaceWorkingDayStatusEnum.OPEN: lambda: day.replace_with_open(
+                intervals=data.intervals
+            ),
+        }
+
+        func = mapped_funcs.get(data.status)
+        if func is None:
+            raise UnsupportedPlaceWorkingDayStatus(status=data.status)
+
+        func()
+
+    def _get_working_day_by_weekday(
+        self,
+        weekday: WeekdayVO,
+    ) -> PlaceWorkingDay:
+        for day in self.working_days:
+            if day.weekday == weekday:
+                return day
+
+        raise PlaceWorkingDayNotFound(
+            place_id=self.id,
+            weekday=weekday,
+        )
