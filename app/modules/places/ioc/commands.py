@@ -26,6 +26,9 @@ from app.modules.places.application.commands.categories.update.handler import (
 from app.modules.places.application.commands.categories.update_translation.handler import (
     UpdatePlaceCategoryTranslationCommandHandler,
 )
+from app.modules.places.application.commands.places.add_phone.handler import (
+    AddPlacePhoneCommandHandler,
+)
 from app.modules.places.application.commands.places.create.handler import (
     CreatePlaceCommandHandler,
 )
@@ -35,11 +38,20 @@ from app.modules.places.application.commands.places.create_translation.handler i
 from app.modules.places.application.commands.places.delete.handler import (
     DeletePlaceCommandHandler,
 )
+from app.modules.places.application.commands.places.delete_phone.handler import (
+    DeletePlacePhoneCommandHandler,
+)
 from app.modules.places.application.commands.places.delete_translation.command import (
     DeletePlaceTranslationCommandHandler,
 )
+from app.modules.places.application.commands.places.make_phone_primary.handler import (
+    MakePlacePhonePrimaryCommandHandler,
+)
 from app.modules.places.application.commands.places.update.handler import (
     UpdatePlaceCommandHandler,
+)
+from app.modules.places.application.commands.places.update_phone.handler import (
+    UpdatePlacePhoneCommandHandler,
 )
 from app.modules.places.application.commands.places.update_translation.handler import (
     UpdatePlaceTranslationCommandHandler,
@@ -231,4 +243,48 @@ class PlacesCommandHandlersProvider(Provider):
             transaction_manager=transaction_manager,
             place_repository=place_repository,
             place_translation_repository=place_translation_repository,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def add_place_phone_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        place_repository: IPlaceRepository,
+    ) -> AddPlacePhoneCommandHandler:
+        return AddPlacePhoneCommandHandler(
+            transaction_manager=transaction_manager,
+            place_repository=place_repository,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def delete_place_phone_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        place_repository: IPlaceRepository,
+    ) -> DeletePlacePhoneCommandHandler:
+        return DeletePlacePhoneCommandHandler(
+            transaction_manager=transaction_manager,
+            place_repository=place_repository,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def update_place_phone_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        place_repository: IPlaceRepository,
+    ) -> UpdatePlacePhoneCommandHandler:
+        return UpdatePlacePhoneCommandHandler(
+            transaction_manager=transaction_manager,
+            place_repository=place_repository,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def make_phone_primary_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        place_repository: IPlaceRepository,
+    ) -> MakePlacePhonePrimaryCommandHandler:
+        return MakePlacePhonePrimaryCommandHandler(
+            transaction_manager=transaction_manager,
+            place_repository=place_repository,
         )

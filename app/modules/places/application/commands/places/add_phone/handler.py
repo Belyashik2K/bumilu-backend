@@ -24,7 +24,7 @@ class AddPlacePhoneCommandHandler(ICommandHandler[AddPlacePhoneCommand]):
 
     async def handle(self, command: AddPlacePhoneCommand) -> None:
         place_id = PlaceIdVO.from_uuid(command.place_id)
-        place = await self._place_repository.get_by_id(place_id)
+        place = await self._place_repository.get_by_id_with_phones(place_id)
         if place is None:
             raise PlaceNotFound(place_id.value)
 
