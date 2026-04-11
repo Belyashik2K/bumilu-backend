@@ -60,6 +60,10 @@ class PlaceIdVO(IdVO): ...
 
 
 @dataclass(frozen=True, slots=True)
+class PlaceTranslationIdVO(IdVO): ...
+
+
+@dataclass(frozen=True, slots=True)
 class PlaceCategoryIdVO(IdVO): ...
 
 
