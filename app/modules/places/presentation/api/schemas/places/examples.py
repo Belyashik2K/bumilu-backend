@@ -1,5 +1,6 @@
 from datetime import time
 
+from app.core.enums import LanguageEnum
 from app.modules.places.shared.enums import PlacePhoneTypeEnum
 
 DISPLAY_ADDRESS_EXAMPLE = "Saint-Petersburg, 2 Murinskiy Prospekt, 3"
@@ -24,3 +25,4 @@ PHOTO_URL_EXAMPLE = "https://example.com/photo.jpg"
 PHOTO_THUMBNAIL_URL_EXAMPLE = "https://example.com/photo_thumbnail.jpg"
 AVERAGE_EXAMPLE = 5.0
 REVIEWS_COUNT_EXAMPLE = 1984
+LANGUAGE_CODE_EXAMPLE = LanguageEnum.RU

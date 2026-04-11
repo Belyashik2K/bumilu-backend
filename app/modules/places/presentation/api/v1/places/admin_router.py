@@ -10,6 +10,7 @@ from pydantic import UUID7
 from starlette import status
 
 from app.core.constants import UNSET
+from app.core.enums import LanguageEnum
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.staff.deps import get_staff_principal
@@ -20,11 +21,24 @@ from app.modules.places.application.commands.places.create.command import (
 from app.modules.places.application.commands.places.create.handler import (
     CreatePlaceCommandHandler,
 )
+from app.modules.places.application.commands.places.create_translation.command import (
+    CreatePlaceTranslationCommand,
+    PlaceTranslationData,
+)
+from app.modules.places.application.commands.places.create_translation.handler import (
+    CreatePlaceTranslationCommandHandler,
+)
 from app.modules.places.application.commands.places.delete.command import (
     DeletePlaceCommand,
 )
 from app.modules.places.application.commands.places.delete.handler import (
     DeletePlaceCommandHandler,
+)
+from app.modules.places.application.commands.places.delete_translation.command import (
+    DeletePlaceTranslationCommandHandler,
+)
+from app.modules.places.application.commands.places.delete_translation.handler import (
+    DeletePlaceTranslationCommand,
 )
 from app.modules.places.application.commands.places.update.command import (
     UpdatePlaceCommand,
@@ -32,10 +46,21 @@ from app.modules.places.application.commands.places.update.command import (
 from app.modules.places.application.commands.places.update.handler import (
     UpdatePlaceCommandHandler,
 )
+from app.modules.places.application.commands.places.update_translation.command import (
+    UpdatePlaceTranslationCommand,
+    UpdatePlaceTranslationData,
+)
+from app.modules.places.application.commands.places.update_translation.handler import (
+    UpdatePlaceTranslationCommandHandler,
+)
 from app.modules.places.presentation.api.schemas.places.main import (
     CreatePlaceRequestSchema,
     CreatePlaceResponseSchema,
     UpdatePlaceRequestSchema,
+)
+from app.modules.places.presentation.api.schemas.places.translation import (
+    CreatePlaceTranslationRequestSchema,
+    UpdatePlaceTranslationRequestSchema,
 )
 
 admin_places_router = APIRouter(
@@ -114,5 +139,88 @@ async def delete_place(
     await handler(
         DeletePlaceCommand(
             place_id=place_id,
+        )
+    )
+
+
+@admin_places_router.post(
+    "/{place_id}/translations",
+    status_code=status.HTTP_201_CREATED,
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND,
+        status.HTTP_409_CONFLICT,
+    ),
+)
+@inject
+async def create_place_translation(
+    place_id: UUID7,
+    handler: FromDishka[CreatePlaceTranslationCommandHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+    data: CreatePlaceTranslationRequestSchema,
+) -> None:
+    await handler(
+        CreatePlaceTranslationCommand(
+            place_id=place_id,
+            data=PlaceTranslationData(
+                language_code=data.language_code,
+                title=data.title,
+                description=data.description,
+                short_description=data.short_description,
+                display_address=data.display_address,
+            ),
+        )
+    )
+
+
+@admin_places_router.patch(
+    "/{place_id}/translations/{language_code}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND,
+        status.HTTP_409_CONFLICT,
+    ),
+)
+@inject
+async def update_place_translation(
+    place_id: UUID7,
+    language_code: LanguageEnum,
+    handler: FromDishka[UpdatePlaceTranslationCommandHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+    data: UpdatePlaceTranslationRequestSchema,
+) -> None:
+    data_dump = data.model_dump(exclude_unset=True)
+    await handler(
+        UpdatePlaceTranslationCommand(
+            place_id=place_id,
+            data=UpdatePlaceTranslationData(
+                language_code=language_code,
+                title=data_dump.get("title", UNSET),
+                description=data_dump.get("description", UNSET),
+                short_description=data_dump.get("short_description", UNSET),
+                display_address=data_dump.get("display_address", UNSET),
+            ),
+        )
+    )
+
+
+@admin_places_router.delete(
+    "/{place_id}/translations/{language_code}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND,
+        status.HTTP_409_CONFLICT,
+    ),
+)
+@inject
+async def delete_place_translation(
+    place_id: UUID7,
+    language_code: LanguageEnum,
+    handler: FromDishka[DeletePlaceTranslationCommandHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+) -> None:
+    await handler(
+        DeletePlaceTranslationCommand(
+            place_id=place_id,
+            language_code=language_code,
         )
     )

@@ -86,7 +86,7 @@ class Place:
             self.address_taxi = address_taxi
         if (
             address_taxi_comment is not None
-            and address_taxi_comment != self.address_taxi
+            and address_taxi_comment != self.address_taxi_comment
         ):
             self.address_taxi_comment = address_taxi_comment
 
