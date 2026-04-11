@@ -9,7 +9,16 @@ from app.core.domain.value_objects.id import (
     PlaceIdVO,
 )
 from app.core.domain.value_objects.location import LocationVO
-from app.modules.places.domain.places.models.place.exceptions import PlaceIsNotEditable
+from app.core.enums import LanguageEnum
+from app.modules.places.domain.places.models.place.exceptions import (
+    PlaceIsNotEditable,
+    PlaceTranslationAlreadyExists,
+    PlaceTranslationNotFound,
+)
+from app.modules.places.domain.places.models.place_translation.model import (
+    PlaceTranslation,
+    PlaceTranslationData,
+)
 from app.modules.places.domain.places.value_objects.taxi_address.object import (
     PlaceTaxiAddressVO,
 )
@@ -26,6 +35,7 @@ class Place:
     address_taxi: PlaceTaxiAddressVO
     address_taxi_comment: str | None = field(default=None)
     status: PlaceStatusEnum = field(default=PlaceStatusEnum.DRAFT)
+    translation_language_codes: set[LanguageEnum] = field(default_factory=set)
 
     def is_draft(self) -> bool:
         return self.status == PlaceStatusEnum.DRAFT
@@ -79,3 +89,42 @@ class Place:
             and address_taxi_comment != self.address_taxi
         ):
             self.address_taxi_comment = address_taxi_comment
+
+    def create_translation(self, data: PlaceTranslationData) -> PlaceTranslation:
+        if not self.is_editable():
+            raise PlaceIsNotEditable(
+                place_id=self.id,
+            )
+
+        if data.language_code in self.translation_language_codes:
+            raise PlaceTranslationAlreadyExists(
+                place_id=self.id,
+                language_code=data.language_code,
+            )
+
+        translation = PlaceTranslation.create(
+            place_id=self.id,
+            data=data,
+        )
+        self.translation_language_codes.add(data.language_code)
+
+        return translation
+
+    def ensure_translation_can_be_deleted(self, language_code: LanguageEnum) -> None:
+        if not self.is_editable():
+            raise PlaceIsNotEditable(
+                place_id=self.id,
+            )
+
+        if language_code not in self.translation_language_codes:
+            raise PlaceTranslationNotFound(
+                place_id=self.id,
+                language_code=language_code,
+            )
+
+    def remove_translation(
+        self,
+        language_code: LanguageEnum,
+    ) -> None:
+        self.ensure_translation_can_be_deleted(language_code=language_code)
+        self.translation_language_codes.remove(language_code)
