@@ -6,3 +6,7 @@ class UnsetType:
 
 
 UNSET = UnsetType()
+
+
+def is_unset(value: object) -> bool:
+    return value is UNSET
