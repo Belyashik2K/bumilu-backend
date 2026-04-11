@@ -16,8 +16,8 @@ from app.modules.places.application.queries.places.shared.models.place_photo imp
 from app.modules.places.application.queries.places.shared.models.place_rating import (
     PlaceRatingReadModel,
 )
-from app.modules.places.application.queries.places.shared.models.place_working_hour import (
-    PlaceWorkingHourReadModel,
+from app.modules.places.application.queries.places.shared.models.place_working_day import (
+    PlaceWorkingDayReadModel,
 )
 
 
@@ -31,4 +31,4 @@ class PlaceCardReadModel:
     photos: list[PlacePhotoReadModel] = field(default_factory=list)
     location: PlaceLocationReadModel
     rating: PlaceRatingReadModel
-    working_hours: list[PlaceWorkingHourReadModel] = field(default_factory=list)
+    working_days: list[PlaceWorkingDayReadModel] = field(default_factory=list)

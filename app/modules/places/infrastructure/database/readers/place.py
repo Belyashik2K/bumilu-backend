@@ -35,6 +35,7 @@ from app.modules.places.infrastructure.database.models import (
     PlaceCategoryTranslationModel,
     PlaceModel,
     PlaceTranslationModel,
+    PlaceWorkingDayModel,
 )
 from app.modules.reviews.infrastructure.database.models import ReviewModel
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
@@ -95,7 +96,9 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             )
             .options(
                 selectinload(PlaceModel.phones),
-                selectinload(PlaceModel.working_hours),
+                selectinload(PlaceModel.working_days).selectinload(
+                    PlaceWorkingDayModel.working_hours
+                ),
                 contains_eager(PlaceModel.translations),
                 contains_eager(PlaceModel.category).contains_eager(
                     PlaceCategoryModel.translations
@@ -153,7 +156,9 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 PlaceCategoryTranslationModel.language_code == translation_language,
             )
             .options(
-                selectinload(PlaceModel.working_hours),
+                selectinload(PlaceModel.working_days).selectinload(
+                    PlaceWorkingDayModel.working_hours
+                ),
                 contains_eager(PlaceModel.translations),
                 contains_eager(PlaceModel.category).contains_eager(
                     PlaceCategoryModel.translations
@@ -224,7 +229,9 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             .outerjoin(reviews_subq, reviews_subq.c.place_id == PlaceModel.id)
             .where(*base_filters)
             .options(
-                selectinload(PlaceModel.working_hours),
+                selectinload(PlaceModel.working_days).selectinload(
+                    PlaceWorkingDayModel.working_hours
+                ),
                 contains_eager(PlaceModel.translations),
                 contains_eager(PlaceModel.category).contains_eager(
                     PlaceCategoryModel.translations

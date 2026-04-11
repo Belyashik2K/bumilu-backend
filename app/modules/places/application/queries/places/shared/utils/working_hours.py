@@ -13,8 +13,8 @@ def group_working_hours_by_day(
     return {
         str(day): [
             PlaceWorkingHoursIntervalView(
-                start=wh.start_time,
-                end=wh.end_time,
+                start=wh.start,
+                end=wh.end,
             )
             for wh in working_hours
             if wh.weekday == day
@@ -33,8 +33,8 @@ def extract_today_working_hours(
         if wh.weekday == now.weekday() + 1:
             today_working_hours.append(
                 PlaceWorkingHoursIntervalView(
-                    start=wh.start_time,
-                    end=wh.end_time,
+                    start=wh.start,
+                    end=wh.end,
                 )
             )
     return today_working_hours

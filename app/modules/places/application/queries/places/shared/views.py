@@ -31,6 +31,9 @@ from app.modules.places.application.queries.places.shared.models.place_rating im
 from app.modules.places.application.queries.places.shared.models.place_user_context import (
     PlaceUserContextReadModel,
 )
+from app.modules.places.application.queries.places.shared.models.place_working_day import (
+    PlaceWorkingDayReadModel,
+)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -52,9 +55,7 @@ class PlaceView:
     location: PlaceLocationReadModel
     rating: PlaceRatingReadModel
     phones: list[PlacePhoneReadModel] = field(default_factory=list)
-    weekly_working_hours: dict[str, list[PlaceWorkingHoursIntervalView]] = field(
-        default_factory=dict
-    )
+    working_days: list[PlaceWorkingDayReadModel] = field(default_factory=list)
     user_context: PlaceUserContextReadModel
 
 
@@ -68,9 +69,7 @@ class PlaceCardView:
     photos: list[PlacePhotoReadModel] = field(default_factory=list)
     location: PlaceLocationReadModel
     rating: PlaceRatingReadModel
-    today_working_hours: list[PlaceWorkingHoursIntervalView] = field(
-        default_factory=list
-    )
+    working_days: list[PlaceWorkingDayReadModel] = field(default_factory=list)
 
     @classmethod
     def from_read_model(
@@ -78,9 +77,6 @@ class PlaceCardView:
         read_model: PlaceCardReadModel,
     ) -> Self:
         # TODO: configurable number of photos
-        from app.modules.places.application.queries.places.shared.utils.working_hours import (
-            extract_today_working_hours,
-        )
 
         return PlaceCardView(
             id=read_model.id,
@@ -91,10 +87,7 @@ class PlaceCardView:
             photos=read_model.photos[:4],
             location=read_model.location,
             rating=read_model.rating,
-            today_working_hours=extract_today_working_hours(
-                timezone=read_model.timezone,
-                working_hours=read_model.working_hours,
-            ),
+            working_days=read_model.working_days,
         )
 
 
