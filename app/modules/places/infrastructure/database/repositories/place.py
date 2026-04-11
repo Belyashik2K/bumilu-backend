@@ -160,7 +160,6 @@ class SQLAlchemyPlaceRepository(IPlaceRepository):
         model.address_taxi = entity.address_taxi.value
         model.address_taxi_comment = entity.address_taxi_comment
         model.status = entity.status
-        model.translation_language_codes = list(entity.translation_language_codes)
 
     def _to_entity_core(self, model: PlaceModel) -> Place:
         return Place(
@@ -352,6 +351,7 @@ class SQLAlchemyPlaceRepository(IPlaceRepository):
             ]
             self.session.add(model)
             await self.session.flush()
+            await self.session.refresh(model, ["translation_language_codes"])
             return self._to_entity_with_phones_and_working_days(model)
 
         self._update_model(model, entity)
