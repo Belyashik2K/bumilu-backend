@@ -55,8 +55,8 @@ if TYPE_CHECKING:
     from app.modules.places.infrastructure.database.models.base.place_photo import (
         PlacePhotoModel,
     )
-    from app.modules.places.infrastructure.database.models.base.place_working_hour import (
-        PlaceWorkingHourModel,
+    from app.modules.places.infrastructure.database.models.base.place_working_day import (
+        PlaceWorkingDayModel,
     )
 
 
@@ -147,8 +147,8 @@ class PlaceModel(PKUUIDMixin, TimestampMixin, BaseModel):
         back_populates="place",
         cascade="all, delete-orphan",
     )
-    working_hours: Mapped[list["PlaceWorkingHourModel"]] = relationship(
-        "PlaceWorkingHourModel",
+    working_days: Mapped[list["PlaceWorkingDayModel"]] = relationship(
+        "PlaceWorkingDayModel",
         back_populates="place",
         cascade="all, delete-orphan",
     )
