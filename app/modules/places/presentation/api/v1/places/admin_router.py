@@ -58,6 +58,13 @@ from app.modules.places.application.commands.places.make_phone_primary.command i
 from app.modules.places.application.commands.places.make_phone_primary.handler import (
     MakePlacePhonePrimaryCommandHandler,
 )
+from app.modules.places.application.commands.places.replace_working_day.command import (
+    ReplacePlaceWorkingDayCommand,
+    WorkingDayIntervalData,
+)
+from app.modules.places.application.commands.places.replace_working_day.handler import (
+    ReplacePlaceWorkingDayCommandHandler,
+)
 from app.modules.places.application.commands.places.update.command import (
     UpdatePlaceCommand,
 )
@@ -89,6 +96,9 @@ from app.modules.places.presentation.api.schemas.places.phone import (
 from app.modules.places.presentation.api.schemas.places.translation import (
     CreatePlaceTranslationRequestSchema,
     UpdatePlaceTranslationRequestSchema,
+)
+from app.modules.places.presentation.api.schemas.places.working_day import (
+    PlaceWorkingDaySchema,
 )
 
 admin_places_router = APIRouter(
@@ -348,5 +358,34 @@ async def make_place_phone_primary(
         MakePlacePhonePrimaryCommand(
             place_id=place_id,
             phone_id=phone_id,
+        )
+    )
+
+
+@admin_places_router.put(
+    "/{place_id}/working-hours/{weekday}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND,
+        status.HTTP_409_CONFLICT,
+    ),
+)
+@inject
+async def replace_place_working_day(
+    place_id: UUID7,
+    weekday: int,
+    handler: FromDishka[ReplacePlaceWorkingDayCommandHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+    data: PlaceWorkingDaySchema,
+) -> None:
+    await handler(
+        ReplacePlaceWorkingDayCommand(
+            place_id=place_id,
+            weekday=weekday,
+            status=data.status,
+            intervals=[
+                WorkingDayIntervalData(start_time=interval.start, end_time=interval.end)
+                for interval in data.intervals
+            ],
         )
     )

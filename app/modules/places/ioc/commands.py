@@ -47,6 +47,9 @@ from app.modules.places.application.commands.places.delete_translation.command i
 from app.modules.places.application.commands.places.make_phone_primary.handler import (
     MakePlacePhonePrimaryCommandHandler,
 )
+from app.modules.places.application.commands.places.replace_working_day.handler import (
+    ReplacePlaceWorkingDayCommandHandler,
+)
 from app.modules.places.application.commands.places.update.handler import (
     UpdatePlaceCommandHandler,
 )
@@ -285,6 +288,17 @@ class PlacesCommandHandlersProvider(Provider):
         place_repository: IPlaceRepository,
     ) -> MakePlacePhonePrimaryCommandHandler:
         return MakePlacePhonePrimaryCommandHandler(
+            transaction_manager=transaction_manager,
+            place_repository=place_repository,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def replace_place_working_day_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        place_repository: IPlaceRepository,
+    ) -> ReplacePlaceWorkingDayCommandHandler:
+        return ReplacePlaceWorkingDayCommandHandler(
             transaction_manager=transaction_manager,
             place_repository=place_repository,
         )
