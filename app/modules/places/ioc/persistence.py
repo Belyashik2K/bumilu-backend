@@ -15,6 +15,9 @@ from app.modules.places.application.interfaces.repositories.place_category impor
 from app.modules.places.application.interfaces.repositories.place_category_translation import (
     IPlaceCategoryTranslationRepository,
 )
+from app.modules.places.application.interfaces.repositories.place_translation import (
+    IPlaceTranslationRepository,
+)
 from app.modules.places.application.queries.categories.shared.readers.place_category import (
     IPlaceCategoryReader,
 )
@@ -39,6 +42,9 @@ from app.modules.places.infrastructure.database.repositories.place_category impo
 from app.modules.places.infrastructure.database.repositories.place_category_translation import (
     SQLAlchemyPlaceCategoryTranslationRepository,
 )
+from app.modules.places.infrastructure.database.repositories.place_translation_repository import (
+    SQLAlchemyPlaceTranslationRepository,
+)
 
 
 class PlacesPersistenceProvider(Provider):
@@ -51,6 +57,12 @@ class PlacesPersistenceProvider(Provider):
         self, session: AsyncSession
     ) -> SQLAlchemyPlaceRepository:
         return SQLAlchemyPlaceRepository(session=session)
+
+    @provide(scope=Scope.REQUEST, provides=IPlaceTranslationRepository)
+    async def place_translation_repository(
+        self, session: AsyncSession
+    ) -> SQLAlchemyPlaceTranslationRepository:
+        return SQLAlchemyPlaceTranslationRepository(session=session)
 
     @provide(scope=Scope.REQUEST, provides=IPlaceCategoryReader)
     async def place_category_reader(

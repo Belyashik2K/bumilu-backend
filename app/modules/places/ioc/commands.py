@@ -29,11 +29,20 @@ from app.modules.places.application.commands.categories.update_translation.handl
 from app.modules.places.application.commands.places.create.handler import (
     CreatePlaceCommandHandler,
 )
+from app.modules.places.application.commands.places.create_translation.handler import (
+    CreatePlaceTranslationCommandHandler,
+)
 from app.modules.places.application.commands.places.delete.handler import (
     DeletePlaceCommandHandler,
 )
+from app.modules.places.application.commands.places.delete_translation.command import (
+    DeletePlaceTranslationCommandHandler,
+)
 from app.modules.places.application.commands.places.update.handler import (
     UpdatePlaceCommandHandler,
+)
+from app.modules.places.application.commands.places.update_translation.handler import (
+    UpdatePlaceTranslationCommandHandler,
 )
 from app.modules.places.application.interfaces.readers.place import IPlaceReader
 from app.modules.places.application.interfaces.repositories.place import (
@@ -44,6 +53,9 @@ from app.modules.places.application.interfaces.repositories.place_category impor
 )
 from app.modules.places.application.interfaces.repositories.place_category_translation import (
     IPlaceCategoryTranslationRepository,
+)
+from app.modules.places.application.interfaces.repositories.place_translation import (
+    IPlaceTranslationRepository,
 )
 from app.modules.places.application.queries.categories.shared.readers.place_category import (
     IPlaceCategoryReader,
@@ -180,4 +192,43 @@ class PlacesCommandHandlersProvider(Provider):
             transaction_manager=transaction_manager,
             place_repository=place_repository,
             route_reader=route_reader,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def create_place_translation_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        place_repository: IPlaceRepository,
+        place_translation_repository: IPlaceTranslationRepository,
+    ) -> CreatePlaceTranslationCommandHandler:
+        return CreatePlaceTranslationCommandHandler(
+            transaction_manager=transaction_manager,
+            place_repository=place_repository,
+            place_translation_repository=place_translation_repository,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def update_place_translation_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        place_repository: IPlaceRepository,
+        place_translation_repository: IPlaceTranslationRepository,
+    ) -> UpdatePlaceTranslationCommandHandler:
+        return UpdatePlaceTranslationCommandHandler(
+            transaction_manager=transaction_manager,
+            place_repository=place_repository,
+            place_translation_repository=place_translation_repository,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def delete_place_translation_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        place_repository: IPlaceRepository,
+        place_translation_repository: IPlaceTranslationRepository,
+    ) -> DeletePlaceTranslationCommandHandler:
+        return DeletePlaceTranslationCommandHandler(
+            transaction_manager=transaction_manager,
+            place_repository=place_repository,
+            place_translation_repository=place_translation_repository,
         )

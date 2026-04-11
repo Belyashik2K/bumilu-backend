@@ -4,7 +4,10 @@ from geoalchemy2.shape import (
     to_shape,
 )
 from shapely.geometry import Point
-from sqlalchemy import delete
+from sqlalchemy import (
+    delete,
+    select,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.domain.value_objects.id import (
@@ -13,6 +16,9 @@ from app.core.domain.value_objects.id import (
 )
 from app.core.domain.value_objects.location import LocationVO
 from app.core.infrastructure.database import SQLAlchemyBaseRepository
+from app.core.infrastructure.database.exception_catcher import (
+    sqlalchemy_exception_catcher,
+)
 from app.modules.places.application.interfaces.repositories.place import (
     IPlaceRepository,
 )
@@ -60,7 +66,21 @@ class SQLAlchemyPlaceRepository(
             address_taxi=PlaceTaxiAddressVO(model.address_taxi),
             address_taxi_comment=model.address_taxi_comment,
             status=model.status,
+            translation_language_codes=set(model.translation_language_codes or []),
         )
+
+    @sqlalchemy_exception_catcher
+    async def save(self, entity: Place) -> Place:
+        data = self._to_data(entity)
+        merged_data = await self.session.merge(data)
+        await self.session.flush()
+
+        # TODO: optimize
+        stmt = select(PlaceModel).where(PlaceModel.id == merged_data.id)
+        result = await self.session.execute(stmt)
+        model = result.scalar_one()
+
+        return self._to_entity(model)
 
     async def delete_by_id(self, place_id: PlaceIdVO) -> None:
         stmt = delete(PlaceModel).where(PlaceModel.id == place_id.value)

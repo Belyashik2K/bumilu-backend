@@ -32,6 +32,9 @@ from app.core.infrastructure.database.mixins import (
     PKUUIDMixin,
     TimestampMixin,
 )
+from app.modules.places.infrastructure.database.models.translations.place import (
+    PlaceTranslationModel,
+)
 from app.modules.places.shared.enums.place_status import PlaceStatusEnum
 from app.modules.reviews.infrastructure.database.models import ReviewModel
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
@@ -54,9 +57,6 @@ if TYPE_CHECKING:
     )
     from app.modules.places.infrastructure.database.models.base.place_working_hour import (
         PlaceWorkingHourModel,
-    )
-    from app.modules.places.infrastructure.database.models.translations.place import (
-        PlaceTranslationModel,
     )
 
 
@@ -114,6 +114,15 @@ class PlaceModel(PKUUIDMixin, TimestampMixin, BaseModel):
                 )
             )
             .correlate_except(ReviewModel)
+            .scalar_subquery()
+        )
+
+    @declared_attr
+    def translation_language_codes(self):
+        return column_property(
+            select(func.array_agg(PlaceTranslationModel.language_code))
+            .where(PlaceTranslationModel.place_id == self.id)
+            .correlate_except(PlaceTranslationModel)
             .scalar_subquery()
         )
 
