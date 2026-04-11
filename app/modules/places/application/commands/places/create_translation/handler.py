@@ -40,7 +40,7 @@ class CreatePlaceTranslationCommandHandler(
         self._place_translation_repository = place_translation_repository
 
     async def handle(self, command: CreatePlaceTranslationCommand) -> None:
-        place_id = PlaceIdVO(command.place_id)
+        place_id = PlaceIdVO.from_uuid(command.place_id)
         place = await self._place_repository.get_by_id(place_id)
         if place is None:
             raise PlaceNotFound(place_id.value)
