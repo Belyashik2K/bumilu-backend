@@ -20,7 +20,7 @@ from app.modules.places.application.interfaces.repositories.place_category impor
 )
 from app.modules.places.domain.categories.value_objects.slug import PlaceCategorySlugVO
 from app.modules.places.domain.places.value_objects.taxi_address.object import (
-    TaxiAddressVO,
+    PlaceTaxiAddressVO,
 )
 
 
@@ -57,7 +57,7 @@ class UpdatePlaceCommandHandler(ICommandHandler[UpdatePlaceCommand]):
             else place.location
         )
         new_address_taxi = (
-            TaxiAddressVO(command.address_taxi)
+            PlaceTaxiAddressVO(command.address_taxi)
             if not isinstance(command.address_taxi, UnsetType)
             else place.address_taxi
         )
