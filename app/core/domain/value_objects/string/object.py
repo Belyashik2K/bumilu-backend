@@ -14,8 +14,8 @@ class BaseStringVO:
 
     min_length: ClassVar[int | None] = None
     max_length: ClassVar[int | None] = None
-    allowed_chars_pattern: ClassVar[str | Pattern[str] | None] = None
-    forbidden_chars_pattern: ClassVar[str | Pattern[str] | None] = None
+    pattern: ClassVar[str | Pattern[str] | None] = None
+    forbidden_pattern: ClassVar[str | Pattern[str] | None] = None
     strip_value: ClassVar[bool] = True
     to_lower: ClassVar[bool] = False
     to_upper: ClassVar[bool] = False
@@ -34,26 +34,30 @@ class BaseStringVO:
                 f"{self.__class__.__name__}: value must be str, got {type(value).__name__}"
             )
 
-        if self.strip_value:
-            value = value.strip()
-
         if self.to_lower and self.to_upper:
             raise InvalidString(
                 f"{self.__class__.__name__}: only one of to_lower or to_upper can be enabled"
             )
+
+        if self.strip_value:
+            value = value.strip()
 
         if self.to_lower:
             value = value.lower()
         elif self.to_upper:
             value = value.upper()
 
-        self._validate_length(value)
-        self._validate_allowed_chars(value)
-        self._validate_forbidden_chars(value)
-        self.additional_validate(value)
+        self._validate(value)
+        value = self.additional_validate(value)
 
         if value != self.value:
             object.__setattr__(self, "value", value)
+
+    @classmethod
+    def _validate(cls, value: str) -> None:
+        cls._validate_length(value)
+        cls._validate_pattern(value)
+        cls._validate_forbidden_pattern(value)
 
     @classmethod
     def _validate_length(cls, value: str) -> None:
@@ -68,26 +72,24 @@ class BaseStringVO:
             )
 
     @classmethod
-    def _validate_allowed_chars(cls, value: str) -> None:
-        if cls.allowed_chars_pattern is None:
+    def _validate_pattern(cls, value: str) -> None:
+        if cls.pattern is None:
             return
 
-        pattern = cls._compile_pattern(cls.allowed_chars_pattern)
-
-        if pattern.fullmatch(value) is None:
+        regex = cls._compile_pattern(cls.pattern)
+        if regex.fullmatch(value) is None:
             raise InvalidString(
-                f"{cls.__name__}: value contains invalid characters: {value!r}"
+                f"{cls.__name__}: value does not match pattern: {value!r}"
             )
 
     @classmethod
-    def _validate_forbidden_chars(cls, value: str) -> None:
-        if cls.forbidden_chars_pattern is None:
+    def _validate_forbidden_pattern(cls, value: str) -> None:
+        if cls.forbidden_pattern is None:
             return
 
-        pattern = cls._compile_pattern(cls.forbidden_chars_pattern)
-
-        if pattern.search(value) is not None:
-            raise ValueError(
+        regex = cls._compile_pattern(cls.forbidden_pattern)
+        if regex.search(value) is not None:
+            raise InvalidString(
                 f"{cls.__name__}: value contains forbidden characters: {value!r}"
             )
 
@@ -96,9 +98,8 @@ class BaseStringVO:
         return re.compile(pattern) if isinstance(pattern, str) else pattern
 
     @classmethod
-    def additional_validate(cls, value: str) -> None:
-        # This method can be overridden in subclasses to add extra validation logic
-        return None
+    def additional_validate(cls, value: str) -> str:
+        return value
 
     def __str__(self) -> str:
         return "" if self.value is None else self.value
