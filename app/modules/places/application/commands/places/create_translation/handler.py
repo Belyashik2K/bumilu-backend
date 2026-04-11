@@ -54,5 +54,7 @@ class CreatePlaceTranslationCommandHandler(
         )
         new_translation = place.create_translation(translation_data)
 
-        await self._place_translation_repository.save(new_translation)
+        await self._place_translation_repository.save(
+            new_translation
+        )  # TODO: remove _place_translation_repository and save translation through place repository
         await self._place_repository.save(place)
