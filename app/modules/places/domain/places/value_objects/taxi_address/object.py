@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from app.modules.places.domain.places.value_objects.address.exceptions import (
+from app.core.domain.value_objects.string.object import BaseStringVO
+from app.modules.places.domain.places.value_objects.taxi_address.exceptions import (
     InvalidAddress,
 )
 
@@ -8,20 +9,12 @@ SPB_PREFIX = "Санкт-Петербург, "
 
 
 @dataclass(frozen=True, slots=True)
-class AddressVO:
-    value: str
+class TaxiAddressVO(BaseStringVO):
+    min_length = len(SPB_PREFIX) + 1
+    max_length = 255
 
-    def __post_init__(self) -> None:
-        value = self.value.strip()
-
-        if not value:
-            raise InvalidAddress(message="Address cannot be empty", address=self.value)
-
-        if len(value) > 255:
-            raise InvalidAddress(
-                message="Address cannot exceed 255 characters", address=value
-            )
-
+    @classmethod
+    def additional_validate(cls, value: str) -> None:
         if not value.startswith(SPB_PREFIX):
             raise InvalidAddress(
                 message=f"Address must start with '{SPB_PREFIX}'", address=value
@@ -33,5 +26,3 @@ class AddressVO:
                 message="Address must contain more than just the city name",
                 address=value,
             )
-
-        object.__setattr__(self, "value", value)
