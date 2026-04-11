@@ -18,13 +18,11 @@ WITH lang_list AS (SELECT *
 
      category_seed AS (SELECT *
                        FROM (VALUES ('cafe', 'coffee', '#C67C4E', 'PUBLISHED'::place_category_status_enum, 'Кафе',
-                                     'Cafe',
-                                     '咖啡馆'),
+                                     'Cafe', '咖啡馆'),
                                     ('museum', 'landmark', '#3B82F6', 'PUBLISHED'::place_category_status_enum, 'Музей',
                                      'Museum', '博物馆'),
                                     ('park', 'trees', '#22C55E', 'PUBLISHED'::place_category_status_enum, 'Парк',
-                                     'Park',
-                                     '公园'),
+                                     'Park', '公园'),
                                     ('landmark', 'star', '#F59E0B', 'PUBLISHED'::place_category_status_enum,
                                      'Достопримечательность', 'Landmark', '地标'),
                                     ('viewpoint', 'binoculars', '#8B5CF6', 'PUBLISHED'::place_category_status_enum,
@@ -167,7 +165,8 @@ WITH lang_list AS (SELECT *
                                   'Санкт-Петербург, Кожевенная линия, 40', 'Подъезд со стороны главного входа'),
 
                                  ('dvorcovy_bridge', 'viewpoint', 30.308017::double precision,
-                                  59.941238::double precision, 'PUBLISHED'::place_status_enum,
+                                  59.941238::double precision,
+                                  'PUBLISHED'::place_status_enum,
                                   'Дворцовый мост', 'Palace Bridge', '宫殿桥',
                                   'Знаменитый разводной мост в центре Петербурга.',
                                   'Famous drawbridge in the center of Saint Petersburg.',
@@ -262,7 +261,11 @@ WITH lang_list AS (SELECT *
                     pp.category_id,
                     ST_SetSRID(ST_MakePoint(pp.lon, pp.lat), 4326)::geography,
                     'Europe/Moscow',
-                    pp.address_taxi,
+                    CASE
+                        WHEN pp.address_taxi ILIKE 'Санкт-Петербург,%'
+                            THEN pp.address_taxi
+                        ELSE 'Санкт-Петербург, ' || pp.address_taxi
+                        END,
                     pp.address_taxi_comment,
                     pp.status,
                     now(),
@@ -375,6 +378,115 @@ WITH lang_list AS (SELECT *
              WHERE (pn.rn % 2) = 1
              RETURNING 1),
 
+/* -----------------------------------------------------------
+   НОВАЯ ЧАСТЬ: place_working_days + place_working_hours
+   ----------------------------------------------------------- */
+
+     working_days_seed AS (SELECT *
+                           FROM (VALUES ('hermitage', 1, 'OPEN'::place_working_day_status_enum),
+                                        ('hermitage', 2, 'OPEN'::place_working_day_status_enum),
+                                        ('hermitage', 3, 'OPEN'::place_working_day_status_enum),
+                                        ('hermitage', 4, 'OPEN'::place_working_day_status_enum),
+                                        ('hermitage', 5, 'OPEN'::place_working_day_status_enum),
+                                        ('hermitage', 6, 'OPEN'::place_working_day_status_enum),
+                                        ('hermitage', 7, 'OPEN'::place_working_day_status_enum),
+
+                                        ('isaac', 1, 'OPEN'::place_working_day_status_enum),
+                                        ('isaac', 2, 'OPEN'::place_working_day_status_enum),
+                                        ('isaac', 3, 'OPEN'::place_working_day_status_enum),
+                                        ('isaac', 4, 'OPEN'::place_working_day_status_enum),
+                                        ('isaac', 5, 'OPEN'::place_working_day_status_enum),
+                                        ('isaac', 6, 'OPEN'::place_working_day_status_enum),
+                                        ('isaac', 7, 'OPEN'::place_working_day_status_enum),
+
+                                        ('kazan', 1, 'OPEN'::place_working_day_status_enum),
+                                        ('kazan', 2, 'OPEN'::place_working_day_status_enum),
+                                        ('kazan', 3, 'OPEN'::place_working_day_status_enum),
+                                        ('kazan', 4, 'OPEN'::place_working_day_status_enum),
+                                        ('kazan', 5, 'OPEN'::place_working_day_status_enum),
+                                        ('kazan', 6, 'OPEN'::place_working_day_status_enum),
+                                        ('kazan', 7, 'OPEN'::place_working_day_status_enum),
+
+                                        ('savior', 1, 'OPEN'::place_working_day_status_enum),
+                                        ('savior', 2, 'OPEN'::place_working_day_status_enum),
+                                        ('savior', 3, 'OPEN'::place_working_day_status_enum),
+                                        ('savior', 4, 'OPEN'::place_working_day_status_enum),
+                                        ('savior', 5, 'OPEN'::place_working_day_status_enum),
+                                        ('savior', 6, 'OPEN'::place_working_day_status_enum),
+                                        ('savior', 7, 'OPEN'::place_working_day_status_enum),
+
+                                        ('summer_garden', 1, 'OPEN'::place_working_day_status_enum),
+                                        ('summer_garden', 2, 'OPEN'::place_working_day_status_enum),
+                                        ('summer_garden', 3, 'OPEN'::place_working_day_status_enum),
+                                        ('summer_garden', 4, 'OPEN'::place_working_day_status_enum),
+                                        ('summer_garden', 5, 'OPEN'::place_working_day_status_enum),
+                                        ('summer_garden', 6, 'OPEN'::place_working_day_status_enum),
+                                        ('summer_garden', 7, 'OPEN'::place_working_day_status_enum),
+
+                                        ('new_holland', 1, 'OPEN'::place_working_day_status_enum),
+                                        ('new_holland', 2, 'OPEN'::place_working_day_status_enum),
+                                        ('new_holland', 3, 'OPEN'::place_working_day_status_enum),
+                                        ('new_holland', 4, 'OPEN'::place_working_day_status_enum),
+                                        ('new_holland', 5, 'OPEN'::place_working_day_status_enum),
+                                        ('new_holland', 6, 'OPEN'::place_working_day_status_enum),
+                                        ('new_holland', 7, 'OPEN'::place_working_day_status_enum),
+
+                                        ('sevkabel', 1, 'OPEN'::place_working_day_status_enum),
+                                        ('sevkabel', 2, 'OPEN'::place_working_day_status_enum),
+                                        ('sevkabel', 3, 'OPEN'::place_working_day_status_enum),
+                                        ('sevkabel', 4, 'OPEN'::place_working_day_status_enum),
+                                        ('sevkabel', 5, 'OPEN'::place_working_day_status_enum),
+                                        ('sevkabel', 6, 'OPEN'::place_working_day_status_enum),
+                                        ('sevkabel', 7, 'OPEN'::place_working_day_status_enum),
+
+                                        ('dvorcovy_bridge', 1, 'ALL_DAY'::place_working_day_status_enum),
+                                        ('dvorcovy_bridge', 2, 'ALL_DAY'::place_working_day_status_enum),
+                                        ('dvorcovy_bridge', 3, 'ALL_DAY'::place_working_day_status_enum),
+                                        ('dvorcovy_bridge', 4, 'ALL_DAY'::place_working_day_status_enum),
+                                        ('dvorcovy_bridge', 5, 'ALL_DAY'::place_working_day_status_enum),
+                                        ('dvorcovy_bridge', 6, 'ALL_DAY'::place_working_day_status_enum),
+                                        ('dvorcovy_bridge', 7, 'ALL_DAY'::place_working_day_status_enum),
+
+                                        ('bolshe_coffee', 1, 'OPEN'::place_working_day_status_enum),
+                                        ('bolshe_coffee', 2, 'OPEN'::place_working_day_status_enum),
+                                        ('bolshe_coffee', 3, 'OPEN'::place_working_day_status_enum),
+                                        ('bolshe_coffee', 4, 'OPEN'::place_working_day_status_enum),
+                                        ('bolshe_coffee', 5, 'OPEN'::place_working_day_status_enum),
+                                        ('bolshe_coffee', 6, 'OPEN'::place_working_day_status_enum),
+                                        ('bolshe_coffee', 7, 'OPEN'::place_working_day_status_enum),
+
+                                        ('skuratov', 1, 'OPEN'::place_working_day_status_enum),
+                                        ('skuratov', 2, 'OPEN'::place_working_day_status_enum),
+                                        ('skuratov', 3, 'OPEN'::place_working_day_status_enum),
+                                        ('skuratov', 4, 'OPEN'::place_working_day_status_enum),
+                                        ('skuratov', 5, 'OPEN'::place_working_day_status_enum),
+                                        ('skuratov', 6, 'OPEN'::place_working_day_status_enum),
+                                        ('skuratov', 7,
+                                         'OPEN'::place_working_day_status_enum)) AS t(place_code, weekday, status)),
+
+     ins_place_working_days AS (
+         INSERT INTO place_working_days (
+                                         id,
+                                         place_id,
+                                         weekday,
+                                         status,
+                                         created_at,
+                                         updated_at
+             )
+             SELECT uuidv7(),
+                    pm.place_id,
+                    wds.weekday,
+                    wds.status,
+                    now(),
+                    now()
+             FROM working_days_seed wds
+                      JOIN place_map pm
+                           ON pm.place_code = wds.place_code
+             RETURNING
+                 id,
+                 place_id,
+                 weekday),
+
      working_hours_seed AS (SELECT *
                             FROM (VALUES ('hermitage', 1, time '11:00', time '20:00'),
                                          ('hermitage', 2, time '11:00', time '20:00'),
@@ -432,13 +544,7 @@ WITH lang_list AS (SELECT *
                                          ('sevkabel', 6, time '10:00', time '23:00'),
                                          ('sevkabel', 7, time '10:00', time '23:00'),
 
-                                         ('dvorcovy_bridge', 1, time '00:00', time '23:59'),
-                                         ('dvorcovy_bridge', 2, time '00:00', time '23:59'),
-                                         ('dvorcovy_bridge', 3, time '00:00', time '23:59'),
-                                         ('dvorcovy_bridge', 4, time '00:00', time '23:59'),
-                                         ('dvorcovy_bridge', 5, time '00:00', time '23:59'),
-                                         ('dvorcovy_bridge', 6, time '00:00', time '23:59'),
-                                         ('dvorcovy_bridge', 7, time '00:00', time '23:59'),
+                                         -- dvorcovy_bridge = all_day, поэтому сюда не добавляем
 
                                          ('bolshe_coffee', 1, time '08:00', time '22:00'),
                                          ('bolshe_coffee', 2, time '08:00', time '22:00'),
@@ -460,16 +566,14 @@ WITH lang_list AS (SELECT *
      ins_place_working_hours AS (
          INSERT INTO place_working_hours (
                                           id,
-                                          place_id,
-                                          weekday,
+                                          working_day_id,
                                           start_time,
                                           end_time,
                                           created_at,
                                           updated_at
              )
              SELECT uuidv7(),
-                    pm.place_id,
-                    whs.weekday,
+                    pwd.id,
                     whs.start_time,
                     whs.end_time,
                     now(),
@@ -477,6 +581,9 @@ WITH lang_list AS (SELECT *
              FROM working_hours_seed whs
                       JOIN place_map pm
                            ON pm.place_code = whs.place_code
+                      JOIN ins_place_working_days pwd
+                           ON pwd.place_id = pm.place_id
+                               AND pwd.weekday = whs.weekday
              RETURNING 1),
 
      route_seed AS (SELECT *
@@ -501,11 +608,17 @@ WITH lang_list AS (SELECT *
                                   'Маршрут для прогулки по современным и атмосферным точкам города.',
                                   'A route through atmospheric modern spots in the city.',
                                   '穿越城市现代氛围地点的路线。')) AS t(
-                                                                       route_no, route_code,
-                                                                       title_ru, title_en, title_zh,
-                                                                       short_description_ru, short_description_en,
+                                                                       route_no,
+                                                                       route_code,
+                                                                       title_ru,
+                                                                       title_en,
+                                                                       title_zh,
+                                                                       short_description_ru,
+                                                                       short_description_en,
                                                                        short_description_zh,
-                                                                       description_ru, description_en, description_zh
+                                                                       description_ru,
+                                                                       description_en,
+                                                                       description_zh
                         )),
 
      prepared_routes AS (SELECT uuidv7() AS route_id,
@@ -547,6 +660,7 @@ WITH lang_list AS (SELECT *
                           pr.description_en,
                           pr.description_zh
                    FROM prepared_routes pr),
+
      ins_route_translations AS (
          INSERT INTO route_translations (
                                          id,
@@ -624,6 +738,7 @@ SELECT (SELECT count(*) FROM ins_categories)            AS inserted_place_catego
            (SELECT count(*) FROM ins_place_primary_phones) +
            (SELECT count(*) FROM ins_place_secondary_phones)
            )                                            AS inserted_place_phones,
+       (SELECT count(*) FROM ins_place_working_days)    AS inserted_place_working_days,
        (SELECT count(*) FROM ins_place_working_hours)   AS inserted_place_working_hours,
        (SELECT count(*) FROM ins_routes)                AS inserted_routes,
        (SELECT count(*) FROM ins_route_translations)    AS inserted_route_translations,
