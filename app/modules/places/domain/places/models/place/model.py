@@ -11,7 +11,7 @@ from app.core.domain.value_objects.id import (
 from app.core.domain.value_objects.location import LocationVO
 from app.modules.places.domain.places.models.place.exceptions import PlaceIsNotEditable
 from app.modules.places.domain.places.value_objects.taxi_address.object import (
-    TaxiAddressVO,
+    PlaceTaxiAddressVO,
 )
 from app.modules.places.domain.places.value_objects.timezone.object import TimezoneVO
 from app.modules.places.shared.enums.place_status import PlaceStatusEnum
@@ -23,7 +23,7 @@ class Place:
     category_id: PlaceCategoryIdVO
     location: LocationVO
     timezone: TimezoneVO
-    address_taxi: TaxiAddressVO
+    address_taxi: PlaceTaxiAddressVO
     address_taxi_comment: str | None = field(default=None)
     status: PlaceStatusEnum = field(default=PlaceStatusEnum.DRAFT)
 
@@ -44,7 +44,7 @@ class Place:
         cls,
         category_id: PlaceCategoryIdVO,
         location: LocationVO,
-        address_taxi: TaxiAddressVO,
+        address_taxi: PlaceTaxiAddressVO,
         address_taxi_comment: str | None = None,
     ) -> Self:
         return cls(
@@ -61,7 +61,7 @@ class Place:
         *,
         category_id: PlaceCategoryIdVO | None = None,
         location: LocationVO | None = None,
-        address_taxi: TaxiAddressVO | None = None,
+        address_taxi: PlaceTaxiAddressVO | None = None,
         address_taxi_comment: str | None = None,
     ) -> None:
         if not self.is_editable():

@@ -17,7 +17,7 @@ from app.modules.places.application.interfaces.repositories.place_category impor
 from app.modules.places.domain.categories.value_objects.slug import PlaceCategorySlugVO
 from app.modules.places.domain.places.models.place.model import Place
 from app.modules.places.domain.places.value_objects.taxi_address.object import (
-    TaxiAddressVO,
+    PlaceTaxiAddressVO,
 )
 
 
@@ -43,7 +43,7 @@ class CreatePlaceCommandHandler(
         place = Place.create(
             category_id=category.id,
             location=LocationVO(latitude=command.latitude, longitude=command.longitude),
-            address_taxi=TaxiAddressVO(command.address_taxi),
+            address_taxi=PlaceTaxiAddressVO(command.address_taxi),
             address_taxi_comment=command.address_taxi_comment,
         )
         await self._place_repository.save(place)

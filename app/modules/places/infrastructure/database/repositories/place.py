@@ -18,7 +18,7 @@ from app.modules.places.application.interfaces.repositories.place import (
 )
 from app.modules.places.domain.places.models.place.model import Place
 from app.modules.places.domain.places.value_objects.taxi_address.object import (
-    TaxiAddressVO,
+    PlaceTaxiAddressVO,
 )
 from app.modules.places.domain.places.value_objects.timezone.object import TimezoneVO
 from app.modules.places.infrastructure.database.models import PlaceModel
@@ -57,7 +57,7 @@ class SQLAlchemyPlaceRepository(
             category_id=PlaceCategoryIdVO(model.category_id),
             location=self.wkb_to_location_vo(model.location),
             timezone=TimezoneVO(model.timezone),
-            address_taxi=TaxiAddressVO(model.address_taxi),
+            address_taxi=PlaceTaxiAddressVO(model.address_taxi),
             address_taxi_comment=model.address_taxi_comment,
             status=model.status,
         )

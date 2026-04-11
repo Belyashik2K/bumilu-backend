@@ -9,7 +9,7 @@ SPB_PREFIX = "Санкт-Петербург, "
 
 
 @dataclass(frozen=True, slots=True)
-class TaxiAddressVO(BaseStringVO):
+class PlaceTaxiAddressVO(BaseStringVO):
     min_length = len(SPB_PREFIX) + 1
     max_length = 255
 
