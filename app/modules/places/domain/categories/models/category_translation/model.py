@@ -11,6 +11,7 @@ from app.modules.places.domain.categories.value_objects.name.object import (
 )
 
 
+# TODO: refactor as in places
 @dataclass(frozen=True, slots=True, kw_only=True)
 class NewPlaceCategoryTranslation:
     language_code: LanguageEnum
