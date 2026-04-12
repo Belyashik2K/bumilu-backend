@@ -2,11 +2,13 @@ from dataclasses import (
     dataclass,
     field,
 )
-from datetime import time
 from typing import Self
 from uuid import UUID
 
 from app.core.application.queries.pagination import OffsetPagination
+from app.modules.places.application.interfaces.file_storage_url_builder import (
+    IFileStorageURLBuilder,
+)
 from app.modules.places.application.queries.categories.shared.models.place_category import (
     LocalizedPlaceCategoryReadModel,
 )
@@ -37,9 +39,22 @@ from app.modules.places.application.queries.places.shared.models.place_working_d
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class PlaceWorkingHoursIntervalView:
-    start: time
-    end: time
+class PlacePhotoView:
+    url: str
+    thumbnail_url: str | None = field(default=None)
+
+    @classmethod
+    def from_read_model(
+        cls,
+        read_model: PlacePhotoReadModel,
+        storage_url_builder: IFileStorageURLBuilder,
+    ) -> Self:
+        return cls(
+            url=storage_url_builder.build_file_url(file_key=read_model.file_key),
+            thumbnail_url=storage_url_builder.build_file_url(
+                file_key=read_model.thumbnail_file_key
+            ),
+        )
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -50,7 +65,7 @@ class PlaceView:
     short_description: str | None = field(default=None)
     timezone: str
     category: LocalizedPlaceCategoryReadModel
-    photos: list[PlacePhotoReadModel] = field(default_factory=list)
+    photos: list[PlacePhotoView] = field(default_factory=list)
     address: PlaceAddressReadModel
     location: PlaceLocationReadModel
     rating: PlaceRatingReadModel
@@ -66,7 +81,7 @@ class PlaceCardView:
     short_description: str | None = field(default=None)
     timezone: str
     category: LocalizedPlaceCategoryReadModel
-    photos: list[PlacePhotoReadModel] = field(default_factory=list)
+    photos: list[PlacePhotoView] = field(default_factory=list)
     location: PlaceLocationReadModel
     rating: PlaceRatingReadModel
     working_days: list[PlaceWorkingDayReadModel] = field(default_factory=list)
@@ -75,6 +90,7 @@ class PlaceCardView:
     def from_read_model(
         cls,
         read_model: PlaceCardReadModel,
+        storage_url_builder: IFileStorageURLBuilder,
     ) -> Self:
         # TODO: configurable number of photos
 
@@ -84,7 +100,13 @@ class PlaceCardView:
             short_description=read_model.short_description,
             timezone=read_model.timezone,
             category=read_model.category,
-            photos=read_model.photos[:4],
+            photos=[
+                PlacePhotoView.from_read_model(
+                    read_model=photo,
+                    storage_url_builder=storage_url_builder,
+                )
+                for photo in read_model.photos[:4]
+            ],
             location=read_model.location,
             rating=read_model.rating,
             working_days=read_model.working_days,

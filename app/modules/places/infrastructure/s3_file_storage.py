@@ -12,6 +12,22 @@ from app.modules.places.application.interfaces.file_storage import (
     FileObjectInfo,
     IFileStorage,
 )
+from app.modules.places.application.interfaces.file_storage_url_builder import (
+    IFileStorageURLBuilder,
+)
+
+
+class S3FileStorageURLBuilder(IFileStorageURLBuilder):
+    def __init__(
+        self,
+        public_endpoint: str,
+    ) -> None:
+        self._public_endpoint = public_endpoint.strip().rstrip("/")
+
+    def build_file_url(self, file_key: str | None) -> str | None:
+        if file_key is None:
+            return None
+        return f"{self._public_endpoint}/{file_key.lstrip('/')}"
 
 
 class S3FileStorage(IFileStorage):

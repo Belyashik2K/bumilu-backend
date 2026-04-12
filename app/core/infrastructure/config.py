@@ -203,6 +203,7 @@ class RoutingConfig(BaseModel):
 
 class S3Config(BaseModel):
     endpoint_url: str
+    public_endpoint_url: str
     bucket_name: str
     access_key: str
     secret_key: str

@@ -17,8 +17,8 @@ class PlacePhotoSchema(BaseModel):
         description="The URL of the photo.",
         examples=[PHOTO_URL_EXAMPLE],
     )
-    thumbnail_url: str = Field(
-        ...,
+    thumbnail_url: str | None = Field(
+        None,
         description="The URL of the thumbnail version of the photo.",
         examples=[PHOTO_THUMBNAIL_URL_EXAMPLE],
     )

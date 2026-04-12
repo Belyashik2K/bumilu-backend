@@ -4,6 +4,9 @@ from dishka import (
     provide,
 )
 
+from app.modules.places.application.interfaces.file_storage_url_builder import (
+    IFileStorageURLBuilder,
+)
 from app.modules.places.application.interfaces.readers.place import (
     IPlaceReader,
 )
@@ -50,18 +53,20 @@ class PlacesQueryHandlersProvider(Provider):
 
     @provide(scope=Scope.REQUEST)
     async def get_place_handler(
-        self, place_reader: IPlaceReader
+        self, place_reader: IPlaceReader, storage_url_builder: IFileStorageURLBuilder
     ) -> GetPlaceQueryHandler:
         return GetPlaceQueryHandler(
             place_reader=place_reader,
+            storage_url_builder=storage_url_builder,
         )
 
     @provide(scope=Scope.REQUEST)
     async def get_all_places_handler(
-        self, place_reader: IPlaceReader
+        self, place_reader: IPlaceReader, storage_url_builder: IFileStorageURLBuilder
     ) -> GetAllPlacesQueryHandler:
         return GetAllPlacesQueryHandler(
             place_reader=place_reader,
+            storage_url_builder=storage_url_builder,
         )
 
     @provide(scope=Scope.REQUEST)

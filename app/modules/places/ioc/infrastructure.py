@@ -9,8 +9,14 @@ from app.modules.places.application.interfaces.file_key_generator import (
     IFileKeyGenerator,
 )
 from app.modules.places.application.interfaces.file_storage import IFileStorage
+from app.modules.places.application.interfaces.file_storage_url_builder import (
+    IFileStorageURLBuilder,
+)
 from app.modules.places.infrastructure.file_key_generator import FileKeyGenerator
-from app.modules.places.infrastructure.s3_file_storage import S3FileStorage
+from app.modules.places.infrastructure.s3_file_storage import (
+    S3FileStorage,
+    S3FileStorageURLBuilder,
+)
 
 
 class PlacesInfrastructureProvider(Provider):
@@ -26,4 +32,12 @@ class PlacesInfrastructureProvider(Provider):
             region=config.storage.s3.region_name,
             access_key=config.storage.s3.access_key,
             secret_key=config.storage.s3.secret_key,
+        )
+
+    @provide(scope=Scope.APP, provides=IFileStorageURLBuilder)
+    async def file_storage_url_builder(
+        self, config: AppConfig
+    ) -> IFileStorageURLBuilder:
+        return S3FileStorageURLBuilder(
+            public_endpoint=config.storage.s3.public_endpoint_url,
         )

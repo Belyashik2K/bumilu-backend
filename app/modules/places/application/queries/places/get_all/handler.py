@@ -1,5 +1,8 @@
 from app.core.application.queries import IQueryHandler
 from app.core.application.queries.pagination import OffsetPagination
+from app.modules.places.application.interfaces.file_storage_url_builder import (
+    IFileStorageURLBuilder,
+)
 from app.modules.places.application.interfaces.readers.place import (
     IPlaceReader,
 )
@@ -16,10 +19,10 @@ class GetAllPlacesQueryHandler(
     IQueryHandler[GetAllPlacesQuery, PaginatedPlaceCardView]
 ):
     def __init__(
-        self,
-        place_reader: IPlaceReader,
+        self, place_reader: IPlaceReader, storage_url_builder: IFileStorageURLBuilder
     ) -> None:
         self._place_reader = place_reader
+        self._storage_url_builder = storage_url_builder
 
     async def handle(self, query: GetAllPlacesQuery) -> PaginatedPlaceCardView:
         place_cards = await self._place_reader.get_all(
@@ -32,7 +35,9 @@ class GetAllPlacesQueryHandler(
 
         return PaginatedPlaceCardView(
             places=[
-                PlaceCardView.from_read_model(place_card)
+                PlaceCardView.from_read_model(
+                    place_card, storage_url_builder=self._storage_url_builder
+                )
                 for place_card in place_cards.items
             ],
             pagination=OffsetPagination.create(
