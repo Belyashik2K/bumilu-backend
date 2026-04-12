@@ -72,6 +72,10 @@ class PlaceWorkingDayIdVO(IdVO): ...
 
 
 @dataclass(frozen=True, slots=True)
+class PlacePhotoIdVO(IdVO): ...
+
+
+@dataclass(frozen=True, slots=True)
 class PlaceCategoryIdVO(IdVO): ...
 
 

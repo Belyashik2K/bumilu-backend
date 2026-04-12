@@ -1,6 +1,7 @@
 from app.core.domain.value_objects.id import (
     PlaceIdVO,
     PlacePhoneIdVO,
+    PlacePhotoIdVO,
 )
 from app.core.enums import LanguageEnum
 from app.core.exceptions.domain.base import (
@@ -52,4 +53,11 @@ class PlaceWorkingDayNotFound(DomainNotFoundException):
     def __init__(self, place_id: PlaceIdVO, weekday: WeekdayVO) -> None:
         super().__init__(
             message=f"Working day with day_of_week {weekday} not found for place with id {place_id}",
+        )
+
+
+class PlacePhotoNotFound(DomainNotFoundException):
+    def __init__(self, place_id: PlaceIdVO, photo_id: PlacePhotoIdVO) -> None:
+        super().__init__(
+            message=f"Photo with id {photo_id} not found for place with id {place_id}",
         )
