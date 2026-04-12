@@ -29,6 +29,9 @@ from app.modules.places.application.commands.categories.update_translation.handl
 from app.modules.places.application.commands.places.add_phone.handler import (
     AddPlacePhoneCommandHandler,
 )
+from app.modules.places.application.commands.places.change_status.handler import (
+    ChangePlaceStatusCommandHandler,
+)
 from app.modules.places.application.commands.places.complete_photo_upload.handler import (
     CompletePlacePhotoUploadCommandHandler,
 )
@@ -339,4 +342,15 @@ class PlacesCommandHandlersProvider(Provider):
             transaction_manager=transaction_manager,
             place_repository=place_repository,
             file_storage=file_storage,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def change_place_status_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        place_repository: IPlaceRepository,
+    ) -> ChangePlaceStatusCommandHandler:
+        return ChangePlaceStatusCommandHandler(
+            transaction_manager=transaction_manager,
+            place_repository=place_repository,
         )

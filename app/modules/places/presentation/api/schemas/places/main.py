@@ -34,6 +34,7 @@ from app.modules.places.presentation.api.schemas.places.user_context import (
 from app.modules.places.presentation.api.schemas.places.working_day import (
     PlaceWorkingDaySchema,
 )
+from app.modules.places.shared.enums.place_status import PlaceStatusEnum
 
 
 class PlaceMapPOISchema(BaseModel):
@@ -227,4 +228,12 @@ class UpdatePlaceRequestSchema(BaseModel):
         None,
         description="Optional comment for the taxi address",
         examples=[TAXI_COMMENT_EXAMPLE],
+    )
+
+
+class ChangePlaceStatusRequestSchema(BaseModel):
+    status: PlaceStatusEnum = Field(
+        ...,
+        description="New status for the place",
+        examples=[PlaceStatusEnum.PUBLISHED],
     )

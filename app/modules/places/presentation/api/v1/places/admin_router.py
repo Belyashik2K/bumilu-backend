@@ -21,6 +21,12 @@ from app.modules.places.application.commands.places.add_phone.command import (
 from app.modules.places.application.commands.places.add_phone.handler import (
     AddPlacePhoneCommandHandler,
 )
+from app.modules.places.application.commands.places.change_status.command import (
+    ChangePlaceStatusCommand,
+)
+from app.modules.places.application.commands.places.change_status.handler import (
+    ChangePlaceStatusCommandHandler,
+)
 from app.modules.places.application.commands.places.complete_photo_upload.command import (
     CompletePlacePhotoUploadCommand,
 )
@@ -97,6 +103,7 @@ from app.modules.places.application.commands.places.update_translation.handler i
     UpdatePlaceTranslationCommandHandler,
 )
 from app.modules.places.presentation.api.schemas.places.main import (
+    ChangePlaceStatusRequestSchema,
     CreatePlaceRequestSchema,
     CreatePlaceResponseSchema,
     UpdatePlaceRequestSchema,
@@ -172,6 +179,29 @@ async def update_place(
             longitude=location["longitude"] if location is not UNSET else UNSET,
             address_taxi=data_dump.get("address_taxi", UNSET),
             address_taxi_comment=data_dump.get("address_taxi_comment", UNSET),
+        )
+    )
+
+
+@admin_places_router.patch(
+    "/{place_id}/status",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND,
+        status.HTTP_409_CONFLICT,
+    ),
+)
+@inject
+async def change_place_status(
+    place_id: UUID7,
+    handler: FromDishka[ChangePlaceStatusCommandHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+    data: ChangePlaceStatusRequestSchema,
+) -> None:
+    await handler(
+        ChangePlaceStatusCommand(
+            place_id=place_id,
+            status=data.status,
         )
     )
 
