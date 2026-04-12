@@ -1,5 +1,20 @@
 name: bumilu-backend
 services:
+  valhalla:
+    image: ghcr.io/valhalla/valhalla-scripted:latest
+    restart: unless-stopped
+    environment:
+      - serve_tiles=True
+    volumes:
+      - ./valhalla_data:/custom_files
+    healthcheck:
+      test: [ "CMD", "curl", "-fsS", "http://localhost:8002/status" ]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 15s
+    networks:
+      - bumilu
   postgres:
     image: postgis/postgis:18-3.6
     restart: unless-stopped
@@ -47,6 +62,8 @@ services:
       postgres:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      valhalla:
         condition: service_healthy
       migrations:
         condition: service_completed_successfully

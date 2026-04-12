@@ -40,3 +40,5 @@ config.dev.yaml
 .mypy_cache/
 .ruff_cache/
 .run/
+
+valhalla_data/

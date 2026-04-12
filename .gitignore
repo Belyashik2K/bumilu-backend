@@ -215,3 +215,5 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+/valhalla_data/*
+!valhalla_data/README.md
