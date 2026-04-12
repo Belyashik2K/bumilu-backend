@@ -13,3 +13,4 @@ class StartPlacePhotoUploadCommandResult:
     photo_id: UUID
     file_key: str
     upload_url: str
+    expires_in: int

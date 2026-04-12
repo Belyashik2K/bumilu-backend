@@ -21,6 +21,12 @@ from app.modules.places.application.commands.places.add_phone.command import (
 from app.modules.places.application.commands.places.add_phone.handler import (
     AddPlacePhoneCommandHandler,
 )
+from app.modules.places.application.commands.places.complete_photo_upload.command import (
+    CompletePlacePhotoUploadCommand,
+)
+from app.modules.places.application.commands.places.complete_photo_upload.handler import (
+    CompletePlacePhotoUploadCommandHandler,
+)
 from app.modules.places.application.commands.places.create.command import (
     CreatePlaceCommand,
 )
@@ -65,6 +71,12 @@ from app.modules.places.application.commands.places.replace_working_day.command 
 from app.modules.places.application.commands.places.replace_working_day.handler import (
     ReplacePlaceWorkingDayCommandHandler,
 )
+from app.modules.places.application.commands.places.start_photo_upload.command import (
+    StartPlacePhotoUploadCommand,
+)
+from app.modules.places.application.commands.places.start_photo_upload.handler import (
+    StartPlacePhotoUploadCommandHandler,
+)
 from app.modules.places.application.commands.places.update.command import (
     UpdatePlaceCommand,
 )
@@ -92,6 +104,10 @@ from app.modules.places.presentation.api.schemas.places.main import (
 from app.modules.places.presentation.api.schemas.places.phone import (
     PlacePhoneSchema,
     UpdatePlacePhoneSchema,
+)
+from app.modules.places.presentation.api.schemas.places.photo import (
+    StartPlacePhotoUploadRequestSchema,
+    StartPlacePhotoUploadResponseSchema,
 )
 from app.modules.places.presentation.api.schemas.places.translation import (
     CreatePlaceTranslationRequestSchema,
@@ -387,5 +403,53 @@ async def replace_place_working_day(
                 WorkingDayIntervalData(start_time=interval.start, end_time=interval.end)
                 for interval in data.intervals
             ],
+        )
+    )
+
+
+@admin_places_router.post(
+    "/{place_id}/photos/upload",
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND,
+        status.HTTP_409_CONFLICT,
+    ),
+)
+@inject
+async def start_place_photo_upload(
+    place_id: UUID7,
+    handler: FromDishka[StartPlacePhotoUploadCommandHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+    data: StartPlacePhotoUploadRequestSchema,
+) -> StartPlacePhotoUploadResponseSchema:
+    result = await handler(
+        StartPlacePhotoUploadCommand(
+            place_id=place_id,
+            content_type=data.content_type,
+        )
+    )
+    return StartPlacePhotoUploadResponseSchema.model_validate(
+        result, from_attributes=True
+    )
+
+
+@admin_places_router.post(
+    "/{place_id}/photos/{photo_id}/complete",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND,
+        status.HTTP_409_CONFLICT,
+    ),
+)
+@inject
+async def complete_place_photo_upload(
+    place_id: UUID7,
+    photo_id: UUID7,
+    handler: FromDishka[CompletePlacePhotoUploadCommandHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+) -> None:
+    await handler(
+        CompletePlacePhotoUploadCommand(
+            place_id=place_id,
+            photo_id=photo_id,
         )
     )

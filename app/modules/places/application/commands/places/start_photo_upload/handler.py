@@ -15,6 +15,7 @@ from app.modules.places.application.interfaces.file_key_generator import (
 from app.modules.places.application.interfaces.file_storage import IFileStorage
 from app.modules.places.application.interfaces.repositories.place import (
     IPlaceRepository,
+    PlaceLoadOptions,
 )
 
 
@@ -39,7 +40,10 @@ class StartPlacePhotoUploadCommandHandler(
         self, command: StartPlacePhotoUploadCommand
     ) -> StartPlacePhotoUploadCommandResult:
         place_id = PlaceIdVO.from_uuid(command.place_id)
-        place = await self._place_repository.get_by_id(place_id)
+        place = await self._place_repository.get_by_id(
+            place_id,
+            options=PlaceLoadOptions(photos=True),
+        )
         if place is None:
             raise PlaceNotFound(place_id.value)
 
@@ -56,7 +60,7 @@ class StartPlacePhotoUploadCommandHandler(
         )
         await self._place_repository.save(place)
 
-        upload_url = await self._file_storage.generate_upload_url(
+        upload_url, expires_in = await self._file_storage.generate_upload_url(
             file_key=file_key,
             content_type=command.content_type,
         )
@@ -65,4 +69,5 @@ class StartPlacePhotoUploadCommandHandler(
             photo_id=photo.id.value,
             file_key=file_key,
             upload_url=upload_url,
+            expires_in=expires_in,
         )

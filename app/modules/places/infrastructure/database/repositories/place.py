@@ -289,7 +289,6 @@ class SQLAlchemyPlaceRepository(IPlaceRepository):
             model_photo.file_key = entity_photo.file_key
             model_photo.thumbnail_file_key = entity_photo.thumbnail_file_key
             model_photo.status = entity_photo.status
-            model_photo.is_primary = entity_photo.is_primary
 
     def _sync_working_days(self, model: PlaceModel, entity: Place) -> None:
         existing_by_id: dict[UUID, PlaceWorkingDayModel] = {

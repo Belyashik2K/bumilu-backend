@@ -14,6 +14,7 @@ from app.modules.places.application.exceptions.place import (
 from app.modules.places.application.interfaces.file_storage import IFileStorage
 from app.modules.places.application.interfaces.repositories.place import (
     IPlaceRepository,
+    PlaceLoadOptions,
 )
 
 
@@ -37,11 +38,17 @@ class CompletePlacePhotoUploadCommandHandler(
         place_id = PlaceIdVO.from_uuid(command.place_id)
         photo_id = PlacePhotoIdVO.from_uuid(command.photo_id)
 
-        place = await self._place_repository.get_by_id(place_id)
+        place = await self._place_repository.get_by_id(
+            place_id, options=PlaceLoadOptions(photos=True)
+        )
         if place is None:
             raise PlaceNotFound(place_id.value)
 
         photo = place.get_photo(photo_id=photo_id)
+
+        if not photo.is_pending_upload():
+            return
+
         object_info = await self._file_storage.get_object_info(
             file_key=photo.file_key,
         )

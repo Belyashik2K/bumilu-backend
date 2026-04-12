@@ -23,7 +23,7 @@ class IFileStorage(ABC):
         file_key: str,
         content_type: str,
         expires_in: int = 3600,
-    ) -> str: ...
+    ) -> tuple[str, int]: ...
 
     @abstractmethod
     async def get_object_info(
