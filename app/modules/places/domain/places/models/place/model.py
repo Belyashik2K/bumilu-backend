@@ -356,6 +356,9 @@ class Place:
 
         self.photos.remove(photo)
 
+    def get_photo(self, photo_id: PlacePhotoIdVO) -> PlacePhoto:
+        return self._get_photo(photo_id)
+
     def _get_photo(self, photo_id: PlacePhotoIdVO) -> PlacePhoto:
         for photo in self.photos:
             if photo.id == photo_id:
