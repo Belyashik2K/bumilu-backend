@@ -29,6 +29,9 @@ from app.modules.places.application.commands.categories.update_translation.handl
 from app.modules.places.application.commands.places.add_phone.handler import (
     AddPlacePhoneCommandHandler,
 )
+from app.modules.places.application.commands.places.complete_photo_upload.handler import (
+    CompletePlacePhotoUploadCommandHandler,
+)
 from app.modules.places.application.commands.places.create.handler import (
     CreatePlaceCommandHandler,
 )
@@ -50,6 +53,9 @@ from app.modules.places.application.commands.places.make_phone_primary.handler i
 from app.modules.places.application.commands.places.replace_working_day.handler import (
     ReplacePlaceWorkingDayCommandHandler,
 )
+from app.modules.places.application.commands.places.start_photo_upload.handler import (
+    StartPlacePhotoUploadCommandHandler,
+)
 from app.modules.places.application.commands.places.update.handler import (
     UpdatePlaceCommandHandler,
 )
@@ -59,6 +65,10 @@ from app.modules.places.application.commands.places.update_phone.handler import 
 from app.modules.places.application.commands.places.update_translation.handler import (
     UpdatePlaceTranslationCommandHandler,
 )
+from app.modules.places.application.interfaces.file_key_generator import (
+    IFileKeyGenerator,
+)
+from app.modules.places.application.interfaces.file_storage import IFileStorage
 from app.modules.places.application.interfaces.readers.place import IPlaceReader
 from app.modules.places.application.interfaces.repositories.place import (
     IPlaceRepository,
@@ -301,4 +311,32 @@ class PlacesCommandHandlersProvider(Provider):
         return ReplacePlaceWorkingDayCommandHandler(
             transaction_manager=transaction_manager,
             place_repository=place_repository,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def start_place_photo_upload_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        place_repository: IPlaceRepository,
+        file_key_generator: IFileKeyGenerator,
+        file_storage: IFileStorage,
+    ) -> StartPlacePhotoUploadCommandHandler:
+        return StartPlacePhotoUploadCommandHandler(
+            transaction_manager=transaction_manager,
+            place_repository=place_repository,
+            file_key_generator=file_key_generator,
+            file_storage=file_storage,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def complete_place_photo_upload_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        place_repository: IPlaceRepository,
+        file_storage: IFileStorage,
+    ) -> CompletePlacePhotoUploadCommandHandler:
+        return CompletePlacePhotoUploadCommandHandler(
+            transaction_manager=transaction_manager,
+            place_repository=place_repository,
+            file_storage=file_storage,
         )
