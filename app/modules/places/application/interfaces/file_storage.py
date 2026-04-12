@@ -13,6 +13,7 @@ class FileObjectInfo:
     file_key: str
     content_type: str | None = field(default=None)
     size: int | None = field(default=None)
+    etag: str | None = field(default=None)
 
 
 class IFileStorage(ABC):
