@@ -47,6 +47,9 @@ from app.modules.places.application.commands.places.delete.handler import (
 from app.modules.places.application.commands.places.delete_phone.handler import (
     DeletePlacePhoneCommandHandler,
 )
+from app.modules.places.application.commands.places.delete_photo.handler import (
+    DeletePlacePhotoCommandHandler,
+)
 from app.modules.places.application.commands.places.delete_translation.command import (
     DeletePlaceTranslationCommandHandler,
 )
@@ -339,6 +342,19 @@ class PlacesCommandHandlersProvider(Provider):
         file_storage: IFileStorage,
     ) -> CompletePlacePhotoUploadCommandHandler:
         return CompletePlacePhotoUploadCommandHandler(
+            transaction_manager=transaction_manager,
+            place_repository=place_repository,
+            file_storage=file_storage,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def delete_place_photo_handler(
+        self,
+        transaction_manager: ITransactionManager,
+        place_repository: IPlaceRepository,
+        file_storage: IFileStorage,
+    ) -> DeletePlacePhotoCommandHandler:
+        return DeletePlacePhotoCommandHandler(
             transaction_manager=transaction_manager,
             place_repository=place_repository,
             file_storage=file_storage,

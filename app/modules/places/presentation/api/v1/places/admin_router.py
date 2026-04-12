@@ -58,6 +58,12 @@ from app.modules.places.application.commands.places.delete_phone.command import 
 from app.modules.places.application.commands.places.delete_phone.handler import (
     DeletePlacePhoneCommandHandler,
 )
+from app.modules.places.application.commands.places.delete_photo.command import (
+    DeletePlacePhotoCommand,
+)
+from app.modules.places.application.commands.places.delete_photo.handler import (
+    DeletePlacePhotoCommandHandler,
+)
 from app.modules.places.application.commands.places.delete_translation.command import (
     DeletePlaceTranslationCommandHandler,
 )
@@ -479,6 +485,29 @@ async def complete_place_photo_upload(
 ) -> None:
     await handler(
         CompletePlacePhotoUploadCommand(
+            place_id=place_id,
+            photo_id=photo_id,
+        )
+    )
+
+
+@admin_places_router.delete(
+    "/{place_id}/photos/{photo_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses=generate_responses_for_endpoint(
+        status.HTTP_404_NOT_FOUND,
+        status.HTTP_409_CONFLICT,
+    ),
+)
+@inject
+async def delete_place_photo(
+    place_id: UUID7,
+    photo_id: UUID7,
+    handler: FromDishka[DeletePlacePhotoCommandHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+) -> None:
+    await handler(
+        DeletePlacePhotoCommand(
             place_id=place_id,
             photo_id=photo_id,
         )
