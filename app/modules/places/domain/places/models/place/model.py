@@ -12,7 +12,10 @@ from app.core.domain.value_objects.id import (
 )
 from app.core.domain.value_objects.location import LocationVO
 from app.core.enums import LanguageEnum
+from app.core.enums.language import REQUIRED_LANGUAGES
 from app.modules.places.domain.places.models.place.exceptions import (
+    CannotPublishPlaceMissingTranslations,
+    InvalidPlaceStatusTransition,
     PlaceIsNotEditable,
     PlacePhoneAlreadyExists,
     PlacePhoneNotFound,
@@ -368,3 +371,37 @@ class Place:
             place_id=self.id,
             photo_id=photo_id,
         )
+
+    def publish(self) -> None:
+        if self.is_published():
+            return
+
+        missing = REQUIRED_LANGUAGES - self.translation_language_codes
+        if missing:
+            raise CannotPublishPlaceMissingTranslations(
+                place_id=self.id,
+                missing_languages=missing,
+            )
+
+        self.status = PlaceStatusEnum.PUBLISHED
+
+    def hide(self) -> None:
+        if self.is_hidden():
+            return
+
+        self.status = PlaceStatusEnum.HIDDEN
+
+    def change_status(
+        self,
+        new_status: PlaceStatusEnum,
+    ) -> None:
+        if new_status == PlaceStatusEnum.PUBLISHED:
+            self.publish()
+        elif new_status == PlaceStatusEnum.HIDDEN:
+            self.hide()
+        else:
+            raise InvalidPlaceStatusTransition(
+                place_id=self.id,
+                from_status=self.status,
+                to_status=new_status,
+            )
