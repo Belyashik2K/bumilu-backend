@@ -320,11 +320,11 @@ class Place:
             weekday=weekday,
         )
 
-    def add_photo(self, *, file_key: str) -> PlacePhoto:
+    def add_photo(self, *, photo_id: PlacePhotoIdVO, file_key: str) -> PlacePhoto:
         if not self.is_editable():
             raise PlaceIsNotEditable(place_id=self.id)
 
-        photo = PlacePhoto.create_pending(file_key=file_key)
+        photo = PlacePhoto.create_pending(photo_id=photo_id, file_key=file_key)
 
         self.photos.append(photo)
         return photo

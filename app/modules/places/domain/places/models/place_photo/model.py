@@ -15,24 +15,27 @@ class PlacePhoto:
     def create(
         cls,
         *,
+        photo_id: PlacePhotoIdVO | None,
         file_key: str,
         status: PlacePhotoStatusEnum,
         thumbnail_file_key: str | None,
     ) -> "PlacePhoto":
         return cls(
-            id=PlacePhotoIdVO.new(),
+            id=photo_id or PlacePhotoIdVO.new(),
             file_key=file_key,
             thumbnail_file_key=thumbnail_file_key,
             status=status,
         )
 
     @classmethod
-    def create_pending(cls, *, file_key: str) -> "PlacePhoto":
-        return cls(
-            id=PlacePhotoIdVO.new(),
+    def create_pending(
+        cls, *, photo_id: PlacePhotoIdVO | None, file_key: str
+    ) -> "PlacePhoto":
+        return cls.create(
+            photo_id=photo_id,
             file_key=file_key,
-            thumbnail_file_key=None,
             status=PlacePhotoStatusEnum.PENDING_UPLOAD,
+            thumbnail_file_key=None,
         )
 
     def mark_uploaded(self) -> None:
