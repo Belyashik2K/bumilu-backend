@@ -7,6 +7,7 @@ from app.modules.places.application.commands.places.replace_working_day.command 
 from app.modules.places.application.exceptions.place import PlaceNotFound
 from app.modules.places.application.interfaces.repositories.place import (
     IPlaceRepository,
+    PlaceLoadOptions,
 )
 from app.modules.places.domain.places.models.place_working_day.model import (
     PlaceWorkingDayData,
@@ -30,7 +31,12 @@ class ReplacePlaceWorkingDayCommandHandler(
 
     async def handle(self, command: ReplacePlaceWorkingDayCommand) -> None:
         place_id = PlaceIdVO.from_uuid(command.place_id)
-        place = await self._place_repository.get_by_id_with_working_days(place_id)
+        place = await self._place_repository.get_by_id(
+            place_id,
+            options=PlaceLoadOptions(
+                working_days=True,
+            ),
+        )
         if place is None:
             raise PlaceNotFound(place_id.value)
 

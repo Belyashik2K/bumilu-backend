@@ -10,6 +10,7 @@ from app.modules.places.application.commands.places.make_phone_primary.command i
 from app.modules.places.application.exceptions.place import PlaceNotFound
 from app.modules.places.application.interfaces.repositories.place import (
     IPlaceRepository,
+    PlaceLoadOptions,
 )
 
 
@@ -26,7 +27,12 @@ class MakePlacePhonePrimaryCommandHandler(
 
     async def handle(self, command: MakePlacePhonePrimaryCommand) -> None:
         place_id = PlaceIdVO.from_uuid(command.place_id)
-        place = await self._place_repository.get_by_id_with_phones(place_id)
+        place = await self._place_repository.get_by_id(
+            place_id,
+            options=PlaceLoadOptions(
+                phones=True,
+            ),
+        )
         if place is None:
             raise PlaceNotFound(place_id.value)
 
