@@ -37,6 +37,7 @@ from app.modules.places.infrastructure.database.models import (
     PlaceTranslationModel,
     PlaceWorkingDayModel,
 )
+from app.modules.places.shared.enums.place_status import PlaceStatusEnum
 from app.modules.reviews.infrastructure.database.models import ReviewModel
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
@@ -92,6 +93,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             .where(
                 PlaceTranslationModel.language_code == translation_language,
                 PlaceCategoryTranslationModel.language_code == translation_language,
+                PlaceModel.status == PlaceStatusEnum.PUBLISHED,
                 PlaceModel.id == place_id,
             )
             .options(
@@ -155,6 +157,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 PlaceModel.id.in_(place_ids),
                 PlaceTranslationModel.language_code == translation_language,
                 PlaceCategoryTranslationModel.language_code == translation_language,
+                PlaceModel.status == PlaceStatusEnum.PUBLISHED,
             )
             .options(
                 selectinload(PlaceModel.working_days).selectinload(
@@ -196,6 +199,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         base_filters = [
             PlaceTranslationModel.language_code == translation_language,
             PlaceCategoryTranslationModel.language_code == translation_language,
+            PlaceModel.status == PlaceStatusEnum.PUBLISHED,
         ]
 
         if title_like:
@@ -305,6 +309,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             .where(
                 PlaceTranslationModel.language_code == translation_language,
                 PlaceCategoryTranslationModel.language_code == translation_language,
+                PlaceModel.status == PlaceStatusEnum.PUBLISHED,
                 PlaceModel.location.op("&&")(bbox),
                 func.ST_Intersects(PlaceModel.location, bbox),
             )
