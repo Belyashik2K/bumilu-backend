@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.14"
 dependencies = [
+    "aiobotocore>=3.4.0",
     "aiosmtplib>=5.1.0",
     "alembic>=1.18.4",
     "alembic-postgresql-enum>=1.10.0",
