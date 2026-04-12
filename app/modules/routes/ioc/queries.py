@@ -4,6 +4,9 @@ from dishka import (
     provide,
 )
 
+from app.modules.places.application.interfaces.file_storage_url_builder import (
+    IFileStorageURLBuilder,
+)
 from app.modules.routes.application.interfaces.readers.route import IRouteReader
 from app.modules.routes.application.queries.build_route_path.handler import (
     BuildRoutePathForRouteQueryHandler,
@@ -26,10 +29,11 @@ class RoutesQueryHandlersProvider(Provider):
 
     @provide(scope=Scope.REQUEST)
     async def get_route_handler(
-        self, route_reader: IRouteReader
+        self, route_reader: IRouteReader, storage_url_builder: IFileStorageURLBuilder
     ) -> GetRouteQueryHandler:
         return GetRouteQueryHandler(
             route_reader=route_reader,
+            storage_url_builder=storage_url_builder,
         )
 
     @provide(scope=Scope.REQUEST)

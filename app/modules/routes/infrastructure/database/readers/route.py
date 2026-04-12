@@ -67,6 +67,7 @@ class SQLAlchemyRouteReader(IRouteReader):
             .options(
                 contains_eager(RouteModel.translations),
                 place_loader.selectinload(PlaceModel.translations),
+                place_loader.selectinload(PlaceModel.photos),
                 place_loader.joinedload(PlaceModel.category).selectinload(
                     PlaceCategoryModel.translations
                 ),

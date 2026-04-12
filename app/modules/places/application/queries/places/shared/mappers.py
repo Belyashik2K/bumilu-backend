@@ -171,7 +171,10 @@ class PlaceReadModelMapper:
 
     @classmethod
     def map_photos(cls, place: PlaceModel) -> list[PlacePhotoReadModel]:
-        photo_url = "https://media.bumilu.ru/banner.jpg"  # TODO: add real photo url from place.photos
-        thumbnail_url = "https://media.bumilu.ru/banner_thumbnail.jpg"
-
-        return [PlacePhotoReadModel(url=photo_url, thumbnail_url=thumbnail_url)] * 5
+        return [
+            PlacePhotoReadModel(
+                file_key=photo.file_key,
+                thumbnail_file_key=photo.thumbnail_file_key,
+            )
+            for photo in place.photos
+        ]

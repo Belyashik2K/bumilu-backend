@@ -99,6 +99,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 selectinload(PlaceModel.working_days).selectinload(
                     PlaceWorkingDayModel.working_hours
                 ),
+                selectinload(PlaceModel.photos),
                 contains_eager(PlaceModel.translations),
                 contains_eager(PlaceModel.category).contains_eager(
                     PlaceCategoryModel.translations
@@ -159,6 +160,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 selectinload(PlaceModel.working_days).selectinload(
                     PlaceWorkingDayModel.working_hours
                 ),
+                selectinload(PlaceModel.photos),
                 contains_eager(PlaceModel.translations),
                 contains_eager(PlaceModel.category).contains_eager(
                     PlaceCategoryModel.translations
@@ -232,6 +234,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 selectinload(PlaceModel.working_days).selectinload(
                     PlaceWorkingDayModel.working_hours
                 ),
+                selectinload(PlaceModel.photos),
                 contains_eager(PlaceModel.translations),
                 contains_eager(PlaceModel.category).contains_eager(
                     PlaceCategoryModel.translations
