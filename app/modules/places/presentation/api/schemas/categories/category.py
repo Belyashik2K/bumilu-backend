@@ -108,6 +108,7 @@ PlaceCategoriesListResponseSchema = make_paginated_response_schema(
     item_type=LocalizedPlaceCategorySchema,
     description="Response schema for a paginated list of place categories.",
     validation_alias="categories",
+    serialization_alias="categories",
 )
 AdminPlaceCategoriesListResponseSchema = make_paginated_response_schema(
     item_type=AdminPlaceCategorySchema,

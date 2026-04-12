@@ -8,6 +8,7 @@ from app.core.domain.value_objects.id import (
     PlaceCategoryIdVO,
     PlaceIdVO,
     PlacePhoneIdVO,
+    PlacePhotoIdVO,
 )
 from app.core.domain.value_objects.location import LocationVO
 from app.core.enums import LanguageEnum
@@ -15,11 +16,13 @@ from app.modules.places.domain.places.models.place.exceptions import (
     PlaceIsNotEditable,
     PlacePhoneAlreadyExists,
     PlacePhoneNotFound,
+    PlacePhotoNotFound,
     PlaceTranslationAlreadyExists,
     PlaceTranslationNotFound,
     PlaceWorkingDayNotFound,
 )
 from app.modules.places.domain.places.models.place_phone.model import PlacePhone
+from app.modules.places.domain.places.models.place_photo.model import PlacePhoto
 from app.modules.places.domain.places.models.place_translation.model import (
     PlaceTranslation,
     PlaceTranslationData,
@@ -70,6 +73,7 @@ class Place:
 
     phones: list[PlacePhone] | None = field(default=None)
     working_days: list[PlaceWorkingDay] | None = field(default=None)
+    photos: list[PlacePhoto] | None = field(default=None)
 
     def is_draft(self) -> bool:
         return self.status == PlaceStatusEnum.DRAFT
@@ -314,4 +318,50 @@ class Place:
         raise PlaceWorkingDayNotFound(
             place_id=self.id,
             weekday=weekday,
+        )
+
+    def add_photo(self, *, file_key: str) -> PlacePhoto:
+        if not self.is_editable():
+            raise PlaceIsNotEditable(place_id=self.id)
+
+        photo = PlacePhoto.create_pending(file_key=file_key)
+
+        self.photos.append(photo)
+        return photo
+
+    def mark_photo_ready(
+        self,
+        *,
+        photo_id: PlacePhotoIdVO,
+        thumbnail_file_key: str | None,
+    ) -> None:
+        if not self.is_editable():
+            raise PlaceIsNotEditable(place_id=self.id)
+
+        photo = self._get_photo(photo_id)
+        photo.mark_ready(thumbnail_file_key=thumbnail_file_key)
+
+    def mark_photo_uploaded(self, *, photo_id: PlacePhotoIdVO) -> None:
+        if not self.is_editable():
+            raise PlaceIsNotEditable(place_id=self.id)
+
+        photo = self._get_photo(photo_id)
+        photo.mark_uploaded()
+
+    def remove_photo(self, *, photo_id: PlacePhotoIdVO) -> None:
+        if not self.is_editable():
+            raise PlaceIsNotEditable(place_id=self.id)
+
+        photo = self._get_photo(photo_id)
+
+        self.photos.remove(photo)
+
+    def _get_photo(self, photo_id: PlacePhotoIdVO) -> PlacePhoto:
+        for photo in self.photos:
+            if photo.id == photo_id:
+                return photo
+
+        raise PlacePhotoNotFound(
+            place_id=self.id,
+            photo_id=photo_id,
         )
