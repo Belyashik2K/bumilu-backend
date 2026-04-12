@@ -198,6 +198,24 @@ class RoutingConfig(BaseModel):
 # ================================
 
 
+# =========== StorageConfig ===========
+
+
+class S3Config(BaseModel):
+    endpoint_url: str
+    bucket_name: str
+    access_key: str
+    secret_key: str
+    region_name: str
+
+
+class StorageConfig(BaseModel):
+    s3: S3Config
+
+
+# ================================
+
+
 # ======== AppConfig ========
 
 
@@ -217,6 +235,7 @@ class AppConfig(BaseSettings):
     cors: CORSConfig
     chat: ChatConfig
     routing: RoutingConfig
+    storage: StorageConfig
 
     @classmethod
     def settings_customise_sources(

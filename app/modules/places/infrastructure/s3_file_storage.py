@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Final
 
 from aiobotocore.session import get_session
@@ -16,20 +18,23 @@ class S3FileStorage(IFileStorage):
     def __init__(
         self,
         *,
+        endpoint: str,
         bucket_name: str,
-        region_name: str,
-        endpoint_url: str,
-        aws_access_key_id: str,
-        aws_secret_access_key: str,
-        aws_session_token: str | None = None,
+        access_key: str,
+        secret_key: str,
+        region: str = "ru-1",
+        use_ssl: bool = True,
         verify_ssl: bool | str = True,
     ) -> None:
         self._bucket_name = bucket_name
-        self._region_name = region_name
-        self._endpoint_url = endpoint_url
-        self._aws_access_key_id = aws_access_key_id
-        self._aws_secret_access_key = aws_secret_access_key
-        self._aws_session_token = aws_session_token
+        self._region_name = region
+        self._endpoint_url = self._normalize_endpoint(
+            endpoint=endpoint,
+            use_ssl=use_ssl,
+        )
+        self._aws_access_key_id = access_key
+        self._aws_secret_access_key = secret_key
+        self._aws_session_token: str | None = None
         self._verify_ssl = verify_ssl
         self._session = get_session()
 
@@ -38,6 +43,20 @@ class S3FileStorage(IFileStorage):
             s3={"addressing_style": "path"},
         )
 
+    @staticmethod
+    def _normalize_endpoint(
+        *,
+        endpoint: str,
+        use_ssl: bool,
+    ) -> str:
+        endpoint = endpoint.strip().rstrip("/")
+
+        if endpoint.startswith("http://") or endpoint.startswith("https://"):
+            return endpoint
+
+        scheme = "https" if use_ssl else "http"
+        return f"{scheme}://{endpoint}"
+
     def _client_kwargs(self) -> dict:
         return {
             "service_name": self._SERVICE_NAME,
@@ -45,7 +64,6 @@ class S3FileStorage(IFileStorage):
             "endpoint_url": self._endpoint_url,
             "aws_access_key_id": self._aws_access_key_id,
             "aws_secret_access_key": self._aws_secret_access_key,
-            "aws_session_token": self._aws_session_token,
             "verify": self._verify_ssl,
             "config": self._config,
         }
@@ -57,7 +75,7 @@ class S3FileStorage(IFileStorage):
         expires_in: int = 3600,
     ) -> str:
         async with self._session.create_client(**self._client_kwargs()) as client:
-            url = await client.generate_presigned_url(
+            return await client.generate_presigned_url(
                 "put_object",
                 Params={
                     "Bucket": self._bucket_name,
@@ -67,7 +85,6 @@ class S3FileStorage(IFileStorage):
                 ExpiresIn=expires_in,
                 HttpMethod="PUT",
             )
-            return url
 
     async def get_object_info(
         self,
