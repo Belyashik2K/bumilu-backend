@@ -63,6 +63,10 @@ routing:
   valhalla:
     base_url: "http://valhalla:8002"
     timeout_sec: 5
+storage:
+  s3:
+    endpoint_url: "https://s3.ru-1.storage.selcloud.ru"
+    region_name: "ru-1"
 server:
   host: "0.0.0.0"
   port: 8000
