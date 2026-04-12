@@ -34,3 +34,15 @@ class PlaceTranslationNotFound(ApplicationNotFoundException):
                 f"'{language_code}' not found."
             )
         )
+
+
+class PlacePhotoFileNotUploaded(ApplicationNotFoundException):
+    def __init__(
+        self,
+        place_id: UUID,
+        photo_id: UUID,
+        file_key: str,
+    ) -> None:
+        super().__init__(
+            message=(f"Photo file for place with id '{place_id}' not uploaded.")
+        )
