@@ -38,6 +38,9 @@ class PlacePhoto:
             thumbnail_file_key=None,
         )
 
+    def is_pending_upload(self) -> bool:
+        return self.status == PlacePhotoStatusEnum.PENDING_UPLOAD
+
     def mark_uploaded(self) -> None:
         self.status = PlacePhotoStatusEnum.UPLOADED
 

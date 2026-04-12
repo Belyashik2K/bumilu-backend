@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import Final
+from typing import (
+    Final,
+)
 
 from aiobotocore.session import get_session
 from botocore.config import Config
@@ -73,9 +75,9 @@ class S3FileStorage(IFileStorage):
         file_key: str,
         content_type: str,
         expires_in: int = 3600,
-    ) -> str:
+    ) -> tuple[str, int]:
         async with self._session.create_client(**self._client_kwargs()) as client:
-            return await client.generate_presigned_url(
+            url = await client.generate_presigned_url(
                 "put_object",
                 Params={
                     "Bucket": self._bucket_name,
@@ -85,6 +87,7 @@ class S3FileStorage(IFileStorage):
                 ExpiresIn=expires_in,
                 HttpMethod="PUT",
             )
+            return url, expires_in
 
     async def get_object_info(
         self,
