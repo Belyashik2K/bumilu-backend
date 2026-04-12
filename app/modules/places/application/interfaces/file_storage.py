@@ -31,3 +31,6 @@ class IFileStorage(ABC):
         *,
         file_key: str,
     ) -> FileObjectInfo | None: ...
+
+    @abstractmethod
+    async def delete_object(self, *, file_key: str) -> None: ...

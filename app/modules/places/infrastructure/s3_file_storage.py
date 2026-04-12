@@ -138,3 +138,10 @@ class S3FileStorage(IFileStorage):
             size=response.get("ContentLength"),
             etag=etag,
         )
+
+    async def delete_object(self, *, file_key: str) -> None:
+        async with self._session.create_client(**self._client_kwargs()) as client:
+            await client.delete_object(
+                Bucket=self._bucket_name,
+                Key=file_key,
+            )
