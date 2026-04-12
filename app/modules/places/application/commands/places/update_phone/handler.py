@@ -11,6 +11,7 @@ from app.modules.places.application.commands.places.update_phone.command import 
 from app.modules.places.application.exceptions.place import PlaceNotFound
 from app.modules.places.application.interfaces.repositories.place import (
     IPlaceRepository,
+    PlaceLoadOptions,
 )
 from app.modules.places.domain.places.value_objects.phone_number.object import (
     PlacePhoneNumberVO,
@@ -28,7 +29,12 @@ class UpdatePlacePhoneCommandHandler(ICommandHandler[UpdatePlacePhoneCommand]):
 
     async def handle(self, command: UpdatePlacePhoneCommand) -> None:
         place_id = PlaceIdVO.from_uuid(command.place_id)
-        place = await self._place_repository.get_by_id_with_phones(place_id)
+        place = await self._place_repository.get_by_id(
+            place_id,
+            options=PlaceLoadOptions(
+                phones=True,
+            ),
+        )
         if place is None:
             raise PlaceNotFound(place_id.value)
 
