@@ -6,7 +6,6 @@ from fastapi import (
     APIRouter,
     Depends,
 )
-from starlette import status
 
 from app.core.presentation.api.schemas.accept_language import (
     AcceptLanguageDep,
@@ -34,9 +33,7 @@ routing_router = APIRouter(
 )
 
 
-@routing_router.post(
-    "/route", responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED)
-)
+@routing_router.post("/route", responses=generate_responses_for_endpoint())
 @inject
 async def build_route_between_points(
     handler: FromDishka[BuildRoutePathBetweenPointsQueryHandler],
