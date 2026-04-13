@@ -34,7 +34,7 @@ routing_router = APIRouter(
 )
 
 
-@routing_router.get(
+@routing_router.post(
     "/route", responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED)
 )
 @inject
