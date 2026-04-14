@@ -171,10 +171,10 @@ from app.modules.places.application.queries.places.admin.get_working_days.query 
 )
 from app.modules.places.application.queries.places.shared.dtos import BBox
 from app.modules.places.presentation.api.schemas.places.card import (
-    AdminPlaceCardSchema,
     PaginatedAdminPlaceCardsResponseSchema,
 )
 from app.modules.places.presentation.api.schemas.places.main import (
+    AdminPlaceSchema,
     ChangePlaceStatusRequestSchema,
     CreatePlaceRequestSchema,
     CreatePlaceResponseSchema,
@@ -299,14 +299,14 @@ async def get_place_details(
     handler: FromDishka[GetAdminPlaceQueryHandler],
     accept_language: AcceptLanguageDep,
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> AdminPlaceCardSchema:
+) -> AdminPlaceSchema:
     result = await handler(
         GetAdminPlaceQuery(
             place_id=place_id,
             language=accept_language.language,
         )
     )
-    return AdminPlaceCardSchema.model_validate(result, from_attributes=True)
+    return AdminPlaceSchema.model_validate(result, from_attributes=True)
 
 
 @admin_places_router.patch(

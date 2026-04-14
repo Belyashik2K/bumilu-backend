@@ -1,11 +1,17 @@
+from datetime import datetime
+
 from pydantic import (
     UUID7,
     BaseModel,
     Field,
 )
 
+from app.modules.places.presentation.api.schemas.categories.category import (
+    PlaceCategorySchema,
+)
 from app.modules.places.presentation.api.schemas.categories.examples import SLUG_EXAMPLE
 from app.modules.places.presentation.api.schemas.places.address import (
+    AdminPlaceAddressSchema,
     PlaceAddressSchema,
 )
 from app.modules.places.presentation.api.schemas.places.category import (
@@ -35,12 +41,28 @@ from app.modules.places.presentation.api.schemas.places.working_day import (
 from app.modules.places.shared.enums.place_status import PlaceStatusEnum
 
 
-class PlaceSchema(BaseModel):
+class BasePlaceDetailsSchema(BaseModel):
     id: UUID7 = Field(
         ...,
         description="Unique identifier of the place",
         examples=[UUID_EXAMPLE],
     )
+    timezone: str = Field(
+        ...,
+        description="Timezone of the place",
+        examples=[TIMEZONE_EXAMPLE],
+    )
+    location: PlaceLocationSchema = Field(
+        ...,
+        description="Location of the place",
+    )
+    rating: PlaceRatingSchema = Field(
+        ...,
+        description="Rating of the place",
+    )
+
+
+class PlaceSchema(BasePlaceDetailsSchema):
     title: str = Field(
         ...,
         description="Title of the place",
@@ -56,11 +78,6 @@ class PlaceSchema(BaseModel):
         description="Short description of the place",
         examples=[SHORT_DESCRIPTION_EXAMPLE],
     )
-    timezone: str = Field(
-        ...,
-        description="Timezone of the place",
-        examples=[TIMEZONE_EXAMPLE],
-    )
     category: PlaceCardCategorySchema = Field(
         ...,
         description="Category of the place",
@@ -73,14 +90,6 @@ class PlaceSchema(BaseModel):
         ...,
         description="Address of the place",
     )
-    rating: PlaceRatingSchema = Field(
-        ...,
-        description="Rating of the place",
-    )
-    location: PlaceLocationSchema = Field(
-        ...,
-        description="Location of the place",
-    )
     phones: list[PlacePhoneSchema] = Field(
         default_factory=list,
         description="List of place phones",
@@ -92,6 +101,35 @@ class PlaceSchema(BaseModel):
     user_context: PlaceUserContextSchema = Field(
         ...,
         description="User-specific context for the place, such as whether it's in the user's favorites.",
+    )
+
+
+class AdminPlaceSchema(BasePlaceDetailsSchema):
+    title: str | None = Field(
+        None,
+        description="Title of the place if available.",
+        examples=[TITLE_EXAMPLE],
+    )
+    address: AdminPlaceAddressSchema = Field(
+        ...,
+        description="Address of the place.",
+    )
+    category: PlaceCategorySchema = Field(
+        ...,
+        description="Category of the place",
+    )
+    status: PlaceStatusEnum = Field(
+        ...,
+        description="Status of the place.",
+        examples=[PlaceStatusEnum.PUBLISHED],
+    )
+    created_at: datetime = Field(
+        ...,
+        description="Creation timestamp of the place.",
+    )
+    updated_at: datetime = Field(
+        ...,
+        description="Last update timestamp of the place.",
     )
 
 
