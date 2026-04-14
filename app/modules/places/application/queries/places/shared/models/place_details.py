@@ -2,12 +2,15 @@ from dataclasses import (
     dataclass,
     field,
 )
+from datetime import datetime
 from uuid import UUID
 
 from app.modules.places.application.queries.categories.shared.models.place_category import (
     LocalizedPlaceCategoryReadModel,
+    PlaceCategoryReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_address import (
+    BasePlaceAddressReadModel,
     PlaceAddressReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_location import (
@@ -28,20 +31,34 @@ from app.modules.places.application.queries.places.shared.models.place_user_cont
 from app.modules.places.application.queries.places.shared.models.place_working_day import (
     PlaceWorkingDayReadModel,
 )
+from app.modules.places.shared.enums.place_status import PlaceStatusEnum
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class PlaceDetailsReadModel:
+class BasePlaceDetailsReadModel:
     id: UUID
+    timezone: str
+    category: PlaceCategoryReadModel
+    address: BasePlaceAddressReadModel
+    location: PlaceLocationReadModel
+    rating: PlaceRatingReadModel
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class PlaceDetailsReadModel(BasePlaceDetailsReadModel):
     title: str
     description: str | None = field(default=None)
     short_description: str | None = field(default=None)
-    timezone: str
     category: LocalizedPlaceCategoryReadModel
     photos: list[PlacePhotoReadModel]
     address: PlaceAddressReadModel
-    location: PlaceLocationReadModel
-    rating: PlaceRatingReadModel
     phones: list[PlacePhoneReadModel] = field(default_factory=list)
     working_days: list[PlaceWorkingDayReadModel] = field(default_factory=list)
     user_context: PlaceUserContextReadModel
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class AdminPlaceDetailsReadModel(PlaceDetailsReadModel):
+    status: PlaceStatusEnum
+    created_at: datetime
+    updated_at: datetime

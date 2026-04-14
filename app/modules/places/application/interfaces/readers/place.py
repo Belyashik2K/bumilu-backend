@@ -10,6 +10,7 @@ from app.modules.places.application.queries.places.shared.models.place_card impo
     PlaceCardReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_details import (
+    AdminPlaceDetailsReadModel,
     PlaceDetailsReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_map_poi import (
@@ -42,6 +43,12 @@ class IPlaceReader(ABC):
         place_id: UUID,
         translation_language: LanguageEnum,
     ) -> PlaceDetailsReadModel | None: ...
+
+    @abstractmethod
+    async def get_admin_details_by_id(
+        self,
+        place_id: UUID,
+    ) -> AdminPlaceDetailsReadModel | None: ...
 
     @abstractmethod
     async def get_cards_by_ids(

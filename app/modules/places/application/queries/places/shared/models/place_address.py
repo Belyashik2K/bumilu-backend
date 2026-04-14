@@ -5,7 +5,11 @@ from dataclasses import (
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class PlaceAddressReadModel:
-    display: str
+class BasePlaceAddressReadModel:
     taxi: str | None = field(default=None)
     taxi_comment: str | None = field(default=None)
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class PlaceAddressReadModel(BasePlaceAddressReadModel):
+    display: str
