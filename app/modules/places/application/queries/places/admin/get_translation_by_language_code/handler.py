@@ -1,4 +1,5 @@
 from app.core.application.queries import IQueryHandler
+from app.modules.places.application.exceptions.place import PlaceTranslationNotFound
 from app.modules.places.application.interfaces.readers.place_translation import (
     IPlaceTranslationReader,
 )
@@ -13,7 +14,7 @@ from app.modules.places.application.queries.places.shared.models.place_translati
 class GetAdminPlaceTranslationByLanguageCodeQueryHandler(
     IQueryHandler[
         GetAdminPlaceTranslationByLanguageCodeQuery,
-        PlaceTranslationReadModel | None,
+        PlaceTranslationReadModel,
     ]
 ):
     def __init__(
@@ -24,7 +25,15 @@ class GetAdminPlaceTranslationByLanguageCodeQueryHandler(
 
     async def handle(
         self, query: GetAdminPlaceTranslationByLanguageCodeQuery
-    ) -> PlaceTranslationReadModel | None:
-        return await self._place_translation_reader.get_by_place_id_and_language_code(
-            place_id=query.place_id, language_code=query.language_code
+    ) -> PlaceTranslationReadModel:
+        place_translation = (
+            await self._place_translation_reader.get_by_place_id_and_language_code(
+                place_id=query.place_id, language_code=query.language_code
+            )
         )
+        if place_translation is None:
+            raise PlaceTranslationNotFound(
+                place_id=query.place_id, language_code=query.language_code
+            )
+
+        return place_translation
