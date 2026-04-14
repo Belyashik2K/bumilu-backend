@@ -415,7 +415,7 @@ async def make_place_phone_primary(
 
 
 @admin_places_router.put(
-    "/{place_id}/working-hours/{weekday}",
+    "/{place_id}/working-days/{weekday}",
     status_code=status.HTTP_204_NO_CONTENT,
     responses=generate_responses_for_endpoint(
         status.HTTP_404_NOT_FOUND,
