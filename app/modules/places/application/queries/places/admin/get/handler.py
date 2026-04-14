@@ -17,7 +17,8 @@ class GetAdminPlaceQueryHandler(
 
     async def handle(self, query: GetAdminPlaceQuery) -> AdminPlaceDetailsReadModel:
         place = await self._place_reader.get_admin_details_by_id(
-            place_id=query.place_id
+            place_id=query.place_id,
+            optional_translation_language=query.language,
         )
         if place is None:
             raise PlaceNotFound(place_id=query.place_id)

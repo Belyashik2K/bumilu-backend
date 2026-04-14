@@ -82,7 +82,7 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
     async def get_admin_by_id(
         self,
         category_id: UUID,
-        optional_translation_language: LanguageEnum | None = None,
+        optional_translation_language: LanguageEnum,
     ) -> AdminPlaceCategoryReadModel | None:
         stmt = self._apply_filters(
             (select(PlaceCategoryModel).where(PlaceCategoryModel.id == category_id)),
@@ -139,7 +139,7 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
         self,
         limit: int,
         offset: int,
-        optional_translation_language: LanguageEnum | None = None,
+        optional_translation_language: LanguageEnum,
         status: PlaceCategoryStatusEnum | None = None,
     ) -> PageReadModel[AdminPlaceCategoryReadModel]:
         count_stmt = self._apply_filters(

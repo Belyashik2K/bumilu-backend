@@ -29,7 +29,7 @@ class GetAdminPlaceCategoryQueryHandler(
         self, query: GetAdminPlaceCategoryQuery
     ) -> AdminPlaceCategoryReadModel:
         category = await self._place_category_reader.get_admin_by_id(
-            category_id=query.category_id
+            optional_translation_language=query.language, category_id=query.category_id
         )
         if category is None:
             raise PlaceCategoryNotFound(category_id=query.category_id)

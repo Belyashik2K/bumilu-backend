@@ -60,6 +60,7 @@ class PlaceDetailsReadModel(BasePlaceDetailsReadModel):
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class AdminPlaceDetailsReadModel(BasePlaceDetailsReadModel):
+    title: str | None = field(default=None)
     address: AdminPlaceAddressReadModel
     status: PlaceStatusEnum
     created_at: datetime

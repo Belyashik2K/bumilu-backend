@@ -23,7 +23,7 @@ class IPlaceCategoryReader(ABC):
     async def get_admin_by_id(
         self,
         category_id: UUID,
-        optional_translation_language: LanguageEnum | None = None,
+        optional_translation_language: LanguageEnum,
     ) -> AdminPlaceCategoryReadModel | None: ...
 
     @abstractmethod
@@ -40,6 +40,6 @@ class IPlaceCategoryReader(ABC):
         self,
         limit: int,
         offset: int,
-        optional_translation_language: LanguageEnum | None = None,
+        optional_translation_language: LanguageEnum,
         status: PlaceCategoryStatusEnum | None = None,
     ) -> PageReadModel[AdminPlaceCategoryReadModel]: ...
