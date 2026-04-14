@@ -21,6 +21,7 @@ class GetAdminPlacesListQueryHandler(
             category_slug=query.category_slug,
             limit=query.limit,
             offset=query.offset,
+            optional_translation_language=query.language,
         )
         return PaginatedAdminPlacesView(
             data=places.items,

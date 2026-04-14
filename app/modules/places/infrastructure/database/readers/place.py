@@ -2,12 +2,14 @@ from uuid import UUID
 
 from sqlalchemy import (
     Float,
+    and_,
     func,
     select,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import (
     contains_eager,
+    joinedload,
     selectinload,
 )
 
@@ -19,21 +21,39 @@ from app.modules.places.application.interfaces.readers.place import (
 )
 from app.modules.places.application.queries.places.shared.dtos import BBox
 from app.modules.places.application.queries.places.shared.mappers import (
+    PlaceMapPOIMapper,
+    PlacePhoneMapper,
+    PlacePhotoMapper,
     PlaceReadModelMapper,
+    PlaceWorkingDayMapper,
 )
 from app.modules.places.application.queries.places.shared.models.place_card import (
+    AdminPlaceCardReadModel,
     PlaceCardReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_details import (
+    AdminPlaceDetailsReadModel,
     PlaceDetailsReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_map_poi import (
+    AdminPlaceMapPOIReadModel,
     PlaceMapPOIReadModel,
+)
+from app.modules.places.application.queries.places.shared.models.place_phone import (
+    AdminPlacePhoneReadModel,
+)
+from app.modules.places.application.queries.places.shared.models.place_photo import (
+    AdminPlacePhotoReadModel,
+)
+from app.modules.places.application.queries.places.shared.models.place_working_day import (
+    PlaceWorkingDayReadModel,
 )
 from app.modules.places.infrastructure.database.models import (
     PlaceCategoryModel,
     PlaceCategoryTranslationModel,
     PlaceModel,
+    PlacePhoneModel,
+    PlacePhotoModel,
     PlaceTranslationModel,
     PlaceWorkingDayModel,
 )
@@ -120,6 +140,32 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         if place is None:
             return None
         return PlaceReadModelMapper.map_details(place=place, is_favorite=is_favorite)
+
+    async def get_admin_details_by_id(
+        self,
+        place_id: UUID,
+        optional_translation_language: LanguageEnum | None = None,
+    ) -> AdminPlaceDetailsReadModel | None:
+        stmt = (
+            (select(PlaceModel))
+            .outerjoin(
+                PlaceModel.translations.and_(
+                    PlaceTranslationModel.language_code == optional_translation_language
+                )
+            )
+            .options(
+                joinedload(PlaceModel.category), contains_eager(PlaceModel.translations)
+            )
+            .where(
+                PlaceModel.id == place_id,
+            )
+        )
+
+        result = await self._session.execute(stmt)
+        row = result.unique().one_or_none()
+        if not row:
+            return None
+        return PlaceReadModelMapper.map_admin_details(place=row.PlaceModel)
 
     async def get_cards_by_ids(
         self,
@@ -284,6 +330,96 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             total=total,
         )
 
+    async def admin_get_all(
+        self,
+        *,
+        title_like: str | None,
+        category_slug: str | None,
+        optional_translation_language: LanguageEnum | None,
+        limit: int,
+        offset: int,
+    ) -> PageReadModel[AdminPlaceCardReadModel]:
+        base_filters = []
+
+        if title_like:
+            base_filters.append(
+                PlaceModel.translations.any(
+                    PlaceTranslationModel.title.ilike(f"%{title_like}%")
+                )
+            )
+
+        if category_slug:
+            base_filters.append(PlaceCategoryModel.slug == category_slug)
+
+        reviews_subq = (
+            select(
+                ReviewModel.entity_id.label("place_id"),
+                func.avg(ReviewModel.rating).cast(Float).label("rating_average"),
+                func.count(ReviewModel.id).label("reviews_count"),
+            )
+            .where(ReviewModel.entity_type == ReviewEntityTypeEnum.PLACE)
+            .group_by(ReviewModel.entity_id)
+            .subquery()
+        )
+
+        items_stmt = (
+            select(
+                PlaceModel,
+                PlaceTranslationModel,
+                reviews_subq.c.rating_average,
+                func.coalesce(reviews_subq.c.reviews_count, 0).label("reviews_count"),
+            )
+            .join(PlaceModel.category)
+            .outerjoin(
+                PlaceTranslationModel,
+                and_(
+                    PlaceTranslationModel.place_id == PlaceModel.id,
+                    PlaceTranslationModel.language_code
+                    == optional_translation_language,
+                ),
+            )
+            .outerjoin(reviews_subq, reviews_subq.c.place_id == PlaceModel.id)
+            .where(*base_filters)
+            .options(contains_eager(PlaceModel.category))
+        )
+
+        count_stmt = (
+            select(func.count(func.distinct(PlaceModel.id)))
+            .select_from(PlaceModel)
+            .join(PlaceModel.category)
+            .where(*base_filters)
+        )
+
+        total_subquery = count_stmt.scalar_subquery()
+
+        stmt = (
+            items_stmt.add_columns(total_subquery.label("total_count"))
+            .limit(limit)
+            .offset(offset)
+        )
+
+        result = await self._session.execute(stmt)
+        rows = result.unique().all()
+
+        if not rows:
+            total = await self._session.scalar(count_stmt)
+            return PageReadModel(items=[], total=total or 0)
+
+        total = rows[0].total_count or 0
+
+        return PageReadModel(
+            items=[
+                PlaceReadModelMapper.map_admin_card(
+                    place=place,
+                    translation=translation,
+                    rating_average=rating_average,
+                    reviews_count=reviews_count,
+                )
+                for place, translation, rating_average, reviews_count, _ in rows
+            ],
+            total=total,
+        )
+
     async def list_poi_in_bounds(
         self,
         *,
@@ -325,4 +461,112 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         result = await self._session.execute(stmt)
         rows = result.unique().all()
 
-        return [PlaceReadModelMapper.map_poi(place=row.PlaceModel) for row in rows]
+        return [PlaceMapPOIMapper.map(place=row.PlaceModel) for row in rows]
+
+    async def list_admin_poi_in_bounds(
+        self,
+        *,
+        bounds: BBox,
+        optional_translation_language: LanguageEnum,
+        limit: int,
+    ) -> list[AdminPlaceMapPOIReadModel]:
+        bbox = func.ST_MakeEnvelope(
+            bounds.west,
+            bounds.south,
+            bounds.east,
+            bounds.north,
+            4326,
+        )
+
+        stmt = (
+            select(PlaceModel, PlaceTranslationModel)
+            .outerjoin(
+                PlaceTranslationModel,
+                and_(
+                    PlaceTranslationModel.place_id == PlaceModel.id,
+                    PlaceTranslationModel.language_code
+                    == optional_translation_language,
+                ),
+            )
+            .options(
+                joinedload(PlaceModel.category),
+            )
+            .where(
+                PlaceModel.location.op("&&")(bbox),
+                func.ST_Intersects(PlaceModel.location, bbox),
+            )
+            .limit(limit)
+        )
+
+        result = await self._session.execute(stmt)
+        rows = result.unique().all()
+
+        return [
+            PlaceMapPOIMapper.map_admin(
+                place=place,
+                translation=translation,
+            )
+            for place, translation in rows
+        ]
+
+    async def get_admin_photos_by_id(
+        self,
+        place_id: UUID,
+    ) -> list[AdminPlacePhotoReadModel]:
+        stmt = select(PlacePhotoModel).where(PlacePhotoModel.place_id == place_id)
+
+        result = await self._session.execute(stmt)
+        photos = result.scalars().all()
+
+        return [PlacePhotoMapper.map_admin(photo=photo) for photo in photos]
+
+    async def get_admin_phones_by_id(
+        self,
+        place_id: UUID,
+    ) -> list[AdminPlacePhoneReadModel]:
+        stmt = select(PlacePhoneModel).where(PlacePhoneModel.place_id == place_id)
+
+        result = await self._session.execute(stmt)
+        phones = result.scalars().all()
+
+        return [PlacePhoneMapper.map_admin(phone=phone) for phone in phones]
+
+    async def get_working_days_by_id(
+        self,
+        place_id: UUID,
+    ) -> list[PlaceWorkingDayReadModel]:
+        stmt = (
+            select(PlaceWorkingDayModel)
+            .where(PlaceWorkingDayModel.place_id == place_id)
+            .options(selectinload(PlaceWorkingDayModel.working_hours))
+        )
+
+        result = await self._session.execute(stmt)
+        working_days = result.scalars().all()
+
+        return [
+            PlaceWorkingDayMapper.map(working_day=working_day)
+            for working_day in working_days
+        ]
+
+    async def get_working_day_by_weekday(
+        self,
+        place_id: UUID,
+        weekday: int,
+    ) -> PlaceWorkingDayReadModel | None:
+        stmt = (
+            select(PlaceWorkingDayModel)
+            .where(
+                PlaceWorkingDayModel.place_id == place_id,
+                PlaceWorkingDayModel.weekday == weekday,
+            )
+            .options(selectinload(PlaceWorkingDayModel.working_hours))
+        )
+
+        result = await self._session.execute(stmt)
+        working_day = result.scalar_one_or_none()
+
+        if not working_day:
+            return None
+
+        return PlaceWorkingDayMapper.map(working_day=working_day)

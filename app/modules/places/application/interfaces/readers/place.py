@@ -50,6 +50,7 @@ class IPlaceReader(ABC):
     async def get_admin_details_by_id(
         self,
         place_id: UUID,
+        optional_translation_language: LanguageEnum | None = None,
     ) -> AdminPlaceDetailsReadModel | None: ...
 
     @abstractmethod
@@ -76,6 +77,7 @@ class IPlaceReader(ABC):
         *,
         title_like: str | None,
         category_slug: str | None,
+        optional_translation_language: LanguageEnum | None,
         limit: int,
         offset: int,
     ) -> PageReadModel[AdminPlaceCardReadModel]: ...
@@ -94,7 +96,7 @@ class IPlaceReader(ABC):
         self,
         *,
         bounds: BBox,
-        translation_language: LanguageEnum,
+        optional_translation_language: LanguageEnum | None,
         limit: int,
     ) -> list[AdminPlaceMapPOIReadModel]: ...
 
