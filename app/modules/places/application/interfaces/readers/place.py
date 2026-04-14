@@ -15,8 +15,11 @@ from app.modules.places.application.queries.places.shared.models.place_details i
 from app.modules.places.application.queries.places.shared.models.place_map_poi import (
     PlaceMapPOIReadModel,
 )
+from app.modules.places.application.queries.places.shared.models.place_phone import (
+    AdminPlacePhoneReadModel,
+)
 from app.modules.places.application.queries.places.shared.models.place_photo import (
-    PlacePhotoReadModel,
+    AdminPlacePhotoReadModel,
 )
 from app.modules.places.application.queries.places.user.get_map_poi.query import BBox
 
@@ -65,7 +68,13 @@ class IPlaceReader(ABC):
     ) -> list[PlaceMapPOIReadModel]: ...
 
     @abstractmethod
-    async def get_photos_by_id(
+    async def get_admin_photos_by_id(
         self,
         place_id: UUID,
-    ) -> list[PlacePhotoReadModel]: ...
+    ) -> list[AdminPlacePhotoReadModel]: ...
+
+    @abstractmethod
+    async def get_admin_phones_by_id(
+        self,
+        place_id: UUID,
+    ) -> list[AdminPlacePhoneReadModel]: ...
