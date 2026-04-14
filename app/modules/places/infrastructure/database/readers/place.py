@@ -17,6 +17,7 @@ from app.modules.favourites.infrastructure.database.models import PlaceFavourite
 from app.modules.places.application.interfaces.readers.place import (
     IPlaceReader,
 )
+from app.modules.places.application.queries.places.shared.dtos import BBox
 from app.modules.places.application.queries.places.shared.mappers import (
     PlaceReadModelMapper,
 )
@@ -29,7 +30,6 @@ from app.modules.places.application.queries.places.shared.models.place_details i
 from app.modules.places.application.queries.places.shared.models.place_map_poi import (
     PlaceMapPOIReadModel,
 )
-from app.modules.places.application.queries.places.user.get_map_poi.query import BBox
 from app.modules.places.infrastructure.database.models import (
     PlaceCategoryModel,
     PlaceCategoryTranslationModel,

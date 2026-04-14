@@ -6,6 +6,7 @@ from uuid import UUID
 
 from app.core.application.queries.pagination import PageReadModel
 from app.core.enums import LanguageEnum
+from app.modules.places.application.queries.places.shared.dtos import BBox
 from app.modules.places.application.queries.places.shared.models.place_card import (
     AdminPlaceCardReadModel,
     PlaceCardReadModel,
@@ -15,6 +16,7 @@ from app.modules.places.application.queries.places.shared.models.place_details i
     PlaceDetailsReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_map_poi import (
+    AdminPlaceMapPOIReadModel,
     PlaceMapPOIReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_phone import (
@@ -26,7 +28,6 @@ from app.modules.places.application.queries.places.shared.models.place_photo imp
 from app.modules.places.application.queries.places.shared.models.place_working_day import (
     PlaceWorkingDayReadModel,
 )
-from app.modules.places.application.queries.places.user.get_map_poi.query import BBox
 
 
 class IPlaceReader(ABC):
@@ -87,6 +88,15 @@ class IPlaceReader(ABC):
         translation_language: LanguageEnum,
         limit: int,
     ) -> list[PlaceMapPOIReadModel]: ...
+
+    @abstractmethod
+    async def list_admin_poi_in_bounds(
+        self,
+        *,
+        bounds: BBox,
+        translation_language: LanguageEnum,
+        limit: int,
+    ) -> list[AdminPlaceMapPOIReadModel]: ...
 
     @abstractmethod
     async def get_admin_photos_by_id(

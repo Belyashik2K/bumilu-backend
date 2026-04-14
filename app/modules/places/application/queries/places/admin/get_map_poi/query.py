@@ -8,6 +8,6 @@ from app.modules.places.application.queries.places.shared.dtos import BBox
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetPlacesMapPOIQuery(LanguageMixin):
+class GetAdminPlacesMapPOIQuery(LanguageMixin):
     bounds: BBox
     limit: int = field(default=100)

@@ -18,6 +18,7 @@ from app.core.presentation.endpoint_responses import generate_responses_for_endp
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
 from app.modules.auth.shared.context import Principal
+from app.modules.places.application.queries.places.shared.dtos import BBox
 from app.modules.places.application.queries.places.user.get.handler import (
     GetPlaceQueryHandler,
 )
@@ -30,7 +31,6 @@ from app.modules.places.application.queries.places.user.get_map_poi.handler impo
     GetPlacesMapPOIQueryHandler,
 )
 from app.modules.places.application.queries.places.user.get_map_poi.query import (
-    BBox,
     GetPlacesMapPOIQuery,
 )
 from app.modules.places.presentation.api.schemas.places.main import (
