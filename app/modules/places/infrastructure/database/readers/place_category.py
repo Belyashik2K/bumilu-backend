@@ -79,6 +79,15 @@ class SQLAlchemyPlaceCategoryReader(IPlaceCategoryReader):
         result = await self._session.execute(stmt)
         return result.scalar_one() > 0
 
+    async def exists_by_id(self, category_id: UUID) -> bool:
+        stmt = (
+            select(func.count())
+            .select_from(PlaceCategoryModel)
+            .where(PlaceCategoryModel.id == category_id)
+        )
+        result = await self._session.execute(stmt)
+        return result.scalar_one() > 0
+
     async def get_admin_by_id(
         self,
         category_id: UUID,
