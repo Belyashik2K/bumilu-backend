@@ -60,6 +60,7 @@ from app.modules.places.infrastructure.database.models import (
     PlaceTranslationModel,
     PlaceWorkingDayModel,
 )
+from app.modules.places.shared.enums.place_photo_status import PlacePhotoStatusEnum
 from app.modules.places.shared.enums.place_status import PlaceStatusEnum
 from app.modules.reviews.infrastructure.database.models import ReviewModel
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
@@ -592,7 +593,12 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         self,
         place_id: UUID,
     ) -> list[AdminPlacePhotoReadModel]:
-        stmt = select(PlacePhotoModel).where(PlacePhotoModel.place_id == place_id)
+        stmt = select(PlacePhotoModel).where(
+            PlacePhotoModel.place_id == place_id,
+            PlacePhotoModel.status.in_(
+                [PlacePhotoStatusEnum.READY, PlacePhotoStatusEnum.UPLOADED]
+            ),
+        )
 
         result = await self._session.execute(stmt)
         photos = result.scalars().all()

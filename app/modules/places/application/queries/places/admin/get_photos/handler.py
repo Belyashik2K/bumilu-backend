@@ -1,4 +1,5 @@
 from app.core.application.queries import IQueryHandler
+from app.core.application.queries.pagination import DataListView
 from app.modules.places.application.interfaces.file_storage_url_builder import (
     IFileStorageURLBuilder,
 )
@@ -12,7 +13,7 @@ from app.modules.places.application.queries.places.admin.get_photos.view import 
 
 
 class GetAdminPlacePhotosQueryHandler(
-    IQueryHandler[GetAdminPlacePhotosQuery, list[AdminPlacePhotoView]]
+    IQueryHandler[GetAdminPlacePhotosQuery, DataListView[AdminPlacePhotoView]]
 ):
     def __init__(
         self, place_reader: IPlaceReader, storage_url_builder: IFileStorageURLBuilder
@@ -22,7 +23,7 @@ class GetAdminPlacePhotosQueryHandler(
 
     async def handle(
         self, query: GetAdminPlacePhotosQuery
-    ) -> list[AdminPlacePhotoView]:
+    ) -> DataListView[AdminPlacePhotoView]:
         photos = await self._place_reader.get_admin_photos_by_id(
             place_id=query.place_id
         )
@@ -30,9 +31,11 @@ class GetAdminPlacePhotosQueryHandler(
         # TODO: add more metadata to photos (e.g. is_main, order, etc.)
         # TODO: think about photos in statuses like "hidden", "deleted", etc.
 
-        return [
-            AdminPlacePhotoView.from_read_model(
-                photo, storage_url_builder=self._storage_url_builder
-            )
-            for photo in photos
-        ]
+        return DataListView.create(
+            [
+                AdminPlacePhotoView.from_read_model(
+                    photo, storage_url_builder=self._storage_url_builder
+                )
+                for photo in photos
+            ]
+        )

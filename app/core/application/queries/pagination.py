@@ -43,3 +43,23 @@ class OffsetPagination:
             next_offset=next_offset,
             prev_offset=prev_offset,
         )
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class DataListView(Generic[T]):
+    data: list[T]
+
+    @classmethod
+    def create(cls, items: list[T]) -> Self:
+        return cls(data=items)
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class PaginatedView(Generic[T]):
+    data: list[T]
+    pagination: OffsetPagination
+
+    @classmethod
+    def create(cls, items: list[T], limit: int, offset: int, total: int) -> Self:
+        pagination = OffsetPagination.create(limit=limit, offset=offset, total=total)
+        return cls(data=items, pagination=pagination)

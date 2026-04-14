@@ -11,6 +11,10 @@ from fastapi import (
 from pydantic import UUID7
 from starlette import status
 
+from app.core.application.queries.pagination import (
+    DataListView,
+    PaginatedView,
+)
 from app.core.constants import UNSET
 from app.core.enums import LanguageEnum
 from app.core.presentation.api.schemas.accept_language import (
@@ -127,9 +131,6 @@ from app.modules.places.application.queries.places.admin.get_all.handler import 
 from app.modules.places.application.queries.places.admin.get_all.query import (
     GetAdminPlacesListQuery,
 )
-from app.modules.places.application.queries.places.admin.get_all.view import (
-    PaginatedAdminPlacesView,
-)
 from app.modules.places.application.queries.places.admin.get_map_poi.handler import (
     GetAdminPlacesMapPOIQueryHandler,
 )
@@ -163,9 +164,6 @@ from app.modules.places.application.queries.places.admin.get_translations.handle
 from app.modules.places.application.queries.places.admin.get_translations.query import (
     GetAdminPlaceTranslationsQuery,
 )
-from app.modules.places.application.queries.places.admin.get_translations.view import (
-    PaginatedAdminPlaceTranslationsView,
-)
 from app.modules.places.application.queries.places.admin.get_working_day_by_weekday.handler import (
     GetAdminPlaceWorkingDayByWeekdayQueryHandler,
 )
@@ -179,11 +177,17 @@ from app.modules.places.application.queries.places.admin.get_working_days.query 
     GetAdminPlaceWorkingDaysQuery,
 )
 from app.modules.places.application.queries.places.shared.dtos import BBox
+from app.modules.places.application.queries.places.shared.models.place_card import (
+    AdminPlaceCardReadModel,
+)
 from app.modules.places.application.queries.places.shared.models.place_details import (
     AdminPlaceDetailsReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_map_poi import (
     AdminPlaceMapPOIReadModel,
+)
+from app.modules.places.application.queries.places.shared.models.place_phone import (
+    AdminPlacePhoneReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_translation import (
     PlaceTranslationReadModel,
@@ -230,7 +234,7 @@ async def list_places_map_pois(
     principal: Annotated[Principal, Depends(get_staff_principal)],
     bound: BBoxDep,
     accept_language: AcceptLanguageDep,
-) -> list[AdminPlaceMapPOIReadModel]:
+) -> DataListView[AdminPlaceMapPOIReadModel]:
     result = await handler(
         GetAdminPlacesMapPOIQuery(
             bounds=BBox(
@@ -257,7 +261,7 @@ async def list_places(
     pagination: OffsetPaginationDep,
     title_like: str | None = None,
     category_slug: str | None = None,
-) -> PaginatedAdminPlacesView:
+) -> PaginatedView[AdminPlaceCardReadModel]:
     result = await handler(
         GetAdminPlacesListQuery(
             title_like=title_like,
@@ -397,7 +401,7 @@ async def list_place_translations(
     place_id: UUID7,
     handler: FromDishka[GetAdminPlaceTranslationsQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> PaginatedAdminPlaceTranslationsView:
+) -> PaginatedView[PlaceTranslationReadModel]:
     result = await handler(
         GetAdminPlaceTranslationsQuery(
             place_id=place_id,
@@ -522,15 +526,13 @@ async def list_place_phones(
     place_id: UUID7,
     handler: FromDishka[GetAdminPlacePhonesQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> list[PlacePhoneSchema]:
+) -> DataListView[AdminPlacePhoneReadModel]:
     result = await handler(
         GetAdminPlacePhonesQuery(
             place_id=place_id,
         )
     )
-    return [
-        PlacePhoneSchema.model_validate(phone, from_attributes=True) for phone in result
-    ]
+    return result
 
 
 @admin_places_router.post(
@@ -642,7 +644,7 @@ async def get_place_working_days(
     place_id: UUID7,
     handler: FromDishka[GetAdminPlaceWorkingDaysQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> list[PlaceWorkingDayReadModel]:
+) -> DataListView[PlaceWorkingDayReadModel]:
     result = await handler(
         GetAdminPlaceWorkingDaysQuery(
             place_id=place_id,
@@ -713,7 +715,7 @@ async def list_place_photos(
     place_id: UUID7,
     handler: FromDishka[GetAdminPlacePhotosQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> list[AdminPlacePhotoView]:
+) -> DataListView[AdminPlacePhotoView]:
     result = await handler(
         GetAdminPlacePhotosQuery(
             place_id=place_id,
