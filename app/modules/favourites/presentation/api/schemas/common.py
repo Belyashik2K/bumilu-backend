@@ -10,7 +10,7 @@ from app.modules.favourites.shared.enums import (
     FavouriteEntityPathEnum,
     FavouriteEntityTypeEnum,
 )
-from app.modules.places.presentation.api.schemas.places.main import PlaceCardSchema
+from app.modules.places.presentation.api.schemas.places.card import PlaceCardSchema
 from app.modules.users.presentation.api.schemas.common import USER_ID_EXAMPLE
 
 ENTITY_ID_EXAMPLE = (

@@ -4,6 +4,7 @@ from pydantic import (
 )
 
 from app.core.enums import LanguageEnum
+from app.core.presentation.api.schemas.pagination import make_paginated_response_schema
 from app.modules.places.presentation.api.schemas.places.examples import (
     DESCRIPTION_EXAMPLE,
     DISPLAY_ADDRESS_EXAMPLE,
@@ -13,7 +14,7 @@ from app.modules.places.presentation.api.schemas.places.examples import (
 )
 
 
-class CreatePlaceTranslationRequestSchema(BaseModel):
+class BasePlaceTranslationSchema(BaseModel):
     language_code: LanguageEnum = Field(
         ...,
         description="Language code for the translation",
@@ -41,6 +42,9 @@ class CreatePlaceTranslationRequestSchema(BaseModel):
     )
 
 
+class CreatePlaceTranslationRequestSchema(BasePlaceTranslationSchema): ...
+
+
 class UpdatePlaceTranslationRequestSchema(BaseModel):
     title: str | None = Field(
         None,
@@ -62,3 +66,9 @@ class UpdatePlaceTranslationRequestSchema(BaseModel):
         description="Display address of the place in the specified language",
         examples=[DISPLAY_ADDRESS_EXAMPLE],
     )
+
+
+PaginatedPlaceTranslationListResponseSchema = make_paginated_response_schema(
+    item_type=BasePlaceTranslationSchema,
+    description="Paginated response schema for a list of place translations",
+)

@@ -4,14 +4,12 @@ from pydantic import (
     Field,
 )
 
-from app.core.presentation.api.schemas.pagination import OffsetPaginationSchema
 from app.modules.places.presentation.api.schemas.categories.examples import SLUG_EXAMPLE
 from app.modules.places.presentation.api.schemas.places.address import (
     PlaceAddressSchema,
 )
 from app.modules.places.presentation.api.schemas.places.category import (
     PlaceCardCategorySchema,
-    PlaceMapPOICategorySchema,
 )
 from app.modules.places.presentation.api.schemas.places.examples import (
     DESCRIPTION_EXAMPLE,
@@ -37,88 +35,6 @@ from app.modules.places.presentation.api.schemas.places.working_day import (
 from app.modules.places.shared.enums.place_status import PlaceStatusEnum
 
 
-class PlaceMapPOISchema(BaseModel):
-    id: UUID7 = Field(
-        ...,
-        description="Unique identifier of the place",
-        examples=[UUID_EXAMPLE],
-    )
-    title: str = Field(
-        ...,
-        description="Title of the place",
-        examples=[TITLE_EXAMPLE],
-    )
-    category: PlaceMapPOICategorySchema = Field(
-        ...,
-        description="Category of the place",
-    )
-    location: PlaceLocationSchema = Field(
-        ...,
-        description="Location of the place",
-    )
-
-
-class GetPlaceMapPOIsResponseSchema(BaseModel):
-    pois: list[PlaceMapPOISchema] = Field(
-        default_factory=list,
-        description="A list of places formatted as POIs for map display.",
-    )
-
-
-class PlaceCardSchema(BaseModel):
-    id: UUID7 = Field(
-        ...,
-        description="Unique identifier of the place",
-        examples=[UUID_EXAMPLE],
-    )
-    title: str = Field(
-        ...,
-        description="Title of the place",
-        examples=[TITLE_EXAMPLE],
-    )
-    short_description: str | None = Field(
-        None,
-        description="Short description of the place",
-        examples=[SHORT_DESCRIPTION_EXAMPLE],
-    )
-    timezone: str = Field(
-        ...,
-        description="Timezone of the place",
-        examples=[TIMEZONE_EXAMPLE],
-    )
-    category: PlaceCardCategorySchema = Field(
-        ...,
-        description="Category of the place",
-    )
-    photos: list[PlacePhotoSchema] = Field(
-        default_factory=list,
-        description="List of place photos. Maximum of 4 photos are allowed for the place card.",
-    )
-    rating: PlaceRatingSchema = Field(
-        ...,
-        description="Rating of the place",
-    )
-    location: PlaceLocationSchema = Field(
-        ...,
-        description="Location of the place",
-    )
-    working_days: list[PlaceWorkingDaySchema] = Field(
-        default_factory=list,
-        description="List of working days for the place.",
-    )
-
-
-class PaginatedPlaceCardsResponseSchema(BaseModel):
-    places: list[PlaceCardSchema] = Field(
-        default_factory=list,
-        description="A list of place cards",
-    )
-    pagination: OffsetPaginationSchema = Field(
-        ...,
-        description="Pagination information for the retrieved places.",
-    )
-
-
 class PlaceSchema(BaseModel):
     id: UUID7 = Field(
         ...,
@@ -130,13 +46,13 @@ class PlaceSchema(BaseModel):
         description="Title of the place",
         examples=[TITLE_EXAMPLE],
     )
-    description: str | None = Field(
-        None,
+    description: str = Field(
+        ...,
         description="Description of the place",
         examples=[DESCRIPTION_EXAMPLE],
     )
-    short_description: str | None = Field(
-        None,
+    short_description: str = Field(
+        ...,
         description="Short description of the place",
         examples=[SHORT_DESCRIPTION_EXAMPLE],
     )

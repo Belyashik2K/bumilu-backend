@@ -3,6 +3,7 @@ from pydantic import (
     Field,
 )
 
+from app.core.presentation.api.schemas.pagination import make_data_list_response_schema
 from app.modules.places.presentation.api.schemas.places.working_hours import (
     PlaceWorkingHoursIntervalSchema,
 )
@@ -40,3 +41,9 @@ class PlaceWorkingDaySchema(ReplacePlaceWorkingDaySchema):
         ge=1,
         le=7,
     )
+
+
+PlaceWorkingDayListResponseSchema = make_data_list_response_schema(
+    item_type=PlaceWorkingDaySchema,
+    description="Response schema for a list of working days for a place",
+)

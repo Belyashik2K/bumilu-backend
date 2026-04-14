@@ -11,10 +11,6 @@ from fastapi import (
 from pydantic import UUID7
 from starlette import status
 
-from app.core.application.queries.pagination import (
-    DataListView,
-    PaginatedView,
-)
 from app.core.constants import UNSET
 from app.core.enums import LanguageEnum
 from app.core.presentation.api.schemas.accept_language import (
@@ -149,9 +145,6 @@ from app.modules.places.application.queries.places.admin.get_photos.handler impo
 from app.modules.places.application.queries.places.admin.get_photos.query import (
     GetAdminPlacePhotosQuery,
 )
-from app.modules.places.application.queries.places.admin.get_photos.view import (
-    AdminPlacePhotoView,
-)
 from app.modules.places.application.queries.places.admin.get_translation_by_language_code.handler import (
     GetAdminPlaceTranslationByLanguageCodeQueryHandler,
 )
@@ -177,23 +170,9 @@ from app.modules.places.application.queries.places.admin.get_working_days.query 
     GetAdminPlaceWorkingDaysQuery,
 )
 from app.modules.places.application.queries.places.shared.dtos import BBox
-from app.modules.places.application.queries.places.shared.models.place_card import (
-    AdminPlaceCardReadModel,
-)
-from app.modules.places.application.queries.places.shared.models.place_details import (
-    AdminPlaceDetailsReadModel,
-)
-from app.modules.places.application.queries.places.shared.models.place_map_poi import (
-    AdminPlaceMapPOIReadModel,
-)
-from app.modules.places.application.queries.places.shared.models.place_phone import (
-    AdminPlacePhoneReadModel,
-)
-from app.modules.places.application.queries.places.shared.models.place_translation import (
-    PlaceTranslationReadModel,
-)
-from app.modules.places.application.queries.places.shared.models.place_working_day import (
-    PlaceWorkingDayReadModel,
+from app.modules.places.presentation.api.schemas.places.card import (
+    AdminPlaceCardSchema,
+    PaginatedAdminPlaceCardsResponseSchema,
 )
 from app.modules.places.presentation.api.schemas.places.main import (
     ChangePlaceStatusRequestSchema,
@@ -202,18 +181,27 @@ from app.modules.places.presentation.api.schemas.places.main import (
     UpdatePlaceRequestSchema,
 )
 from app.modules.places.presentation.api.schemas.places.phone import (
+    AdminPlacePhoneListResponseSchema,
     PlacePhoneSchema,
     UpdatePlacePhoneSchema,
 )
 from app.modules.places.presentation.api.schemas.places.photo import (
+    AdminPlacePhotoListResponseSchema,
     StartPlacePhotoUploadRequestSchema,
     StartPlacePhotoUploadResponseSchema,
 )
+from app.modules.places.presentation.api.schemas.places.poi import (
+    AdminPlaceMapPOIListResponseSchema,
+)
 from app.modules.places.presentation.api.schemas.places.translation import (
+    BasePlaceTranslationSchema,
     CreatePlaceTranslationRequestSchema,
+    PaginatedPlaceTranslationListResponseSchema,
     UpdatePlaceTranslationRequestSchema,
 )
 from app.modules.places.presentation.api.schemas.places.working_day import (
+    PlaceWorkingDayListResponseSchema,
+    PlaceWorkingDaySchema,
     ReplacePlaceWorkingDaySchema,
 )
 
@@ -222,31 +210,6 @@ admin_places_router = APIRouter(
     tags=["Admin Places"],
     dependencies=[Depends(security)],
 )
-
-
-@admin_places_router.get(
-    "/map/pois",
-    responses=generate_responses_for_endpoint(status.HTTP_404_NOT_FOUND),
-)
-@inject
-async def list_places_map_pois(
-    handler: FromDishka[GetAdminPlacesMapPOIQueryHandler],
-    principal: Annotated[Principal, Depends(get_staff_principal)],
-    bound: BBoxDep,
-    accept_language: AcceptLanguageDep,
-) -> DataListView[AdminPlaceMapPOIReadModel]:
-    result = await handler(
-        GetAdminPlacesMapPOIQuery(
-            bounds=BBox(
-                south=bound.south,
-                west=bound.west,
-                north=bound.north,
-                east=bound.east,
-            ),
-            language=accept_language.language,
-        )
-    )
-    return result
 
 
 @admin_places_router.get(
@@ -261,7 +224,7 @@ async def list_places(
     pagination: OffsetPaginationDep,
     title_like: str | None = None,
     category_slug: str | None = None,
-) -> PaginatedView[AdminPlaceCardReadModel]:
+) -> PaginatedAdminPlaceCardsResponseSchema:
     result = await handler(
         GetAdminPlacesListQuery(
             title_like=title_like,
@@ -271,7 +234,36 @@ async def list_places(
             language=accept_language.language,
         )
     )
-    return result
+    return PaginatedAdminPlaceCardsResponseSchema.model_validate(
+        result, from_attributes=True
+    )
+
+
+@admin_places_router.get(
+    "/map/pois",
+    responses=generate_responses_for_endpoint(status.HTTP_404_NOT_FOUND),
+)
+@inject
+async def list_places_map_pois(
+    handler: FromDishka[GetAdminPlacesMapPOIQueryHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+    bound: BBoxDep,
+    accept_language: AcceptLanguageDep,
+) -> AdminPlaceMapPOIListResponseSchema:
+    result = await handler(
+        GetAdminPlacesMapPOIQuery(
+            bounds=BBox(
+                south=bound.south,
+                west=bound.west,
+                north=bound.north,
+                east=bound.east,
+            ),
+            language=accept_language.language,
+        )
+    )
+    return AdminPlaceMapPOIListResponseSchema.model_validate(
+        result, from_attributes=True
+    )
 
 
 @admin_places_router.post(
@@ -307,14 +299,14 @@ async def get_place_details(
     handler: FromDishka[GetAdminPlaceQueryHandler],
     accept_language: AcceptLanguageDep,
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> AdminPlaceDetailsReadModel:
+) -> AdminPlaceCardSchema:
     result = await handler(
         GetAdminPlaceQuery(
             place_id=place_id,
             language=accept_language.language,
         )
     )
-    return result
+    return AdminPlaceCardSchema.model_validate(result, from_attributes=True)
 
 
 @admin_places_router.patch(
@@ -401,13 +393,15 @@ async def list_place_translations(
     place_id: UUID7,
     handler: FromDishka[GetAdminPlaceTranslationsQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> PaginatedView[PlaceTranslationReadModel]:
+) -> PaginatedPlaceTranslationListResponseSchema:
     result = await handler(
         GetAdminPlaceTranslationsQuery(
             place_id=place_id,
         )
     )
-    return result
+    return PaginatedPlaceTranslationListResponseSchema.model_validate(
+        result, from_attributes=True
+    )
 
 
 @admin_places_router.post(
@@ -451,14 +445,14 @@ async def get_place_translation(
     language_code: LanguageEnum,
     handler: FromDishka[GetAdminPlaceTranslationByLanguageCodeQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> PlaceTranslationReadModel:
+) -> BasePlaceTranslationSchema:
     result = await handler(
         GetAdminPlaceTranslationByLanguageCodeQuery(
             place_id=place_id,
             language_code=language_code,
         )
     )
-    return result
+    return BasePlaceTranslationSchema.model_validate(result, from_attributes=True)
 
 
 @admin_places_router.patch(
@@ -526,13 +520,15 @@ async def list_place_phones(
     place_id: UUID7,
     handler: FromDishka[GetAdminPlacePhonesQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> DataListView[AdminPlacePhoneReadModel]:
+) -> AdminPlacePhoneListResponseSchema:
     result = await handler(
         GetAdminPlacePhonesQuery(
             place_id=place_id,
         )
     )
-    return result
+    return AdminPlacePhoneListResponseSchema.model_validate(
+        result, from_attributes=True
+    )
 
 
 @admin_places_router.post(
@@ -644,13 +640,15 @@ async def get_place_working_days(
     place_id: UUID7,
     handler: FromDishka[GetAdminPlaceWorkingDaysQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> DataListView[PlaceWorkingDayReadModel]:
+) -> PlaceWorkingDayListResponseSchema:
     result = await handler(
         GetAdminPlaceWorkingDaysQuery(
             place_id=place_id,
         )
     )
-    return result
+    return PlaceWorkingDayListResponseSchema.model_validate(
+        result, from_attributes=True
+    )
 
 
 @admin_places_router.get(
@@ -665,14 +663,14 @@ async def get_place_working_day_by_weekday(
     weekday: int,
     handler: FromDishka[GetAdminPlaceWorkingDayByWeekdayQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> PlaceWorkingDayReadModel:
+) -> PlaceWorkingDaySchema:
     result = await handler(
         GetAdminPlaceWorkingDayByWeekdayQuery(
             place_id=place_id,
             weekday=weekday,
         )
     )
-    return result
+    return PlaceWorkingDaySchema.model_validate(result, from_attributes=True)
 
 
 @admin_places_router.put(
@@ -715,13 +713,15 @@ async def list_place_photos(
     place_id: UUID7,
     handler: FromDishka[GetAdminPlacePhotosQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> DataListView[AdminPlacePhotoView]:
+) -> AdminPlacePhotoListResponseSchema:
     result = await handler(
         GetAdminPlacePhotosQuery(
             place_id=place_id,
         )
     )
-    return result
+    return AdminPlacePhotoListResponseSchema.model_validate(
+        result, from_attributes=True
+    )
 
 
 @admin_places_router.post(

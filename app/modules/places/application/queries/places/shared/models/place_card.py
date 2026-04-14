@@ -30,7 +30,6 @@ from app.modules.places.shared.enums.place_status import PlaceStatusEnum
 @dataclass(frozen=True, slots=True, kw_only=True)
 class BasePlaceCardReadModel:
     id: UUID
-    title: str | None = field(default=None)
     timezone: str
     category: PlaceCategoryReadModel
     location: PlaceLocationReadModel
@@ -48,6 +47,7 @@ class PlaceCardReadModel(BasePlaceCardReadModel):
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class AdminPlaceCardReadModel(BasePlaceCardReadModel):
+    title: str | None = field(default=None)
     address: AdminPlaceAddressReadModel
     created_at: datetime
     updated_at: datetime

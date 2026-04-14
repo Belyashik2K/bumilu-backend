@@ -3,7 +3,7 @@ from pydantic import (
     Field,
 )
 
-from app.modules.places.presentation.api.schemas.places.main import PlaceCardSchema
+from app.modules.places.presentation.api.schemas.places.card import PlaceCardSchema
 
 
 class RoutePointSchema(BaseModel):

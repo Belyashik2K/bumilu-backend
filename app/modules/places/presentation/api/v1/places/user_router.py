@@ -35,11 +35,14 @@ from app.modules.places.application.queries.places.user.get_map_poi.handler impo
 from app.modules.places.application.queries.places.user.get_map_poi.query import (
     GetPlacesMapPOIQuery,
 )
-from app.modules.places.presentation.api.schemas.places.main import (
-    GetPlaceMapPOIsResponseSchema,
+from app.modules.places.presentation.api.schemas.places.card import (
     PaginatedPlaceCardsResponseSchema,
-    PlaceMapPOISchema,
+)
+from app.modules.places.presentation.api.schemas.places.main import (
     PlaceSchema,
+)
+from app.modules.places.presentation.api.schemas.places.poi import (
+    PlaceMapPOIListResponseSchema,
 )
 
 user_places_router = APIRouter(
@@ -84,7 +87,7 @@ async def get_place_map_pois(
     principal: Annotated[Principal, Depends(get_user_principal)],
     accept_language: AcceptLanguageDep,
     bbox: BBoxDep,
-) -> GetPlaceMapPOIsResponseSchema:
+) -> PlaceMapPOIListResponseSchema:
     result = await handler(
         GetPlacesMapPOIQuery(
             bounds=BBox(
@@ -96,12 +99,7 @@ async def get_place_map_pois(
             language=accept_language.language,
         )
     )
-    return GetPlaceMapPOIsResponseSchema(
-        pois=[
-            PlaceMapPOISchema.model_validate(poi, from_attributes=True)
-            for poi in result
-        ]
-    )
+    return PlaceMapPOIListResponseSchema.model_validate(result, from_attributes=True)
 
 
 @user_places_router.get(
