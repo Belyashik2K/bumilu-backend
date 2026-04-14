@@ -44,6 +44,11 @@ class PlaceCategorySchema(PlaceCategoryBaseSchema):
         description="Unique identifier of the place category",
         examples=[UUID_EXAMPLE],
     )
+    name: str | None = Field(
+        None,
+        description="The localized name of the place category if available.",
+        examples=[NAME_EXAMPLE],
+    )
 
 
 class LocalizedPlaceCategorySchema(PlaceCategorySchema):
