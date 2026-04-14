@@ -87,3 +87,10 @@ class IPlaceReader(ABC):
         self,
         place_id: UUID,
     ) -> list[PlaceWorkingDayReadModel]: ...
+
+    @abstractmethod
+    async def get_working_day_by_weekday(
+        self,
+        place_id: UUID,
+        weekday: int,
+    ) -> PlaceWorkingDayReadModel | None: ...
