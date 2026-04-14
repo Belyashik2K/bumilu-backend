@@ -1,4 +1,7 @@
-from dataclasses import dataclass
+from dataclasses import (
+    dataclass,
+    field,
+)
 from uuid import UUID
 
 from app.modules.places.application.queries.categories.shared.models.place_category import (
@@ -10,8 +13,17 @@ from app.modules.places.application.queries.places.shared.models.place_location 
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class PlaceMapPOIReadModel:
+class BasePlaceMapPOIReadModel:
     id: UUID
+    title: str | None = field(default=None)
+    location: PlaceLocationReadModel
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class PlaceMapPOIReadModel(BasePlaceMapPOIReadModel):
     title: str
     category: LocalizedPlaceCategoryReadModel
-    location: PlaceLocationReadModel
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class AdminPlaceMapPOIReadModel(PlaceMapPOIReadModel): ...
