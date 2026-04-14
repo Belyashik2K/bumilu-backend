@@ -58,7 +58,7 @@ class PlaceDetailsReadModel(BasePlaceDetailsReadModel):
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class AdminPlaceDetailsReadModel(PlaceDetailsReadModel):
+class AdminPlaceDetailsReadModel(BasePlaceDetailsReadModel):
     status: PlaceStatusEnum
     created_at: datetime
     updated_at: datetime

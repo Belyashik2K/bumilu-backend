@@ -6,6 +6,7 @@ from uuid import UUID
 
 from app.modules.places.application.queries.categories.shared.models.place_category import (
     LocalizedPlaceCategoryReadModel,
+    PlaceCategoryReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_location import (
     PlaceLocationReadModel,
@@ -26,4 +27,5 @@ class PlaceMapPOIReadModel(BasePlaceMapPOIReadModel):
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class AdminPlaceMapPOIReadModel(PlaceMapPOIReadModel): ...
+class AdminPlaceMapPOIReadModel(BasePlaceMapPOIReadModel):
+    category: PlaceCategoryReadModel

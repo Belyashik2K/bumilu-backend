@@ -9,6 +9,9 @@ from app.modules.places.application.queries.categories.shared.models.place_categ
     LocalizedPlaceCategoryReadModel,
     PlaceCategoryReadModel,
 )
+from app.modules.places.application.queries.places.shared.models.place_address import (
+    BasePlaceAddressReadModel,
+)
 from app.modules.places.application.queries.places.shared.models.place_location import (
     PlaceLocationReadModel,
 )
@@ -21,11 +24,13 @@ from app.modules.places.application.queries.places.shared.models.place_rating im
 from app.modules.places.application.queries.places.shared.models.place_working_day import (
     PlaceWorkingDayReadModel,
 )
+from app.modules.places.shared.enums.place_status import PlaceStatusEnum
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class BasePlaceCardReadModel:
     id: UUID
+    title: str | None = field(default=None)
     timezone: str
     category: PlaceCategoryReadModel
     location: PlaceLocationReadModel
@@ -42,8 +47,8 @@ class PlaceCardReadModel(BasePlaceCardReadModel):
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class AdminPlaceCardReadModel(
-    PlaceCardReadModel
-):  # TODO: add title and short description translations when language support will be implemented
+class AdminPlaceCardReadModel(BasePlaceCardReadModel):
+    address: BasePlaceAddressReadModel
     created_at: datetime
     updated_at: datetime
+    status: PlaceStatusEnum
