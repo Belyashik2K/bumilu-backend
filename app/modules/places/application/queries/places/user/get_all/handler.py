@@ -6,12 +6,12 @@ from app.modules.places.application.interfaces.file_storage_url_builder import (
 from app.modules.places.application.interfaces.readers.place import (
     IPlaceReader,
 )
-from app.modules.places.application.queries.places.get_all.query import (
-    GetAllPlacesQuery,
-)
 from app.modules.places.application.queries.places.shared.views import (
     PaginatedPlaceCardView,
     PlaceCardView,
+)
+from app.modules.places.application.queries.places.user.get_all.query import (
+    GetAllPlacesQuery,
 )
 
 

@@ -6,7 +6,6 @@ from uuid import UUID
 
 from app.core.application.queries.pagination import PageReadModel
 from app.core.enums import LanguageEnum
-from app.modules.places.application.queries.places.get_map_poi.query import BBox
 from app.modules.places.application.queries.places.shared.models.place_card import (
     PlaceCardReadModel,
 )
@@ -16,6 +15,10 @@ from app.modules.places.application.queries.places.shared.models.place_details i
 from app.modules.places.application.queries.places.shared.models.place_map_poi import (
     PlaceMapPOIReadModel,
 )
+from app.modules.places.application.queries.places.shared.models.place_photo import (
+    PlacePhotoReadModel,
+)
+from app.modules.places.application.queries.places.user.get_map_poi.query import BBox
 
 
 class IPlaceReader(ABC):
@@ -60,3 +63,9 @@ class IPlaceReader(ABC):
         translation_language: LanguageEnum,
         limit: int,
     ) -> list[PlaceMapPOIReadModel]: ...
+
+    @abstractmethod
+    async def get_photos_by_id(
+        self,
+        place_id: UUID,
+    ) -> list[PlacePhotoReadModel]: ...

@@ -6,11 +6,11 @@ from app.modules.places.application.interfaces.file_storage_url_builder import (
 from app.modules.places.application.interfaces.readers.place import (
     IPlaceReader,
 )
-from app.modules.places.application.queries.places.get.query import GetPlaceQuery
 from app.modules.places.application.queries.places.shared.views import (
     PlacePhotoView,
     PlaceView,
 )
+from app.modules.places.application.queries.places.user.get.query import GetPlaceQuery
 
 
 class GetPlaceQueryHandler(

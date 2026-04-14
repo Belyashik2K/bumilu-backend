@@ -36,12 +36,14 @@ from app.modules.places.application.queries.places.shared.models.place_user_cont
 from app.modules.places.application.queries.places.shared.models.place_working_day import (
     PlaceWorkingDayReadModel,
 )
+from app.modules.places.shared.enums.place_photo_status import PlacePhotoStatusEnum
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class PlacePhotoView:
     url: str
     thumbnail_url: str | None = field(default=None)
+    status: PlacePhotoStatusEnum
 
     @classmethod
     def from_read_model(
@@ -54,6 +56,7 @@ class PlacePhotoView:
             thumbnail_url=storage_url_builder.build_file_url(
                 file_key=read_model.thumbnail_file_key
             ),
+            status=read_model.status,
         )
 
 
