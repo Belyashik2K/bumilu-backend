@@ -14,7 +14,10 @@ from app.core.presentation.api.schemas.location import LocationDep
 from app.core.presentation.api.schemas.pagination import OffsetPaginationDep
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.modules.auth.presentation.api import security
-from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
+from app.modules.auth.presentation.api.v1.users.deps import (
+    get_principal,
+    get_user_principal,
+)
 from app.modules.auth.shared.context import Principal
 from app.modules.routes.application.queries.build_route_path.handler import (
     BuildRoutePathForRouteQueryHandler,
@@ -91,7 +94,7 @@ async def get_route_by_id(
 async def build_route_path_for_route(
     route_id: UUID7,
     handler: FromDishka[BuildRoutePathForRouteQueryHandler],
-    principal: Annotated[Principal, Depends(get_user_principal)],
+    principal: Annotated[Principal, Depends(get_principal)],
     data: BuildRoutePathForRouteRequestSchema,
     accept_language: AcceptLanguageDep,
 ) -> RoutePathSchema:
