@@ -22,6 +22,7 @@ class PlaceCategoryReadModel:
     slug: str
     icon_key: str
     marker_color: str
+    name: str | None = field(default=None)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

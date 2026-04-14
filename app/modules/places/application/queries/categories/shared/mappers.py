@@ -3,6 +3,9 @@ from app.modules.places.application.queries.categories.shared.models.place_categ
     LocalizedPlaceCategoryReadModel,
     PlaceCategoryReadModel,
 )
+from app.modules.places.domain.categories.models.category_translation.model import (
+    PlaceCategoryTranslation,
+)
 from app.modules.places.infrastructure.database.models import PlaceCategoryModel
 
 
@@ -34,7 +37,9 @@ class PlaceCategoryMapper:
     @staticmethod
     def map_admin_category(
         category: PlaceCategoryModel,
+        translation: PlaceCategoryTranslation | None = None,
     ) -> AdminPlaceCategoryReadModel:
+        name = translation.name if translation else None
         return AdminPlaceCategoryReadModel(
             id=category.id,
             slug=category.slug,
@@ -42,4 +47,5 @@ class PlaceCategoryMapper:
             marker_color=category.marker_color,
             status=category.status,
             total_places=category.total_places,
+            name=name,
         )

@@ -23,6 +23,7 @@ class GetAdminPlaceCategoriesListQueryHandler(
         categories = await self._place_category_reader.list_admin(
             limit=query.limit,
             offset=query.offset,
+            optional_translation_language=query.language,
             status=None,  # TODO: add filtering by status (e.g. only published categories)
         )
 

@@ -23,9 +23,11 @@ from app.modules.places.application.queries.places.user.get.handler import (
     GetPlaceQueryHandler,
 )
 from app.modules.places.application.queries.places.user.get.query import GetPlaceQuery
-from app.modules.places.application.queries.places.user.get_all import (
-    GetAllPlacesQuery,
+from app.modules.places.application.queries.places.user.get_all.handler import (
     GetAllPlacesQueryHandler,
+)
+from app.modules.places.application.queries.places.user.get_all.query import (
+    GetAllPlacesQuery,
 )
 from app.modules.places.application.queries.places.user.get_map_poi.handler import (
     GetPlacesMapPOIQueryHandler,

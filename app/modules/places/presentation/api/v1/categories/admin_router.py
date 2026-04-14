@@ -12,6 +12,7 @@ from pydantic import UUID7
 from starlette import status
 
 from app.core.enums import LanguageEnum
+from app.core.presentation.api.schemas.accept_language import AcceptLanguageDep
 from app.core.presentation.api.schemas.pagination import OffsetPaginationDep
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.modules.auth.presentation.api import security
@@ -112,6 +113,7 @@ admin_place_categories_router = APIRouter(
 async def get_place_categories(
     handler: FromDishka[GetAdminPlaceCategoriesListQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
+    accept_language: AcceptLanguageDep,
     pagination: OffsetPaginationDep,
 ) -> AdminPlaceCategoriesListResponseSchema:
     result = await handler(
@@ -119,6 +121,7 @@ async def get_place_categories(
             actor_id=principal.id.value,
             limit=pagination.limit,
             offset=pagination.offset,
+            language=accept_language.language,
         )
     )
     return AdminPlaceCategoriesListResponseSchema.model_validate(
@@ -155,12 +158,14 @@ async def create_place_category(
 async def get_place_category(
     category_id: UUID7,
     handler: FromDishka[GetAdminPlaceCategoryQueryHandler],
+    accept_language: AcceptLanguageDep,
     principal: Annotated[Principal, Depends(get_staff_principal)],
 ) -> AdminPlaceCategorySchema:
     result = await handler(
         GetAdminPlaceCategoryQuery(
             category_id=category_id,
             actor_id=principal.id.value,
+            language=accept_language.language,
         )
     )
     return AdminPlaceCategorySchema.model_validate(result, from_attributes=True)

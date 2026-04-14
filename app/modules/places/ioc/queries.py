@@ -34,7 +34,7 @@ from app.modules.places.application.queries.categories.user.get_all.handler impo
 from app.modules.places.application.queries.places.user.get.handler import (
     GetPlaceQueryHandler,
 )
-from app.modules.places.application.queries.places.user.get_all import (
+from app.modules.places.application.queries.places.user.get_all.handler import (
     GetAllPlacesQueryHandler,
 )
 from app.modules.places.application.queries.places.user.get_map_poi.handler import (
