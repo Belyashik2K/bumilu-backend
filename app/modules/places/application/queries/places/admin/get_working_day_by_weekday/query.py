@@ -3,6 +3,6 @@ from uuid import UUID
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetPlaceWorkingDayByWeekdayQuery:
+class GetAdminPlaceWorkingDayByWeekdayQuery:
     place_id: UUID
     weekday: int

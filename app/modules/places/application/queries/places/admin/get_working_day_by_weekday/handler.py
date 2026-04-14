@@ -1,15 +1,15 @@
 from app.core.application.queries import IQueryHandler
 from app.modules.places.application.interfaces.readers.place import IPlaceReader
 from app.modules.places.application.queries.places.admin.get_working_day_by_weekday.query import (
-    GetPlaceWorkingDayByWeekdayQuery,
+    GetAdminPlaceWorkingDayByWeekdayQuery,
 )
 from app.modules.places.application.queries.places.shared.models.place_working_day import (
     PlaceWorkingDayReadModel,
 )
 
 
-class GetPlaceWorkingDayByWeekdayQueryHandler(
-    IQueryHandler[GetPlaceWorkingDayByWeekdayQuery, PlaceWorkingDayReadModel]
+class GetAdminPlaceWorkingDayByWeekdayQueryHandler(
+    IQueryHandler[GetAdminPlaceWorkingDayByWeekdayQuery, PlaceWorkingDayReadModel]
 ):
     def __init__(
         self,
@@ -18,7 +18,7 @@ class GetPlaceWorkingDayByWeekdayQueryHandler(
         self._place_reader = place_reader
 
     async def handle(
-        self, query: GetPlaceWorkingDayByWeekdayQuery
+        self, query: GetAdminPlaceWorkingDayByWeekdayQuery
     ) -> PlaceWorkingDayReadModel:
         return await self._place_reader.get_working_day_by_weekday(
             place_id=query.place_id, weekday=query.weekday
