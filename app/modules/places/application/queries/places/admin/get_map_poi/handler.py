@@ -22,6 +22,6 @@ class GetAdminPlacesMapPOIQueryHandler(
     ) -> list[AdminPlaceMapPOIReadModel]:
         return await self._place_reader.list_admin_poi_in_bounds(
             bounds=query.bounds,
-            translation_language=query.language,
+            optional_translation_language=query.language,
             limit=query.limit,
         )

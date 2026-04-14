@@ -22,7 +22,6 @@ class PlaceCategoryReadModel:
     slug: str
     icon_key: str
     marker_color: str
-    name: str | None = field(default=None)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -32,5 +31,6 @@ class LocalizedPlaceCategoryReadModel(PlaceCategoryReadModel):
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class AdminPlaceCategoryReadModel(PlaceCategoryReadModel):
+    name: str | None = field(default=None)
     total_places: int = field(default=0)
     status: PlaceCategoryStatusEnum

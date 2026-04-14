@@ -10,6 +10,7 @@ from app.modules.places.application.queries.categories.shared.models.place_categ
     PlaceCategoryReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_address import (
+    AdminPlaceAddressReadModel,
     BasePlaceAddressReadModel,
     PlaceAddressReadModel,
 )
@@ -59,6 +60,7 @@ class PlaceDetailsReadModel(BasePlaceDetailsReadModel):
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class AdminPlaceDetailsReadModel(BasePlaceDetailsReadModel):
+    address: AdminPlaceAddressReadModel
     status: PlaceStatusEnum
     created_at: datetime
     updated_at: datetime

@@ -10,7 +10,7 @@ from app.modules.places.application.queries.categories.shared.models.place_categ
     PlaceCategoryReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_address import (
-    BasePlaceAddressReadModel,
+    AdminPlaceAddressReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_location import (
     PlaceLocationReadModel,
@@ -48,7 +48,7 @@ class PlaceCardReadModel(BasePlaceCardReadModel):
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class AdminPlaceCardReadModel(BasePlaceCardReadModel):
-    address: BasePlaceAddressReadModel
+    address: AdminPlaceAddressReadModel
     created_at: datetime
     updated_at: datetime
     status: PlaceStatusEnum

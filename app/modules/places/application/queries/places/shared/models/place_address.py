@@ -13,3 +13,6 @@ class BasePlaceAddressReadModel:
 @dataclass(frozen=True, slots=True, kw_only=True)
 class PlaceAddressReadModel(BasePlaceAddressReadModel):
     display: str
+
+
+class AdminPlaceAddressReadModel(BasePlaceAddressReadModel): ...
