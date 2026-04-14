@@ -35,5 +35,4 @@ class UpdatePlaceCategoryTranslationRequestSchema(BaseModel):
 PaginatedAdminPlaceCategoryTranslationsResponseSchema = make_paginated_response_schema(
     item_type=PlaceCategoryTranslationSchema,
     description="Response schema for a paginated list of place categories for admin users",
-    validation_alias="translations",
 )
