@@ -20,6 +20,9 @@ class IPlaceCategoryReader(ABC):
     async def exists(self, slug: str) -> bool: ...
 
     @abstractmethod
+    async def exists_by_id(self, category_id: UUID) -> bool: ...
+
+    @abstractmethod
     async def get_admin_by_id(
         self,
         category_id: UUID,

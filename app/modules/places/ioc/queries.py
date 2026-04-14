@@ -125,17 +125,23 @@ class PlacesQueryHandlersProvider(Provider):
 
     @provide(scope=Scope.REQUEST)
     async def get_admin_place_category_translations_handler(
-        self, place_category_translation_reader: IPlaceCategoryTranslationReader
+        self,
+        place_category_reader: IPlaceCategoryReader,
+        place_category_translation_reader: IPlaceCategoryTranslationReader,
     ) -> GetAdminPlaceCategoryTranslationsListQueryHandler:
         return GetAdminPlaceCategoryTranslationsListQueryHandler(
+            place_category_reader=place_category_reader,
             place_category_translation_reader=place_category_translation_reader,
         )
 
     @provide(scope=Scope.REQUEST)
     async def get_admin_place_category_translation_handler(
-        self, place_category_translation_reader: IPlaceCategoryTranslationReader
+        self,
+        place_category_reader: IPlaceCategoryReader,
+        place_category_translation_reader: IPlaceCategoryTranslationReader,
     ) -> GetAdminPlaceCategoryTranslationQueryHandler:
         return GetAdminPlaceCategoryTranslationQueryHandler(
+            place_category_reader=place_category_reader,
             place_category_translation_reader=place_category_translation_reader,
         )
 
@@ -174,17 +180,23 @@ class PlacesQueryHandlersProvider(Provider):
 
     @provide(scope=Scope.REQUEST)
     async def get_admin_place_translations_handler(
-        self, place_translation_reader: IPlaceTranslationReader
+        self,
+        place_reader: IPlaceReader,
+        place_translation_reader: IPlaceTranslationReader,
     ) -> GetAdminPlaceTranslationsQueryHandler:
         return GetAdminPlaceTranslationsQueryHandler(
+            place_reader=place_reader,
             place_translation_reader=place_translation_reader,
         )
 
     @provide(scope=Scope.REQUEST)
     async def get_admin_place_translation_handler(
-        self, place_translation_reader: IPlaceTranslationReader
+        self,
+        place_reader: IPlaceReader,
+        place_translation_reader: IPlaceTranslationReader,
     ) -> GetAdminPlaceTranslationByLanguageCodeQueryHandler:
         return GetAdminPlaceTranslationByLanguageCodeQueryHandler(
+            place_reader=place_reader,
             place_translation_reader=place_translation_reader,
         )
 
