@@ -4,11 +4,13 @@ from pydantic import (
     Field,
 )
 
+from app.core.presentation.api.schemas.pagination import make_data_list_response_schema
 from app.modules.places.presentation.api.schemas.places.examples import (
     PHOTO_THUMBNAIL_URL_EXAMPLE,
     PHOTO_URL_EXAMPLE,
     UUID_EXAMPLE,
 )
+from app.modules.places.shared.enums.place_photo_status import PlacePhotoStatusEnum
 
 
 class PlacePhotoSchema(BaseModel):
@@ -21,6 +23,19 @@ class PlacePhotoSchema(BaseModel):
         None,
         description="The URL of the thumbnail version of the photo.",
         examples=[PHOTO_THUMBNAIL_URL_EXAMPLE],
+    )
+
+
+class AdminPlacePhotoSchema(PlacePhotoSchema):
+    id: UUID7 = Field(
+        ...,
+        description="The unique identifier of the photo.",
+        examples=[UUID_EXAMPLE],
+    )
+    status: PlacePhotoStatusEnum = Field(
+        ...,
+        description="The status of the photo.",
+        examples=[PlacePhotoStatusEnum.READY],
     )
 
 
@@ -53,3 +68,9 @@ class StartPlacePhotoUploadResponseSchema(BaseModel):
         description="The number of seconds until the upload URL expires.",
         examples=[3600],
     )
+
+
+AdminPlacePhotoListResponseSchema = make_data_list_response_schema(
+    item_type=AdminPlacePhotoSchema,
+    description="Response schema for a list of photos associated with a place, including administrative details.",
+)

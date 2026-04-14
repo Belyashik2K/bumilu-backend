@@ -5,7 +5,6 @@ from dataclasses import (
 from typing import Self
 from uuid import UUID
 
-from app.core.application.queries.pagination import OffsetPagination
 from app.modules.places.application.interfaces.file_storage_url_builder import (
     IFileStorageURLBuilder,
 )
@@ -113,10 +112,10 @@ class PlaceCardView:
         )
 
 
-@dataclass(frozen=True, slots=True, kw_only=True)
-class PaginatedPlaceCardView:
-    places: list[PlaceCardView] = field(default_factory=list)
-    pagination: OffsetPagination
+# @dataclass(frozen=True, slots=True, kw_only=True)
+# class PaginatedPlaceCardView:
+#     places: list[PlaceCardView] = field(default_factory=list)
+#     pagination: OffsetPagination
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

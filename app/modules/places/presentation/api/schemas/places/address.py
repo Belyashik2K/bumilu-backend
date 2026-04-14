@@ -10,13 +10,8 @@ from app.modules.places.presentation.api.schemas.places.examples import (
 )
 
 
-class PlaceAddressSchema(BaseModel):
-    display: str = Field(
-        ...,
-        description="Formatted and localized address for displaying to users.",
-        examples=[DISPLAY_ADDRESS_EXAMPLE],
-    )
-    taxi: str | None = Field(
+class BasePlaceAddressSchema(BaseModel):
+    taxi: str = Field(
         None,
         description="Address formatted for taxi services.",
         examples=[TAXI_ADDRESS_EXAMPLE],
@@ -26,3 +21,14 @@ class PlaceAddressSchema(BaseModel):
         description="Additional comments for taxi drivers.",
         examples=[TAXI_COMMENT_EXAMPLE],
     )
+
+
+class PlaceAddressSchema(BasePlaceAddressSchema):
+    display: str = Field(
+        ...,
+        description="Formatted and localized address for displaying to users.",
+        examples=[DISPLAY_ADDRESS_EXAMPLE],
+    )
+
+
+class AdminPlaceAddressSchema(BasePlaceAddressSchema): ...

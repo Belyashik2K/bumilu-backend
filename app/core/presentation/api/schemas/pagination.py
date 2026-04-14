@@ -89,6 +89,15 @@ def get_offset_pagination(
     return OffsetPaginationQuery(limit=limit, offset=offset)
 
 
+class BaseDataListResponseSchema(BaseModel, Generic[T]):
+    model_config = ConfigDict(populate_by_name=True)
+
+    data: list[T] = Field(
+        ...,
+        description="Dynamic field containing the list of items. The name of this field is determined by the 'json_key' parameter when creating the schema.",
+    )
+
+
 class BasePaginatedResponseSchema(BaseModel, Generic[T]):
     model_config = ConfigDict(populate_by_name=True)
 
@@ -100,6 +109,36 @@ class BasePaginatedResponseSchema(BaseModel, Generic[T]):
         ...,
         description="Pagination metadata.",
     )
+
+
+def make_data_list_response_schema(
+    item_type: type[T],
+    *,
+    description: str | None = None,
+    serialization_alias: str | None = None,
+    validation_alias: str | None = None,
+) -> type[BaseDataListResponseSchema[T]]:
+    model_name = f"{item_type.__name__.rstrip("Schema")}ListResponseSchema"
+
+    class ConcreteDataListResponseSchema(BaseDataListResponseSchema[item_type]):  # type: ignore
+        model_config = ConfigDict(
+            title=model_name,
+            validate_by_name=True,
+            validate_by_alias=True,
+        )
+
+        data: list[item_type] = Field(  # type: ignore
+            ...,
+            description=description or f"List of {item_type.__name__} items.",
+            serialization_alias=serialization_alias,
+            validation_alias=validation_alias,
+        )
+
+    ConcreteDataListResponseSchema.__name__ = model_name
+    ConcreteDataListResponseSchema.__qualname__ = model_name
+    ConcreteDataListResponseSchema.model_rebuild(force=True)
+
+    return ConcreteDataListResponseSchema
 
 
 # TODO: Replace all manually defined paginated response schemas with dynamically generated ones using this function

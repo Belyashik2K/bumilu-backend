@@ -1,4 +1,5 @@
 from app.core.application.queries import IQueryHandler
+from app.core.application.queries.pagination import DataListView
 from app.modules.places.application.interfaces.readers.place import (
     IPlaceReader,
 )
@@ -14,7 +15,7 @@ from app.modules.places.application.queries.places.user.get_map_poi.query import
 class GetPlacesMapPOIQueryHandler(
     IQueryHandler[
         GetPlacesMapPOIQuery,
-        list[PlaceMapPOIView],
+        DataListView[PlaceMapPOIView],
     ]
 ):
     def __init__(
@@ -23,7 +24,9 @@ class GetPlacesMapPOIQueryHandler(
     ) -> None:
         self._place_reader = place_reader
 
-    async def handle(self, query: GetPlacesMapPOIQuery) -> list[PlaceMapPOIView]:
+    async def handle(
+        self, query: GetPlacesMapPOIQuery
+    ) -> DataListView[PlaceMapPOIView]:
         query.bounds.validate()
 
         pois = await self._place_reader.list_poi_in_bounds(
@@ -32,17 +35,19 @@ class GetPlacesMapPOIQueryHandler(
             limit=query.limit,
         )
 
-        return [
-            PlaceMapPOIView(
-                id=poi.id,
-                category=PlaceMapPOICategoryView(
-                    id=poi.category.id,
-                    name=poi.category.name,
-                    marker_color=poi.category.marker_color,
-                    icon_key=poi.category.icon_key,
-                ),
-                title=poi.title,
-                location=poi.location,
-            )
-            for poi in pois
-        ]
+        return DataListView.create(
+            [
+                PlaceMapPOIView(
+                    id=poi.id,
+                    category=PlaceMapPOICategoryView(
+                        id=poi.category.id,
+                        name=poi.category.name,
+                        marker_color=poi.category.marker_color,
+                        icon_key=poi.category.icon_key,
+                    ),
+                    title=poi.title,
+                    location=poi.location,
+                )
+                for poi in pois
+            ]
+        )

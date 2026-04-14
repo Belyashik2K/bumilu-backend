@@ -11,7 +11,6 @@ from app.modules.places.application.queries.categories.shared.models.place_categ
 )
 from app.modules.places.application.queries.places.shared.models.place_address import (
     AdminPlaceAddressReadModel,
-    BasePlaceAddressReadModel,
     PlaceAddressReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_location import (
@@ -40,7 +39,6 @@ class BasePlaceDetailsReadModel:
     id: UUID
     timezone: str
     category: PlaceCategoryReadModel
-    address: BasePlaceAddressReadModel
     location: PlaceLocationReadModel
     rating: PlaceRatingReadModel
 
