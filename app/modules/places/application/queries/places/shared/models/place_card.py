@@ -2,10 +2,12 @@ from dataclasses import (
     dataclass,
     field,
 )
+from datetime import datetime
 from uuid import UUID
 
 from app.modules.places.application.queries.categories.shared.models.place_category import (
     LocalizedPlaceCategoryReadModel,
+    PlaceCategoryReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_location import (
     PlaceLocationReadModel,
@@ -22,13 +24,26 @@ from app.modules.places.application.queries.places.shared.models.place_working_d
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class PlaceCardReadModel:
+class BasePlaceCardReadModel:
     id: UUID
-    title: str
-    short_description: str | None = field(default=None)
     timezone: str
-    category: LocalizedPlaceCategoryReadModel
-    photos: list[PlacePhotoReadModel] = field(default_factory=list)
+    category: PlaceCategoryReadModel
     location: PlaceLocationReadModel
     rating: PlaceRatingReadModel
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class PlaceCardReadModel(BasePlaceCardReadModel):
+    title: str
+    short_description: str | None = field(default=None)
+    category: LocalizedPlaceCategoryReadModel
+    photos: list[PlacePhotoReadModel] = field(default_factory=list)
     working_days: list[PlaceWorkingDayReadModel] = field(default_factory=list)
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class AdminPlaceCardReadModel(
+    PlaceCardReadModel
+):  # TODO: add title and short description translations when language support will be implemented
+    created_at: datetime
+    updated_at: datetime

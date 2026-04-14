@@ -7,6 +7,7 @@ from uuid import UUID
 from app.core.application.queries.pagination import PageReadModel
 from app.core.enums import LanguageEnum
 from app.modules.places.application.queries.places.shared.models.place_card import (
+    AdminPlaceCardReadModel,
     PlaceCardReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_details import (
@@ -67,6 +68,16 @@ class IPlaceReader(ABC):
         limit: int,
         offset: int,
     ) -> PageReadModel[PlaceCardReadModel]: ...
+
+    @abstractmethod
+    async def admin_get_all(
+        self,
+        *,
+        title_like: str | None,
+        category_slug: str | None,
+        limit: int,
+        offset: int,
+    ) -> PageReadModel[AdminPlaceCardReadModel]: ...
 
     @abstractmethod
     async def list_poi_in_bounds(
