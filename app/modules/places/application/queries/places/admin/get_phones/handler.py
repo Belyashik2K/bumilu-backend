@@ -1,4 +1,5 @@
 from app.core.application.queries import IQueryHandler
+from app.core.application.queries.pagination import DataListView
 from app.modules.places.application.interfaces.readers.place import IPlaceReader
 from app.modules.places.application.queries.places.admin.get_phones.query import (
     GetAdminPlacePhonesQuery,
@@ -9,7 +10,7 @@ from app.modules.places.application.queries.places.shared.models.place_phone imp
 
 
 class GetAdminPlacePhonesQueryHandler(
-    IQueryHandler[GetAdminPlacePhonesQuery, list[AdminPlacePhoneReadModel]]
+    IQueryHandler[GetAdminPlacePhonesQuery, DataListView[AdminPlacePhoneReadModel]]
 ):
     def __init__(
         self,
@@ -19,5 +20,6 @@ class GetAdminPlacePhonesQueryHandler(
 
     async def handle(
         self, query: GetAdminPlacePhonesQuery
-    ) -> list[AdminPlacePhoneReadModel]:
-        return await self._place_reader.get_admin_phones_by_id(place_id=query.place_id)
+    ) -> DataListView[AdminPlacePhoneReadModel]:
+        items = await self._place_reader.get_admin_phones_by_id(place_id=query.place_id)
+        return DataListView.create(items=items)
