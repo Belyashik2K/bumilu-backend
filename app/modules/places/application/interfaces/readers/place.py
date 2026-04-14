@@ -21,6 +21,9 @@ from app.modules.places.application.queries.places.shared.models.place_phone imp
 from app.modules.places.application.queries.places.shared.models.place_photo import (
     AdminPlacePhotoReadModel,
 )
+from app.modules.places.application.queries.places.shared.models.place_working_day import (
+    PlaceWorkingDayReadModel,
+)
 from app.modules.places.application.queries.places.user.get_map_poi.query import BBox
 
 
@@ -78,3 +81,9 @@ class IPlaceReader(ABC):
         self,
         place_id: UUID,
     ) -> list[AdminPlacePhoneReadModel]: ...
+
+    @abstractmethod
+    async def get_working_days_by_id(
+        self,
+        place_id: UUID,
+    ) -> list[PlaceWorkingDayReadModel]: ...
