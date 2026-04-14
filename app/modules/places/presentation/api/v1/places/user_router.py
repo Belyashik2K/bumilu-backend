@@ -18,20 +18,18 @@ from app.core.presentation.endpoint_responses import generate_responses_for_endp
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
 from app.modules.auth.shared.context import Principal
-from app.modules.places.application.queries.places.get.handler import (
+from app.modules.places.application.queries.places.user.get.handler import (
     GetPlaceQueryHandler,
 )
-from app.modules.places.application.queries.places.get.query import GetPlaceQuery
-from app.modules.places.application.queries.places.get_all.handler import (
+from app.modules.places.application.queries.places.user.get.query import GetPlaceQuery
+from app.modules.places.application.queries.places.user.get_all import (
+    GetAllPlacesQuery,
     GetAllPlacesQueryHandler,
 )
-from app.modules.places.application.queries.places.get_all.query import (
-    GetAllPlacesQuery,
-)
-from app.modules.places.application.queries.places.get_map_poi.handler import (
+from app.modules.places.application.queries.places.user.get_map_poi.handler import (
     GetPlacesMapPOIQueryHandler,
 )
-from app.modules.places.application.queries.places.get_map_poi.query import (
+from app.modules.places.application.queries.places.user.get_map_poi.query import (
     BBox,
     GetPlacesMapPOIQuery,
 )

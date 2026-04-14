@@ -31,13 +31,13 @@ from app.modules.places.application.queries.categories.shared.readers.place_cate
 from app.modules.places.application.queries.categories.user.get_all.handler import (
     GetAllPlaceCategoriesQueryHandler,
 )
-from app.modules.places.application.queries.places.get.handler import (
+from app.modules.places.application.queries.places.user.get.handler import (
     GetPlaceQueryHandler,
 )
-from app.modules.places.application.queries.places.get_all.handler import (
+from app.modules.places.application.queries.places.user.get_all import (
     GetAllPlacesQueryHandler,
 )
-from app.modules.places.application.queries.places.get_map_poi.handler import (
+from app.modules.places.application.queries.places.user.get_map_poi.handler import (
     GetPlacesMapPOIQueryHandler,
 )
 
