@@ -48,6 +48,9 @@ from app.modules.favourites.infrastructure.preview_providers.place import (
 from app.modules.favourites.infrastructure.target_checker import (
     FavouriteTargetChecker,
 )
+from app.modules.places.application.interfaces.file_storage_url_builder import (
+    IFileStorageURLBuilder,
+)
 from app.modules.places.application.interfaces.readers.place import (
     IPlaceReader,
 )
@@ -76,9 +79,11 @@ class FavouriteProvider(Provider):
     async def place_preview_provider(
         self,
         place_reader: IPlaceReader,
+        storage_url_builder: IFileStorageURLBuilder,
     ) -> PlaceFavouritePreviewProvider:
         return PlaceFavouritePreviewProvider(
             place_reader=place_reader,
+            storage_url_builder=storage_url_builder,
         )
 
     @provide(scope=Scope.REQUEST, provides=IFavouritePreviewEnricher)

@@ -301,11 +301,13 @@ async def create_place(
 async def get_place_details(
     place_id: UUID7,
     handler: FromDishka[GetAdminPlaceQueryHandler],
+    accept_language: AcceptLanguageDep,
     principal: Annotated[Principal, Depends(get_staff_principal)],
 ) -> AdminPlaceDetailsReadModel:
     result = await handler(
         GetAdminPlaceQuery(
             place_id=place_id,
+            language=accept_language.language,
         )
     )
     return result

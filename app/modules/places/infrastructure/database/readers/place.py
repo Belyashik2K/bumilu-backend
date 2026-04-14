@@ -1,9 +1,12 @@
+from dataclasses import dataclass
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy import (
     Float,
     and_,
     func,
+    literal,
     select,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -62,9 +65,221 @@ from app.modules.reviews.infrastructure.database.models import ReviewModel
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
 
+@dataclass(slots=True)
+class PlaceListFilters:
+    title_like: str | None = None
+    category_slug: str | None = None
+    place_ids: list[UUID] | None = None
+    status: PlaceStatusEnum | None = None
+
+
 class SQLAlchemyPlaceReader(IPlaceReader):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
+
+    @staticmethod
+    def _build_reviews_subquery(place_ids: list[UUID] | None = None):
+        stmt = select(
+            ReviewModel.entity_id.label("place_id"),
+            func.avg(ReviewModel.rating).cast(Float).label("rating_average"),
+            func.count(ReviewModel.id).label("reviews_count"),
+        ).where(ReviewModel.entity_type == ReviewEntityTypeEnum.PLACE)
+
+        if place_ids:
+            stmt = stmt.where(ReviewModel.entity_id.in_(place_ids))
+
+        return stmt.group_by(ReviewModel.entity_id).subquery()
+
+    @staticmethod
+    def _build_public_filters(
+        *,
+        filters: PlaceListFilters,
+        language: LanguageEnum,
+    ) -> list[Any]:
+        conditions: list[Any] = [
+            PlaceTranslationModel.language_code == language,
+            PlaceCategoryTranslationModel.language_code == language,
+            PlaceModel.status == PlaceStatusEnum.PUBLISHED,
+        ]
+
+        if filters.title_like:
+            conditions.append(
+                PlaceModel.translations.any(
+                    and_(
+                        PlaceTranslationModel.language_code == language,
+                        PlaceTranslationModel.title.ilike(f"%{filters.title_like}%"),
+                    )
+                )
+            )
+
+        if filters.category_slug:
+            conditions.append(PlaceCategoryModel.slug == filters.category_slug)
+
+        if filters.place_ids:
+            conditions.append(PlaceModel.id.in_(filters.place_ids))
+
+        return conditions
+
+    @staticmethod
+    def _build_admin_filters(
+        *,
+        filters: PlaceListFilters,
+        language: LanguageEnum | None = None,
+    ) -> list[Any]:
+        conditions: list[Any] = []
+
+        if filters.title_like:
+            if language is None:
+                conditions.append(
+                    PlaceModel.translations.any(
+                        PlaceTranslationModel.title.ilike(f"%{filters.title_like}%")
+                    )
+                )
+            else:
+                conditions.append(
+                    PlaceModel.translations.any(
+                        and_(
+                            PlaceTranslationModel.language_code == language,
+                            PlaceTranslationModel.title.ilike(
+                                f"%{filters.title_like}%"
+                            ),
+                        )
+                    )
+                )
+
+        if filters.category_slug:
+            conditions.append(PlaceCategoryModel.slug == filters.category_slug)
+
+        if filters.place_ids:
+            conditions.append(PlaceModel.id.in_(filters.place_ids))
+
+        if filters.status is not None:
+            conditions.append(PlaceModel.status == filters.status)
+
+        return conditions
+
+    def _build_public_base_stmt(
+        self,
+        *,
+        language: LanguageEnum,
+        filters: PlaceListFilters,
+    ):
+        return (
+            select(PlaceModel)
+            .join(PlaceModel.translations)
+            .join(PlaceModel.category)
+            .join(PlaceCategoryModel.translations)
+            .where(*self._build_public_filters(filters=filters, language=language))
+            .options(
+                selectinload(PlaceModel.working_days).selectinload(
+                    PlaceWorkingDayModel.working_hours
+                ),
+                selectinload(PlaceModel.photos),
+                contains_eager(PlaceModel.translations),
+                contains_eager(PlaceModel.category).contains_eager(
+                    PlaceCategoryModel.translations
+                ),
+            )
+        )
+
+    def _build_public_cards_stmt(
+        self,
+        *,
+        language: LanguageEnum,
+        filters: PlaceListFilters,
+    ):
+        reviews_subq = self._build_reviews_subquery(filters.place_ids)
+
+        return (
+            self._build_public_base_stmt(language=language, filters=filters)
+            .outerjoin(reviews_subq, reviews_subq.c.place_id == PlaceModel.id)
+            .add_columns(
+                reviews_subq.c.rating_average,
+                func.coalesce(reviews_subq.c.reviews_count, 0).label("reviews_count"),
+            )
+        )
+
+    def _build_admin_cards_stmt(
+        self,
+        *,
+        language: LanguageEnum,
+        filters: PlaceListFilters,
+    ):
+        reviews_subq = self._build_reviews_subquery(filters.place_ids)
+
+        return (
+            select(
+                PlaceModel,
+                PlaceTranslationModel,
+                reviews_subq.c.rating_average,
+                func.coalesce(reviews_subq.c.reviews_count, 0).label("reviews_count"),
+            )
+            .join(PlaceModel.category)
+            .outerjoin(
+                PlaceTranslationModel,
+                and_(
+                    PlaceTranslationModel.place_id == PlaceModel.id,
+                    PlaceTranslationModel.language_code == language,
+                ),
+            )
+            .outerjoin(reviews_subq, reviews_subq.c.place_id == PlaceModel.id)
+            .where(*self._build_admin_filters(filters=filters, language=language))
+            .options(joinedload(PlaceModel.category))
+        )
+
+    def _build_public_count_stmt(
+        self,
+        *,
+        language: LanguageEnum,
+        filters: PlaceListFilters,
+    ):
+        return (
+            select(func.count(func.distinct(PlaceModel.id)))
+            .select_from(PlaceModel)
+            .join(PlaceModel.translations)
+            .join(PlaceModel.category)
+            .join(PlaceCategoryModel.translations)
+            .where(*self._build_public_filters(filters=filters, language=language))
+        )
+
+    def _build_admin_count_stmt(
+        self,
+        *,
+        language: LanguageEnum,
+        filters: PlaceListFilters,
+    ):
+        stmt = select(func.count(func.distinct(PlaceModel.id))).select_from(PlaceModel)
+        stmt = stmt.join(PlaceModel.category)
+
+        return stmt.where(
+            *self._build_admin_filters(filters=filters, language=language)
+        )
+
+    async def _paginate_with_total(
+        self,
+        *,
+        items_stmt,
+        count_stmt,
+        limit: int,
+        offset: int,
+    ) -> tuple[list[Any], int]:
+        total_subquery = count_stmt.scalar_subquery()
+
+        stmt = (
+            items_stmt.add_columns(total_subquery.label("total_count"))
+            .limit(limit)
+            .offset(offset)
+        )
+
+        result = await self._session.execute(stmt)
+        rows = result.unique().all()
+
+        if not rows:
+            total = await self._session.scalar(count_stmt)
+            return [], total or 0
+
+        total = rows[0].total_count or 0
+        return rows, total
 
     async def exists(self, place_id: UUID) -> bool:
         stmt = (
@@ -93,19 +308,22 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         place_id: UUID,
         translation_language: LanguageEnum,
     ) -> PlaceDetailsReadModel | None:
-        is_favorite_subquery = (
-            select(PlaceFavouriteModel.user_id)
-            .where(
-                PlaceFavouriteModel.place_id == PlaceModel.id,
-                PlaceFavouriteModel.user_id == actor_id,
+        if actor_id is None:
+            is_favorite_expr = literal(False)
+        else:
+            is_favorite_expr = (
+                select(PlaceFavouriteModel.user_id)
+                .where(
+                    PlaceFavouriteModel.place_id == PlaceModel.id,
+                    PlaceFavouriteModel.user_id == actor_id,
+                )
+                .exists()
             )
-            .exists()
-        )
 
         stmt = (
             select(
                 PlaceModel,
-                is_favorite_subquery.label("is_favorite"),
+                is_favorite_expr.label("is_favorite"),
             )
             .join(PlaceModel.translations)
             .join(PlaceModel.category)
@@ -136,36 +354,36 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             return None
 
         place, is_favorite = row
-
-        if place is None:
-            return None
         return PlaceReadModelMapper.map_details(place=place, is_favorite=is_favorite)
 
     async def get_admin_details_by_id(
         self,
         place_id: UUID,
-        optional_translation_language: LanguageEnum | None = None,
+        optional_translation_language: LanguageEnum,
     ) -> AdminPlaceDetailsReadModel | None:
         stmt = (
-            (select(PlaceModel))
+            select(PlaceModel, PlaceTranslationModel)
             .outerjoin(
-                PlaceModel.translations.and_(
-                    PlaceTranslationModel.language_code == optional_translation_language
-                )
+                PlaceTranslationModel,
+                and_(
+                    PlaceTranslationModel.place_id == PlaceModel.id,
+                    PlaceTranslationModel.language_code
+                    == optional_translation_language,
+                ),
             )
-            .options(
-                joinedload(PlaceModel.category), contains_eager(PlaceModel.translations)
-            )
-            .where(
-                PlaceModel.id == place_id,
-            )
+            .options(joinedload(PlaceModel.category))
+            .where(PlaceModel.id == place_id)
         )
 
         result = await self._session.execute(stmt)
         row = result.unique().one_or_none()
+
         if not row:
             return None
-        return PlaceReadModelMapper.map_admin_details(place=row.PlaceModel)
+
+        return PlaceReadModelMapper.map_admin_details(
+            place=row.PlaceModel, translation=row.PlaceTranslationModel
+        )
 
     async def get_cards_by_ids(
         self,
@@ -175,46 +393,11 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         if not place_ids:
             return []
 
-        reviews_subq = (
-            select(
-                ReviewModel.entity_id.label("place_id"),
-                func.avg(ReviewModel.rating).cast(Float).label("rating_average"),
-                func.count(ReviewModel.id).label("reviews_count"),
-            )
-            .where(
-                ReviewModel.entity_type == ReviewEntityTypeEnum.PLACE,
-                ReviewModel.entity_id.in_(place_ids),
-            )
-            .group_by(ReviewModel.entity_id)
-            .subquery()
-        )
+        filters = PlaceListFilters(place_ids=place_ids)
 
-        stmt = (
-            select(
-                PlaceModel,
-                reviews_subq.c.rating_average,
-                func.coalesce(reviews_subq.c.reviews_count, 0).label("reviews_count"),
-            )
-            .join(PlaceModel.translations)
-            .join(PlaceModel.category)
-            .join(PlaceCategoryModel.translations)
-            .outerjoin(reviews_subq, reviews_subq.c.place_id == PlaceModel.id)
-            .where(
-                PlaceModel.id.in_(place_ids),
-                PlaceTranslationModel.language_code == translation_language,
-                PlaceCategoryTranslationModel.language_code == translation_language,
-                PlaceModel.status == PlaceStatusEnum.PUBLISHED,
-            )
-            .options(
-                selectinload(PlaceModel.working_days).selectinload(
-                    PlaceWorkingDayModel.working_hours
-                ),
-                selectinload(PlaceModel.photos),
-                contains_eager(PlaceModel.translations),
-                contains_eager(PlaceModel.category).contains_eager(
-                    PlaceCategoryModel.translations
-                ),
-            )
+        stmt = self._build_public_cards_stmt(
+            language=translation_language,
+            filters=filters,
         )
 
         result = await self._session.execute(stmt)
@@ -242,81 +425,27 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         limit: int,
         offset: int,
     ) -> PageReadModel[PlaceCardReadModel]:
-        base_filters = [
-            PlaceTranslationModel.language_code == translation_language,
-            PlaceCategoryTranslationModel.language_code == translation_language,
-            PlaceModel.status == PlaceStatusEnum.PUBLISHED,
-        ]
-
-        if title_like:
-            base_filters.append(
-                PlaceModel.translations.any(
-                    PlaceTranslationModel.title.ilike(f"%{title_like}%")
-                )
-            )
-
-        if category_slug:
-            base_filters.append(PlaceCategoryModel.slug == category_slug)
-
-        reviews_subq = (
-            select(
-                ReviewModel.entity_id.label("place_id"),
-                func.avg(ReviewModel.rating).cast(Float).label("rating_average"),
-                func.count(ReviewModel.id).label("reviews_count"),
-            )
-            .where(ReviewModel.entity_type == ReviewEntityTypeEnum.PLACE)
-            .group_by(ReviewModel.entity_id)
-            .subquery()
+        filters = PlaceListFilters(
+            title_like=title_like,
+            category_slug=category_slug,
         )
 
-        items_stmt = (
-            select(
-                PlaceModel,
-                reviews_subq.c.rating_average,
-                func.coalesce(reviews_subq.c.reviews_count, 0).label("reviews_count"),
-            )
-            .join(PlaceModel.translations)
-            .join(PlaceModel.category)
-            .join(PlaceCategoryModel.translations)
-            .outerjoin(reviews_subq, reviews_subq.c.place_id == PlaceModel.id)
-            .where(*base_filters)
-            .options(
-                selectinload(PlaceModel.working_days).selectinload(
-                    PlaceWorkingDayModel.working_hours
-                ),
-                selectinload(PlaceModel.photos),
-                contains_eager(PlaceModel.translations),
-                contains_eager(PlaceModel.category).contains_eager(
-                    PlaceCategoryModel.translations
-                ),
-            )
+        items_stmt = self._build_public_cards_stmt(
+            language=translation_language,
+            filters=filters,
+        ).order_by(PlaceModel.id)
+
+        count_stmt = self._build_public_count_stmt(
+            language=translation_language,
+            filters=filters,
         )
 
-        count_stmt = (
-            select(func.count(func.distinct(PlaceModel.id)))
-            .select_from(PlaceModel)
-            .join(PlaceModel.translations)
-            .join(PlaceModel.category)
-            .join(PlaceCategoryModel.translations)
-            .where(*base_filters)
+        rows, total = await self._paginate_with_total(
+            items_stmt=items_stmt,
+            count_stmt=count_stmt,
+            limit=limit,
+            offset=offset,
         )
-
-        total_subquery = count_stmt.scalar_subquery()
-
-        stmt = (
-            items_stmt.add_columns(total_subquery.label("total_count"))
-            .limit(limit)
-            .offset(offset)
-        )
-
-        result = await self._session.execute(stmt)
-        rows = result.unique().all()
-
-        if not rows:
-            total = await self._session.scalar(count_stmt)
-            return PageReadModel(items=[], total=total or 0)
-
-        total = rows[0].total_count or 0
 
         return PageReadModel(
             items=[
@@ -335,77 +464,31 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         *,
         title_like: str | None,
         category_slug: str | None,
-        optional_translation_language: LanguageEnum | None,
+        optional_translation_language: LanguageEnum,
         limit: int,
         offset: int,
     ) -> PageReadModel[AdminPlaceCardReadModel]:
-        base_filters = []
-
-        if title_like:
-            base_filters.append(
-                PlaceModel.translations.any(
-                    PlaceTranslationModel.title.ilike(f"%{title_like}%")
-                )
-            )
-
-        if category_slug:
-            base_filters.append(PlaceCategoryModel.slug == category_slug)
-
-        reviews_subq = (
-            select(
-                ReviewModel.entity_id.label("place_id"),
-                func.avg(ReviewModel.rating).cast(Float).label("rating_average"),
-                func.count(ReviewModel.id).label("reviews_count"),
-            )
-            .where(ReviewModel.entity_type == ReviewEntityTypeEnum.PLACE)
-            .group_by(ReviewModel.entity_id)
-            .subquery()
+        filters = PlaceListFilters(
+            title_like=title_like,
+            category_slug=category_slug,
         )
 
-        items_stmt = (
-            select(
-                PlaceModel,
-                PlaceTranslationModel,
-                reviews_subq.c.rating_average,
-                func.coalesce(reviews_subq.c.reviews_count, 0).label("reviews_count"),
-            )
-            .join(PlaceModel.category)
-            .outerjoin(
-                PlaceTranslationModel,
-                and_(
-                    PlaceTranslationModel.place_id == PlaceModel.id,
-                    PlaceTranslationModel.language_code
-                    == optional_translation_language,
-                ),
-            )
-            .outerjoin(reviews_subq, reviews_subq.c.place_id == PlaceModel.id)
-            .where(*base_filters)
-            .options(contains_eager(PlaceModel.category))
+        items_stmt = self._build_admin_cards_stmt(
+            language=optional_translation_language,
+            filters=filters,
+        ).order_by(PlaceModel.id)
+
+        count_stmt = self._build_admin_count_stmt(
+            language=optional_translation_language,
+            filters=filters,
         )
 
-        count_stmt = (
-            select(func.count(func.distinct(PlaceModel.id)))
-            .select_from(PlaceModel)
-            .join(PlaceModel.category)
-            .where(*base_filters)
+        rows, total = await self._paginate_with_total(
+            items_stmt=items_stmt,
+            count_stmt=count_stmt,
+            limit=limit,
+            offset=offset,
         )
-
-        total_subquery = count_stmt.scalar_subquery()
-
-        stmt = (
-            items_stmt.add_columns(total_subquery.label("total_count"))
-            .limit(limit)
-            .offset(offset)
-        )
-
-        result = await self._session.execute(stmt)
-        rows = result.unique().all()
-
-        if not rows:
-            total = await self._session.scalar(count_stmt)
-            return PageReadModel(items=[], total=total or 0)
-
-        total = rows[0].total_count or 0
 
         return PageReadModel(
             items=[
@@ -436,9 +519,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         )
 
         stmt = (
-            select(
-                PlaceModel,
-            )
+            select(PlaceModel)
             .join(PlaceModel.translations)
             .join(PlaceModel.category)
             .join(PlaceCategoryModel.translations)
@@ -488,9 +569,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                     == optional_translation_language,
                 ),
             )
-            .options(
-                joinedload(PlaceModel.category),
-            )
+            .options(joinedload(PlaceModel.category))
             .where(
                 PlaceModel.location.op("&&")(bbox),
                 func.ST_Intersects(PlaceModel.location, bbox),
@@ -538,6 +617,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         stmt = (
             select(PlaceWorkingDayModel)
             .where(PlaceWorkingDayModel.place_id == place_id)
+            .order_by(PlaceWorkingDayModel.weekday)
             .options(selectinload(PlaceWorkingDayModel.working_hours))
         )
 

@@ -218,9 +218,11 @@ class PlaceReadModelMapper:
     def map_admin_details(
         cls,
         place: PlaceModel,
+        translation: PlaceTranslationModel | None = None,
     ) -> AdminPlaceDetailsReadModel:
         return AdminPlaceDetailsReadModel(
             id=place.id,
+            title=translation.title if translation is not None else None,
             timezone=place.timezone,
             category=PlaceCategoryMapper.map_category(place.category),
             location=cls.map_location(place),
