@@ -12,7 +12,9 @@ from app.core.presentation.api.schemas.accept_language import (
 )
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.modules.auth.presentation.api import security
-from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
+from app.modules.auth.presentation.api.v1.users.deps import (
+    get_principal,
+)
 from app.modules.auth.shared.context import Principal
 from app.modules.routing.application.queries.build_route_path.handler import (
     BuildRoutePathBetweenPointsQueryHandler,
@@ -37,7 +39,7 @@ routing_router = APIRouter(
 @inject
 async def build_route_between_points(
     handler: FromDishka[BuildRoutePathBetweenPointsQueryHandler],
-    principal: Annotated[Principal, Depends(get_user_principal)],
+    principal: Annotated[Principal, Depends(get_principal)],
     data: GetRouteBetweenPointsRequestSchema,
     accept_language: AcceptLanguageDep,
 ) -> RoutePathSchema:
