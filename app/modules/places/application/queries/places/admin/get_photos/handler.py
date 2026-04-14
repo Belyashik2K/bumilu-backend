@@ -9,11 +9,10 @@ from app.modules.places.application.queries.places.admin.get_photos.query import
 from app.modules.places.application.queries.places.admin.get_photos.view import (
     AdminPlacePhotoView,
 )
-from app.modules.places.application.queries.places.shared.views import PlacePhotoView
 
 
 class GetAdminPlacePhotosQueryHandler(
-    IQueryHandler[GetAdminPlacePhotosQuery, list[PlacePhotoView]]
+    IQueryHandler[GetAdminPlacePhotosQuery, list[AdminPlacePhotoView]]
 ):
     def __init__(
         self, place_reader: IPlaceReader, storage_url_builder: IFileStorageURLBuilder

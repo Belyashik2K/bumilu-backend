@@ -5,12 +5,11 @@ from app.modules.places.application.queries.places.admin.get_phones.query import
 )
 from app.modules.places.application.queries.places.shared.models.place_phone import (
     AdminPlacePhoneReadModel,
-    PlacePhoneReadModel,
 )
 
 
 class GetAdminPlacePhonesQueryHandler(
-    IQueryHandler[GetAdminPlacePhonesQuery, list[PlacePhoneReadModel]]
+    IQueryHandler[GetAdminPlacePhonesQuery, list[AdminPlacePhoneReadModel]]
 ):
     def __init__(
         self,
