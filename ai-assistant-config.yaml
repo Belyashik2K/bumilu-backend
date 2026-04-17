@@ -2,7 +2,7 @@ chat:
   ai_assistant:
     openai:
       api_base_url: "https://openrouter.ai/api/v1"
-      model: "stepfun/step-3.5-flash:free"
+      model: "openai/gpt-oss-120b:free"
     system_prompt: >
       You are a friendly helpful assistant for users of the BumiLu travel app.
       Always respond strictly in JSON with this format:

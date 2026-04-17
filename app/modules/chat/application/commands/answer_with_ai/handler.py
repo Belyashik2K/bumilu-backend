@@ -1,7 +1,12 @@
+import logging
+
 from app.core.application.commands import ICommandHandler
 from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.domain.value_objects.id import ChatIdVO
-from app.core.utils import get_current_dt
+from app.core.utils import (
+    get_current_dt,
+    prepare_extras,
+)
 from app.modules.chat.application.commands.answer_with_ai.command import (
     AnswerWithAIInChatCommand,
 )
@@ -11,6 +16,8 @@ from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
 )
 from app.modules.chat.domain.value_objects.message_text import MessageTextVO
+
+logger = logging.getLogger(name=__name__)
 
 
 class AnswerWithAIInChatCommandHandler(ICommandHandler[AnswerWithAIInChatCommand]):
@@ -57,7 +64,11 @@ class AnswerWithAIInChatCommandHandler(ICommandHandler[AnswerWithAIInChatCommand
                 await self._chat_message_repository.save(reply)
 
             await self._chat_repository.save(chat)
-        except Exception:  # TODO: add specific exception for chat responder errors
+        except Exception as e:  # TODO: add specific exception for chat responder errors
+            logger.exception(
+                "answer_with_ai_failed",
+                extra=prepare_extras(reason=str(e)),
+            )
             chat.escalate_to_admin(now=now)
             await self._chat_repository.save(chat)
 
