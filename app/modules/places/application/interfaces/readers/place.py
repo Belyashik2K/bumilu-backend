@@ -38,6 +38,9 @@ class IPlaceReader(ABC):
     async def count_by_category_id(self, category_id: UUID) -> int: ...
 
     @abstractmethod
+    async def count_existing_places(self, place_ids: list[UUID]) -> int: ...
+
+    @abstractmethod
     async def get_by_id(
         self,
         *,
