@@ -48,7 +48,7 @@ from app.modules.places.infrastructure.database.repositories.place_category impo
 from app.modules.places.infrastructure.database.repositories.place_category_translation import (
     SQLAlchemyPlaceCategoryTranslationRepository,
 )
-from app.modules.places.infrastructure.database.repositories.place_translation_repository import (
+from app.modules.places.infrastructure.database.repositories.place_translation import (
     SQLAlchemyPlaceTranslationRepository,
 )
 
