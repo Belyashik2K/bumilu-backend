@@ -34,9 +34,11 @@ class RouteModel(PKUUIDMixin, TimestampMixin, BaseModel):
         "RouteTranslationModel",
         back_populates="route",
         cascade="all, delete-orphan",
+        order_by="RouteTranslationModel.language_code",
     )
     points: Mapped[list["RoutePointModel"]] = relationship(
         "RoutePointModel",
         back_populates="route",
         cascade="all, delete-orphan",
+        order_by="RoutePointModel.point_index",
     )
