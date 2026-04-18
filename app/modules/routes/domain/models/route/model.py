@@ -12,6 +12,7 @@ from app.core.domain.value_objects.id import (
     RouteIdVO,
 )
 from app.core.enums import LanguageEnum
+from app.core.enums.language import REQUIRED_LANGUAGES
 from app.modules.routes.domain.models.route_point.model import RoutePoint
 from app.modules.routes.domain.models.route_translation.model import RouteTranslation
 from app.modules.routes.domain.value_objects.description.object import (
@@ -165,3 +166,39 @@ class Route:
 
         if len(self._translations) == initial_len:
             raise ValueError(f"Translation for language '{language_code}' not found")
+
+    def publish(self) -> None:
+        if self.is_published():
+            return
+
+        if missing_languages := REQUIRED_LANGUAGES - {
+            translation.language_code for translation in self.translations
+        }:
+            raise ValueError(
+                f"Cannot publish route. Missing translations for languages: {', '.join(missing_languages)}"
+            )
+
+        if len(self.points) < 2:
+            raise ValueError(
+                "Cannot publish route. A route must have at least 2 points."
+            )
+
+        self.status = RouteStatusEnum.PUBLISHED
+
+    def hide(self) -> None:
+        if self.is_hidden():
+            return
+
+        if self.is_draft():
+            raise ValueError("Cannot hide route. Only published routes can be hidden.")
+
+        self.status = RouteStatusEnum.HIDDEN
+
+    def change_status(self, new_status: RouteStatusEnum) -> None:
+        if new_status == RouteStatusEnum.PUBLISHED:
+            self.publish()
+        elif new_status == RouteStatusEnum.HIDDEN:
+            self.hide()
+        raise ValueError(
+            f"Invalid status transition to '{new_status}' for route with current status '{self.status}'"
+        )
