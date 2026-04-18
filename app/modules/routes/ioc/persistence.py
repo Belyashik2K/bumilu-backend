@@ -6,8 +6,14 @@ from dishka import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.routes.application.interfaces.readers.route import IRouteReader
+from app.modules.routes.application.interfaces.repositories.route import (
+    IRouteRepository,
+)
 from app.modules.routes.infrastructure.database.readers.route import (
     SQLAlchemyRouteReader,
+)
+from app.modules.routes.infrastructure.database.repositories.route import (
+    SQLAlchemyRouteRepository,
 )
 
 
@@ -15,3 +21,7 @@ class RoutesPersistenceProvider(Provider):
     @provide(scope=Scope.REQUEST, provides=IRouteReader)
     async def route_reader(self, session: AsyncSession) -> IRouteReader:
         return SQLAlchemyRouteReader(session=session)
+
+    @provide(scope=Scope.REQUEST, provides=IRouteReader)
+    async def route_repository(self, session: AsyncSession) -> IRouteRepository:
+        return SQLAlchemyRouteRepository(session=session)
