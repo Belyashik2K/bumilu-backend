@@ -1,3 +1,4 @@
+from time import time
 from uuid import UUID
 
 from geoalchemy2.elements import WKBElement
@@ -290,6 +291,30 @@ class SQLAlchemyPlaceRepository(IPlaceRepository):
             model_photo.thumbnail_file_key = entity_photo.thumbnail_file_key
             model_photo.status = entity_photo.status
 
+    def _sync_working_hours(
+        self,
+        model_day: PlaceWorkingDayModel,
+        entity_day: PlaceWorkingDay,
+    ) -> None:
+        existing_by_key: dict[tuple[time, time], PlaceWorkingHourModel] = {
+            (hour.start_time, hour.end_time): hour for hour in model_day.working_hours
+        }
+
+        incoming_intervals_by_key: dict[tuple[time, time], WorkingIntervalVO] = {
+            (interval.start_time, interval.end_time): interval
+            for interval in entity_day.intervals
+        }
+        incoming_keys = set(incoming_intervals_by_key.keys())
+
+        for model_hour in list(model_day.working_hours):
+            key = (model_hour.start_time, model_hour.end_time)
+            if key not in incoming_keys:
+                model_day.working_hours.remove(model_hour)
+
+        for key, interval in incoming_intervals_by_key.items():
+            if key not in existing_by_key:
+                model_day.working_hours.append(self._working_hour_to_model(interval))
+
     def _sync_working_days(self, model: PlaceModel, entity: Place) -> None:
         existing_by_id: dict[UUID, PlaceWorkingDayModel] = {
             day.id: day for day in model.working_days
@@ -312,13 +337,11 @@ class SQLAlchemyPlaceRepository(IPlaceRepository):
 
             model_day.weekday = entity_day.weekday.value
             model_day.status = entity_day.status
-            model_day.working_hours.clear()
 
             if entity_day.status == PlaceWorkingDayStatusEnum.OPEN:
-                model_day.working_hours.extend(
-                    self._working_hour_to_model(interval)
-                    for interval in entity_day.intervals
-                )
+                self._sync_working_hours(model_day, entity_day)
+            else:
+                model_day.working_hours.clear()
 
     @sqlalchemy_exception_catcher
     async def get_by_id(
