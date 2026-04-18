@@ -72,7 +72,9 @@ class Place:
     address_taxi: PlaceTaxiAddressVO
     address_taxi_comment: str | None = field(default=None)
     status: PlaceStatusEnum = field(default=PlaceStatusEnum.DRAFT)
-    translation_language_codes: set[LanguageEnum] = field(default_factory=set)
+    translation_language_codes: set[LanguageEnum] = field(
+        default_factory=set
+    )  # TODO: Migrate to list of PlaceTranslation and remove this field
 
     phones: list[PlacePhone] | None = field(default=None)
     working_days: list[PlaceWorkingDay] | None = field(default=None)
