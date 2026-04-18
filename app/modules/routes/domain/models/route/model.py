@@ -196,9 +196,9 @@ class Route:
 
     def change_status(self, new_status: RouteStatusEnum) -> None:
         if new_status == RouteStatusEnum.PUBLISHED:
-            self.publish()
+            return self.publish()
         elif new_status == RouteStatusEnum.HIDDEN:
-            self.hide()
+            return self.hide()
         raise ValueError(
             f"Invalid status transition to '{new_status}' for route with current status '{self.status}'"
         )
