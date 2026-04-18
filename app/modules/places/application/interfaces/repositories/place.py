@@ -2,7 +2,10 @@ from abc import (
     ABC,
     abstractmethod,
 )
-from dataclasses import dataclass
+from dataclasses import (
+    dataclass,
+    field,
+)
 
 from app.core.domain.value_objects.id import PlaceIdVO
 from app.modules.places.domain.places.models.place.model import Place
@@ -10,9 +13,9 @@ from app.modules.places.domain.places.models.place.model import Place
 
 @dataclass(slots=True, kw_only=True, frozen=True)
 class PlaceLoadOptions:
-    phones: bool = False
-    working_days: bool = False
-    photos: bool = False
+    phones: bool = field(default=False)
+    working_days: bool = field(default=False)
+    photos: bool = field(default=False)
 
 
 class IPlaceRepository(ABC):
