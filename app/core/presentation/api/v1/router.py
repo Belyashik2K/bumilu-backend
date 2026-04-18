@@ -5,7 +5,9 @@ from app.modules.chat.presentation.api.v1 import chat_router
 from app.modules.favourites.presentation.api.v1 import favourites_router
 from app.modules.places.presentation.api.v1 import places_router
 from app.modules.reviews.presentation.api.v1 import reviews_router
-from app.modules.routes.presentation.api.v1 import routes_router
+from app.modules.routes.presentation.api.v1 import (
+    routes_router,
+)
 from app.modules.routing.presentation.api.v1 import routing_router
 from app.modules.staff.presentation.api.v1 import staff_router
 from app.modules.users.presentation.api.v1 import users_router

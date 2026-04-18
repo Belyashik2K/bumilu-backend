@@ -39,12 +39,12 @@ from app.modules.routes.presentation.api.schemas.main import (
 )
 from app.modules.routing.presentation.api.schemas.path import RoutePathSchema
 
-routes_router = APIRouter(
+user_routes_router = APIRouter(
     prefix="/routes", tags=["Routes"], dependencies=[Depends(security)]
 )
 
 
-@routes_router.get("", responses=generate_responses_for_endpoint())
+@user_routes_router.get("", responses=generate_responses_for_endpoint())
 @inject
 async def get_routes(
     handler: FromDishka[GetAllRoutesQueryHandler],
@@ -69,7 +69,7 @@ async def get_routes(
     )
 
 
-@routes_router.get("/{route_id}", responses=generate_responses_for_endpoint())
+@user_routes_router.get("/{route_id}", responses=generate_responses_for_endpoint())
 @inject
 async def get_route_by_id(
     route_id: UUID7,
@@ -86,7 +86,7 @@ async def get_route_by_id(
     return RouteSchema.model_validate(result, from_attributes=True)
 
 
-@routes_router.get(
+@user_routes_router.get(
     "/{route_id}/route",
     responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
 )
