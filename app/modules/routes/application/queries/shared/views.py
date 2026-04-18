@@ -4,17 +4,12 @@ from dataclasses import (
 )
 from uuid import UUID
 
-from app.core.application.queries.pagination import OffsetPagination
 from app.modules.places.application.queries.places.shared.views import PlaceCardView
-from app.modules.routes.application.queries.shared.models.route_card import (
-    RouteCardReadModel,
-)
 
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class PaginatedRouteCardView:
-    routes: list[RouteCardReadModel] = field(default_factory=list)
-    pagination: OffsetPagination
+# @dataclass(frozen=True, slots=True, kw_only=True)
+# class PaginatedRouteCardView:
+#     routes: list[RouteCardReadModel] = field(default_factory=list)
+#     pagination: OffsetPagination
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

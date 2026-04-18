@@ -34,7 +34,7 @@ class ReplaceRoutePointsCommandHandler(ICommandHandler[ReplaceRoutePointsCommand
         if route is None:
             raise RouteNotFound(route_id.value)
 
-        expected_existing_places_count = len(command.place_ids)
+        expected_existing_places_count = len(set(command.place_ids))
         actual_existing_places_count = await self._place_reader.count_existing_places(
             place_ids=command.place_ids
         )

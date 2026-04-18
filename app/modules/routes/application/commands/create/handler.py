@@ -31,4 +31,4 @@ class CreateRouteCommandHandler(
 
         await self._route_repository.save(route)
 
-        return CreateRouteCommandResult(route_id=route.id.value)
+        return CreateRouteCommandResult(id=route.id.value)
