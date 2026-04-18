@@ -22,6 +22,6 @@ class RoutesPersistenceProvider(Provider):
     async def route_reader(self, session: AsyncSession) -> IRouteReader:
         return SQLAlchemyRouteReader(session=session)
 
-    @provide(scope=Scope.REQUEST, provides=IRouteReader)
+    @provide(scope=Scope.REQUEST, provides=IRouteRepository)
     async def route_repository(self, session: AsyncSession) -> IRouteRepository:
         return SQLAlchemyRouteRepository(session=session)

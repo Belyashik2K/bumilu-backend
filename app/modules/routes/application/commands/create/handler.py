@@ -23,12 +23,12 @@ class CreateRouteCommandHandler(
         super().__init__(transaction_manager)
         self._route_repository = route_repository
 
-    def handle(
+    async def handle(
         self,
         command: CreateRouteCommand,
     ) -> CreateRouteCommandResult:
         route = Route.create()
 
-        self._route_repository.save(route)
+        await self._route_repository.save(route)
 
         return CreateRouteCommandResult(route_id=route.id.value)
