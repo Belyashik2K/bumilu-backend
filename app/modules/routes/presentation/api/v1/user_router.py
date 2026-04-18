@@ -32,9 +32,11 @@ from app.modules.routes.application.queries.get_all.handler import (
 )
 from app.modules.routes.application.queries.get_all.query import GetAllRoutesQuery
 from app.modules.routes.presentation.api.filters.route_sort import RouteSortFiltersDep
+from app.modules.routes.presentation.api.schemas.card import (
+    PaginatedRouteCardsResponseSchema,
+)
 from app.modules.routes.presentation.api.schemas.main import (
     BuildRoutePathForRouteRequestSchema,
-    PaginatedRouteCardsResponseSchema,
     RouteSchema,
 )
 from app.modules.routing.presentation.api.schemas.path import RoutePathSchema

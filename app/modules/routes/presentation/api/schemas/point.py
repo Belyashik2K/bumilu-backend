@@ -1,4 +1,5 @@
 from pydantic import (
+    UUID7,
     BaseModel,
     Field,
 )
@@ -14,4 +15,11 @@ class RoutePointSchema(BaseModel):
     preview: PlaceCardSchema = Field(
         ...,
         description="Preview of the place at this point.",
+    )
+
+
+class ReplaceRoutePointsRequestSchema(BaseModel):
+    place_ids: list[UUID7] = Field(
+        default_factory=list,
+        description="Ordered list of place IDs to replace the existing points in the route.",
     )

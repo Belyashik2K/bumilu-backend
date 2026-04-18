@@ -8,4 +8,4 @@ class CreateRouteCommand: ...
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class CreateRouteCommandResult:
-    route_id: UUID
+    id: UUID
