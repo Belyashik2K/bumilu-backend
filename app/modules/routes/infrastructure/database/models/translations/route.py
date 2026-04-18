@@ -45,8 +45,8 @@ class RouteTranslationModel(PKUUIDMixin, TimestampMixin, BaseModel):
         Enum(LanguageEnum, name="language_enum")
     )
     title: Mapped[str] = mapped_column(String(255))
-    short_description: Mapped[str | None] = mapped_column(String(255))
-    description: Mapped[str | None] = mapped_column(String(4096))
+    short_description: Mapped[str] = mapped_column(String(255))
+    description: Mapped[str] = mapped_column(String(4096))
 
     route: Mapped["RouteModel"] = relationship(
         "RouteModel",
