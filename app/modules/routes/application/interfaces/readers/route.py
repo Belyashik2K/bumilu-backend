@@ -14,7 +14,7 @@ from app.modules.routes.application.queries.shared.models.route_details import (
     RouteDetailsReadModel,
 )
 from app.modules.routes.application.queries.shared.models.route_point import (
-    RoutePointReadModel,
+    AdminRoutePointReadModel,
     RouteWaypointModel,
 )
 
@@ -38,7 +38,11 @@ class IRouteReader(ABC):
     ) -> list[RouteWaypointModel]: ...
 
     @abstractmethod
-    async def get_route_points(self, route_id: UUID) -> list[RoutePointReadModel]: ...
+    async def get_admin_route_points(
+        self,
+        route_id: UUID,
+        optional_translation_language: LanguageEnum,
+    ) -> list[AdminRoutePointReadModel]: ...
 
     @abstractmethod
     async def get_all(
