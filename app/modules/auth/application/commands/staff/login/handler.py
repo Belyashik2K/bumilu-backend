@@ -7,6 +7,10 @@ from app.modules.auth.application.commands.staff.login import (
     LoginAsStaffMemberCommand,
     LoginAsStaffMemberCommandResult,
 )
+from app.modules.auth.application.commands.staff.login.exceptions import (
+    InvalidCredentials,
+    PrincipalNotFound,
+)
 from app.modules.auth.application.interfaces.hashers import IStaffPasswordHasher
 from app.modules.auth.application.interfaces.repositories.principal import (
     IPrincipalRepository,
@@ -64,16 +68,16 @@ class LoginAsStaffMemberCommandHandler(
                 await self._principal_repository.save(principal)
                 await self._staff_member_repository.save(staff_member)
             else:
-                raise ValueError("Invalid email or password")
+                raise InvalidCredentials()
 
         if not self._staff_password_hasher.verify(
             password=command.password, password_hash=staff_member.password_hash
         ):
-            raise ValueError("Invalid email or password")
+            raise InvalidCredentials()
 
         principal = await self._principal_repository.get_by_id(staff_member.id)
         if principal is None:
-            raise ValueError("Principal not found for staff member")
+            raise PrincipalNotFound()
 
         tokens = await self._auth_session_service.issue(
             principal=principal,
