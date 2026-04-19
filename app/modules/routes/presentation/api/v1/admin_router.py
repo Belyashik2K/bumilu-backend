@@ -112,7 +112,7 @@ from app.modules.routes.presentation.api.schemas.translation import (
     PaginatedRouteTranslationSchema,
     UpdateRouteTranslationRequestSchema,
 )
-from app.modules.routing.application.models.route_path import RoutePath
+from app.modules.routing.presentation.api.schemas.path import RoutePathSchema
 
 admin_routes_router = APIRouter(
     prefix="/admin/routes", tags=["Admin Routes"], dependencies=[Depends(security)]
@@ -199,7 +199,7 @@ async def build_route_path_for_route(
     principal: Annotated[Principal, Depends(get_staff_principal)],
     accept_language: AcceptLanguageDep,
     data: BuildRoutePathForRouteRequestSchema,
-) -> RoutePath:
+) -> RoutePathSchema:
     result = await handler(
         query=BuildAdminRoutePathForRouteQuery(
             route_id=route_id,
@@ -207,7 +207,7 @@ async def build_route_path_for_route(
             travel_mode=data.travel_mode,
         )
     )
-    return result
+    return RoutePathSchema.model_validate(result, from_attributes=True)
 
 
 @admin_routes_router.patch(
