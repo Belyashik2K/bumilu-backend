@@ -11,6 +11,9 @@ from app.modules.routes.application.interfaces.readers.route import IRouteReader
 from app.modules.routes.application.interfaces.readers.route_translation import (
     IRouteTranslationReader,
 )
+from app.modules.routes.application.queries.admin.get_all.handler import (
+    GetAdminRoutesListQueryHandler,
+)
 from app.modules.routes.application.queries.admin.get_points.handler import (
     GetAdminRoutePointsQueryHandler,
 )
@@ -86,4 +89,12 @@ class RoutesQueryHandlersProvider(Provider):
         return GetAdminRouteTranslationByLanguageCodeQueryHandler(
             route_reader=route_reader,
             route_translation_reader=route_translation_reader,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def get_admin_routes_list_handler(
+        self, route_reader: IRouteReader
+    ) -> GetAdminRoutesListQueryHandler:
+        return GetAdminRoutesListQueryHandler(
+            route_reader=route_reader,
         )

@@ -20,6 +20,7 @@ from app.core.enums import LanguageEnum
 from app.core.presentation.api.schemas.accept_language import (
     AcceptLanguageDep,
 )
+from app.core.presentation.api.schemas.pagination import OffsetPaginationDep
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.staff.deps import get_staff_principal
@@ -62,6 +63,12 @@ from app.modules.routes.application.commands.update_translation.command import (
 from app.modules.routes.application.commands.update_translation.handler import (
     UpdateRouteTranslationCommandHandler,
 )
+from app.modules.routes.application.queries.admin.get_all.handler import (
+    GetAdminRoutesListQueryHandler,
+)
+from app.modules.routes.application.queries.admin.get_all.query import (
+    GetAdminRoutesListQuery,
+)
 from app.modules.routes.application.queries.admin.get_points.handler import (
     GetAdminRoutePointsQueryHandler,
 )
@@ -79,6 +86,9 @@ from app.modules.routes.application.queries.admin.get_translations.handler impor
 )
 from app.modules.routes.application.queries.admin.get_translations.query import (
     GetAdminRouteTranslationsQuery,
+)
+from app.modules.routes.application.queries.shared.models.route_card import (
+    AdminRouteCardReadModel,
 )
 from app.modules.routes.application.queries.shared.models.route_point import (
     AdminRoutePointReadModel,
@@ -101,6 +111,27 @@ from app.modules.routes.presentation.api.schemas.translation import (
 admin_routes_router = APIRouter(
     prefix="/admin/routes", tags=["Admin Routes"], dependencies=[Depends(security)]
 )
+
+
+@admin_routes_router.get(
+    "",
+    responses=generate_responses_for_endpoint(),
+)
+@inject
+async def get_routes(
+    handler: FromDishka[GetAdminRoutesListQueryHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+    accept_language: AcceptLanguageDep,
+    pagination: OffsetPaginationDep,
+) -> PaginatedView[AdminRouteCardReadModel]:
+    result = await handler(
+        query=GetAdminRoutesListQuery(
+            language=accept_language.language,
+            limit=pagination.limit,
+            offset=pagination.offset,
+        ),
+    )
+    return result
 
 
 @admin_routes_router.post(

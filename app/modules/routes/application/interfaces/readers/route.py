@@ -8,6 +8,7 @@ from app.core.application.queries.pagination import PageReadModel
 from app.core.enums import LanguageEnum
 from app.modules.places.shared.enums.route_sort import RouteSortByEnum
 from app.modules.routes.application.queries.shared.models.route_card import (
+    AdminRouteCardReadModel,
     RouteCardReadModel,
 )
 from app.modules.routes.application.queries.shared.models.route_details import (
@@ -58,3 +59,12 @@ class IRouteReader(ABC):
         longitude: float | None = None,
         sort_by: RouteSortByEnum | None = None,
     ) -> PageReadModel[RouteCardReadModel]: ...
+
+    @abstractmethod
+    async def admin_get_all(
+        self,
+        *,
+        optional_translation_language: LanguageEnum,
+        limit: int,
+        offset: int,
+    ) -> PageReadModel[AdminRouteCardReadModel]: ...
