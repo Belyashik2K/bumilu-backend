@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import (
     UUID7,
     BaseModel,
@@ -22,23 +24,31 @@ class CreateRouteResponseSchema(BaseModel):
     )
 
 
-class RouteSchema(BaseModel):
+class BaseRouteSchema(BaseModel):
     id: UUID7 = Field(
         ...,
         description="Unique identifier of the route",
         examples=[UUID_EXAMPLE],
     )
+    total_points: int = Field(
+        ...,
+        description="Total number of points included in the route",
+        examples=[5],
+    )
+
+
+class RouteSchema(BaseRouteSchema):
     title: str = Field(
         ...,
         description="Title of the route",
         examples=[TITLE_EXAMPLE],
     )
-    description: str | None = Field(
+    description: str = Field(
         None,
         description="Detailed description of the route",
         examples=[SHORT_DESCRIPTION_EXAMPLE],
     )
-    short_description: str | None = Field(
+    short_description: str = Field(
         None,
         description="Short description of the route",
         examples=[SHORT_DESCRIPTION_EXAMPLE],
@@ -47,10 +57,26 @@ class RouteSchema(BaseModel):
         default_factory=list,
         description="Ordered list of points included in the route, where each point represents a place",
     )
-    total_points: int = Field(
+
+
+class AdminRouteSchema(BaseRouteSchema):
+    title: str | None = Field(
+        None,
+        description="Title of the route. Can be null for unpublished routes.",
+        examples=[TITLE_EXAMPLE],
+    )
+    status: RouteStatusEnum = Field(
         ...,
-        description="Total number of points included in the route",
-        examples=[5],
+        description="Current status of the route.",
+        examples=[RouteStatusEnum.PUBLISHED],
+    )
+    created_at: datetime = Field(
+        ...,
+        description="Timestamp when the route was created.",
+    )
+    updated_at: datetime = Field(
+        ...,
+        description="Timestamp when the route was last updated.",
     )
 
 

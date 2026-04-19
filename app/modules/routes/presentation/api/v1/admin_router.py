@@ -11,10 +11,6 @@ from fastapi import (
 from pydantic import UUID7
 from starlette import status
 
-from app.core.application.queries.pagination import (
-    DataListView,
-    PaginatedView,
-)
 from app.core.constants import UNSET
 from app.core.enums import LanguageEnum
 from app.core.presentation.api.schemas.accept_language import (
@@ -91,27 +87,22 @@ from app.modules.routes.application.queries.admin.get_translations.handler impor
 from app.modules.routes.application.queries.admin.get_translations.query import (
     GetAdminRouteTranslationsQuery,
 )
-from app.modules.routes.application.queries.shared.models.route_card import (
-    AdminRouteCardReadModel,
-)
-from app.modules.routes.application.queries.shared.models.route_details import (
-    AdminRouteDetailsReadModel,
-)
-from app.modules.routes.application.queries.shared.models.route_point import (
-    AdminRoutePointReadModel,
-)
-from app.modules.routes.application.queries.shared.models.route_translation import (
-    RouteTranslationReadModel,
+from app.modules.routes.presentation.api.schemas.card import (
+    PaginatedAdminRouteCardsResponseSchema,
 )
 from app.modules.routes.presentation.api.schemas.main import (
+    AdminRouteSchema,
     ChangeRouteStatusRequestSchema,
     CreateRouteResponseSchema,
 )
 from app.modules.routes.presentation.api.schemas.point import (
+    AdminRoutePointListSchema,
     ReplaceRoutePointsRequestSchema,
 )
 from app.modules.routes.presentation.api.schemas.translation import (
+    BaseRouteTranslationSchema,
     CreateRouteTranslationRequestSchema,
+    PaginatedRouteTranslationSchema,
     UpdateRouteTranslationRequestSchema,
 )
 
@@ -130,7 +121,7 @@ async def get_routes(
     principal: Annotated[Principal, Depends(get_staff_principal)],
     accept_language: AcceptLanguageDep,
     pagination: OffsetPaginationDep,
-) -> PaginatedView[AdminRouteCardReadModel]:
+) -> PaginatedAdminRouteCardsResponseSchema:
     result = await handler(
         query=GetAdminRoutesListQuery(
             language=accept_language.language,
@@ -138,7 +129,9 @@ async def get_routes(
             offset=pagination.offset,
         ),
     )
-    return result
+    return PaginatedAdminRouteCardsResponseSchema.model_validate(
+        result, from_attributes=True
+    )
 
 
 @admin_routes_router.post(
@@ -164,14 +157,14 @@ async def get_route_by_id(
     handler: FromDishka[GetAdminRouteQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
     accept_language: AcceptLanguageDep,
-) -> AdminRouteDetailsReadModel:
+) -> AdminRouteSchema:
     result = await handler(
         query=GetAdminRouteQuery(
             route_id=route_id,
             language=accept_language.language,
         )
     )
-    return result
+    return AdminRouteSchema.model_validate(result, from_attributes=True)
 
 
 @admin_routes_router.delete(
@@ -215,7 +208,7 @@ async def get_route_translations(
     handler: FromDishka[GetAdminRouteTranslationsQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
     pagination: OffsetPaginationDep,
-) -> PaginatedView[RouteTranslationReadModel]:
+) -> PaginatedRouteTranslationSchema:
     result = await handler(
         query=GetAdminRouteTranslationsQuery(
             route_id=route_id,
@@ -223,7 +216,7 @@ async def get_route_translations(
             offset=pagination.offset,
         )
     )
-    return result
+    return PaginatedRouteTranslationSchema.model_validate(result, from_attributes=True)
 
 
 @admin_routes_router.post(
@@ -259,13 +252,13 @@ async def get_route_translation_by_language_code(
     language_code: LanguageEnum,
     handler: FromDishka[GetAdminRouteTranslationByLanguageCodeQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> RouteTranslationReadModel:
+) -> BaseRouteTranslationSchema:
     result = await handler(
         query=GetAdminRouteTranslationByLanguageCodeQuery(
             route_id=route_id, language_code=language_code
         )
     )
-    return result
+    return BaseRouteTranslationSchema.model_validate(result, from_attributes=True)
 
 
 @admin_routes_router.patch(
@@ -323,13 +316,13 @@ async def get_route_points(
     handler: FromDishka[GetAdminRoutePointsQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
     accept_language: AcceptLanguageDep,
-) -> DataListView[AdminRoutePointReadModel]:
+) -> AdminRoutePointListSchema:
     result = await handler(
         query=GetAdminRoutePointsQuery(
             route_id=route_id, language=accept_language.language
         )
     )
-    return result
+    return AdminRoutePointListSchema.model_validate(result, from_attributes=True)
 
 
 @admin_routes_router.put(

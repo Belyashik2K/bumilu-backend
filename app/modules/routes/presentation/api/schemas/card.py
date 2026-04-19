@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import (
     UUID7,
     BaseModel,
@@ -10,28 +12,52 @@ from app.modules.routes.presentation.api.schemas.examples import (
     TITLE_EXAMPLE,
     UUID_EXAMPLE,
 )
+from app.modules.routes.shared.enums.route_status import RouteStatusEnum
+
+# @dataclass(frozen=True, slots=True, kw_only=True)
+# class BaseRouteCardReadModel:
+#     id: UUID
+#     total_places: int
+#
+#
+# @dataclass(frozen=True, slots=True, kw_only=True)
+# class RouteCardReadModel(BaseRouteCardReadModel):
+#     title: str
+#     short_description: str
+#     m_to_start_place: int | None = field(default=None)
+#
+#
+# @dataclass(frozen=True, slots=True, kw_only=True)
+# class AdminRouteCardReadModel(BaseRouteCardReadModel):
+#     title: str | None = field(default=None)
+#     status: RouteStatusEnum
+#     created_at: datetime
+#     updated_at: datetime
 
 
-class RouteCardSchema(BaseModel):
+class BaseRouteCardSchema(BaseModel):
     id: UUID7 = Field(
         ...,
         description="Unique identifier of the place",
         examples=[UUID_EXAMPLE],
     )
+    total_places: int = Field(
+        ...,
+        description="Total number of places included in the route",
+        examples=[5],
+    )
+
+
+class RouteCardSchema(BaseRouteCardSchema):
     title: str = Field(
         ...,
         description="Title of the route",
         examples=[TITLE_EXAMPLE],
     )
-    short_description: str | None = Field(
+    short_description: str = Field(
         None,
         description="Short description of the route",
         examples=[SHORT_DESCRIPTION_EXAMPLE],
-    )
-    total_places: int = Field(
-        ...,
-        description="Total number of places included in the route",
-        examples=[5],
     )
     m_to_start_place: float | None = Field(
         None,
@@ -40,7 +66,32 @@ class RouteCardSchema(BaseModel):
     )
 
 
+class AdminRouteCardSchema(BaseRouteCardSchema):
+    title: str | None = Field(
+        None,
+        description="Title of the route",
+        examples=[TITLE_EXAMPLE],
+    )
+    status: RouteStatusEnum = Field(
+        ...,
+        description="Status of the route",
+        examples=[RouteStatusEnum.PUBLISHED],
+    )
+    created_at: datetime = Field(
+        ...,
+        description="Creation timestamp of the route in ISO 8601 format",
+    )
+    updated_at: datetime = Field(
+        ...,
+        description="Last update timestamp of the route in ISO 8601 format",
+    )
+
+
 PaginatedRouteCardsResponseSchema = make_paginated_response_schema(
     item_type=RouteCardSchema,
     description="Response schema for a paginated list of route cards.",
+)
+PaginatedAdminRouteCardsResponseSchema = make_paginated_response_schema(
+    item_type=AdminRouteCardSchema,
+    description="Response schema for a paginated list of route cards for admin.",
 )
