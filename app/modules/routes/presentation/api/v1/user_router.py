@@ -19,18 +19,18 @@ from app.modules.auth.presentation.api.v1.users.deps import (
     get_user_principal,
 )
 from app.modules.auth.shared.context import Principal
-from app.modules.routes.application.queries.user.build_route_path import (
-    BuildRoutePathForRouteQuery,
+from app.modules.routes.application.queries.user.build_route_path.handler import (
     BuildRoutePathForRouteQueryHandler,
 )
-from app.modules.routes.application.queries.user.get import (
-    GetRouteQuery,
-    GetRouteQueryHandler,
+from app.modules.routes.application.queries.user.build_route_path.query import (
+    BuildRoutePathForRouteQuery,
 )
-from app.modules.routes.application.queries.user.get_all import GetAllRoutesQuery
+from app.modules.routes.application.queries.user.get.handler import GetRouteQueryHandler
+from app.modules.routes.application.queries.user.get.query import GetRouteQuery
 from app.modules.routes.application.queries.user.get_all.handler import (
     GetAllRoutesQueryHandler,
 )
+from app.modules.routes.application.queries.user.get_all.query import GetAllRoutesQuery
 from app.modules.routes.presentation.api.filters.route_sort import RouteSortFiltersDep
 from app.modules.routes.presentation.api.schemas.card import (
     PaginatedRouteCardsResponseSchema,

@@ -8,10 +8,13 @@ from app.modules.places.application.interfaces.file_storage_url_builder import (
     IFileStorageURLBuilder,
 )
 from app.modules.routes.application.interfaces.readers.route import IRouteReader
-from app.modules.routes.application.queries.user.build_route_path import (
+from app.modules.routes.application.queries.admin.get_points.handler import (
+    GetAdminRoutePointsQueryHandler,
+)
+from app.modules.routes.application.queries.user.build_route_path.handler import (
     BuildRoutePathForRouteQueryHandler,
 )
-from app.modules.routes.application.queries.user.get import GetRouteQueryHandler
+from app.modules.routes.application.queries.user.get.handler import GetRouteQueryHandler
 from app.modules.routes.application.queries.user.get_all.handler import (
     GetAllRoutesQueryHandler,
 )
@@ -43,4 +46,13 @@ class RoutesQueryHandlersProvider(Provider):
         return BuildRoutePathForRouteQueryHandler(
             route_reader=route_reader,
             routing_gateway=routing_gateway,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def get_admin_route_points_handler(
+        self, route_reader: IRouteReader, storage_url_builder: IFileStorageURLBuilder
+    ) -> GetAdminRoutePointsQueryHandler:
+        return GetAdminRoutePointsQueryHandler(
+            route_reader=route_reader,
+            storage_url_builder=storage_url_builder,
         )

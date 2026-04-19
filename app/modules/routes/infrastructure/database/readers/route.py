@@ -19,12 +19,19 @@ from app.core.enums import LanguageEnum
 from app.modules.places.application.queries.places.shared.mappers import (
     PlaceReadModelMapper,
 )
+from app.modules.places.application.queries.places.shared.models.place_card import (
+    AdminPlaceCardReadModel,
+)
 from app.modules.places.infrastructure.database.models import (
     PlaceCategoryModel,
     PlaceCategoryTranslationModel,
     PlaceModel,
     PlaceTranslationModel,
     PlaceWorkingDayModel,
+)
+from app.modules.places.infrastructure.database.query_builders import (
+    PlaceListFilters,
+    SQLAlchemyPlaceQueryBuilder,
 )
 from app.modules.places.shared.enums.route_sort import RouteSortByEnum
 from app.modules.routes.application.interfaces.readers.route import IRouteReader
@@ -35,6 +42,7 @@ from app.modules.routes.application.queries.shared.models.route_details import (
     RouteDetailsReadModel,
 )
 from app.modules.routes.application.queries.shared.models.route_point import (
+    AdminRoutePointReadModel,
     RoutePointReadModel,
     RouteWaypointModel,
 )
@@ -156,7 +164,44 @@ class SQLAlchemyRouteReader(IRouteReader):
         self,
         route_id: UUID,
         optional_translation_language: LanguageEnum,
-    ) -> list[RoutePointReadModel]: ...
+    ) -> list[AdminRoutePointReadModel]:
+        route_points_stmt = (
+            select(RoutePointModel)
+            .where(RoutePointModel.route_id == route_id)
+            .order_by(RoutePointModel.point_index)
+        )
+
+        result = await self._session.execute(route_points_stmt)
+        route_points = result.scalars().all()
+
+        if not route_points:
+            return []
+
+        card_stmt = SQLAlchemyPlaceQueryBuilder.build_admin_cards_stmt(
+            language=optional_translation_language,
+            filters=PlaceListFilters(
+                place_ids=[point.place_id for point in route_points]
+            ),
+        )
+        result = await self._session.execute(card_stmt)
+        rows = result.unique().all()
+
+        place_cards: dict[UUID, AdminPlaceCardReadModel] = {
+            place.id: PlaceReadModelMapper.map_admin_card(
+                place,
+                translation,
+                rating_average=rating_average,
+                reviews_count=reviews_count,
+            )
+            for place, translation, rating_average, reviews_count in rows
+        }
+
+        return [
+            AdminRoutePointReadModel(
+                index=point.point_index, preview=place_cards.get(point.place_id)
+            )
+            for point in route_points
+        ]
 
     async def get_all(
         self,
