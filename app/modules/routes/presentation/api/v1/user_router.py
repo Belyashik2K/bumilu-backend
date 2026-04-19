@@ -7,7 +7,6 @@ from fastapi import (
     Depends,
 )
 from pydantic import UUID7
-from starlette import status
 
 from app.core.presentation.api.schemas.accept_language import AcceptLanguageDep
 from app.core.presentation.api.schemas.location import LocationDep
@@ -89,7 +88,7 @@ async def get_route_by_id(
 
 @user_routes_router.post(
     "/{route_id}/route",
-    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+    responses=generate_responses_for_endpoint(),
 )
 @inject
 async def build_route_path_for_route(
