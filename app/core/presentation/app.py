@@ -25,7 +25,6 @@ from app.core.infrastructure.config import AppConfig
 from app.core.infrastructure.logging import setup_logging
 from app.core.ioc import (
     CORE_PROVIDERS,
-    ConfigProvider,
 )
 from app.core.presentation.api import api_router
 from app.core.presentation.exceptions import set_exception_handlers
@@ -41,7 +40,7 @@ from app.modules.places.ioc import PLACES_PROVIDERS
 from app.modules.reviews.ioc import ReviewProvider
 from app.modules.routes.ioc import ROUTES_PROVIDERS
 from app.modules.routing.ioc import ROUTING_PROVIDERS
-from app.modules.staff.ioc import StaffProvider
+from app.modules.staff.ioc import STAFF_PROVIDERS
 from app.modules.users.ioc import UserProvider
 
 
@@ -99,14 +98,13 @@ def create_app() -> FastAPI:
     set_exception_handlers(app)
 
     container = make_async_container(
-        ConfigProvider(),
         *CORE_PROVIDERS,
         UserProvider(),
         AuthProvider(),
         ReviewProvider(),
         FavouriteProvider(),
         *CHAT_PROVIDERS,
-        StaffProvider(),
+        *STAFF_PROVIDERS,
         *PLACES_PROVIDERS,
         *ROUTES_PROVIDERS,
         *ROUTING_PROVIDERS,
