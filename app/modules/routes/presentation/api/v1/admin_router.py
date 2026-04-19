@@ -187,10 +187,13 @@ async def get_route_translations(
     route_id: UUID7,
     handler: FromDishka[GetAdminRouteTranslationsQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
+    pagination: OffsetPaginationDep,
 ) -> PaginatedView[RouteTranslationReadModel]:
     result = await handler(
         query=GetAdminRouteTranslationsQuery(
             route_id=route_id,
+            limit=pagination.limit,
+            offset=pagination.offset,
         )
     )
     return result
