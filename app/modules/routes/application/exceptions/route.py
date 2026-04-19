@@ -14,3 +14,11 @@ class RouteTranslationNotFound(ApplicationNotFoundException):
         super().__init__(
             message=f"Translation for route with id {route_id} and language code {language_code} not found"
         )
+
+
+class InvalidPlaceIds(ApplicationNotFoundException):
+    def __init__(self, expected_count: int, actual_count: int) -> None:
+        super().__init__(
+            message=f"Some of the provided place IDs do not exist. Expected {expected_count} place IDs, "
+            f"but found only {actual_count}"
+        )
