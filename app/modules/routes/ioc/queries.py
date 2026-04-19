@@ -8,8 +8,17 @@ from app.modules.places.application.interfaces.file_storage_url_builder import (
     IFileStorageURLBuilder,
 )
 from app.modules.routes.application.interfaces.readers.route import IRouteReader
+from app.modules.routes.application.interfaces.readers.route_translation import (
+    IRouteTranslationReader,
+)
 from app.modules.routes.application.queries.admin.get_points.handler import (
     GetAdminRoutePointsQueryHandler,
+)
+from app.modules.routes.application.queries.admin.get_translation_by_language_code.handler import (
+    GetAdminRouteTranslationByLanguageCodeQueryHandler,
+)
+from app.modules.routes.application.queries.admin.get_translations.handler import (
+    GetAdminRouteTranslationsQueryHandler,
 )
 from app.modules.routes.application.queries.user.build_route_path.handler import (
     BuildRoutePathForRouteQueryHandler,
@@ -55,4 +64,26 @@ class RoutesQueryHandlersProvider(Provider):
         return GetAdminRoutePointsQueryHandler(
             route_reader=route_reader,
             storage_url_builder=storage_url_builder,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def get_admin_route_translations_handler(
+        self,
+        route_reader: IRouteReader,
+        route_translation_reader: IRouteTranslationReader,
+    ) -> GetAdminRouteTranslationsQueryHandler:
+        return GetAdminRouteTranslationsQueryHandler(
+            route_reader=route_reader,
+            route_translation_reader=route_translation_reader,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def get_admin_route_translation_by_language_code_handler(
+        self,
+        route_reader: IRouteReader,
+        route_translation_reader: IRouteTranslationReader,
+    ) -> GetAdminRouteTranslationByLanguageCodeQueryHandler:
+        return GetAdminRouteTranslationByLanguageCodeQueryHandler(
+            route_reader=route_reader,
+            route_translation_reader=route_translation_reader,
         )
