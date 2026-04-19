@@ -12,6 +12,7 @@ from app.modules.routes.application.queries.shared.models.route_card import (
     RouteCardReadModel,
 )
 from app.modules.routes.application.queries.shared.models.route_details import (
+    AdminRouteDetailsReadModel,
     RouteDetailsReadModel,
 )
 from app.modules.routes.application.queries.shared.models.route_point import (
@@ -31,6 +32,14 @@ class IRouteReader(ABC):
         *,
         translation_language: LanguageEnum,
     ) -> RouteDetailsReadModel | None: ...
+
+    @abstractmethod
+    async def get_admin_by_id(
+        self,
+        route_id: UUID,
+        *,
+        optional_translation_language: LanguageEnum,
+    ) -> AdminRouteDetailsReadModel | None: ...
 
     @abstractmethod
     async def count_by_place_id(self, place_id: UUID) -> int: ...
