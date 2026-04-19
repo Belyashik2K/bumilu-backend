@@ -43,6 +43,7 @@ from app.modules.routes.infrastructure.database.models import (
     RoutePointModel,
     RouteTranslationModel,
 )
+from app.modules.routes.shared.enums.route_status import RouteStatusEnum
 
 
 class SQLAlchemyRouteReader(IRouteReader):
@@ -62,6 +63,7 @@ class SQLAlchemyRouteReader(IRouteReader):
             .join(RouteModel.translations)
             .where(
                 RouteModel.id == route_id,
+                RouteModel.status == RouteStatusEnum.PUBLISHED,
                 RouteTranslationModel.language_code == translation_language,
             )
             .options(
@@ -125,11 +127,15 @@ class SQLAlchemyRouteReader(IRouteReader):
     ) -> list[RouteWaypointModel]:
         stmt = (
             select(RoutePointModel)
-            .where(RoutePointModel.route_id == route_id)
+            .join(RoutePointModel.route)
+            .where(
+                RouteModel.status == RouteStatusEnum.PUBLISHED,
+                RoutePointModel.route_id == route_id,
+            )
             .options(
                 joinedload(
                     RoutePointModel.place,
-                )
+                ),
             )
             .order_by(RoutePointModel.point_index.asc())
         )
@@ -158,6 +164,7 @@ class SQLAlchemyRouteReader(IRouteReader):
     ) -> PageReadModel[RouteCardReadModel]:
         # TODO: refactor to use separate queries for different sort_by values
         base_filters = [
+            RouteModel.status == RouteStatusEnum.PUBLISHED,
             RouteTranslationModel.language_code == translation_language,
         ]
 
