@@ -3,8 +3,11 @@ from sqlalchemy.orm import (
     Mapped,
     mapped_column,
 )
-from uuid6 import UUID
+from uuid6 import (
+    UUID,
+    uuid7,
+)
 
 
 class PKUUIDMixin:
-    id: Mapped[UUID] = mapped_column(_UUID, primary_key=True)
+    id: Mapped[UUID] = mapped_column(_UUID(), primary_key=True, default_factory=uuid7)

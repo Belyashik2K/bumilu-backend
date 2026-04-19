@@ -1,51 +1,62 @@
 from app.core.application.queries import IQueryHandler
-from app.core.shared.domain.value_objects.id import UserIdVO
-from app.modules.favourites.application.interfaces.repositories.favourite import (
-    IFavouriteRepository,
+from app.core.application.queries.pagination import OffsetPagination
+from app.modules.favourites.application.interfaces.preview_enricher import (
+    IFavouritePreviewEnricher,
 )
 from app.modules.favourites.application.queries.get_all_by_user.query import (
     GetAllFavouritesByUserQuery,
-    GetAllFavouritesByUserQueryResult,
 )
-from app.modules.favourites.application.shared.dtos import FavouriteItemDTO
-from app.modules.users.application.interfaces.repositories.user import IUserRepository
+from app.modules.favourites.application.queries.get_all_by_user.view import (
+    PaginatedFavouriteRecordsView,
+)
+from app.modules.favourites.application.queries.shared.readers import (
+    IFavouriteReader,
+)
 from app.modules.users.application.queries.get.exceptions import UserNotFound
+from app.modules.users.application.queries.shared.readers import IUserReader
 
 
 class GetAllFavouritesByUserQueryHandler(
     IQueryHandler[
         GetAllFavouritesByUserQuery,
-        GetAllFavouritesByUserQueryResult,
+        PaginatedFavouriteRecordsView,
     ]
 ):
     def __init__(
         self,
-        favourite_repository: IFavouriteRepository,
-        user_repository: IUserRepository,
+        favourite_reader: IFavouriteReader,
+        user_reader: IUserReader,
+        preview_enricher: IFavouritePreviewEnricher,
     ) -> None:
-        self._favourite_repository = favourite_repository
-        self._user_repository = user_repository
+        self._favourite_reader = favourite_reader
+        self._user_reader = user_reader
+        self._preview_enricher = preview_enricher
 
     async def handle(
         self, query: GetAllFavouritesByUserQuery
-    ) -> GetAllFavouritesByUserQueryResult:
-        user_id = UserIdVO.from_uuid(query.user_id)
-
-        user = await self._user_repository.get_by_id(user_id)
+    ) -> PaginatedFavouriteRecordsView:
+        user = await self._user_reader.get_by_id(query.user_id)
         if not user:
-            raise UserNotFound(user_id=user_id)
+            raise UserNotFound(user_id=query.user_id)  # type: ignore
 
-        favourites = await self._favourite_repository.get_all_by_user_id(
-            user_id=user_id,
+        favourite_records = await self._favourite_reader.get_favourites_by_user_id(
+            user_id=query.user_id,
+            limit=query.limit,
+            offset=query.offset,
+            entity_type=query.entity_type,
         )
 
-        return GetAllFavouritesByUserQueryResult(
-            user_id=user_id.value,
-            items=[
-                FavouriteItemDTO(
-                    entity_id=favourite.entity_id.value,
-                    entity_type=favourite.entity_type,
-                )
-                for favourite in favourites
-            ],
+        enriched_favourites = await self._preview_enricher.enrich(
+            items=favourite_records.items,
+            translation_language=query.language,
+        )
+
+        return PaginatedFavouriteRecordsView(
+            user_id=query.user_id,
+            favourites=enriched_favourites,
+            pagination=OffsetPagination.create(
+                limit=query.limit,
+                offset=query.offset,
+                total=favourite_records.total,
+            ),
         )

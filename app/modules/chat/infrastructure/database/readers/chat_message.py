@@ -6,13 +6,13 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.chat.application.queries.common_views import (
+from app.modules.chat.application.queries.shared.readers import IChatMessageReader
+from app.modules.chat.application.queries.shared.views import (
     ChatMessageAuthorView,
     ChatMessagesPage,
     ChatMessageView,
     LocationView,
 )
-from app.modules.chat.application.queries.readers.chat_message import IChatMessageReader
 from app.modules.chat.infrastructure.database.models import ChatMessageModel
 
 

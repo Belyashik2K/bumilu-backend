@@ -1,0 +1,27 @@
+from app.core.application.queries import IQueryHandler
+from app.core.application.queries.pagination import DataListView
+from app.modules.places.application.exceptions.place import PlaceNotFound
+from app.modules.places.application.interfaces.readers.place import IPlaceReader
+from app.modules.places.application.queries.places.admin.get_working_days.query import (
+    GetAdminPlaceWorkingDaysQuery,
+)
+from app.modules.places.application.queries.places.shared.models.place_working_day import (
+    PlaceWorkingDayReadModel,
+)
+
+
+class GetAdminPlaceWorkingDaysQueryHandler(
+    IQueryHandler[GetAdminPlaceWorkingDaysQuery, DataListView[PlaceWorkingDayReadModel]]
+):
+    def __init__(self, place_reader: IPlaceReader) -> None:
+        self._place_reader = place_reader
+
+    async def handle(
+        self, query: GetAdminPlaceWorkingDaysQuery
+    ) -> DataListView[PlaceWorkingDayReadModel]:
+        exists = await self._place_reader.exists(place_id=query.place_id)
+        if not exists:
+            raise PlaceNotFound(place_id=query.place_id)
+
+        data = await self._place_reader.get_working_days_by_id(place_id=query.place_id)
+        return DataListView.create(items=data)

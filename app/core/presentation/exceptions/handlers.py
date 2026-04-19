@@ -13,15 +13,15 @@ from starlette.responses import (
 )
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
+from app.core.exceptions import (
+    BaseApplicationException,
+    BaseDomainException,
+)
 from app.core.presentation.exceptions.mappers import (
     map_app_exception_to_http,
     map_domain_exception_to_http,
 )
 from app.core.presentation.exceptions.response import ErrorResponseSchema
-from app.core.shared.exceptions import (
-    BaseApplicationException,
-    BaseDomainException,
-)
 
 logger = logging.getLogger(__name__)
 

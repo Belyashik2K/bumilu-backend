@@ -18,12 +18,12 @@ from sqlalchemy.orm import (
     relationship,
 )
 
+from app.core.enums import LanguageEnum
 from app.core.infrastructure.database import BaseModel
 from app.core.infrastructure.database.mixins import (
     PKUUIDMixin,
     TimestampMixin,
 )
-from app.core.shared.enums import LanguageEnum
 from app.modules.chat.shared.enums import (
     ChatCloseReasonEnum,
     ChatStatusEnum,

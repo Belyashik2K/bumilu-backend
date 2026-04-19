@@ -7,23 +7,30 @@ from fastapi import (
     Depends,
 )
 from starlette import status
+from starlette.responses import Response
 
-from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
-from app.core.shared.presentation.schemas.pagination import (
+from app.core.presentation.api.schemas.pagination import (
     OffsetPaginationDep,
 )
+from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.modules.auth.presentation.api import security
-from app.modules.auth.presentation.api.v1.deps import get_principal
+from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
 from app.modules.auth.shared.context import Principal
 from app.modules.chat.application.commands.user import (
     SubmitUserMessageCommand,
     SubmitUserMessageCommandHandler,
 )
-from app.modules.chat.application.queries.user import (
-    GetUserActiveChatMessagesQuery,
-    GetUserActiveChatMessagesQueryHandler,
-    GetUserActiveChatQuery,
-    GetUserActiveChatQueryHandler,
+from app.modules.chat.application.queries.user.get_chat.handler import (
+    GetUserRecentChatQueryHandler,
+)
+from app.modules.chat.application.queries.user.get_chat.query import (
+    GetUserRecentChatQuery,
+)
+from app.modules.chat.application.queries.user.get_messages.handler import (
+    GetUserRecentChatMessagesQueryHandler,
+)
+from app.modules.chat.application.queries.user.get_messages.query import (
+    GetUserRecentChatMessagesQuery,
 )
 from app.modules.chat.presentation.api.schemas.user.get import (
     GetChatInfoResponseSchema,
@@ -39,13 +46,14 @@ user_chat_router = APIRouter(tags=["Chat"], dependencies=[Depends(security)])
 
 @user_chat_router.post(
     "/users/me/chat",
-    responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
+    status_code=status.HTTP_201_CREATED,
+    responses=generate_responses_for_endpoint(),
 )
 @inject
 async def submit_user_message(
     handler: FromDishka[SubmitUserMessageCommandHandler],
     data: SubmitUserMessageRequestSchema,
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
 ) -> SubmitUserMessageResponseSchema:
     result = await handler(
         SubmitUserMessageCommand(
@@ -60,44 +68,40 @@ async def submit_user_message(
 
 @user_chat_router.get(
     "/users/me/chat",
-    responses=generate_responses_for_endpoint(),
+    responses=generate_responses_for_endpoint(status.HTTP_204_NO_CONTENT),
 )
 @inject
-async def get_current_user_chat(
-    handler: FromDishka[GetUserActiveChatQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
-) -> GetChatInfoResponseSchema | dict:
+async def get_recent_user_chat(
+    handler: FromDishka[GetUserRecentChatQueryHandler],
+    principal: Annotated[Principal, Depends(get_user_principal)],
+) -> GetChatInfoResponseSchema | None:
     result = await handler(
-        GetUserActiveChatQuery(
+        GetUserRecentChatQuery(
             user_id=principal.id.value,
         )
     )
-    return (
-        GetChatInfoResponseSchema.model_validate(result, from_attributes=True)
-        if result
-        else {}
-    )
+    if not result:
+        return Response(status_code=status.HTTP_204_NO_CONTENT)  # type: ignore
+    return GetChatInfoResponseSchema.model_validate(result, from_attributes=True)
 
 
 @user_chat_router.get(
     "/users/me/chat/messages",
-    responses=generate_responses_for_endpoint(),
+    responses=generate_responses_for_endpoint(status.HTTP_204_NO_CONTENT),
 )
 @inject
-async def get_current_user_chat_messages(
-    handler: FromDishka[GetUserActiveChatMessagesQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+async def get_recent_user_chat_messages(
+    handler: FromDishka[GetUserRecentChatMessagesQueryHandler],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     pagination: OffsetPaginationDep,
-) -> GetChatMessagesResponseSchema | dict:
+) -> GetChatMessagesResponseSchema | None:
     result = await handler(
-        GetUserActiveChatMessagesQuery(
+        GetUserRecentChatMessagesQuery(
             user_id=principal.id.value,
             limit=pagination.limit,
             offset=pagination.offset,
         )
     )
-    return (
-        GetChatMessagesResponseSchema.model_validate(result, from_attributes=True)
-        if result
-        else {}
-    )
+    if not result:
+        return Response(status_code=status.HTTP_204_NO_CONTENT)  # type: ignore
+    return GetChatMessagesResponseSchema.model_validate(result, from_attributes=True)

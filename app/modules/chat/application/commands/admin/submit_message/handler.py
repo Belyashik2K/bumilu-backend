@@ -1,9 +1,10 @@
 from app.core.application.commands import ICommandHandlerWithResult
-from app.core.shared.domain.value_objects.id import (
+from app.core.application.interfaces.transaction_manager import ITransactionManager
+from app.core.domain.value_objects.id import (
     ChatIdVO,
-    UserIdVO,
+    PrincipalIdVO,
 )
-from app.core.shared.utils import get_current_dt
+from app.core.utils import get_current_dt
 from app.modules.chat.application.commands.admin.submit_message import (
     SubmitAdminMessageCommand,
     SubmitAdminMessageCommandResult,
@@ -18,15 +19,16 @@ from app.modules.chat.domain.value_objects.message_text import MessageTextVO
 
 class SubmitAdminMessageCommandHandler(
     ICommandHandlerWithResult[
-        SubmitAdminMessageCommand,
-        SubmitAdminMessageCommandResult,
+        SubmitAdminMessageCommand, SubmitAdminMessageCommandResult
     ]
 ):
     def __init__(
         self,
         chat_repository: IChatRepository,
         chat_message_repository: IChatMessageRepository,
+        transaction_manager: ITransactionManager,
     ) -> None:
+        super().__init__(transaction_manager)
         self._chat_repository = chat_repository
         self._chat_message_repository = chat_message_repository
 
@@ -34,7 +36,7 @@ class SubmitAdminMessageCommandHandler(
         self,
         command: SubmitAdminMessageCommand,
     ) -> SubmitAdminMessageCommandResult:
-        author_id = UserIdVO.from_uuid(command.actor_id)
+        author_id = PrincipalIdVO.from_uuid(command.actor_id)
         chat_id = ChatIdVO.from_uuid(command.chat_id)
         text = MessageTextVO(command.text)
         now = get_current_dt()

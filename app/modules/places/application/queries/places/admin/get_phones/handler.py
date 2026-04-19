@@ -1,0 +1,30 @@
+from app.core.application.queries import IQueryHandler
+from app.core.application.queries.pagination import DataListView
+from app.modules.places.application.exceptions.place import PlaceNotFound
+from app.modules.places.application.interfaces.readers.place import IPlaceReader
+from app.modules.places.application.queries.places.admin.get_phones.query import (
+    GetAdminPlacePhonesQuery,
+)
+from app.modules.places.application.queries.places.shared.models.place_phone import (
+    AdminPlacePhoneReadModel,
+)
+
+
+class GetAdminPlacePhonesQueryHandler(
+    IQueryHandler[GetAdminPlacePhonesQuery, DataListView[AdminPlacePhoneReadModel]]
+):
+    def __init__(
+        self,
+        place_reader: IPlaceReader,
+    ) -> None:
+        self._place_reader = place_reader
+
+    async def handle(
+        self, query: GetAdminPlacePhonesQuery
+    ) -> DataListView[AdminPlacePhoneReadModel]:
+        exists = await self._place_reader.exists(place_id=query.place_id)
+        if not exists:
+            raise PlaceNotFound(place_id=query.place_id)
+
+        items = await self._place_reader.get_admin_phones_by_id(place_id=query.place_id)
+        return DataListView.create(items=items)

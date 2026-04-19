@@ -9,10 +9,11 @@ from fastapi import (
 from pydantic import UUID7
 from starlette import status
 
+from app.core.constants import UNSET
+from app.core.presentation.api.schemas.pagination import OffsetPaginationDep
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
-from app.core.shared.constants import UNSET
 from app.modules.auth.presentation.api import security
-from app.modules.auth.presentation.api.v1.deps import get_principal
+from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
 from app.modules.auth.shared.context import Principal
 from app.modules.reviews.application.commands.create import (
     CreateReviewCommand,
@@ -26,17 +27,21 @@ from app.modules.reviews.application.commands.update import (
     UpdateReviewCommand,
     UpdateReviewCommandHandler,
 )
-from app.modules.reviews.application.queries.get import (
+from app.modules.reviews.application.queries.get.handler import GetReviewQueryHandler
+from app.modules.reviews.application.queries.get.query import (
     GetReviewQuery,
-    GetReviewQueryHandler,
 )
-from app.modules.reviews.application.queries.get_all_by_user import (
-    GetAllReviewsByUserQuery,
+from app.modules.reviews.application.queries.get_all_by_user.handler import (
     GetAllReviewsByUserQueryHandler,
 )
-from app.modules.reviews.application.queries.get_all_for_entity import (
-    GetAllReviewsForEntityQuery,
+from app.modules.reviews.application.queries.get_all_by_user.query import (
+    GetAllReviewsByUserQuery,
+)
+from app.modules.reviews.application.queries.get_all_for_entity.handler import (
     GetAllReviewsForEntityQueryHandler,
+)
+from app.modules.reviews.application.queries.get_all_for_entity.query import (
+    GetAllReviewsForEntityQuery,
 )
 from app.modules.reviews.presentation.api.schemas.common import (
     ENTITY_ID_PATH,
@@ -44,6 +49,7 @@ from app.modules.reviews.presentation.api.schemas.common import (
     REVIEW_ID_PATH,
     USER_ID_PATH,
     ReviewInfoSchema,
+    ReviewsFiltersDep,
 )
 from app.modules.reviews.presentation.api.schemas.create import (
     CreateReviewRequestSchema,
@@ -76,12 +82,17 @@ reviews_router = APIRouter(
 @inject
 async def get_my_reviews(
     handler: FromDishka[GetAllReviewsByUserQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
+    pagination: OffsetPaginationDep,
+    filters: ReviewsFiltersDep,
 ) -> GetAllReviewsByUserResponseSchema:
     result = await handler(
         GetAllReviewsByUserQuery(
             user_id=principal.id.value,
             actor_id=principal.id.value,
+            limit=pagination.limit,
+            offset=pagination.offset,
+            entity_type=filters.entity_type,
         )
     )
     return GetAllReviewsByUserResponseSchema.model_validate(
@@ -98,13 +109,18 @@ async def get_my_reviews(
 @inject
 async def get_reviews_by_user_id(
     handler: FromDishka[GetAllReviewsByUserQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
+    pagination: OffsetPaginationDep,
+    filters: ReviewsFiltersDep,
     user_id: UUID7 = USER_ID_PATH,
 ) -> GetAllReviewsByUserResponseSchema:
     result = await handler(
         GetAllReviewsByUserQuery(
             user_id=user_id,
             actor_id=principal.id.value,
+            limit=pagination.limit,
+            offset=pagination.offset,
+            entity_type=filters.entity_type,
         )
     )
     return GetAllReviewsByUserResponseSchema.model_validate(
@@ -121,7 +137,7 @@ async def get_reviews_by_user_id(
 @inject
 async def get_review_by_id(
     handler: FromDishka[GetReviewQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     review_id: UUID7 = REVIEW_ID_PATH,
 ) -> ReviewInfoSchema:
     result = await handler(
@@ -142,7 +158,7 @@ async def get_review_by_id(
 @inject
 async def delete_review_by_id(
     handler: FromDishka[DeleteReviewCommandHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     review_id: UUID7 = REVIEW_ID_PATH,
 ) -> None:
     await handler(
@@ -163,7 +179,7 @@ async def delete_review_by_id(
 async def update_review_by_id(
     handler: FromDishka[UpdateReviewCommandHandler],
     data: UpdateReviewRequestSchema,
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     review_id: UUID7 = REVIEW_ID_PATH,
 ) -> UpdateReviewResponseSchema:
     data_dump = data.model_dump(exclude_unset=True)
@@ -187,7 +203,8 @@ async def update_review_by_id(
 @inject
 async def get_reviews_for_entity(
     handler: FromDishka[GetAllReviewsForEntityQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
+    pagination: OffsetPaginationDep,
     entity_type: ReviewEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> GetAllReviewsForEntityResponseSchema:
@@ -196,6 +213,8 @@ async def get_reviews_for_entity(
             actor_id=principal.id.value,
             entity_id=entity_id,
             entity_type=entity_type.domain_name,
+            limit=pagination.limit,
+            offset=pagination.offset,
         )
     )
     return GetAllReviewsForEntityResponseSchema.model_validate(
@@ -214,7 +233,7 @@ async def get_reviews_for_entity(
 async def create_review_for_entity(
     handler: FromDishka[CreateReviewCommandHandler],
     data: CreateReviewRequestSchema,
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     entity_type: ReviewEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> CreateReviewResponseSchema:

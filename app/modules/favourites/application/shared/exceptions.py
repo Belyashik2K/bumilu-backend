@@ -1,5 +1,5 @@
-from app.core.shared.domain.value_objects.id import IdVO
-from app.core.shared.exceptions.application.base import ApplicationNotFoundException
+from app.core.domain.value_objects.id import IdVO
+from app.core.exceptions.application.base import ApplicationNotFoundException
 from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
 
 

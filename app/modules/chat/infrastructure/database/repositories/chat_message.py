@@ -3,17 +3,17 @@ from collections.abc import Iterable
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.infrastructure.database import SQLAlchemyBaseRepository
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     ChatIdVO,
     ChatMessageIdVO,
-    UserIdVO,
+    PrincipalIdVO,
 )
+from app.core.domain.value_objects.location import LocationVO
+from app.core.infrastructure.database import SQLAlchemyBaseRepository
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
 )
 from app.modules.chat.domain.models.chat_message import ChatMessage
-from app.modules.chat.domain.value_objects.location import LocationVO
 from app.modules.chat.domain.value_objects.message_text import MessageTextVO
 from app.modules.chat.infrastructure.database.models import ChatMessageModel
 
@@ -39,7 +39,9 @@ class SQLAlchemyChatMessageRepository(
         return ChatMessage(
             id=ChatMessageIdVO.from_uuid(data.id),
             chat_id=ChatIdVO.from_uuid(data.chat_id),
-            author_id=UserIdVO.from_uuid(data.author_id) if data.author_id else None,
+            author_id=PrincipalIdVO.from_uuid(data.author_id)
+            if data.author_id
+            else None,
             author_type=data.author_type,
             text=MessageTextVO(data.text),
             location=LocationVO.from_coordinates(

@@ -1,4 +1,4 @@
-from app.core.shared.exceptions.application.base import ApplicationConflictException
+from app.core.exceptions.application.base import ApplicationConflictException
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
 

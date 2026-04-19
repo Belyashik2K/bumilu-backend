@@ -3,18 +3,18 @@ from abc import (
     abstractmethod,
 )
 
-from app.modules.users.domain.value_objects import EmailVO
+from app.modules.users.domain.value_objects import UserEmailVO
 
 
 class IEmailLoginChallengeStore(ABC):
     @abstractmethod
-    async def consume(self, *, email: EmailVO, code_hash: str) -> bool: ...
+    async def consume(self, *, email: UserEmailVO, code_hash: str) -> bool: ...
 
     @abstractmethod
     async def save_with_rate_limit(
         self,
         *,
-        email: EmailVO,
+        email: UserEmailVO,
         code_hash: str,
         ttl_seconds: int,
         min_interval_seconds: int,

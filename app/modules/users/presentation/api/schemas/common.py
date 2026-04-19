@@ -5,7 +5,7 @@ from pydantic import (
     Field,
 )
 
-from app.core.shared.enums import UserRoleEnum
+from app.core.enums import UserRoleEnum
 
 USER_ID_EXAMPLE = "019caaaa-0000-7000-a000-000000001984"
 USER_EMAIL_EXAMPLE = "belyashik2k@dev.bumilu.ru"

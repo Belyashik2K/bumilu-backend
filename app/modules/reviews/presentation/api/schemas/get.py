@@ -4,14 +4,14 @@ from pydantic import (
     Field,
 )
 
+from app.core.presentation.api.schemas.pagination import OffsetPaginationSchema
 from app.modules.reviews.presentation.api.schemas.common import (
     AUTHOR_ID_EXAMPLE,
-    ENTITY_ID_EXAMPLE,
-    ENTITY_TYPE_EXAMPLE,
     REVIEW_ID_EXAMPLE,
+    ReviewAuthorInfoSchema,
+    ReviewEntityInfoSchema,
     ReviewInfoSchema,
 )
-from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
 MY_REVIEW_TEXT_EXAMPLE = (
     "Зашёл в точку на Невском буквально на минутку, чтобы узнать, есть ли свободные столики — "
@@ -35,12 +35,11 @@ MY_REVIEW_EXAMPLE_DATA = {
 
 
 class ReviewInfoSchemaWithoutEntity(ReviewInfoSchema):
-    entity_id: UUID7 = Field(exclude=True)
-    entity_type: ReviewEntityTypeEnum = Field(exclude=True)
+    entity: ReviewEntityInfoSchema = Field(exclude=True)
 
 
-class ReviewInfoSchemaWithAuthor(ReviewInfoSchema):
-    author_id: UUID7 = Field(exclude=True)
+class ReviewInfoSchemaWithoutAuthor(ReviewInfoSchema):
+    author: ReviewAuthorInfoSchema = Field(exclude=True)
 
 
 class GetAllReviewsByUserResponseSchema(BaseModel):
@@ -49,28 +48,28 @@ class GetAllReviewsByUserResponseSchema(BaseModel):
         description="ID of the user (author) for which reviews are fetched",
         examples=[AUTHOR_ID_EXAMPLE],
     )
-    items: list[ReviewInfoSchemaWithAuthor] = Field(
+    reviews: list[ReviewInfoSchemaWithoutAuthor] = Field(
         ..., description="List of reviews left by the user (author) fetched"
+    )
+    pagination: OffsetPaginationSchema = Field(
+        ..., description="Pagination info for the reviews fetched"
     )
 
 
 class GetAllReviewsForEntityResponseSchema(BaseModel):
-    entity_id: UUID7 = Field(
+    entity: ReviewEntityInfoSchema = Field(
         ...,
-        description="ID of the entity for which reviews are fetched",
-        examples=[ENTITY_ID_EXAMPLE],
+        description="Information about the entity the reviews are for",
     )
-    entity_type: ReviewEntityTypeEnum = Field(
-        ...,
-        description="Type of the entity for which reviews are fetched",
-        examples=[ENTITY_TYPE_EXAMPLE],
-    )
-    my_review: ReviewInfoSchemaWithoutEntity | None = Field(
+    actor_review: ReviewInfoSchemaWithoutEntity | None = Field(
         None,
         description="Review left by the current user for the entity, if exists",
-        alias="actor_review",
+        serialization_alias="user_review",
         examples=[MY_REVIEW_EXAMPLE_DATA],
     )
-    items: list[ReviewInfoSchemaWithoutEntity] = Field(
+    reviews: list[ReviewInfoSchemaWithoutEntity] = Field(
         ..., description="List of reviews for the entity fetched"
+    )
+    pagination: OffsetPaginationSchema = Field(
+        ..., description="Pagination info for the reviews fetched"
     )

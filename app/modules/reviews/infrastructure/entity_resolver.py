@@ -1,4 +1,4 @@
-from app.core.shared.domain.value_objects.id import IdVO
+from app.core.domain.value_objects.id import IdVO
 from app.modules.reviews.application.interfaces.entity_resolver import (
     IReviewEntityResolver,
 )

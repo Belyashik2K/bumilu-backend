@@ -9,9 +9,15 @@ from fastapi import (
 from pydantic import UUID7
 from starlette import status
 
+from app.core.presentation.api.schemas.accept_language import (
+    AcceptLanguageDep,
+)
+from app.core.presentation.api.schemas.pagination import (
+    OffsetPaginationDep,
+)
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.modules.auth.presentation.api import security
-from app.modules.auth.presentation.api.v1.deps import get_principal
+from app.modules.auth.presentation.api.v1.users.deps import get_user_principal
 from app.modules.auth.shared.context import Principal
 from app.modules.favourites.application.commands.add import (
     AddToFavouritesCommand,
@@ -21,9 +27,11 @@ from app.modules.favourites.application.commands.remove import (
     RemoveFromFavouritesCommand,
     RemoveFromFavouritesCommandHandler,
 )
-from app.modules.favourites.application.queries.get_all_by_user import (
-    GetAllFavouritesByUserQuery,
+from app.modules.favourites.application.queries.get_all_by_user.handler import (
     GetAllFavouritesByUserQueryHandler,
+)
+from app.modules.favourites.application.queries.get_all_by_user.query import (
+    GetAllFavouritesByUserQuery,
 )
 from app.modules.favourites.presentation.api.schemas.common import (
     ENTITY_ID_PATH,
@@ -31,6 +39,7 @@ from app.modules.favourites.presentation.api.schemas.common import (
     USER_ID_PATH,
 )
 from app.modules.favourites.presentation.api.schemas.get import (
+    FavouritesFiltersDep,
     GetAllFavouritesByUserResponseSchema,
 )
 from app.modules.favourites.shared.enums.favourite_entity import FavouriteEntityPathEnum
@@ -50,12 +59,19 @@ favourites_router = APIRouter(
 @inject
 async def get_my_favourites(
     handler: FromDishka[GetAllFavouritesByUserQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
+    accept_language: AcceptLanguageDep,
+    filters: FavouritesFiltersDep,
+    pagination: OffsetPaginationDep,
 ) -> GetAllFavouritesByUserResponseSchema:
     result = await handler(
         GetAllFavouritesByUserQuery(
             actor_id=principal.id.value,
             user_id=principal.id.value,
+            limit=pagination.limit,
+            offset=pagination.offset,
+            entity_type=filters.entity_type,
+            language=accept_language.language,
         )
     )
     return GetAllFavouritesByUserResponseSchema.model_validate(
@@ -72,13 +88,20 @@ async def get_my_favourites(
 @inject
 async def get_favourites_by_user_id(
     uc: FromDishka[GetAllFavouritesByUserQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
+    accept_language: AcceptLanguageDep,
+    filters: FavouritesFiltersDep,
+    pagination: OffsetPaginationDep,
     user_id: UUID7 = USER_ID_PATH,
 ) -> GetAllFavouritesByUserResponseSchema:
     result = await uc(
         GetAllFavouritesByUserQuery(
             actor_id=principal.id.value,
             user_id=user_id,
+            limit=pagination.limit,
+            offset=pagination.offset,
+            entity_type=filters.entity_type,
+            language=accept_language.language,
         )
     )
     return GetAllFavouritesByUserResponseSchema.model_validate(
@@ -96,7 +119,7 @@ async def get_favourites_by_user_id(
 @inject
 async def add_to_favourites(
     handler: FromDishka[AddToFavouritesCommandHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     entity_type: FavouriteEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> None:
@@ -119,7 +142,7 @@ async def add_to_favourites(
 @inject
 async def remove_from_favourites(
     handler: FromDishka[RemoveFromFavouritesCommandHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     entity_type: FavouriteEntityPathEnum = ENTITY_TYPE_PATH,
     entity_id: UUID7 = ENTITY_ID_PATH,
 ) -> None:

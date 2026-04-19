@@ -1,13 +1,14 @@
 [project]
-name = "bumilu-users-service"
+name = "bumilu-backend"
 version = "0.1.0"
-description = "Users service for mobile and web application BumiLu (不迷路), PAB project"
+description = "Backend for mobile and web application BumiLu (不迷路), PAB project"
 readme = "README.md"
 authors = [
     { name = "Belyashik2K", email = "work@belyashik2k.ru" }
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 dependencies = [
+    "aiobotocore>=3.4.0",
     "aiosmtplib>=5.1.0",
     "alembic>=1.18.4",
     "alembic-postgresql-enum>=1.10.0",
@@ -15,11 +16,18 @@ dependencies = [
     "apscheduler-dishka>=1.0.0",
     "dishka>=1.8.0",
     "fastapi[all]>=0.129.0",
+    "geoalchemy2[shapely]>=0.18.4",
+    "httpx>=0.28.1",
     "openai>=2.26.0",
+    "polyline>=2.0.4",
+    "pwdlib[argon2]>=0.3.0",
     "pydantic-settings[yaml]>=2.13.0",
     "pyjwt>=2.11.0",
     "redis>=7.2.0",
     "sqlalchemy[postgresql-asyncpg]>=2.0.46",
+    "taskiq>=0.12.1",
+    "taskiq-redis>=1.2.2",
+    "timezonefinder[numba]>=8.2.2",
     "uuid6>=2025.0.1",
 ]
 
@@ -80,7 +88,11 @@ ignore = [
 fixable = ["ALL"]
 
 [tool.ruff.lint.per-file-ignores]
-"**/__init__.py" = ["F401"] # Ignore unused imports in __init__.py files
+"**/__init__.py" = [
+    "F401", # Ignore unused imports in __init__.py files
+    "F403", # Ignore 'from module import *' in __init__.py files
+]
+"app/core/infrastructure/queue/worker.py" = ["E402"] # Ignore module level import not at top of file in worker.py
 
 [tool.ruff.format]
 quote-style = "double"

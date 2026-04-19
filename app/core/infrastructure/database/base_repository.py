@@ -11,11 +11,11 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.application.interfaces.repositories import IBaseRepository
+from app.core.domain.value_objects.id import IdVO
 from app.core.infrastructure.database.exception_catcher import (
     sqlalchemy_exception_catcher,
 )
 from app.core.infrastructure.database.mixins import PKUUIDMixin
-from app.core.shared.domain.value_objects.id import IdVO
 
 TEntity = TypeVar("TEntity")  # Entity
 TModel = TypeVar("TModel", bound=PKUUIDMixin)  # SQLAlchemy model
@@ -44,6 +44,16 @@ class SQLAlchemyBaseRepository(IBaseRepository[TEntity], Generic[TEntity, TModel
         merged_data = await self.session.merge(data)
         await self.session.flush()
         return self._to_entity(merged_data)
+
+    @sqlalchemy_exception_catcher
+    async def batch_save(self, entities: list[TEntity]) -> list[TEntity]:
+        data_list = [self._to_data(entity) for entity in entities]
+        merged_data_list = []
+        for data in data_list:
+            merged_data = await self.session.merge(data)
+            merged_data_list.append(merged_data)
+        await self.session.flush()
+        return [self._to_entity(merged_data) for merged_data in merged_data_list]
 
     @sqlalchemy_exception_catcher
     async def get_by_id(self, _id: IdVO) -> TEntity | None:

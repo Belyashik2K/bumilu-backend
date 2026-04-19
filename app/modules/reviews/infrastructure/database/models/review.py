@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlalchemy import (
@@ -14,6 +15,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
+    relationship,
 )
 
 from app.core.infrastructure.database import BaseModel
@@ -23,9 +25,23 @@ from app.core.infrastructure.database.mixins import (
 )
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
+if TYPE_CHECKING:
+    from app.modules.users.infrastructure.database.models import UserModel
+
 
 class ReviewModel(PKUUIDMixin, TimestampMixin, BaseModel):
     __tablename__ = "reviews"
+    __table_args__ = (
+        Index(
+            "ix_reviews_entity",
+            "entity_type",
+            "entity_id",
+        ),
+        UniqueConstraint(
+            "entity_type", "entity_id", "author_id", name="uq_reviews_entity_author"
+        ),
+        CheckConstraint("rating >= 1 AND rating <= 5", name="ck_reviews_rating_range"),
+    )
 
     author_id: Mapped[UUID] = mapped_column(
         _UUID,
@@ -40,14 +56,6 @@ class ReviewModel(PKUUIDMixin, TimestampMixin, BaseModel):
     text: Mapped[str | None] = mapped_column(VARCHAR(1000))
     rating: Mapped[int] = mapped_column()
 
-    __table_args__ = (
-        Index(
-            "ix_reviews_entity",
-            "entity_type",
-            "entity_id",
-        ),
-        UniqueConstraint(
-            "entity_type", "entity_id", "author_id", name="uq_reviews_entity_author"
-        ),
-        CheckConstraint("rating >= 1 AND rating <= 5", name="ck_reviews_rating_range"),
+    author: Mapped["UserModel"] = relationship(
+        "UserModel", back_populates="reviews", lazy="raise"
     )

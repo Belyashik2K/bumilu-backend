@@ -3,13 +3,7 @@ from dataclasses import (
 )
 from uuid import UUID
 
-from app.modules.chat.application.queries.user.get_chat.view import UserChatView
-
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetUserActiveChatQuery:
+class GetUserRecentChatQuery:
     user_id: UUID
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class GetUserActiveChatQueryResult(UserChatView): ...

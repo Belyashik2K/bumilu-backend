@@ -3,10 +3,10 @@ logging:
   format: "%(asctime)s | %(levelname)-8s | %(request_id)s | %(name)s:%(lineno)d - %(message)s"
   datetime_format: "%d.%m.%Y at %H:%M:%S"
 docs:
-  title: "BumiLu users-service API"
+  title: "BumiLu API"
   description: >
-    This is the API documentation for the BumiLu users-service.
-    It provides endpoints for authentication, chat, favorites and reviews management.
+    This is the API documentation for the BumiLu application.
+    It provides endpoints for authentication, places, routes, chats, and more.
   version: "1.0.0"
   urls:
     openapi: "/docs/openapi.json"
@@ -55,10 +55,19 @@ chat:
     polling_interval_sec: 60
 cors:
   enabled: false
-  allow_origins: [ "http://localhost:3000" ]
+  allow_origins: [ "*" ]
   allow_credentials: true
   allow_methods: [ "*" ]
   allow_headers: [ "*" ]
+routing:
+  valhalla:
+    base_url: "http://valhalla:8002"
+    timeout_sec: 5
+storage:
+  s3:
+    endpoint_url: "https://s3.ru-1.storage.selcloud.ru"
+    public_endpoint_url: "https://media.bumilu.ru"
+    region_name: "ru-1"
 server:
   host: "0.0.0.0"
   port: 8000

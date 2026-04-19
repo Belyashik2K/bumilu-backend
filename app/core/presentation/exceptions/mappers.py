@@ -9,12 +9,10 @@ from starlette.status import (
     HTTP_503_SERVICE_UNAVAILABLE,
 )
 
-from app.core.shared.exceptions.application import (
-    BaseApplicationException,
-)
-from app.core.shared.exceptions.application.error_code import ApplicationErrorCodeEnum
-from app.core.shared.exceptions.domain.base import BaseDomainException
-from app.core.shared.exceptions.domain.error_code import DomainErrorCodeEnum
+from app.core.exceptions import BaseApplicationException
+from app.core.exceptions.application.error_code import ApplicationErrorCodeEnum
+from app.core.exceptions.domain.base import BaseDomainException
+from app.core.exceptions.domain.error_code import DomainErrorCodeEnum
 
 
 def map_domain_exception_to_http(exc: BaseDomainException) -> tuple[int, str]:

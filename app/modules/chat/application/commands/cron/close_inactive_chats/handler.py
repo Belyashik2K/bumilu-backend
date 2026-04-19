@@ -4,7 +4,8 @@ from app.core.application.commands import (
     EmptyCommand,
     ICommandHandler,
 )
-from app.core.shared.utils import get_current_dt
+from app.core.application.interfaces.transaction_manager import ITransactionManager
+from app.core.utils import get_current_dt
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.shared.enums import ChatCloseReasonEnum
 
@@ -13,8 +14,10 @@ class CloseInactiveChatsCommandHandler(ICommandHandler[EmptyCommand]):
     def __init__(
         self,
         chat_repository: IChatRepository,
+        transaction_manager: ITransactionManager,
         inactivity_threshold_minutes: int,
     ) -> None:
+        super().__init__(transaction_manager)
         self._chat_repository = chat_repository
         self._inactivity_threshold_minutes = inactivity_threshold_minutes
 
@@ -25,4 +28,5 @@ class CloseInactiveChatsCommandHandler(ICommandHandler[EmptyCommand]):
 
         for chat in inactive_chats:
             chat.close(reason=ChatCloseReasonEnum.INACTIVITY, now=now)
-            await self._chat_repository.save(chat)
+
+        await self._chat_repository.batch_save(inactive_chats)
