@@ -21,6 +21,9 @@ from app.modules.routes.application.queries.shared.models.route_point import (
 
 class IRouteReader(ABC):
     @abstractmethod
+    async def exists(self, route_id: UUID) -> bool: ...
+
+    @abstractmethod
     async def get_by_id(
         self,
         route_id: UUID,
