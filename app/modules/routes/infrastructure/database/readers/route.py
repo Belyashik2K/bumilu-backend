@@ -152,6 +152,12 @@ class SQLAlchemyRouteReader(IRouteReader):
             for point in points
         ]
 
+    async def get_admin_route_points(
+        self,
+        route_id: UUID,
+        optional_translation_language: LanguageEnum,
+    ) -> list[RoutePointReadModel]: ...
+
     async def get_all(
         self,
         *,

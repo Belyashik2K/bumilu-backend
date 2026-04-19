@@ -6,15 +6,14 @@ from uuid import UUID
 
 from app.modules.places.application.queries.places.shared.views import PlaceCardView
 
-# @dataclass(frozen=True, slots=True, kw_only=True)
-# class PaginatedRouteCardView:
-#     routes: list[RouteCardReadModel] = field(default_factory=list)
-#     pagination: OffsetPagination
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class BaseRoutePointView:
+    index: int
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class RoutePointView:
-    index: int
+class RoutePointView(BaseRoutePointView):
     preview: PlaceCardView
 
 
