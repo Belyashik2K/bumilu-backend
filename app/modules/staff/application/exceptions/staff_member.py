@@ -20,7 +20,7 @@ class StaffMemberWithGivenEmailAlreadyExists(ApplicationConflictException):
     def __init__(self, email: StaffMemberEmailVO) -> None:
         super().__init__(
             message=f"Staff member with email {email} already exists.",
-            details={"email": email},  # TODO: kwargs for details in base exception
+            details={"email": str(email)},  # TODO: kwargs for details in base exception
         )
 
 
