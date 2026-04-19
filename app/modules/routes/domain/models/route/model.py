@@ -13,6 +13,14 @@ from app.core.domain.value_objects.id import (
 )
 from app.core.enums import LanguageEnum
 from app.core.enums.language import REQUIRED_LANGUAGES
+from app.modules.routes.domain.models.route.exceptions import (
+    CannotPublishPlaceMissingTranslations,
+    CannotPublishRouteMissingPoints,
+    InvalidRouteStatusTransition,
+    RouteIsNotEditable,
+    RouteTranslationAlreadyExists,
+    RouteTranslationNotFound,
+)
 from app.modules.routes.domain.models.route_point.model import RoutePoint
 from app.modules.routes.domain.models.route_translation.model import RouteTranslation
 from app.modules.routes.domain.value_objects.description.object import (
@@ -58,21 +66,21 @@ class Route:
     @property
     def points(self) -> tuple[RoutePoint, ...]:
         if self._points is None:
-            raise ValueError("Route points not loaded")
+            raise RuntimeError("Route points not loaded")
         return tuple(self._points)
 
     @property
     def translations(self) -> tuple[RouteTranslation, ...]:
         if self._translations is None:
-            raise ValueError("Route translations not loaded")
+            raise RuntimeError("Route translations not loaded")
         return tuple(self._translations)
 
     def replace_points(self, place_ids: Sequence[PlaceIdVO]) -> None:
         if not self.is_editable():
-            raise ValueError("Only routes in DRAFT or HIDDEN status can be edited")
+            raise RouteIsNotEditable(self.id)
 
         if self._points is None:
-            raise ValueError("Route points not loaded")
+            raise RuntimeError("Route points not loaded")
 
         self._points = [
             RoutePoint.create(
@@ -85,7 +93,7 @@ class Route:
 
     def find_translation(self, language_code: LanguageEnum) -> RouteTranslation | None:
         if self._translations is None:
-            raise ValueError("Route translations not loaded")
+            raise RuntimeError("Route translations not loaded")
 
         for translation in self._translations:
             if translation.language_code == language_code:
@@ -104,14 +112,15 @@ class Route:
         description: RouteDescriptionVO,
     ) -> RouteTranslation:
         if not self.is_editable():
-            raise ValueError("Only routes in DRAFT or HIDDEN status can be edited")
+            raise RouteIsNotEditable(self.id)
 
         if self._translations is None:
-            raise ValueError("Route translations not loaded")
+            raise RuntimeError("Route translations not loaded")
 
         if self.has_translation(language_code):
-            raise ValueError(
-                f"Translation for language '{language_code}' already exists"
+            raise RouteTranslationAlreadyExists(
+                route_id=self.id,
+                language_code=language_code,
             )
 
         translation = RouteTranslation.create(
@@ -134,14 +143,17 @@ class Route:
         description: RouteDescriptionVO | None = None,
     ) -> None:
         if not self.is_editable():
-            raise ValueError("Only routes in DRAFT or HIDDEN status can be edited")
+            raise RouteIsNotEditable(self.id)
 
         if self._translations is None:
-            raise ValueError("Route translations not loaded")
+            raise RuntimeError("Route translations not loaded")
 
         translation = self.find_translation(language_code)
         if translation is None:
-            raise ValueError(f"Translation for language '{language_code}' not found")
+            raise RouteTranslationNotFound(
+                route_id=self.id,
+                language_code=language_code,
+            )
 
         translation.update(
             title=title,
@@ -151,10 +163,10 @@ class Route:
 
     def remove_translation(self, language_code: LanguageEnum) -> None:
         if not self.is_editable():
-            raise ValueError("Only routes in DRAFT or HIDDEN status can be edited")
+            raise RouteIsNotEditable(self.id)
 
         if self._translations is None:
-            raise ValueError("Route translations not loaded")
+            raise RuntimeError("Route translations not loaded")
 
         initial_len = len(self._translations)
 
@@ -165,7 +177,10 @@ class Route:
         ]
 
         if len(self._translations) == initial_len:
-            raise ValueError(f"Translation for language '{language_code}' not found")
+            raise RouteTranslationNotFound(
+                route_id=self.id,
+                language_code=language_code,
+            )
 
     def publish(self) -> None:
         if self.is_published():
@@ -174,14 +189,13 @@ class Route:
         if missing_languages := REQUIRED_LANGUAGES - {
             translation.language_code for translation in self.translations
         }:
-            raise ValueError(
-                f"Cannot publish route. Missing translations for languages: {', '.join(missing_languages)}"
+            raise CannotPublishPlaceMissingTranslations(
+                route_id=self.id,
+                missing_languages=list(missing_languages),
             )
 
         if len(self.points) < 2:
-            raise ValueError(
-                "Cannot publish route. A route must have at least 2 points."
-            )
+            raise CannotPublishRouteMissingPoints(route_id=self.id)
 
         self.status = RouteStatusEnum.PUBLISHED
 
@@ -190,7 +204,11 @@ class Route:
             return
 
         if self.is_draft():
-            raise ValueError("Cannot hide route. Only published routes can be hidden.")
+            InvalidRouteStatusTransition(
+                route_id=self.id,
+                from_status=self.status,
+                to_status=RouteStatusEnum.HIDDEN,
+            )
 
         self.status = RouteStatusEnum.HIDDEN
 
@@ -199,6 +217,8 @@ class Route:
             return self.publish()
         elif new_status == RouteStatusEnum.HIDDEN:
             return self.hide()
-        raise ValueError(
-            f"Invalid status transition to '{new_status}' for route with current status '{self.status}'"
+        raise InvalidRouteStatusTransition(
+            route_id=self.id,
+            from_status=self.status,
+            to_status=new_status,
         )

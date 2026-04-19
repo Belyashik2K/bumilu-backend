@@ -8,7 +8,10 @@ from app.modules.places.application.interfaces.readers.place import IPlaceReader
 from app.modules.routes.application.commands.replace_points.command import (
     ReplaceRoutePointsCommand,
 )
-from app.modules.routes.application.exceptions.route import RouteNotFound
+from app.modules.routes.application.exceptions.route import (
+    InvalidPlaceIds,
+    RouteNotFound,
+)
 from app.modules.routes.application.interfaces.repositories.route import (
     IRouteRepository,
     RouteLoadOptions,
@@ -40,9 +43,9 @@ class ReplaceRoutePointsCommandHandler(ICommandHandler[ReplaceRoutePointsCommand
         )
 
         if expected_existing_places_count != actual_existing_places_count:
-            raise ValueError(
-                f"Some of the provided place IDs do not exist. Expected {expected_existing_places_count}, "
-                f"but found {actual_existing_places_count}."
+            raise InvalidPlaceIds(
+                expected_count=expected_existing_places_count,
+                actual_count=actual_existing_places_count,
             )
 
         route.replace_points(
