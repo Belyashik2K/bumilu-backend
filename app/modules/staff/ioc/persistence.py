@@ -5,13 +5,12 @@ from dishka import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.staff.application.interfaces.readers import (
+from app.modules.staff.application.interfaces.readers.staff_member import (
     IStaffMemberReader,
 )
 from app.modules.staff.application.interfaces.repositories.staff_member import (
     IStaffMemberRepository,
 )
-from app.modules.staff.application.queries.get.handler import GetStaffMemberQueryHandler
 from app.modules.staff.infrastructure.database.readers.staff_member import (
     SQLAlchemyStaffMemberReader,
 )
@@ -20,7 +19,7 @@ from app.modules.staff.infrastructure.database.repositories.staff_member import 
 )
 
 
-class StaffProvider(Provider):
+class StaffPersistenceProvider(Provider):
     @provide(scope=Scope.REQUEST, provides=IStaffMemberRepository)
     async def staff_member_repository(
         self,
@@ -34,12 +33,3 @@ class StaffProvider(Provider):
         session: AsyncSession,
     ) -> SQLAlchemyStaffMemberReader:
         return SQLAlchemyStaffMemberReader(session=session)
-
-    @provide(scope=Scope.REQUEST)
-    async def get_staff_member_handler(
-        self,
-        staff_member_reader: IStaffMemberReader,
-    ) -> GetStaffMemberQueryHandler:
-        return GetStaffMemberQueryHandler(
-            staff_member_reader=staff_member_reader,
-        )
