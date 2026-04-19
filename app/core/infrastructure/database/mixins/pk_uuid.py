@@ -10,4 +10,4 @@ from uuid6 import (
 
 
 class PKUUIDMixin:
-    id: Mapped[UUID] = mapped_column(_UUID(), primary_key=True, default_factory=uuid7)
+    id: Mapped[UUID] = mapped_column(_UUID(), primary_key=True, default=uuid7)
