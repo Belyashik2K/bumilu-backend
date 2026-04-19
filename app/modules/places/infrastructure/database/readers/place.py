@@ -198,12 +198,18 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         count = result.scalar_one()
         return count
 
-    async def count_existing_places(self, place_ids: list[UUID]) -> int:
+    async def count_existing_places_by_status(
+        self, place_ids: list[UUID], status: PlaceStatusEnum
+    ) -> int:
         stmt = (
             select(func.count())
             .select_from(PlaceModel)
             .where(PlaceModel.id.in_(place_ids))
         )
+
+        if status is not None:
+            stmt = stmt.where(PlaceModel.status == status)
+
         result = await self._session.execute(stmt)
         count = result.scalar_one()
         return count

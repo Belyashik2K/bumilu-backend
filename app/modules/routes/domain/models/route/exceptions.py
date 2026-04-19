@@ -1,4 +1,7 @@
-from app.core.domain.value_objects.id import RouteIdVO
+from app.core.domain.value_objects.id import (
+    PlaceIdVO,
+    RouteIdVO,
+)
 from app.core.enums import LanguageEnum
 from app.core.exceptions.domain.base import (
     DomainInvariantViolationException,
@@ -44,6 +47,18 @@ class CannotPublishRouteMissingPoints(DomainInvariantViolationException):
     def __init__(self, route_id: RouteIdVO) -> None:
         super().__init__(
             message=f"Cannot publish route with id {route_id} because it has less than 2 points",
+        )
+
+
+class CannotPublishRouteWithUnpublishedPlaces(DomainInvariantViolationException):
+    def __init__(
+        self,
+        route_id: RouteIdVO,
+        unpublished_place_ids: list[PlaceIdVO],
+    ) -> None:
+        super().__init__(
+            message=f"Cannot publish route with id {route_id} because it has unpublished places with ids: "
+            f"{', '.join(str(place_id) for place_id in unpublished_place_ids)}",
         )
 
 

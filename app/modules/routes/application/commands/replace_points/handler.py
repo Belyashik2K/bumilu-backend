@@ -5,6 +5,7 @@ from app.core.domain.value_objects.id import (
     RouteIdVO,
 )
 from app.modules.places.application.interfaces.readers.place import IPlaceReader
+from app.modules.places.shared.enums.place_status import PlaceStatusEnum
 from app.modules.routes.application.commands.replace_points.command import (
     ReplaceRoutePointsCommand,
 )
@@ -38,8 +39,10 @@ class ReplaceRoutePointsCommandHandler(ICommandHandler[ReplaceRoutePointsCommand
             raise RouteNotFound(route_id.value)
 
         expected_existing_places_count = len(set(command.place_ids))
-        actual_existing_places_count = await self._place_reader.count_existing_places(
-            place_ids=command.place_ids
+        actual_existing_places_count = (
+            await self._place_reader.count_existing_places_by_status(
+                place_ids=command.place_ids, status=PlaceStatusEnum.PUBLISHED
+            )
         )
 
         if expected_existing_places_count != actual_existing_places_count:

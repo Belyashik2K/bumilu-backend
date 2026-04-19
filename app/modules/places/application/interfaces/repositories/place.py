@@ -28,6 +28,11 @@ class IPlaceRepository(ABC):
     ) -> Place | None: ...
 
     @abstractmethod
+    async def get_unpublished_ids(
+        self, place_ids: list[PlaceIdVO]
+    ) -> list[PlaceIdVO]: ...
+
+    @abstractmethod
     async def save(self, entity: Place) -> Place: ...
 
     @abstractmethod
