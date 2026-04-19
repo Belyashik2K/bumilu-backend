@@ -393,10 +393,13 @@ async def list_place_translations(
     place_id: UUID7,
     handler: FromDishka[GetAdminPlaceTranslationsQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
+    pagination: OffsetPaginationDep,
 ) -> PaginatedPlaceTranslationListResponseSchema:
     result = await handler(
         GetAdminPlaceTranslationsQuery(
             place_id=place_id,
+            limit=pagination.limit,
+            offset=pagination.offset,
         )
     )
     return PaginatedPlaceTranslationListResponseSchema.model_validate(
