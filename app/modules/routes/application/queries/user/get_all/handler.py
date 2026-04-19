@@ -4,10 +4,10 @@ from app.core.application.queries.pagination import (
 )
 from app.modules.places.shared.enums.route_sort import RouteSortByEnum
 from app.modules.routes.application.interfaces.readers.route import IRouteReader
-from app.modules.routes.application.queries.get_all.query import GetAllRoutesQuery
 from app.modules.routes.application.queries.shared.models.route_card import (
     RouteCardReadModel,
 )
+from app.modules.routes.application.queries.user.get_all.query import GetAllRoutesQuery
 
 
 class GetAllRoutesQueryHandler(
