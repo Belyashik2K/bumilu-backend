@@ -15,7 +15,6 @@ from app.core.presentation.api.schemas.pagination import OffsetPaginationDep
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.users.deps import (
-    get_principal,
     get_user_principal,
 )
 from app.modules.auth.shared.context import Principal
@@ -88,7 +87,7 @@ async def get_route_by_id(
     return RouteSchema.model_validate(result, from_attributes=True)
 
 
-@user_routes_router.get(
+@user_routes_router.post(
     "/{route_id}/route",
     responses=generate_responses_for_endpoint(status.HTTP_501_NOT_IMPLEMENTED),
 )
@@ -96,7 +95,7 @@ async def get_route_by_id(
 async def build_route_path_for_route(
     route_id: UUID7,
     handler: FromDishka[BuildRoutePathForRouteQueryHandler],
-    principal: Annotated[Principal, Depends(get_principal)],
+    principal: Annotated[Principal, Depends(get_user_principal)],
     data: BuildRoutePathForRouteRequestSchema,
     accept_language: AcceptLanguageDep,
 ) -> RoutePathSchema:

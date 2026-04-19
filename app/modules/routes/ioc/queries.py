@@ -11,6 +11,9 @@ from app.modules.routes.application.interfaces.readers.route import IRouteReader
 from app.modules.routes.application.interfaces.readers.route_translation import (
     IRouteTranslationReader,
 )
+from app.modules.routes.application.queries.admin.build_route_path.handler import (
+    BuildAdminRoutePathForRouteQueryHandler,
+)
 from app.modules.routes.application.queries.admin.get.handler import (
     GetAdminRouteQueryHandler,
 )
@@ -59,6 +62,15 @@ class RoutesQueryHandlersProvider(Provider):
         self, route_reader: IRouteReader, routing_gateway: IRoutingGateway
     ) -> BuildRoutePathForRouteQueryHandler:
         return BuildRoutePathForRouteQueryHandler(
+            route_reader=route_reader,
+            routing_gateway=routing_gateway,
+        )
+
+    @provide(scope=Scope.REQUEST)
+    async def build_admin_route_path_for_route_handler(
+        self, route_reader: IRouteReader, routing_gateway: IRoutingGateway
+    ) -> BuildAdminRoutePathForRouteQueryHandler:
+        return BuildAdminRoutePathForRouteQueryHandler(
             route_reader=route_reader,
             routing_gateway=routing_gateway,
         )

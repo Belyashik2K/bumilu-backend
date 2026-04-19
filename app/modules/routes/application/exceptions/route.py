@@ -1,7 +1,10 @@
 from uuid import UUID
 
 from app.core.enums import LanguageEnum
-from app.core.exceptions.application.base import ApplicationNotFoundException
+from app.core.exceptions.application.base import (
+    ApplicationConflictException,
+    ApplicationNotFoundException,
+)
 
 
 class RouteNotFound(ApplicationNotFoundException):
@@ -23,4 +26,11 @@ class InvalidPlaceIds(ApplicationNotFoundException):
             f" {expected_count} "
             f"place IDs, "
             f"but found only {actual_count}"
+        )
+
+
+class RouteHasTooFewPointsForBuildingRoutePath(ApplicationConflictException):
+    def __init__(self, route_id: UUID) -> None:
+        super().__init__(
+            message=f"Route with id {route_id} has too few points for building route path. At least 2 points are required."
         )

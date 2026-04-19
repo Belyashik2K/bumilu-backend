@@ -189,7 +189,6 @@ class SQLAlchemyRouteReader(IRouteReader):
             select(RoutePointModel)
             .join(RoutePointModel.route)
             .where(
-                RouteModel.status == RouteStatusEnum.PUBLISHED,
                 RoutePointModel.route_id == route_id,
             )
             .options(
