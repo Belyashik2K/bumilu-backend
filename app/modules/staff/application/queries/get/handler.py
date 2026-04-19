@@ -1,9 +1,9 @@
 from app.core.application.queries import IQueryHandler
-from app.modules.staff.application.queries.get.query import GetStaffMemberQuery
-from app.modules.staff.application.queries.shared.exceptions import StaffMemberNotFound
-from app.modules.staff.application.queries.shared.readers.staff_member import (
+from app.modules.staff.application.exceptions.staff_member import StaffMemberNotFound
+from app.modules.staff.application.interfaces.readers.staff_member import (
     IStaffMemberReader,
 )
+from app.modules.staff.application.queries.get.query import GetStaffMemberQuery
 from app.modules.staff.application.queries.shared.views import StaffMemberInfoView
 
 
