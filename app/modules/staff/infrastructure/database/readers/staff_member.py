@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.staff.application.queries.shared.readers.staff_member import (
+from app.modules.staff.application.interfaces.readers import (
     IStaffMemberReader,
 )
 from app.modules.staff.application.queries.shared.views import StaffMemberInfoView

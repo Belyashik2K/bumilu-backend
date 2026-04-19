@@ -10,7 +10,7 @@ from app.modules.staff.application.interfaces.repositories.staff_member import (
     IStaffMemberRepository,
 )
 from app.modules.staff.domain.models.staff_member import StaffMember
-from app.modules.staff.domain.value_objects.staff_email import StaffEmailVO
+from app.modules.staff.domain.value_objects.staff_email import StaffMemberEmailVO
 from app.modules.staff.infrastructure.database.models import StaffMemberModel
 
 
@@ -34,12 +34,12 @@ class SQLAlchemyStaffMemberRepository(
         return StaffMember(
             id=PrincipalIdVO.from_uuid(data.id),
             name=data.name,
-            email=StaffEmailVO.from_string(data.email),
+            email=StaffMemberEmailVO.from_string(data.email),
             password_hash=data.password_hash,
             role=data.role,
         )
 
-    async def get_by_email(self, email: StaffEmailVO) -> StaffMember | None:
+    async def get_by_email(self, email: StaffMemberEmailVO) -> StaffMember | None:
         stmt = select(StaffMemberModel).where(StaffMemberModel.email == email.value)
         result = await self.session.execute(stmt)
         data = result.scalar_one_or_none()

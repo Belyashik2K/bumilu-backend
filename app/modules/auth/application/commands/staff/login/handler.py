@@ -18,7 +18,7 @@ from app.modules.staff.application.interfaces.repositories.staff_member import (
     IStaffMemberRepository,
 )
 from app.modules.staff.domain.models.staff_member import StaffMember
-from app.modules.staff.domain.value_objects.staff_email import StaffEmailVO
+from app.modules.staff.domain.value_objects.staff_email import StaffMemberEmailVO
 from app.modules.staff.shared.enums.staff_role import StaffRoleEnum
 from app.modules.users.application.queries.shared.dtos import AccountInfoDTO
 
@@ -45,7 +45,7 @@ class LoginAsStaffMemberCommandHandler(
     async def handle(
         self, command: LoginAsStaffMemberCommand
     ) -> LoginAsStaffMemberCommandResult:
-        staff_member_email = StaffEmailVO.from_string(command.email)
+        staff_member_email = StaffMemberEmailVO.from_string(command.email)
 
         staff_member = await self._staff_member_repository.get_by_email(
             staff_member_email

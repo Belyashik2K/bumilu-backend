@@ -1,1 +1,1 @@
-from .object import StaffEmailVO
+from .object import StaffMemberEmailVO

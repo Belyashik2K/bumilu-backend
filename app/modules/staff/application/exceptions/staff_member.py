@@ -1,0 +1,19 @@
+from app.core.domain.value_objects.id import PrincipalIdVO
+from app.core.exceptions.application.base import ApplicationNotFoundException
+from app.modules.staff.domain.value_objects.staff_email import StaffMemberEmailVO
+
+
+class StaffMemberNotFound(ApplicationNotFoundException):
+    def __init__(self, staff_member_id: PrincipalIdVO) -> None:
+        super().__init__(
+            message="Staff member not found.",
+            details={"staff_member_id": str(staff_member_id)},
+        )
+
+
+class StaffMemberWithGivenEmailAlreadyExists(ApplicationNotFoundException):
+    def __init__(self, email: StaffMemberEmailVO) -> None:
+        super().__init__(
+            message=f"Staff member with email {email} already exists.",
+            details={"email": email},  # TODO: kwargs for details in base exception
+        )

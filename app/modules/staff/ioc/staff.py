@@ -5,13 +5,13 @@ from dishka import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.staff.application.interfaces.readers import (
+    IStaffMemberReader,
+)
 from app.modules.staff.application.interfaces.repositories.staff_member import (
     IStaffMemberRepository,
 )
 from app.modules.staff.application.queries.get.handler import GetStaffMemberQueryHandler
-from app.modules.staff.application.queries.shared.readers.staff_member import (
-    IStaffMemberReader,
-)
 from app.modules.staff.infrastructure.database.readers.staff_member import (
     SQLAlchemyStaffMemberReader,
 )

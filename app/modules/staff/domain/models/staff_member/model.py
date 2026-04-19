@@ -4,7 +4,7 @@ from typing import Self
 from app.core.domain.value_objects.id import (
     PrincipalIdVO,
 )
-from app.modules.staff.domain.value_objects.staff_email.object import StaffEmailVO
+from app.modules.staff.domain.value_objects.staff_email.object import StaffMemberEmailVO
 from app.modules.staff.shared.enums.staff_role import StaffRoleEnum
 
 
@@ -12,7 +12,7 @@ from app.modules.staff.shared.enums.staff_role import StaffRoleEnum
 class StaffMember:
     id: PrincipalIdVO
     name: str
-    email: StaffEmailVO
+    email: StaffMemberEmailVO
     password_hash: str
     role: StaffRoleEnum
 
@@ -22,7 +22,7 @@ class StaffMember:
         *,
         id: PrincipalIdVO,
         name: str,
-        email: StaffEmailVO,
+        email: StaffMemberEmailVO,
         password_hash: str,
         role: StaffRoleEnum,
     ) -> Self:
