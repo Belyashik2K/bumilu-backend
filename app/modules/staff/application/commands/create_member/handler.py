@@ -1,5 +1,6 @@
 from app.core.application.commands import ICommandHandler
 from app.core.application.interfaces.transaction_manager import ITransactionManager
+from app.core.domain.value_objects.id import PrincipalIdVO
 from app.modules.auth.application.interfaces.hashers import IStaffPasswordHasher
 from app.modules.auth.application.interfaces.repositories.principal import (
     IPrincipalRepository,
@@ -10,6 +11,8 @@ from app.modules.staff.application.commands.create_member.command import (
     CreateStaffMemberCommand,
 )
 from app.modules.staff.application.exceptions.staff_member import (
+    ActorRoleNotAllowedToPerformAction,
+    MultipleOwnersNotAllowed,
     StaffMemberWithGivenEmailAlreadyExists,
 )
 from app.modules.staff.application.interfaces.repositories.staff_member import (
@@ -20,6 +23,7 @@ from app.modules.staff.domain.value_objects.staff_email import StaffMemberEmailV
 from app.modules.staff.domain.value_objects.staff_password.object import (
     StaffMemberPasswordVO,
 )
+from app.modules.staff.shared.enums.staff_role import StaffRoleEnum
 
 
 class CreateStaffMemberCommandHandler(ICommandHandler[CreateStaffMemberCommand]):
@@ -36,6 +40,17 @@ class CreateStaffMemberCommandHandler(ICommandHandler[CreateStaffMemberCommand])
         self._principal_repository = principal_repository
 
     async def handle(self, command: CreateStaffMemberCommand) -> None:
+        actor_id = PrincipalIdVO.from_uuid(command.actor_id)
+        actor = await self._staff_member_repository.get_by_id(actor_id)
+
+        if actor is None or actor.role != StaffRoleEnum.OWNER:
+            raise ActorRoleNotAllowedToPerformAction(
+                actor_role=actor.role if actor is not None else None,
+                action="Create staff member",
+            )
+        if command.role == StaffRoleEnum.OWNER:
+            raise MultipleOwnersNotAllowed()
+
         email = StaffMemberEmailVO(command.email)
         password = StaffMemberPasswordVO(command.password)
 
