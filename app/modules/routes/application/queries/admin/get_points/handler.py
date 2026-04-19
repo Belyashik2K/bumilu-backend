@@ -3,6 +3,7 @@ from app.core.application.queries.pagination import DataListView
 from app.modules.places.application.interfaces.file_storage_url_builder import (
     IFileStorageURLBuilder,
 )
+from app.modules.routes.application.exceptions.route import RouteNotFound
 from app.modules.routes.application.interfaces.readers.route import IRouteReader
 from app.modules.routes.application.queries.admin.get_points.query import (
     GetAdminRoutePointsQuery,
@@ -24,6 +25,12 @@ class GetAdminRoutePointsQueryHandler(
     async def handle(
         self, query: GetAdminRoutePointsQuery
     ) -> DataListView[AdminRoutePointReadModel]:
+        exists = await self._route_reader.exists(
+            route_id=query.route_id,
+        )
+        if not exists:
+            raise RouteNotFound(route_id=query.route_id)
+
         points = await self._route_reader.get_admin_route_points(
             route_id=query.route_id, optional_translation_language=query.language
         )
