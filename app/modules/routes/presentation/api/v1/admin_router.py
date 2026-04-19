@@ -59,6 +59,12 @@ from app.modules.routes.application.commands.update_translation.command import (
 from app.modules.routes.application.commands.update_translation.handler import (
     UpdateRouteTranslationCommandHandler,
 )
+from app.modules.routes.application.queries.admin.build_route_path.handler import (
+    BuildAdminRoutePathForRouteQueryHandler,
+)
+from app.modules.routes.application.queries.admin.build_route_path.query import (
+    BuildAdminRoutePathForRouteQuery,
+)
 from app.modules.routes.application.queries.admin.get.handler import (
     GetAdminRouteQueryHandler,
 )
@@ -92,6 +98,7 @@ from app.modules.routes.presentation.api.schemas.card import (
 )
 from app.modules.routes.presentation.api.schemas.main import (
     AdminRouteSchema,
+    BuildRoutePathForRouteRequestSchema,
     ChangeRouteStatusRequestSchema,
     CreateRouteResponseSchema,
 )
@@ -105,6 +112,7 @@ from app.modules.routes.presentation.api.schemas.translation import (
     PaginatedRouteTranslationSchema,
     UpdateRouteTranslationRequestSchema,
 )
+from app.modules.routing.application.models.route_path import RoutePath
 
 admin_routes_router = APIRouter(
     prefix="/admin/routes", tags=["Admin Routes"], dependencies=[Depends(security)]
@@ -179,6 +187,27 @@ async def delete_route(
     principal: Annotated[Principal, Depends(get_staff_principal)],
 ) -> None:
     await handler(command=DeleteRouteCommand(route_id=route_id))
+
+
+@admin_routes_router.post(
+    "/{route_id}/route",
+)
+@inject
+async def build_route_path_for_route(
+    route_id: UUID7,
+    handler: FromDishka[BuildAdminRoutePathForRouteQueryHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+    accept_language: AcceptLanguageDep,
+    data: BuildRoutePathForRouteRequestSchema,
+) -> RoutePath:
+    result = await handler(
+        query=BuildAdminRoutePathForRouteQuery(
+            route_id=route_id,
+            language=accept_language.language,
+            travel_mode=data.travel_mode,
+        )
+    )
+    return result
 
 
 @admin_routes_router.patch(
