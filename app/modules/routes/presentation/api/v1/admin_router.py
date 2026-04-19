@@ -9,8 +9,12 @@ from fastapi import (
 from pydantic import UUID7
 from starlette import status
 
+from app.core.application.queries.pagination import DataListView
 from app.core.constants import UNSET
 from app.core.enums import LanguageEnum
+from app.core.presentation.api.schemas.accept_language import (
+    AcceptLanguageDep,
+)
 from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.staff.deps import get_staff_principal
@@ -52,6 +56,15 @@ from app.modules.routes.application.commands.update_translation.command import (
 )
 from app.modules.routes.application.commands.update_translation.handler import (
     UpdateRouteTranslationCommandHandler,
+)
+from app.modules.routes.application.queries.admin.get_points.handler import (
+    GetAdminRoutePointsQueryHandler,
+)
+from app.modules.routes.application.queries.admin.get_points.query import (
+    GetAdminRoutePointsQuery,
+)
+from app.modules.routes.application.queries.shared.models.route_point import (
+    AdminRoutePointReadModel,
 )
 from app.modules.routes.presentation.api.schemas.main import (
     ChangeRouteStatusRequestSchema,
@@ -180,6 +193,25 @@ async def delete_route_translation(
             language_code=language_code,
         )
     )
+
+
+@admin_routes_router.get(
+    "/{route_id}/points",
+    responses=generate_responses_for_endpoint(),
+)
+@inject
+async def get_route_points(
+    route_id: UUID7,
+    handler: FromDishka[GetAdminRoutePointsQueryHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+    accept_language: AcceptLanguageDep,
+) -> DataListView[AdminRoutePointReadModel]:
+    result = await handler(
+        query=GetAdminRoutePointsQuery(
+            route_id=route_id, language=accept_language.language
+        )
+    )
+    return result
 
 
 @admin_routes_router.put(
