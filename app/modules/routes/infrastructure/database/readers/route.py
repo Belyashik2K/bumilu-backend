@@ -36,6 +36,7 @@ from app.modules.places.infrastructure.database.query_builders import (
 from app.modules.places.shared.enums.route_sort import RouteSortByEnum
 from app.modules.routes.application.interfaces.readers.route import IRouteReader
 from app.modules.routes.application.queries.shared.models.route_card import (
+    AdminRouteCardReadModel,
     RouteCardReadModel,
 )
 from app.modules.routes.application.queries.shared.models.route_details import (
@@ -224,7 +225,7 @@ class SQLAlchemyRouteReader(IRouteReader):
             RouteTranslationModel.language_code == translation_language,
         ]
 
-        total_places_subquery = (
+        total_routes_subquery = (
             select(func.count(RoutePointModel.id))
             .where(RoutePointModel.route_id == RouteModel.id)
             .correlate(RouteModel)
@@ -238,7 +239,7 @@ class SQLAlchemyRouteReader(IRouteReader):
             .options(
                 contains_eager(RouteModel.translations),
             )
-            .add_columns(total_places_subquery.label("total_places"))
+            .add_columns(total_routes_subquery.label("total_places"))
         )
 
         count_stmt = (
@@ -332,6 +333,79 @@ class SQLAlchemyRouteReader(IRouteReader):
                     short_description=route.translations[0].short_description,
                     total_places=total_places,
                     m_to_start_place=distance_meters,
+                )
+            )
+
+        return PageReadModel(
+            items=items,
+            total=total,
+        )
+
+    async def admin_get_all(
+        self,
+        *,
+        optional_translation_language: LanguageEnum,
+        limit: int,
+        offset: int,
+    ) -> PageReadModel[AdminRouteCardReadModel]:
+        total_routes_subquery = (
+            select(func.count(RoutePointModel.id))
+            .where(RoutePointModel.route_id == RouteModel.id)
+            .correlate(RouteModel)
+            .scalar_subquery()
+        )
+
+        items_stmt = (
+            select(RouteModel)
+            .outerjoin(
+                RouteModel.translations.and_(
+                    RouteTranslationModel.route_id == RouteModel.id,
+                    RouteTranslationModel.language_code
+                    == optional_translation_language,
+                )
+            )
+            .options(
+                contains_eager(RouteModel.translations),
+            )
+            .add_columns(total_routes_subquery.label("total_places"))
+        )
+
+        count_stmt = select(func.count(func.distinct(RouteModel.id))).select_from(
+            RouteModel
+        )
+
+        total_subquery = count_stmt.scalar_subquery()
+
+        stmt = (
+            items_stmt.add_columns(total_subquery.label("total_count"))
+            .limit(limit)
+            .offset(offset)
+        )
+
+        result = await self._session.execute(stmt)
+        rows = result.unique().all()
+
+        if not rows:
+            total = await self._session.scalar(count_stmt)
+            return PageReadModel(
+                items=[],
+                total=total or 0,
+            )
+
+        total = rows[0].total_count or 0
+        items: list[AdminRouteCardReadModel] = []
+
+        for row in rows:
+            route, total_places, _total_count = row
+
+            items.append(
+                AdminRouteCardReadModel(
+                    id=route.id,
+                    title=route.translations[0].title if route.translations else None,
+                    total_places=total_places,
+                    status=route.status,
+                    created_at=route.created_at,
+                    updated_at=route.updated_at,
                 )
             )
 
