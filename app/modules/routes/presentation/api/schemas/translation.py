@@ -4,6 +4,9 @@ from pydantic import (
 )
 
 from app.core.enums import LanguageEnum
+from app.core.presentation.api.schemas.pagination import (
+    make_paginated_response_schema,
+)
 from app.modules.routes.presentation.api.schemas.examples import (
     DESCRIPTION_EXAMPLE,
     LANGUAGE_CODE_EXAMPLE,
@@ -54,3 +57,9 @@ class UpdateRouteTranslationRequestSchema(BaseModel):
         description="Short description of the route in the specified language",
         examples=[SHORT_DESCRIPTION_EXAMPLE],
     )
+
+
+PaginatedRouteTranslationSchema = make_paginated_response_schema(
+    item_type=BaseRouteTranslationSchema,
+    description="Paginated response schema for route translations",
+)
