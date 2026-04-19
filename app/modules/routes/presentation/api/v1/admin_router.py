@@ -1,4 +1,6 @@
-from typing import Annotated
+from typing import (
+    Annotated,
+)
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
@@ -9,7 +11,10 @@ from fastapi import (
 from pydantic import UUID7
 from starlette import status
 
-from app.core.application.queries.pagination import DataListView
+from app.core.application.queries.pagination import (
+    DataListView,
+    PaginatedView,
+)
 from app.core.constants import UNSET
 from app.core.enums import LanguageEnum
 from app.core.presentation.api.schemas.accept_language import (
@@ -63,8 +68,23 @@ from app.modules.routes.application.queries.admin.get_points.handler import (
 from app.modules.routes.application.queries.admin.get_points.query import (
     GetAdminRoutePointsQuery,
 )
+from app.modules.routes.application.queries.admin.get_translation_by_language_code.handler import (
+    GetAdminRouteTranslationByLanguageCodeQueryHandler,
+)
+from app.modules.routes.application.queries.admin.get_translation_by_language_code.query import (
+    GetAdminRouteTranslationByLanguageCodeQuery,
+)
+from app.modules.routes.application.queries.admin.get_translations.handler import (
+    GetAdminRouteTranslationsQueryHandler,
+)
+from app.modules.routes.application.queries.admin.get_translations.query import (
+    GetAdminRouteTranslationsQuery,
+)
 from app.modules.routes.application.queries.shared.models.route_point import (
     AdminRoutePointReadModel,
+)
+from app.modules.routes.application.queries.shared.models.route_translation import (
+    RouteTranslationReadModel,
 )
 from app.modules.routes.presentation.api.schemas.main import (
     ChangeRouteStatusRequestSchema,
@@ -127,6 +147,24 @@ async def update_route_status(
     )
 
 
+@admin_routes_router.get(
+    "/{route_id}/translations",
+    responses=generate_responses_for_endpoint(),
+)
+@inject
+async def get_route_translations(
+    route_id: UUID7,
+    handler: FromDishka[GetAdminRouteTranslationsQueryHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+) -> PaginatedView[RouteTranslationReadModel]:
+    result = await handler(
+        query=GetAdminRouteTranslationsQuery(
+            route_id=route_id,
+        )
+    )
+    return result
+
+
 @admin_routes_router.post(
     "/{route_id}/translations",
     status_code=status.HTTP_204_NO_CONTENT,
@@ -148,6 +186,25 @@ async def create_route_translation(
             description=data.description,
         )
     )
+
+
+@admin_routes_router.get(
+    "/{route_id}/translations/{language_code}",
+    responses=generate_responses_for_endpoint(),
+)
+@inject
+async def get_route_translation_by_language_code(
+    route_id: UUID7,
+    language_code: LanguageEnum,
+    handler: FromDishka[GetAdminRouteTranslationByLanguageCodeQueryHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+) -> RouteTranslationReadModel:
+    result = await handler(
+        query=GetAdminRouteTranslationByLanguageCodeQuery(
+            route_id=route_id, language_code=language_code
+        )
+    )
+    return result
 
 
 @admin_routes_router.patch(

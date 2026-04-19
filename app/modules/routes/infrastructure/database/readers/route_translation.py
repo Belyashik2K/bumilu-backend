@@ -74,7 +74,7 @@ class SQLAlchemyRouteTranslationReader(IRouteTranslationReader):
             return PageReadModel(total=total)
 
         translations: list[RouteTranslationModel] = [
-            row.PlaceTranslationModel for row in rows
+            row.RouteTranslationModel for row in rows
         ]
         total = rows[0].total_count
 
