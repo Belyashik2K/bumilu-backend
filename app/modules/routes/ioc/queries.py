@@ -8,11 +8,11 @@ from app.modules.places.application.interfaces.file_storage_url_builder import (
     IFileStorageURLBuilder,
 )
 from app.modules.routes.application.interfaces.readers.route import IRouteReader
-from app.modules.routes.application.queries.build_route_path.handler import (
+from app.modules.routes.application.queries.user.build_route_path import (
     BuildRoutePathForRouteQueryHandler,
 )
-from app.modules.routes.application.queries.get.handler import GetRouteQueryHandler
-from app.modules.routes.application.queries.get_all.handler import (
+from app.modules.routes.application.queries.user.get import GetRouteQueryHandler
+from app.modules.routes.application.queries.user.get_all.handler import (
     GetAllRoutesQueryHandler,
 )
 from app.modules.routing.application.interfaces.routing_gateway import IRoutingGateway

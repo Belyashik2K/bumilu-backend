@@ -5,11 +5,11 @@ from app.modules.places.application.interfaces.file_storage_url_builder import (
 from app.modules.places.application.queries.places.shared.views import PlaceCardView
 from app.modules.routes.application.exceptions.route import RouteNotFound
 from app.modules.routes.application.interfaces.readers.route import IRouteReader
-from app.modules.routes.application.queries.get.query import GetRouteQuery
 from app.modules.routes.application.queries.shared.views import (
     RoutePointView,
     RouteView,
 )
+from app.modules.routes.application.queries.user.get.query import GetRouteQuery
 
 
 class GetRouteQueryHandler(IQueryHandler[GetRouteQuery, RouteView]):

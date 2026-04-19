@@ -1,7 +1,7 @@
 from app.core.application.queries import IQueryHandler
 from app.modules.routes.application.exceptions.route import RouteNotFound
 from app.modules.routes.application.interfaces.readers.route import IRouteReader
-from app.modules.routes.application.queries.build_route_path.query import (
+from app.modules.routes.application.queries.user.build_route_path.query import (
     BuildRoutePathForRouteQuery,
 )
 from app.modules.routing.application.interfaces.routing_gateway import IRoutingGateway
@@ -28,12 +28,14 @@ class BuildRoutePathForRouteQueryHandler(
         if route is None:
             raise RouteNotFound(route_id=query.route_id)
 
-        points = await self._route_reader.get_route_points(route_id=query.route_id)
+        waypoints = await self._route_reader.get_route_waypoints(
+            route_id=query.route_id
+        )
 
         return await self._routing_gateway.get_route(
             points=[
                 Waypoint(latitude=point.latitude, longitude=point.longitude)
-                for point in sorted(points, key=lambda p: p.index)
+                for point in sorted(waypoints, key=lambda p: p.index)
             ],
             mode=query.travel_mode,
             translation_language=query.language,

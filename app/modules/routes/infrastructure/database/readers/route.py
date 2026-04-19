@@ -121,7 +121,7 @@ class SQLAlchemyRouteReader(IRouteReader):
         result = await self._session.execute(stmt)
         return result.scalar_one()
 
-    async def get_route_points(
+    async def get_route_waypoints(
         self,
         route_id: UUID,
     ) -> list[RouteWaypointModel]:
