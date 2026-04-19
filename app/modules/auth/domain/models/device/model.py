@@ -5,12 +5,12 @@ from dataclasses import (
 from datetime import datetime
 from typing import Self
 
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
     DeviceIdVO,
-    UserIdVO,
+    PrincipalIdVO,
 )
-from app.core.shared.enums import DevicePlatformEnum
-from app.core.shared.utils import get_current_dt
+from app.core.enums import DevicePlatformEnum
+from app.core.utils import get_current_dt
 from app.modules.auth.domain.models.device.exceptions import (
     DeviceAlreadyAttachedToDifferentGuestUser,
 )
@@ -22,7 +22,7 @@ class Device:
     platform: DevicePlatformEnum
     name: str | None = field(default=None)
     app_version: str
-    guest_user_id: UserIdVO | None = field(default=None)
+    guest_user_id: PrincipalIdVO | None = field(default=None)
     last_seen_at: datetime = field(default_factory=get_current_dt)
 
     def touch(self) -> None:
@@ -48,7 +48,7 @@ class Device:
         self.update_app_version(app_version)
         self.touch()
 
-    def attach_guest_user(self, guest_user_id: UserIdVO) -> None:
+    def attach_guest_user(self, guest_user_id: PrincipalIdVO) -> None:
         if self.guest_user_id is not None and self.guest_user_id != guest_user_id:
             raise DeviceAlreadyAttachedToDifferentGuestUser()
         if self.guest_user_id == guest_user_id:
@@ -65,7 +65,7 @@ class Device:
         device_id: DeviceIdVO,
         platform: DevicePlatformEnum,
         app_version: str,
-        guest_user_id: UserIdVO | None = None,
+        guest_user_id: PrincipalIdVO | None = None,
         name: str | None = None,
     ) -> Self:
         return cls(

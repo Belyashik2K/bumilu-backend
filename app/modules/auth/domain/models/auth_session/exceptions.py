@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from app.core.shared.exceptions.domain.base import (
+from app.core.exceptions.domain.base import (
     DomainInvariantViolationException,
     DomainValidationException,
 )

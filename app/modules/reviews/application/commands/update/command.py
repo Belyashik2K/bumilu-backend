@@ -4,7 +4,7 @@ from dataclasses import (
 )
 from uuid import UUID
 
-from app.core.shared.constants import (
+from app.core.constants import (
     UNSET,
     UnsetType,
 )

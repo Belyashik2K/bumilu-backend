@@ -6,6 +6,7 @@ from sqlalchemy import (
 )
 from sqlalchemy import (
     DateTime,
+    Enum,
     ForeignKey,
     Index,
 )
@@ -21,22 +22,29 @@ from app.core.infrastructure.database.mixins import (
     CreatedAtMixin,
     PKUUIDMixin,
 )
+from app.modules.auth.shared.enums import PrincipalTypeEnum
 
 if TYPE_CHECKING:
-    from app.modules.auth.infrastructure.database.models import DeviceModel
-    from app.modules.users.infrastructure.database.models import UserModel
+    from app.modules.auth.infrastructure.database.models import (
+        DeviceModel,
+        PrincipalModel,
+    )
 
 
 class AuthSessionModel(PKUUIDMixin, CreatedAtMixin, BaseModel):
     __tablename__ = "auth_sessions"
 
-    user_id: Mapped[UUID] = mapped_column(
-        _UUID,
-        ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"),
+    principal_id: Mapped[UUID] = mapped_column(
+        _UUID(),
+        ForeignKey("principals.id", ondelete="CASCADE", onupdate="CASCADE"),
         index=True,
     )
-    device_id: Mapped[UUID] = mapped_column(
-        _UUID,
+    principal_type: Mapped[PrincipalTypeEnum] = mapped_column(
+        Enum(PrincipalTypeEnum, name="principal_type_enum"),
+        index=True,
+    )
+    device_id: Mapped[UUID | None] = mapped_column(
+        _UUID(),
         ForeignKey("devices.id", ondelete="CASCADE", onupdate="CASCADE"),
         index=True,
     )
@@ -46,8 +54,8 @@ class AuthSessionModel(PKUUIDMixin, CreatedAtMixin, BaseModel):
         DateTime(timezone=True), index=True
     )
 
-    user: Mapped["UserModel"] = relationship(
-        "UserModel",
+    principal: Mapped["PrincipalModel"] = relationship(
+        "PrincipalModel",
         back_populates="auth_sessions",
         lazy="raise",
     )
@@ -59,9 +67,9 @@ class AuthSessionModel(PKUUIDMixin, CreatedAtMixin, BaseModel):
 
     __table_args__ = (
         Index(
-            "ix_auth_sessions_user_device_revoked_at",
-            "user_id",
-            "device_id",
-            postgresql_where=revoked_at.isnot(None),
+            "ix_auth_sessions_principal_type_principal_id_active",
+            "principal_type",
+            "principal_id",
+            postgresql_where=revoked_at.is_(None),
         ),
     )

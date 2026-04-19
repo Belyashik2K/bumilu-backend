@@ -4,16 +4,14 @@ from dataclasses import (
 )
 from uuid import UUID
 
-from app.modules.reviews.application.shared.dtos import ReviewInfoDTO
+from app.core.application.queries.pagination import (
+    OffsetPaginationMixin,
+)
+from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class GetAllReviewsByUserQuery:
+class GetAllReviewsByUserQuery(OffsetPaginationMixin):
     actor_id: UUID
     user_id: UUID
-
-
-@dataclass(frozen=True, slots=True, kw_only=True)
-class GetAllReviewsByUserQueryResult:
-    user_id: UUID
-    items: list[ReviewInfoDTO] = field(default_factory=list)
+    entity_type: ReviewEntityTypeEnum | None = field(default=None)

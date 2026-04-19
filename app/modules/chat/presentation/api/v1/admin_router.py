@@ -11,14 +11,12 @@ from fastapi import (
 from pydantic import UUID7
 from starlette import status
 
-from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
-from app.core.shared.presentation.schemas.pagination import (
+from app.core.presentation.api.schemas.pagination import (
     OffsetPaginationDep,
 )
+from app.core.presentation.endpoint_responses import generate_responses_for_endpoint
 from app.modules.auth.presentation.api import security
-from app.modules.auth.presentation.api.v1.deps import (
-    get_admin_principal,
-)
+from app.modules.auth.presentation.api.v1.staff.deps import get_staff_principal
 from app.modules.auth.shared.context import Principal
 from app.modules.chat.application.commands.admin import (
     SubmitAdminMessageCommand,
@@ -70,7 +68,7 @@ admin_chat_router = APIRouter(
 @inject
 async def get_chats_list(
     handler: FromDishka[GetAdminChatListQueryHandler],
-    principal: Annotated[Principal, Depends(get_admin_principal)],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
     filters: AdminChatFiltersDep,
     pagination: OffsetPaginationDep,
 ) -> AdminChatListResponseSchema:
@@ -92,7 +90,7 @@ async def get_chats_list(
 @inject
 async def get_chat_info(
     handler: FromDishka[GetAdminChatQueryHandler],
-    principal: Annotated[Principal, Depends(get_admin_principal)],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
     chat_id: UUID7 = CHAT_ID_PATH,
 ) -> AdminChatInfoSchema:
     result = await handler(
@@ -111,7 +109,7 @@ async def get_chat_info(
 @inject
 async def get_chat_messages(
     handler: FromDishka[GetAdminChatMessagesQueryHandler],
-    principal: Annotated[Principal, Depends(get_admin_principal)],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
     pagination: OffsetPaginationDep,
     chat_id: UUID7 = CHAT_ID_PATH,
 ) -> GetChatMessagesResponseSchema:
@@ -128,23 +126,28 @@ async def get_chat_messages(
 
 @admin_chat_router.post(
     "/{chat_id}/close",
+    status_code=status.HTTP_204_NO_CONTENT,
     responses=generate_responses_for_endpoint(status.HTTP_404_NOT_FOUND),
 )
 @inject
 async def close_chat_as_admin(
     handler: FromDishka[CloseChatAsAdminCommandHandler],
-    principal: Principal = Depends(get_admin_principal),
+    principal: Principal = Depends(get_staff_principal),
     chat_id: UUID7 = CHAT_ID_PATH,
 ) -> None:
     await handler(CloseChatAsAdminCommand(actor_id=principal.id.value, chat_id=chat_id))
 
 
-@admin_chat_router.post("/{chat_id}/reply")
+@admin_chat_router.post(
+    "/{chat_id}/messages",
+    status_code=status.HTTP_201_CREATED,
+    responses=generate_responses_for_endpoint(status.HTTP_404_NOT_FOUND),
+)
 @inject
 async def reply_to_chat_as_admin(
     handler: FromDishka[SubmitAdminMessageCommandHandler],
     data: SubmitAdminMessageRequestSchema,
-    principal: Principal = Depends(get_admin_principal),
+    principal: Principal = Depends(get_staff_principal),
     chat_id: UUID7 = CHAT_ID_PATH,
 ) -> SubmitAdminMessageResponseSchema:
     result = await handler(

@@ -4,12 +4,12 @@ from abc import (
 )
 
 from app.modules.auth.application.interfaces.hashers.base import IHasher
-from app.modules.users.domain.value_objects import EmailVO
+from app.modules.users.domain.value_objects import UserEmailVO
 
 
 class IVerificationCodeHasher(IHasher, ABC):
     @abstractmethod
-    def hash(self, *, email: EmailVO, code: str) -> str: ...
+    def hash(self, *, email: UserEmailVO, code: str) -> str: ...
 
     @abstractmethod
-    def verify(self, *, email: EmailVO, code: str, code_hash: str) -> bool: ...
+    def verify(self, *, email: UserEmailVO, code: str, code_hash: str) -> bool: ...

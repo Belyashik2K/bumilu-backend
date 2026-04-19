@@ -11,8 +11,8 @@ from pydantic import (
     Field,
 )
 
-from app.core.shared.enums import LanguageEnum
-from app.core.shared.presentation.schemas.pagination import (
+from app.core.enums import LanguageEnum
+from app.core.presentation.api.schemas.pagination import (
     OffsetPaginationSchema,
 )
 from app.modules.chat.presentation.api.schemas.admin.common import ChatUserSchema
@@ -59,14 +59,6 @@ class AdminChatPreviewSchema(BaseModel):
     )
 
 
-class AdminChatFilterSchema(BaseModel):
-    status: ChatStatusEnum | None = Field(
-        None,
-        description="Filter chats by their status. If not provided, chats of all statuses will be returned.",
-        examples=[ChatStatusEnum.ESCALATED_TO_ADMIN],
-    )
-
-
 class AdminChatListResponseSchema(BaseModel):
     chats: list[AdminChatPreviewSchema] = Field(
         ...,
@@ -93,6 +85,14 @@ class AdminChatInfoSchema(AdminChatPreviewSchema):
     close_reason: str | None = Field(
         None,
         description="The reason why the chat was closed, if applicable. This can provide context for the closure of the chat, such as whether it was resolved, escalated, or closed for other reasons.",
+    )
+
+
+class AdminChatFilterSchema(BaseModel):
+    status: ChatStatusEnum | None = Field(
+        None,
+        description="Filter chats by their status. If not provided, chats of all statuses will be returned.",
+        examples=[ChatStatusEnum.ESCALATED_TO_ADMIN],
     )
 
 

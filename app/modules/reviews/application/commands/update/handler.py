@@ -1,12 +1,13 @@
 import logging
 
 from app.core.application.commands import ICommandHandlerWithResult
-from app.core.shared.constants import UnsetType
-from app.core.shared.domain.value_objects.id import (
+from app.core.application.interfaces.transaction_manager import ITransactionManager
+from app.core.constants import UnsetType
+from app.core.domain.value_objects.id import (
+    PrincipalIdVO,
     ReviewIdVO,
-    UserIdVO,
 )
-from app.core.shared.utils import prepare_extras
+from app.core.utils import prepare_extras
 from app.modules.reviews.application.commands.update import (
     UpdateReviewCommand,
     UpdateReviewCommandResult,
@@ -32,7 +33,9 @@ class UpdateReviewCommandHandler(
     def __init__(
         self,
         review_repository: IReviewRepository,
+        transaction_manager: ITransactionManager,
     ) -> None:
+        super().__init__(transaction_manager)
         self._review_repository = review_repository
 
     async def handle(
@@ -44,7 +47,7 @@ class UpdateReviewCommandHandler(
         if review is None:
             raise ReviewNotFound(review_id=review_id)
 
-        actor_id = UserIdVO.from_uuid(command.actor_id)
+        actor_id = PrincipalIdVO.from_uuid(command.actor_id)
         if review.author_id != actor_id:
             logger.warning(
                 "review_update_forbidden",

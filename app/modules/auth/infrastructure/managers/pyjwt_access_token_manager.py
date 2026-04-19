@@ -5,16 +5,18 @@ from datetime import (
 
 import jwt
 
-from app.core.shared.domain.value_objects.id import (
+from app.core.domain.value_objects.id import (
+    PrincipalIdVO,
     SessionIdVO,
-    UserIdVO,
 )
-from app.core.shared.enums import UserRoleEnum
-from app.core.shared.utils import get_current_dt
+from app.core.enums import UserRoleEnum
+from app.core.utils import get_current_dt
 from app.modules.auth.application.interfaces.managers.access_token import (
     IAccessTokenManager,
     TokenInfoDTO,
 )
+from app.modules.auth.shared.enums import PrincipalTypeEnum
+from app.modules.staff.shared.enums.staff_role import StaffRoleEnum
 
 
 class PyJWTAccessTokenManager(IAccessTokenManager):
@@ -34,14 +36,16 @@ class PyJWTAccessTokenManager(IAccessTokenManager):
 
     def issue(
         self,
-        user_id: UserIdVO,
+        principal_id: PrincipalIdVO,
+        principal_type: PrincipalTypeEnum,
         session_id: SessionIdVO,
         role: UserRoleEnum,
         ttl: int,
     ) -> str:
         payload = {
             "type": "access",
-            "sub": str(user_id),
+            "sub": str(principal_id),
+            "principal_type": principal_type.value,
             "iss": self._issuer,
             "exp": self._get_expiration_time(seconds=ttl),
             "iat": get_current_dt(),
@@ -69,10 +73,19 @@ class PyJWTAccessTokenManager(IAccessTokenManager):
         if payload.get("type") != "access":
             raise ValueError("Invalid token type")
 
+        principal_type = PrincipalTypeEnum(payload["principal_type"])
+        role = payload["role"]
+
+        mapped_role = {
+            PrincipalTypeEnum.USER: lambda: UserRoleEnum(role),
+            PrincipalTypeEnum.STAFF: lambda: StaffRoleEnum(role),
+        }
+
         return TokenInfoDTO(
-            user_id=UserIdVO.from_str(payload["sub"]),
+            principal_type=principal_type,
+            principal_id=PrincipalIdVO.from_str(payload["sub"]),
             session_id=SessionIdVO.from_str(payload["session_id"]),
-            role=UserRoleEnum(payload["role"]),
+            role=mapped_role[principal_type](),
             issued_at=payload["iat"],
             expires_at=payload["exp"],
         )

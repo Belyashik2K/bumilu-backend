@@ -1,7 +1,22 @@
-name: bumilu-users-service
+name: bumilu-backend
 services:
+  valhalla:
+    image: ghcr.io/valhalla/valhalla-scripted:latest
+    restart: unless-stopped
+    environment:
+      - serve_tiles=True
+    volumes:
+      - ./valhalla_data:/custom_files
+    healthcheck:
+      test: [ "CMD", "curl", "-fsS", "http://localhost:8002/status" ]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 15s
+    networks:
+      - bumilu
   postgres:
-    image: postgres:17-alpine
+    image: postgis/postgis:18-3.6
     restart: unless-stopped
     env_file: [ .env ]
     environment:
@@ -9,7 +24,7 @@ services:
       POSTGRES_PASSWORD: ${DATABASE__PASSWORD}
       POSTGRES_DB: ${DATABASE__NAME}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
       interval: 1s
@@ -48,12 +63,55 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      valhalla:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    networks:
+      - bumilu
+  worker:
+    build: .
+    restart: unless-stopped
+    env_file: [ .env ]
+    command: [
+      "taskiq",
+      "worker",
+      "app.core.infrastructure.queue.worker:broker",
+      "--workers",
+      "${TASKIQ__WORKERS_COUNT}"
+    ]
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    networks:
+      - bumilu
+  scheduler:
+    build: .
+    restart: unless-stopped
+    env_file: [ .env ]
+    command: [
+      "taskiq",
+      "scheduler",
+      "app.core.infrastructure.schedulers.taskiq:scheduler",
+      "--update-interval",
+      "${TASKIQ__SCHEDULER__POLLING_INTERVAL}"
+    ]
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
       migrations:
         condition: service_completed_successfully
     networks:
       - bumilu
 networks:
   bumilu:
+    external: true
 volumes:
   postgres_data:
   redis_data:

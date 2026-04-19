@@ -157,14 +157,14 @@ class CORSConfig(BaseModel):
 # ========= ChatConfig ========
 
 
-class OpenRouterConfig(BaseModel):
+class OpenAIConfig(BaseModel):
     api_key: str
     api_base_url: str
     model: str
 
 
 class AIAssistantConfig(BaseModel):
-    openrouter: OpenRouterConfig
+    openai: OpenAIConfig
     system_prompt: str
     confidence_score_threshold: float
     polling_interval_sec: int
@@ -181,6 +181,41 @@ class ChatConfig(BaseModel):
 
 
 # ================================
+
+
+# ========= RoutingConfig ========
+
+
+class ValhallaConfig(BaseModel):
+    base_url: str
+    timeout_sec: int
+
+
+class RoutingConfig(BaseModel):
+    valhalla: ValhallaConfig
+
+
+# ================================
+
+
+# =========== StorageConfig ===========
+
+
+class S3Config(BaseModel):
+    endpoint_url: str
+    public_endpoint_url: str
+    bucket_name: str
+    access_key: str
+    secret_key: str
+    region_name: str
+
+
+class StorageConfig(BaseModel):
+    s3: S3Config
+
+
+# ================================
+
 
 # ======== AppConfig ========
 
@@ -200,6 +235,8 @@ class AppConfig(BaseSettings):
     auth: AuthConfig
     cors: CORSConfig
     chat: ChatConfig
+    routing: RoutingConfig
+    storage: StorageConfig
 
     @classmethod
     def settings_customise_sources(

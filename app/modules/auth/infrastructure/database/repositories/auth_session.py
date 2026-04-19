@@ -5,14 +5,14 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.domain.value_objects.id import (
+    DeviceIdVO,
+    PrincipalIdVO,
+    SessionIdVO,
+)
 from app.core.infrastructure.database import SQLAlchemyBaseRepository
 from app.core.infrastructure.database.exception_catcher import (
     sqlalchemy_exception_catcher,
-)
-from app.core.shared.domain.value_objects.id import (
-    DeviceIdVO,
-    SessionIdVO,
-    UserIdVO,
 )
 from app.modules.auth.application.interfaces.repositories.auth_session import (
     IAuthSessionRepository,
@@ -31,8 +31,9 @@ class SQLAlchemyAuthSessionRepository(
     def _to_entity(self, data: AuthSessionModel) -> AuthSession:
         return AuthSession(
             id=SessionIdVO.from_uuid(data.id),
-            user_id=UserIdVO.from_uuid(data.user_id),
-            device_id=DeviceIdVO.from_uuid(data.device_id),
+            principal_id=PrincipalIdVO.from_uuid(data.principal_id),
+            principal_type=data.principal_type,
+            device_id=DeviceIdVO.from_uuid(data.device_id) if data.device_id else None,
             refresh_token_hash=data.refresh_token_hash,
             expires_at=data.expires_at,
             revoked_at=data.revoked_at,
@@ -41,8 +42,9 @@ class SQLAlchemyAuthSessionRepository(
     def _to_data(self, entity: AuthSession) -> AuthSessionModel:
         return AuthSessionModel(
             id=entity.id.value,
-            user_id=entity.user_id.value,
-            device_id=entity.device_id.value,
+            principal_id=entity.principal_id.value,
+            principal_type=entity.principal_type,
+            device_id=entity.device_id.value if entity.device_id else None,
             refresh_token_hash=entity.refresh_token_hash,
             expires_at=entity.expires_at,
             revoked_at=entity.revoked_at,

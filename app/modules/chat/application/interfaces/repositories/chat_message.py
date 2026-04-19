@@ -5,7 +5,7 @@ from abc import (
 from collections.abc import Iterable
 
 from app.core.application.interfaces.repositories import IBaseRepository
-from app.core.shared.domain.value_objects.id import ChatIdVO
+from app.core.domain.value_objects.id import ChatIdVO
 from app.modules.chat.domain.models.chat_message import ChatMessage
 
 

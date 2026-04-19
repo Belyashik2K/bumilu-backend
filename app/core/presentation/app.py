@@ -21,22 +21,27 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
-from app.core.di import CoreProvider
 from app.core.infrastructure.config import AppConfig
 from app.core.infrastructure.logging import setup_logging
+from app.core.ioc import (
+    CORE_PROVIDERS,
+)
 from app.core.presentation.api import api_router
 from app.core.presentation.exceptions import set_exception_handlers
 from app.core.presentation.middlewares.outer import (
     AccessLogMiddleware,
-    SQLAlchemyTransactionMiddleware,
 )
-from app.modules.auth.di import AuthProvider
+from app.modules.auth.ioc import AuthProvider
 from app.modules.auth.presentation.api.middlewares.auth import AuthMiddleware
-from app.modules.chat.di import ChatProvider
 from app.modules.chat.infrastructure.apscheduler_jobs import register_chat_jobs
-from app.modules.favourites.di import FavouriteProvider
-from app.modules.reviews.di import ReviewProvider
-from app.modules.users.di import UserProvider
+from app.modules.chat.ioc import CHAT_PROVIDERS
+from app.modules.favourites.ioc import FavouriteProvider
+from app.modules.places.ioc import PLACES_PROVIDERS
+from app.modules.reviews.ioc import ReviewProvider
+from app.modules.routes.ioc import ROUTES_PROVIDERS
+from app.modules.routing.ioc import ROUTING_PROVIDERS
+from app.modules.staff.ioc import STAFF_PROVIDERS
+from app.modules.users.ioc import UserProvider
 
 
 @asynccontextmanager
@@ -77,7 +82,6 @@ def create_app() -> FastAPI:
     async def redirect_to_docs(request: Request) -> RedirectResponse:
         return RedirectResponse(url=config.docs.urls.swagger)
 
-    app.add_middleware(SQLAlchemyTransactionMiddleware)
     app.add_middleware(AuthMiddleware)
     app.add_middleware(AccessLogMiddleware)
     if config.cors.enabled:
@@ -94,12 +98,16 @@ def create_app() -> FastAPI:
     set_exception_handlers(app)
 
     container = make_async_container(
-        CoreProvider(),
+        *CORE_PROVIDERS,
         UserProvider(),
         AuthProvider(),
         ReviewProvider(),
         FavouriteProvider(),
-        ChatProvider(),
+        *CHAT_PROVIDERS,
+        *STAFF_PROVIDERS,
+        *PLACES_PROVIDERS,
+        *ROUTES_PROVIDERS,
+        *ROUTING_PROVIDERS,
         FastapiProvider(),
     )
     setup_dishka_fastapi(container=container, app=app)

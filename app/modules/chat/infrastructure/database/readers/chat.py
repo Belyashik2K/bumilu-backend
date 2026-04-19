@@ -12,12 +12,12 @@ from app.modules.chat.application.queries.admin.get_chat_list.view import (
     AdminChatListPage,
     AdminChatPreviewView,
 )
-from app.modules.chat.application.queries.common_views import (
+from app.modules.chat.application.queries.shared.readers import IChatReader
+from app.modules.chat.application.queries.shared.views import (
+    ChatUserView,
     LocationView,
-    UserView,
 )
-from app.modules.chat.application.queries.readers.chat import IChatReader
-from app.modules.chat.application.queries.user.get_chat import UserChatView
+from app.modules.chat.application.queries.user.get_chat.view import UserChatView
 from app.modules.chat.infrastructure.database.models import ChatModel
 from app.modules.chat.shared.enums import ChatStatusEnum
 
@@ -26,9 +26,12 @@ class SQLAlchemyChatReader(IChatReader):
     def __init__(self, session: AsyncSession):
         self._session = session
 
-    async def get_active_chat_by_user_id(self, user_id: UUID) -> UserChatView | None:
-        stmt = select(ChatModel.id, ChatModel.status, ChatModel.last_activity_at).where(
-            ChatModel.user_id == user_id, ChatModel.status != ChatStatusEnum.CLOSED
+    async def get_recent_chat_by_user_id(self, user_id: UUID) -> UserChatView | None:
+        stmt = (
+            select(ChatModel.id, ChatModel.status, ChatModel.last_activity_at)
+            .where(ChatModel.user_id == user_id)
+            .order_by(ChatModel.last_activity_at.desc())
+            .limit(1)
         )
         result = await self._session.execute(stmt)
         row = result.first()
@@ -51,7 +54,7 @@ class SQLAlchemyChatReader(IChatReader):
             return None
         return AdminChatView(
             id=chat.id,
-            user=UserView(
+            user=ChatUserView(
                 id=chat.user.id,
                 email=chat.user.email,
                 role=chat.user.role,
@@ -108,7 +111,7 @@ class SQLAlchemyChatReader(IChatReader):
         converted_chats = [
             AdminChatPreviewView(
                 id=chat.id,
-                user=UserView(
+                user=ChatUserView(
                     id=chat.user.id,
                     email=chat.user.email,
                     role=chat.user.role,

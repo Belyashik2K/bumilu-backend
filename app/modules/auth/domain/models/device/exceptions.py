@@ -1,4 +1,4 @@
-from app.core.shared.exceptions.domain.base import DomainConflictException
+from app.core.exceptions.domain.base import DomainConflictException
 
 
 class DeviceAlreadyAttachedToDifferentGuestUser(DomainConflictException):
