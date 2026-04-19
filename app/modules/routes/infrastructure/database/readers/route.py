@@ -58,6 +58,11 @@ class SQLAlchemyRouteReader(IRouteReader):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
+    async def exists(self, route_id: UUID) -> bool:
+        stmt = select(func.count(RouteModel.id)).where(RouteModel.id == route_id)
+        result = await self._session.execute(stmt)
+        return result.scalar_one() > 0
+
     async def get_by_id(
         self,
         route_id: UUID,
