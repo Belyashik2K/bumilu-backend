@@ -63,6 +63,10 @@ from app.modules.routes.application.commands.update_translation.command import (
 from app.modules.routes.application.commands.update_translation.handler import (
     UpdateRouteTranslationCommandHandler,
 )
+from app.modules.routes.application.queries.admin.get.handler import (
+    GetAdminRouteQueryHandler,
+)
+from app.modules.routes.application.queries.admin.get.query import GetAdminRouteQuery
 from app.modules.routes.application.queries.admin.get_all.handler import (
     GetAdminRoutesListQueryHandler,
 )
@@ -89,6 +93,9 @@ from app.modules.routes.application.queries.admin.get_translations.query import 
 )
 from app.modules.routes.application.queries.shared.models.route_card import (
     AdminRouteCardReadModel,
+)
+from app.modules.routes.application.queries.shared.models.route_details import (
+    AdminRouteDetailsReadModel,
 )
 from app.modules.routes.application.queries.shared.models.route_point import (
     AdminRoutePointReadModel,
@@ -145,6 +152,26 @@ async def create_route(
 ) -> CreateRouteResponseSchema:
     result = await handler(command=CreateRouteCommand())
     return CreateRouteResponseSchema.model_validate(result, from_attributes=True)
+
+
+@admin_routes_router.get(
+    "/{route_id}",
+    responses=generate_responses_for_endpoint(),
+)
+@inject
+async def get_route_by_id(
+    route_id: UUID7,
+    handler: FromDishka[GetAdminRouteQueryHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+    accept_language: AcceptLanguageDep,
+) -> AdminRouteDetailsReadModel:
+    result = await handler(
+        query=GetAdminRouteQuery(
+            route_id=route_id,
+            language=accept_language.language,
+        )
+    )
+    return result
 
 
 @admin_routes_router.delete(
