@@ -16,6 +16,7 @@ from app.core.enums.language import REQUIRED_LANGUAGES
 from app.modules.routes.domain.models.route.exceptions import (
     CannotPublishPlaceMissingTranslations,
     CannotPublishRouteMissingPoints,
+    CannotPublishRouteWithUnpublishedPlaces,
     InvalidRouteStatusTransition,
     RouteIsNotEditable,
     RouteTranslationAlreadyExists,
@@ -182,7 +183,7 @@ class Route:
                 language_code=language_code,
             )
 
-    def publish(self) -> None:
+    def publish(self, unpublished_place_ids: list[PlaceIdVO]) -> None:
         if self.is_published():
             return
 
@@ -197,6 +198,12 @@ class Route:
         if len(self.points) < 2:
             raise CannotPublishRouteMissingPoints(route_id=self.id)
 
+        if unpublished_place_ids:
+            raise CannotPublishRouteWithUnpublishedPlaces(
+                route_id=self.id,
+                unpublished_place_ids=unpublished_place_ids,
+            )
+
         self.status = RouteStatusEnum.PUBLISHED
 
     def hide(self) -> None:
@@ -204,7 +211,7 @@ class Route:
             return
 
         if self.is_draft():
-            InvalidRouteStatusTransition(
+            raise InvalidRouteStatusTransition(
                 route_id=self.id,
                 from_status=self.status,
                 to_status=RouteStatusEnum.HIDDEN,
@@ -213,9 +220,7 @@ class Route:
         self.status = RouteStatusEnum.HIDDEN
 
     def change_status(self, new_status: RouteStatusEnum) -> None:
-        if new_status == RouteStatusEnum.PUBLISHED:
-            return self.publish()
-        elif new_status == RouteStatusEnum.HIDDEN:
+        if new_status == RouteStatusEnum.HIDDEN:
             return self.hide()
         raise InvalidRouteStatusTransition(
             route_id=self.id,

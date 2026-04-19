@@ -28,6 +28,7 @@ from app.modules.places.application.queries.places.shared.models.place_photo imp
 from app.modules.places.application.queries.places.shared.models.place_working_day import (
     PlaceWorkingDayReadModel,
 )
+from app.modules.places.shared.enums.place_status import PlaceStatusEnum
 
 
 class IPlaceReader(ABC):
@@ -38,7 +39,9 @@ class IPlaceReader(ABC):
     async def count_by_category_id(self, category_id: UUID) -> int: ...
 
     @abstractmethod
-    async def count_existing_places(self, place_ids: list[UUID]) -> int: ...
+    async def count_existing_places_by_status(
+        self, place_ids: list[UUID], status: PlaceStatusEnum
+    ) -> int: ...
 
     @abstractmethod
     async def get_by_id(

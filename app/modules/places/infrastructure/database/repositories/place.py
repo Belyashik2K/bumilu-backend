@@ -56,6 +56,7 @@ from app.modules.places.infrastructure.database.models import (
     PlaceWorkingDayModel,
     PlaceWorkingHourModel,
 )
+from app.modules.places.shared.enums.place_status import PlaceStatusEnum
 from app.modules.places.shared.enums.place_working_day_status import (
     PlaceWorkingDayStatusEnum,
 )
@@ -363,6 +364,17 @@ class SQLAlchemyPlaceRepository(IPlaceRepository):
             return None
 
         return self._to_entity(model, options=options)
+
+    @sqlalchemy_exception_catcher
+    async def get_unpublished_ids(self, place_ids: list[PlaceIdVO]) -> list[PlaceIdVO]:
+        stmt = (
+            select(PlaceModel.id)
+            .where(PlaceModel.id.in_([place_id.value for place_id in place_ids]))
+            .where(PlaceModel.status != PlaceStatusEnum.PUBLISHED)
+        )
+        result = await self.session.execute(stmt)
+        place_id_values = result.scalars().all()
+        return [PlaceIdVO.from_uuid(place_id) for place_id in place_id_values]
 
     @sqlalchemy_exception_catcher
     async def save(self, entity: Place) -> Place:

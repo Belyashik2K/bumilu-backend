@@ -6,6 +6,9 @@ from dishka import (
 
 from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.modules.places.application.interfaces.readers.place import IPlaceReader
+from app.modules.places.application.interfaces.repositories.place import (
+    IPlaceRepository,
+)
 from app.modules.routes.application.commands.change_status.handler import (
     ChangeRouteStatusCommandHandler,
 )
@@ -60,10 +63,12 @@ class RoutesCommandHandlersProvider(Provider):
         self,
         transaction_manager: ITransactionManager,
         route_repository: IRouteRepository,
+        place_repository: IPlaceRepository,
     ) -> ChangeRouteStatusCommandHandler:
         return ChangeRouteStatusCommandHandler(
             transaction_manager=transaction_manager,
             route_repository=route_repository,
+            place_repository=place_repository,
         )
 
     @provide(scope=Scope.REQUEST)
