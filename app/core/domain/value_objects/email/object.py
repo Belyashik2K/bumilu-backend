@@ -1,7 +1,6 @@
 import re
 from dataclasses import (
     dataclass,
-    field,
 )
 from typing import (
     ClassVar,
@@ -21,10 +20,10 @@ _BASIC_EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[A-Za-z]{2,63}$")
 class BaseEmailVO:
     value: str
 
-    ALLOWED_TLDS: ClassVar[set[str] | None] = field(default=None)
+    ALLOWED_TLDS: ClassVar[set[str] | None] = None
     BLOCKED_TLDS: ClassVar[set[str]] = set()
 
-    ALLOWED_DOMAINS: ClassVar[set[str] | None] = field(default=None)
+    ALLOWED_DOMAINS: ClassVar[set[str] | None] = None
     BLOCKED_DOMAINS: ClassVar[set[str]] = set()
 
     @classmethod
