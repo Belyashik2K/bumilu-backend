@@ -1,0 +1,4 @@
+services:
+  postgres:
+    image: postgis/postgis:18-3.6
+    platform: linux/amd64
