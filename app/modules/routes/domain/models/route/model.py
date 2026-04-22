@@ -10,6 +10,7 @@ from typing import (
 from app.core.domain.value_objects.id import (
     PlaceIdVO,
     RouteIdVO,
+    RoutePointIdVO,
 )
 from app.core.enums import LanguageEnum
 from app.core.enums.language import REQUIRED_LANGUAGES
@@ -19,7 +20,7 @@ from app.modules.routes.domain.models.route.exceptions import (
     CannotPublishRouteWithUnpublishedPlaces,
     InvalidRouteStatusTransition,
     RouteIsNotEditable,
-    RoutePlacePointNotFound,
+    RoutePointNotFound,
     RouteTranslationAlreadyExists,
     RouteTranslationNotFound,
 )
@@ -94,22 +95,35 @@ class Route:
             )
         )
 
-    def remove_point(self, place_id: PlaceIdVO) -> None:
+    def remove_point(self, point_id: RoutePointIdVO) -> None:
         if self._points is None:
             raise RuntimeError("Route points not loaded")
 
         if not self.is_editable():
             raise RouteIsNotEditable(self.id)
 
-        for index, point in enumerate(self._points):
-            if point.place_id == place_id:
-                del self._points[index]
-                return
+        if not any(point.id == point_id for point in self._points):
+            raise RoutePointNotFound(
+                route_id=self.id,
+                point_id=point_id,
+            )
 
-        raise RoutePlacePointNotFound(
-            route_id=self.id,
-            place_id=place_id,
-        )
+        idx = 0
+        new_points = []
+
+        for point in self._points:
+            if point.id == point_id:
+                continue
+            new_points.append(
+                RoutePoint.create(
+                    route_id=self.id,
+                    place_id=point.place_id,
+                    index=RoutePointIndexVO(idx),
+                )
+            )
+            idx += 1
+
+        self._points = new_points
 
     def replace_points(self, place_ids: Sequence[PlaceIdVO]) -> None:
         if not self.is_editable():

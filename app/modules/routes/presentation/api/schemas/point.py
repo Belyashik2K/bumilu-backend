@@ -9,6 +9,7 @@ from app.modules.places.presentation.api.schemas.places.card import (
     AdminPlaceCardSchema,
     PlaceCardSchema,
 )
+from app.modules.routes.presentation.api.schemas.examples import UUID_EXAMPLE
 
 
 class BaseRoutePointSchema(BaseModel):
@@ -26,6 +27,9 @@ class RoutePointSchema(BaseRoutePointSchema):
 
 
 class AdminRoutePointSchema(BaseRoutePointSchema):
+    id: UUID7 = Field(
+        ..., description="ID of the route point.", examples=[UUID_EXAMPLE]
+    )
     preview: AdminPlaceCardSchema = Field(
         ...,
         description="Preview of the place at this point.",

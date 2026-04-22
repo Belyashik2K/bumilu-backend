@@ -1,8 +1,8 @@
 from app.core.application.commands import ICommandHandler
 from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.domain.value_objects.id import (
-    PlaceIdVO,
     RouteIdVO,
+    RoutePointIdVO,
 )
 from app.modules.routes.application.commands.remove_point.command import (
     RemoveRoutePointCommand,
@@ -32,7 +32,7 @@ class RemoveRoutePointCommandHandler(ICommandHandler[RemoveRoutePointCommand]):
         if route is None:
             raise RouteNotFound(route_id=command.route_id)
 
-        place_id = PlaceIdVO.from_uuid(command.place_id)
+        point_id = RoutePointIdVO.from_uuid(command.point_id)
 
-        route.remove_point(place_id=place_id)
+        route.remove_point(point_id=point_id)
         await self._route_repository.save(route)
