@@ -21,6 +21,12 @@ from app.core.presentation.endpoint_responses import generate_responses_for_endp
 from app.modules.auth.presentation.api import security
 from app.modules.auth.presentation.api.v1.staff.deps import get_staff_principal
 from app.modules.auth.shared.context import Principal
+from app.modules.routes.application.commands.add_point.command import (
+    AddRoutePointCommand,
+)
+from app.modules.routes.application.commands.add_point.handler import (
+    AddRoutePointCommandHandler,
+)
 from app.modules.routes.application.commands.change_status.command import (
     ChangeRouteStatusCommand,
 )
@@ -46,6 +52,12 @@ from app.modules.routes.application.commands.delete_translation.command import (
 )
 from app.modules.routes.application.commands.delete_translation.handler import (
     DeleteRouteTranslationCommandHandler,
+)
+from app.modules.routes.application.commands.remove_point.command import (
+    RemoveRoutePointCommand,
+)
+from app.modules.routes.application.commands.remove_point.handler import (
+    RemoveRoutePointCommandHandler,
 )
 from app.modules.routes.application.commands.replace_points.command import (
     ReplaceRoutePointsCommand,
@@ -103,6 +115,7 @@ from app.modules.routes.presentation.api.schemas.main import (
     CreateRouteResponseSchema,
 )
 from app.modules.routes.presentation.api.schemas.point import (
+    AddRoutePointRequestSchema,
     AdminRoutePointListSchema,
     ReplaceRoutePointsRequestSchema,
 )
@@ -354,6 +367,26 @@ async def get_route_points(
     return AdminRoutePointListSchema.model_validate(result, from_attributes=True)
 
 
+@admin_routes_router.post(
+    "/{route_id}/points",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses=generate_responses_for_endpoint(),
+)
+@inject
+async def add_route_point(
+    route_id: UUID7,
+    handler: FromDishka[AddRoutePointCommandHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+    data: AddRoutePointRequestSchema,
+) -> None:
+    await handler(
+        command=AddRoutePointCommand(
+            route_id=route_id,
+            place_id=data.place_id,
+        )
+    )
+
+
 @admin_routes_router.put(
     "/{route_id}/points",
     status_code=status.HTTP_204_NO_CONTENT,
@@ -370,5 +403,25 @@ async def replace_route_points(
         command=ReplaceRoutePointsCommand(
             route_id=route_id,
             place_ids=data.place_ids,
+        )
+    )
+
+
+@admin_routes_router.delete(
+    "/{route_id}/points/{place_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses=generate_responses_for_endpoint(),
+)
+@inject
+async def remove_route_point(
+    route_id: UUID7,
+    place_id: UUID7,
+    handler: FromDishka[RemoveRoutePointCommandHandler],
+    principal: Annotated[Principal, Depends(get_staff_principal)],
+) -> None:
+    await handler(
+        command=RemoveRoutePointCommand(
+            route_id=route_id,
+            place_id=place_id,
         )
     )
