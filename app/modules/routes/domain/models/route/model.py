@@ -19,6 +19,7 @@ from app.modules.routes.domain.models.route.exceptions import (
     CannotPublishRouteWithUnpublishedPlaces,
     InvalidRouteStatusTransition,
     RouteIsNotEditable,
+    RoutePlacePointNotFound,
     RouteTranslationAlreadyExists,
     RouteTranslationNotFound,
 )
@@ -77,6 +78,9 @@ class Route:
         return tuple(self._translations)
 
     def add_point(self, place_id: PlaceIdVO) -> None:
+        if self._points is None:
+            raise RuntimeError("Route points not loaded")
+
         if not self.is_editable():
             raise RouteIsNotEditable(self.id)
 
@@ -91,10 +95,21 @@ class Route:
         )
 
     def remove_point(self, place_id: PlaceIdVO) -> None:
+        if self._points is None:
+            raise RuntimeError("Route points not loaded")
+
         if not self.is_editable():
             raise RouteIsNotEditable(self.id)
 
-        ...
+        for index, point in enumerate(self._points):
+            if point.place_id == place_id:
+                del self._points[index]
+                return
+
+        raise RoutePlacePointNotFound(
+            route_id=self.id,
+            place_id=place_id,
+        )
 
     def replace_points(self, place_ids: Sequence[PlaceIdVO]) -> None:
         if not self.is_editable():

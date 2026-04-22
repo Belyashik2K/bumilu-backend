@@ -31,6 +31,13 @@ class RouteTranslationNotFound(DomainNotFoundException):
         )
 
 
+class RoutePlacePointNotFound(DomainNotFoundException):
+    def __init__(self, route_id: RouteIdVO, place_id: PlaceIdVO) -> None:
+        super().__init__(
+            message=f"Place with id {place_id} not found in route with id {route_id}"
+        )
+
+
 class CannotPublishPlaceMissingTranslations(DomainInvariantViolationException):
     def __init__(
         self,

@@ -43,7 +43,5 @@ class AddRoutePointCommandHandler(ICommandHandler[AddRoutePointCommand]):
         if not exists:
             raise PlaceNotFound(place_id=command.place_id)
 
-        route.add_point(
-            place_id=PlaceIdVO.from_uuid(command.place_id),
-        )
+        route.add_point(place_id=PlaceIdVO.from_uuid(command.place_id))
         await self._route_repository.save(route)
