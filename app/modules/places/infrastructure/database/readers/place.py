@@ -12,6 +12,7 @@ from sqlalchemy.orm import (
     contains_eager,
     joinedload,
     selectinload,
+    with_loader_criteria,
 )
 
 from app.core.application.queries.pagination import PageReadModel
@@ -257,6 +258,11 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 contains_eager(PlaceModel.category).contains_eager(
                     PlaceCategoryModel.translations
                 ),
+                with_loader_criteria(
+                    PlaceModel.photos,
+                    PlacePhotoModel.status == PlacePhotoStatusEnum.UPLOADED,
+                    include_aliases=True
+                )
             )
         )
 
