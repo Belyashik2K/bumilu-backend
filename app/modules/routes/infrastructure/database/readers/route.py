@@ -249,7 +249,9 @@ class SQLAlchemyRouteReader(IRouteReader):
 
         return [
             AdminRoutePointReadModel(
-                index=point.point_index, preview=place_cards.get(point.place_id)
+                id=point.id,
+                index=point.point_index,
+                preview=place_cards.get(point.place_id),
             )
             for point in route_points
         ]

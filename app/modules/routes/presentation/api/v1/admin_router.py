@@ -408,20 +408,20 @@ async def replace_route_points(
 
 
 @admin_routes_router.delete(
-    "/{route_id}/points/{place_id}",
+    "/{route_id}/points/{point_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     responses=generate_responses_for_endpoint(),
 )
 @inject
 async def remove_route_point(
     route_id: UUID7,
-    place_id: UUID7,
+    point_id: UUID7,
     handler: FromDishka[RemoveRoutePointCommandHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
 ) -> None:
     await handler(
         command=RemoveRoutePointCommand(
             route_id=route_id,
-            place_id=place_id,
+            point_id=point_id,
         )
     )

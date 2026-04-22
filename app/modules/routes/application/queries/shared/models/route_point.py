@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from uuid import UUID
 
 from app.modules.places.application.queries.places.shared.models.place_card import (
     AdminPlaceCardReadModel,
@@ -24,4 +25,5 @@ class RoutePointReadModel(BaseRoutePointModel):
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class AdminRoutePointReadModel(BaseRoutePointModel):
+    id: UUID
     preview: AdminPlaceCardReadModel

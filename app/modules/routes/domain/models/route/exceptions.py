@@ -1,6 +1,7 @@
 from app.core.domain.value_objects.id import (
     PlaceIdVO,
     RouteIdVO,
+    RoutePointIdVO,
 )
 from app.core.enums import LanguageEnum
 from app.core.exceptions.domain.base import (
@@ -31,10 +32,10 @@ class RouteTranslationNotFound(DomainNotFoundException):
         )
 
 
-class RoutePlacePointNotFound(DomainNotFoundException):
-    def __init__(self, route_id: RouteIdVO, place_id: PlaceIdVO) -> None:
+class RoutePointNotFound(DomainNotFoundException):
+    def __init__(self, route_id: RouteIdVO, point_id: RoutePointIdVO) -> None:
         super().__init__(
-            message=f"Place with id {place_id} not found in route with id {route_id}"
+            message=f"Point with id {point_id} not found in route with id {route_id}"
         )
 
 
