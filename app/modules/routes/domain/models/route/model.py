@@ -76,6 +76,26 @@ class Route:
             raise RuntimeError("Route translations not loaded")
         return tuple(self._translations)
 
+    def add_point(self, place_id: PlaceIdVO) -> None:
+        if not self.is_editable():
+            raise RouteIsNotEditable(self.id)
+
+        last_idx = self._points[-1].index.value + 1
+
+        self._points.append(
+            RoutePoint.create(
+                route_id=self.id,
+                place_id=place_id,
+                index=RoutePointIndexVO(last_idx),
+            )
+        )
+
+    def remove_point(self, place_id: PlaceIdVO) -> None:
+        if not self.is_editable():
+            raise RouteIsNotEditable(self.id)
+
+        ...
+
     def replace_points(self, place_ids: Sequence[PlaceIdVO]) -> None:
         if not self.is_editable():
             raise RouteIsNotEditable(self.id)
