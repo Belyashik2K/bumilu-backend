@@ -39,6 +39,13 @@ class ReplaceRoutePointsRequestSchema(BaseModel):
     )
 
 
+class AddRoutePointRequestSchema(BaseModel):
+    place_id: UUID7 = Field(
+        ...,
+        description="ID of the place to add as a point in the route.",
+    )
+
+
 AdminRoutePointListSchema = make_data_list_response_schema(
     item_type=AdminRoutePointSchema,
     description="List of points in the route.",

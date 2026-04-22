@@ -27,9 +27,7 @@ class RemoveRoutePointCommandHandler(ICommandHandler[RemoveRoutePointCommand]):
         route_id = RouteIdVO.from_uuid(command.route_id)
         route = await self._route_repository.get_by_id(
             route_id=route_id,
-            options=RouteLoadOptions(
-                points=True,
-            ),
+            options=RouteLoadOptions(points=True),
         )
         if route is None:
             raise RouteNotFound(route_id=command.route_id)
