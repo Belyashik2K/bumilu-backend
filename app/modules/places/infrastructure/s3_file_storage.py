@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import (
     Final,
 )
@@ -58,7 +56,7 @@ class S3FileStorage(IFileStorage):
 
         self._config = Config(
             signature_version="s3v4",
-            s3={"addressing_style": "path"},
+            s3={"addressing_style": "virtual"},
         )
 
     @staticmethod
