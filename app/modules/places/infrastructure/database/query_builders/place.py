@@ -12,6 +12,7 @@ from sqlalchemy.orm import (
     contains_eager,
     joinedload,
     selectinload,
+    with_loader_criteria,
 )
 
 from app.core.enums import LanguageEnum
@@ -19,9 +20,11 @@ from app.modules.places.infrastructure.database.models import (
     PlaceCategoryModel,
     PlaceCategoryTranslationModel,
     PlaceModel,
+    PlacePhotoModel,
     PlaceTranslationModel,
     PlaceWorkingDayModel,
 )
+from app.modules.places.shared.enums.place_photo_status import PlacePhotoStatusEnum
 from app.modules.places.shared.enums.place_status import PlaceStatusEnum
 from app.modules.reviews.infrastructure.database.models import ReviewModel
 from app.modules.reviews.shared.enums import ReviewEntityTypeEnum
@@ -135,6 +138,11 @@ class SQLAlchemyPlaceQueryBuilder:
                     PlaceWorkingDayModel.working_hours
                 ),
                 selectinload(PlaceModel.photos),
+                with_loader_criteria(
+                    PlaceModel.photos,
+                    PlacePhotoModel.status == PlacePhotoStatusEnum.UPLOADED,
+                    include_aliases=True,
+                ),
                 contains_eager(PlaceModel.translations),
                 contains_eager(PlaceModel.category).contains_eager(
                     PlaceCategoryModel.translations
