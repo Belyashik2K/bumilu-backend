@@ -26,6 +26,7 @@ from app.modules.places.infrastructure.database.models import (
     PlaceCategoryModel,
     PlaceCategoryTranslationModel,
     PlaceModel,
+    PlacePhotoModel,
     PlaceTranslationModel,
     PlaceWorkingDayModel,
 )
@@ -33,6 +34,7 @@ from app.modules.places.infrastructure.database.query_builders import (
     PlaceListFilters,
     SQLAlchemyPlaceQueryBuilder,
 )
+from app.modules.places.shared.enums.place_photo_status import PlacePhotoStatusEnum
 from app.modules.places.shared.enums.route_sort import RouteSortByEnum
 from app.modules.routes.application.interfaces.readers.route import IRouteReader
 from app.modules.routes.application.queries.shared.models.route_card import (
@@ -90,6 +92,11 @@ class SQLAlchemyRouteReader(IRouteReader):
                 ),
                 place_loader.selectinload(PlaceModel.working_days).selectinload(
                     PlaceWorkingDayModel.working_hours
+                ),
+                with_loader_criteria(
+                    PlaceModel.photos,
+                    PlacePhotoModel.status == PlacePhotoStatusEnum.UPLOADED,
+                    include_aliases=True,
                 ),
                 with_loader_criteria(
                     PlaceTranslationModel,
