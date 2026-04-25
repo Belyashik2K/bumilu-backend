@@ -6,6 +6,7 @@ from fastapi import (
     APIRouter,
     Depends,
 )
+from pydantic import UUID7
 from starlette import status
 from starlette.responses import Response
 
@@ -94,12 +95,14 @@ async def get_recent_user_chat_messages(
     handler: FromDishka[GetUserRecentChatMessagesQueryHandler],
     principal: Annotated[Principal, Depends(get_user_principal)],
     pagination: OffsetPaginationDep,
+    after_message_id: UUID7 | None = None,
 ) -> GetChatMessagesResponseSchema | None:
     result = await handler(
         GetUserRecentChatMessagesQuery(
             user_id=principal.id.value,
             limit=pagination.limit,
             offset=pagination.offset,
+            after_message_id=after_message_id,
         )
     )
     if not result:

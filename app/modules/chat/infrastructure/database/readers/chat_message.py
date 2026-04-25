@@ -52,16 +52,18 @@ class SQLAlchemyChatMessageReader(IChatMessageReader):
         chat_id: UUID,
         limit: int,
         offset: int,
+        after_message_id: UUID | None = None,
     ) -> ChatMessagesPage:
-        total_subquery = (
-            select(func.count())
-            .where(ChatMessageModel.chat_id == chat_id)
-            .scalar_subquery()
-        )
+        base_filters = [ChatMessageModel.chat_id == chat_id]
+
+        if after_message_id is not None:
+            base_filters.append(ChatMessageModel.id > after_message_id)
+
+        total_subquery = select(func.count()).where(*base_filters).scalar_subquery()
 
         stmt = (
             select(ChatMessageModel, total_subquery.label("total_count"))
-            .where(ChatMessageModel.chat_id == chat_id)
+            .where(*base_filters)
             .order_by(ChatMessageModel.created_at.asc())
             .limit(limit)
             .offset(offset)
@@ -72,7 +74,7 @@ class SQLAlchemyChatMessageReader(IChatMessageReader):
 
         if not rows:
             total = await self._session.scalar(
-                select(func.count()).where(ChatMessageModel.chat_id == chat_id)
+                select(func.count()).where(*base_filters)
             )
 
             return ChatMessagesPage(
