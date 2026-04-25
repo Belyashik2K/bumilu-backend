@@ -67,10 +67,7 @@ class SQLAlchemyPlaceQueryBuilder:
         if filters.title_like:
             conditions.append(
                 PlaceModel.translations.any(
-                    and_(
-                        PlaceTranslationModel.language_code == language,
-                        PlaceTranslationModel.title.ilike(f"%{filters.title_like}%"),
-                    )
+                    PlaceTranslationModel.title.ilike(f"%{filters.title_like}%"),
                 )
             )
 
