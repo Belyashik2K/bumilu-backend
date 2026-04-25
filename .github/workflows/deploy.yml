@@ -56,16 +56,6 @@ jobs:
           script: |
             cd /opt/bumilu/infra
             git pull
-
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_READ_TOKEN }}
-
-            task backend:pull
-
-            task rm ENV=prod SERVICE=migrations || true
-            task up ENV=prod SERVICE=migrations
-
-            task recreate ENV=prod SERVICE=api
-            task recreate ENV=prod SERVICE=worker
-            task recreate ENV=prod SERVICE=scheduler
-
+            task backend:deploy
             docker image prune -f
