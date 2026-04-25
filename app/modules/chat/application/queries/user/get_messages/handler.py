@@ -32,7 +32,10 @@ class GetUserRecentChatMessagesQueryHandler(
             return None
 
         messages_page = await self._chat_message_reader.list_messages_by_chat_id(
-            chat.id, limit=query.limit, offset=query.offset
+            chat.id,
+            after_message_id=query.after_message_id,
+            limit=query.limit,
+            offset=query.offset,
         )
 
         return PaginatedChatMessagesView(
