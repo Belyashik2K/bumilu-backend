@@ -57,5 +57,5 @@ jobs:
             cd /opt/bumilu/infra
             git pull
             docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_READ_TOKEN }}
-            task backend:deploy
+            task backend:deploy ENV=prod
             docker image prune -f
