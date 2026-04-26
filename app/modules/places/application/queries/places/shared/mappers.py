@@ -1,3 +1,7 @@
+from time import time
+from zoneinfo import ZoneInfo
+
+from app.core.utils import get_current_dt
 from app.modules.places.application.queries.categories.shared.mappers import (
     PlaceCategoryMapper,
 )
@@ -12,6 +16,9 @@ from app.modules.places.application.queries.places.shared.models.place_card impo
 from app.modules.places.application.queries.places.shared.models.place_details import (
     AdminPlaceDetailsReadModel,
     PlaceDetailsReadModel,
+)
+from app.modules.places.application.queries.places.shared.models.place_llm_context import (
+    NearbyPlaceLLMContextReadModel,
 )
 from app.modules.places.application.queries.places.shared.models.place_location import (
     PlaceLocationReadModel,
@@ -46,6 +53,9 @@ from app.modules.places.infrastructure.database.models import (
     PlacePhotoModel,
     PlaceTranslationModel,
     PlaceWorkingDayModel,
+)
+from app.modules.places.shared.enums.place_working_day_status import (
+    PlaceWorkingDayStatusEnum,
 )
 
 
@@ -162,6 +172,87 @@ class PlaceMapPOIMapper:
 
 
 class PlaceReadModelMapper:
+    @classmethod
+    def map_to_llm_context(
+        cls,
+        *,
+        place: PlaceModel,
+        rating_average: float | None = None,
+        reviews_count: int,
+        distance_meters: float | None = None,
+    ) -> NearbyPlaceLLMContextReadModel:
+        translation = place.translations[0]
+
+        return NearbyPlaceLLMContextReadModel(
+            id=place.id,
+            title=translation.title,
+            short_description=translation.short_description,
+            category_title=place.category.translations[0].name,
+            address=PlaceAddressMapper.map(
+                display=translation.address_display,
+                taxi=place.address_taxi,
+                taxi_comment=place.address_taxi_comment,
+            ),
+            rating=cls.map_rating(
+                average=rating_average,
+                reviews_count=reviews_count,
+            ),
+            distance_meters=int(distance_meters)
+            if distance_meters is not None
+            else None,
+            is_open_now=cls._is_open_now(place=place),
+        )
+
+    @staticmethod
+    def _is_open_now(place: PlaceModel) -> bool | None:
+        if not place.working_days:
+            return None
+
+        now = get_current_dt().astimezone(ZoneInfo(place.timezone))
+        current_weekday = now.isoweekday()
+        current_time = now.time()
+
+        working_day = next(
+            (day for day in place.working_days if day.weekday == current_weekday),
+            None,
+        )
+
+        if working_day is None:
+            return None
+
+        if working_day.status == PlaceWorkingDayStatusEnum.UNSPECIFIED:
+            return None
+
+        if working_day.status == PlaceWorkingDayStatusEnum.CLOSED:
+            return False
+
+        if working_day.status == PlaceWorkingDayStatusEnum.ALL_DAY:
+            return True
+
+        if not working_day.working_hours:
+            return False
+
+        return any(
+            PlaceReadModelMapper._is_time_in_range(
+                current_time=current_time,
+                time_from=working_hour.start_time,
+                time_to=working_hour.end_time,
+            )
+            for working_hour in working_day.working_hours
+        )
+
+    @staticmethod
+    def _is_time_in_range(
+        *,
+        current_time: time,
+        time_from: time,
+        time_to: time,
+    ) -> bool:
+        if time_from <= time_to:
+            return time_from <= current_time <= time_to
+
+        return current_time >= time_from or current_time <= time_to
+
     @staticmethod
     def map_location(place: PlaceModel) -> PlaceLocationReadModel:
         return PlaceLocationReadModel(

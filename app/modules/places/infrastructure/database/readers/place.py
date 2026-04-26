@@ -37,6 +37,9 @@ from app.modules.places.application.queries.places.shared.models.place_details i
     AdminPlaceDetailsReadModel,
     PlaceDetailsReadModel,
 )
+from app.modules.places.application.queries.places.shared.models.place_llm_context import (
+    NearbyPlaceLLMContextReadModel,
+)
 from app.modules.places.application.queries.places.shared.models.place_map_poi import (
     AdminPlaceMapPOIReadModel,
     PlaceMapPOIReadModel,
@@ -335,7 +338,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             cards_by_id[place_id] for place_id in place_ids if place_id in cards_by_id
         ]
 
-    async def get_cards_in_radius(
+    async def get_nearby_places_llm_context(
         self,
         *,
         latitude: float,
@@ -343,7 +346,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         radius_meters: int,
         translation_language: LanguageEnum,
         limit: int,
-    ) -> list[PlaceCardReadModel]:
+    ) -> list[NearbyPlaceLLMContextReadModel]:
         point = func.ST_SetSRID(
             func.ST_MakePoint(longitude, latitude),
             4326,
@@ -352,7 +355,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         distance_expr = func.ST_Distance(
             PlaceModel.location,
             point,
-        )
+        ).label("distance_meters")
 
         reviews_subquery = self._build_reviews_subquery()
 
@@ -361,6 +364,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 PlaceModel,
                 reviews_subquery.c.rating_average,
                 reviews_subquery.c.reviews_count,
+                distance_expr,
             )
             .outerjoin(
                 reviews_subquery,
@@ -380,12 +384,6 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 ),
             )
             .options(
-                selectinload(PlaceModel.photos),
-                with_loader_criteria(
-                    PlaceModel.photos,
-                    PlacePhotoModel.status == PlacePhotoStatusEnum.UPLOADED,
-                    include_aliases=True,
-                ),
                 selectinload(PlaceModel.working_days).selectinload(
                     PlaceWorkingDayModel.working_hours
                 ),
@@ -402,12 +400,15 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         rows = result.unique().all()
 
         return [
-            PlaceReadModelMapper.map_card(
+            PlaceReadModelMapper.map_to_llm_context(
                 place=place,
                 rating_average=rating_average,
                 reviews_count=reviews_count,
+                distance_meters=int(distance_meters)
+                if distance_meters is not None
+                else None,
             )
-            for place, rating_average, reviews_count in rows
+            for place, rating_average, reviews_count, distance_meters in rows
         ]
 
     async def get_all(

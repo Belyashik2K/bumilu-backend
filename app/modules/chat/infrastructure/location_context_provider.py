@@ -1,4 +1,5 @@
 from dataclasses import asdict
+from pprint import pprint
 
 from app.core.domain.value_objects.location import LocationVO
 from app.core.enums import LanguageEnum
@@ -22,11 +23,13 @@ class LocationContextProvider(ILocationContextProvider):
         translation_language: LanguageEnum,
         radius_meters: int = 1000,
     ) -> LocationContext:
-        places = await self._place_reader.get_cards_in_radius(
+        places = await self._place_reader.get_nearby_places_llm_context(
             latitude=location.latitude,
             longitude=location.longitude,
             radius_meters=radius_meters,
             translation_language=translation_language,
             limit=100,
         )
-        return LocationContext(nearby_places=[asdict(place) for place in places])
+        nearby_places = [asdict(place) for place in places]
+        pprint(nearby_places)
+        return LocationContext(nearby_places=nearby_places)
