@@ -78,14 +78,20 @@ class OpenAIChatResponder(IChatResponder):
 
         if chat.last_location is not None:
             prompt_parts.append(
-                "Last known user location: "
-                f"lat={chat.last_location.latitude}, "
+                "Current user location has changed or may have changed. "
+                "Always treat the last known user location below as the source of truth. "
+                "Do not use locations from previous messages unless the user explicitly asks about them.\n"
+                f"Current location: lat={chat.last_location.latitude}, "
                 f"lon={chat.last_location.longitude}"
             )
 
-        if location_context is not None and location_context.nearby_places:
+        if location_context is not None:
             prompt_parts.append(
-                "Nearby places (use if relevant):\n"
+                "Nearby places are based on the current user location. "
+                "Use only these places when recommending nearby places. "
+                "Do not invent places. "
+                "If none of these places fit the user's request, ask a clarification question.\n"
+                "Nearby places:\n"
                 + json.dumps(
                     location_context.nearby_places,
                     ensure_ascii=False,
