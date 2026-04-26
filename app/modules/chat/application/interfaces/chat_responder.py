@@ -6,6 +6,9 @@ from dataclasses import (
     dataclass,
 )
 
+from app.modules.chat.application.interfaces.location_context_provider import (
+    LocationContext,
+)
 from app.modules.chat.domain.models.chat import Chat
 from app.modules.chat.domain.models.chat_message import ChatMessage
 
@@ -22,4 +25,5 @@ class IChatResponder(ABC):
         self,
         chat: Chat,
         messages: list[ChatMessage],
+        location_context: LocationContext | None = None,
     ) -> ChatResponderResult: ...

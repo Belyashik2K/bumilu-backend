@@ -10,6 +10,9 @@ from pydantic import UUID7
 from starlette import status
 from starlette.responses import Response
 
+from app.core.presentation.api.schemas.accept_language import (
+    AcceptLanguageDep,
+)
 from app.core.presentation.api.schemas.pagination import (
     OffsetPaginationDep,
 )
@@ -55,11 +58,13 @@ async def submit_user_message(
     handler: FromDishka[SubmitUserMessageCommandHandler],
     data: SubmitUserMessageRequestSchema,
     principal: Annotated[Principal, Depends(get_user_principal)],
+    accept_language: AcceptLanguageDep,
 ) -> SubmitUserMessageResponseSchema:
     result = await handler(
         SubmitUserMessageCommand(
             user_id=principal.id.value,
             text=data.text,
+            language=accept_language.language,
             latitude=data.location.latitude if data.location else None,
             longitude=data.location.longitude if data.location else None,
         )
