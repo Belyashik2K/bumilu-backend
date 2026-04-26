@@ -6,7 +6,7 @@ from sqlalchemy import (
 from sqlalchemy import (
     Enum,
     ForeignKey,
-    String,
+    Text,
 )
 from sqlalchemy.orm import (
     Mapped,
@@ -35,6 +35,6 @@ class ChatMessageModel(PKUUIDMixin, TimestampMixin, BaseModel):
         Enum(AuthorTypeEnum, name="author_type_enum")
     )
     author_id: Mapped[UUID | None] = mapped_column(_UUID())
-    text: Mapped[str] = mapped_column(String(1000))
+    text: Mapped[str] = mapped_column(Text())
     location_latitude: Mapped[float | None] = mapped_column()
     location_longitude: Mapped[float | None] = mapped_column()

@@ -15,6 +15,9 @@ from app.modules.places.application.queries.places.shared.models.place_details i
     AdminPlaceDetailsReadModel,
     PlaceDetailsReadModel,
 )
+from app.modules.places.application.queries.places.shared.models.place_llm_context import (
+    NearbyPlaceLLMContextReadModel,
+)
 from app.modules.places.application.queries.places.shared.models.place_map_poi import (
     AdminPlaceMapPOIReadModel,
     PlaceMapPOIReadModel,
@@ -67,7 +70,7 @@ class IPlaceReader(ABC):
     ) -> list[PlaceCardReadModel]: ...
 
     @abstractmethod
-    async def get_cards_in_radius(
+    async def get_nearby_places_llm_context(
         self,
         *,
         latitude: float,
@@ -75,7 +78,7 @@ class IPlaceReader(ABC):
         radius_meters: int,
         translation_language: LanguageEnum,
         limit: int,
-    ) -> list[PlaceCardReadModel]: ...
+    ) -> list[NearbyPlaceLLMContextReadModel]: ...
 
     @abstractmethod
     async def get_all(
