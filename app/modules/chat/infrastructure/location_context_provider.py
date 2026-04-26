@@ -1,5 +1,4 @@
 from dataclasses import asdict
-from pprint import pprint
 
 from app.core.domain.value_objects.location import LocationVO
 from app.core.enums import LanguageEnum
@@ -31,5 +30,4 @@ class LocationContextProvider(ILocationContextProvider):
             limit=100,
         )
         nearby_places = [asdict(place) for place in places]
-        pprint(nearby_places)
         return LocationContext(nearby_places=nearby_places)
