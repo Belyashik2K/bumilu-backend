@@ -32,6 +32,7 @@ class ChatCommandHandlersProvider(Provider):
     @provide(scope=Scope.REQUEST)
     async def submit_user_message_handler(
         self,
+        config: AppConfig,
         user_repository: IUserRepository,
         chat_repository: IChatRepository,
         chat_message_repository: IChatMessageRepository,
@@ -39,6 +40,7 @@ class ChatCommandHandlersProvider(Provider):
         transaction_manager: ITransactionManager,
     ) -> SubmitUserMessageCommandHandler:
         return SubmitUserMessageCommandHandler(
+            ai_answer_delay_seconds=config.chat.ai_assistant.answer_delay_sec,
             transaction_manager=transaction_manager,
             user_repository=user_repository,
             chat_repository=chat_repository,

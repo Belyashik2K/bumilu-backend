@@ -168,6 +168,7 @@ class AIAssistantConfig(BaseModel):
     system_prompt: str
     confidence_score_threshold: float
     polling_interval_sec: int
+    answer_delay_sec: int
 
 
 class ChatInactivityConfig(BaseModel):
