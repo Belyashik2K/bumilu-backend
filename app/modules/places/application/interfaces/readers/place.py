@@ -67,6 +67,17 @@ class IPlaceReader(ABC):
     ) -> list[PlaceCardReadModel]: ...
 
     @abstractmethod
+    async def get_cards_in_radius(
+        self,
+        *,
+        latitude: float,
+        longitude: float,
+        radius_meters: int,
+        translation_language: LanguageEnum,
+        limit: int,
+    ) -> list[PlaceCardReadModel]: ...
+
+    @abstractmethod
     async def get_all(
         self,
         *,

@@ -21,6 +21,9 @@ from app.modules.chat.application.interfaces.chat_reply_dispatcher import (
     IChatReplyDispatcher,
 )
 from app.modules.chat.application.interfaces.chat_responder import IChatResponder
+from app.modules.chat.application.interfaces.location_context_provider import (
+    ILocationContextProvider,
+)
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
@@ -92,6 +95,7 @@ class ChatCommandHandlersProvider(Provider):
         chat_message_repository: IChatMessageRepository,
         transaction_manager: ITransactionManager,
         chat_responder: IChatResponder,
+        location_context_provider: ILocationContextProvider,
         config: AppConfig,
     ) -> AnswerWithAIInChatCommandHandler:
         return AnswerWithAIInChatCommandHandler(
@@ -100,4 +104,5 @@ class ChatCommandHandlersProvider(Provider):
             chat_message_repository=chat_message_repository,
             chat_responder=chat_responder,
             confidence_score_threshold=config.chat.ai_assistant.confidence_score_threshold,
+            location_context_provider=location_context_provider,
         )

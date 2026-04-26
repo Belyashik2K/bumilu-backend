@@ -2,7 +2,6 @@ from app.core.application.commands import ICommandHandlerWithResult
 from app.core.application.interfaces.transaction_manager import ITransactionManager
 from app.core.domain.value_objects.id import PrincipalIdVO
 from app.core.domain.value_objects.location import LocationVO
-from app.core.enums import LanguageEnum
 from app.core.utils import get_current_dt
 from app.modules.chat.application.commands.user.submit_message import (
     SubmitUserMessageCommand,
@@ -59,13 +58,18 @@ class SubmitUserMessageCommandHandler(
             if not user:
                 raise UserNotFound(user_id=user_id)
 
-            language = LanguageEnum.EN  # TODO: Get user's preferred language
+            language = command.language
 
             chat = Chat.create(
                 user_id=user_id,
                 language=language,
                 location=location,
                 now=now,
+            )
+
+        if chat.language != command.language:
+            chat.update_language(
+                language=command.language,
             )
 
         message = chat.reply_as_user(
@@ -79,7 +83,7 @@ class SubmitUserMessageCommandHandler(
         await self._chat_reply_dispatcher.dispatch(
             chat_id=chat.id.value,
             expected_last_activity_at=now,
-            delay_seconds=self._delay_seconds,
+            delay_seconds=self._ai_answer_delay_seconds,
         )
 
         return SubmitUserMessageCommandResult(
