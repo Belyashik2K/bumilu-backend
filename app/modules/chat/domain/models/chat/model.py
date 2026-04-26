@@ -147,3 +147,6 @@ class Chat:
 
     def can_start_ai_reply(self) -> bool:
         return self.status == ChatStatusEnum.WAITING_FOR_AI
+
+    def update_language(self, language: LanguageEnum) -> None:
+        self.language = language

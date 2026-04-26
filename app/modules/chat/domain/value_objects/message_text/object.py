@@ -11,7 +11,7 @@ from app.modules.chat.domain.value_objects.message_text.exceptions import (
 MAXIMUM_PREVIEW_LENGTH: Final[int] = 29
 
 MINIMUM_MESSAGE_LENGTH: Final[int] = 1
-MAXIMUM_MESSAGE_LENGTH: Final[int] = 1000
+MAXIMUM_MESSAGE_LENGTH: Final[int] = 4096
 
 
 @dataclass(frozen=True, slots=True)

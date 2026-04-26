@@ -9,10 +9,17 @@ from app.modules.chat.application.interfaces.chat_reply_dispatcher import (
     IChatReplyDispatcher,
 )
 from app.modules.chat.application.interfaces.chat_responder import IChatResponder
+from app.modules.chat.application.interfaces.location_context_provider import (
+    ILocationContextProvider,
+)
 from app.modules.chat.infrastructure.chat_responders.openai import OpenAIChatResponder
+from app.modules.chat.infrastructure.location_context_provider import (
+    LocationContextProvider,
+)
 from app.modules.chat.infrastructure.queue.dispatchers.taskiq_chat_reply_dispatcher import (
     TaskiqChatReplyDispatcher,
 )
+from app.modules.places.application.interfaces.readers.place import IPlaceReader
 
 
 class ChatInfrastructureProvider(Provider):
@@ -33,3 +40,10 @@ class ChatInfrastructureProvider(Provider):
         self,
     ) -> TaskiqChatReplyDispatcher:
         return TaskiqChatReplyDispatcher()
+
+    @provide(scope=Scope.REQUEST, provides=ILocationContextProvider)
+    async def location_context_provider(
+        self,
+        place_reader: IPlaceReader,
+    ) -> LocationContextProvider:
+        return LocationContextProvider(place_reader=place_reader)

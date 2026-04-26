@@ -21,6 +21,9 @@ from app.modules.chat.application.interfaces.chat_reply_dispatcher import (
     IChatReplyDispatcher,
 )
 from app.modules.chat.application.interfaces.chat_responder import IChatResponder
+from app.modules.chat.application.interfaces.location_context_provider import (
+    ILocationContextProvider,
+)
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
@@ -32,6 +35,7 @@ class ChatCommandHandlersProvider(Provider):
     @provide(scope=Scope.REQUEST)
     async def submit_user_message_handler(
         self,
+        config: AppConfig,
         user_repository: IUserRepository,
         chat_repository: IChatRepository,
         chat_message_repository: IChatMessageRepository,
@@ -39,6 +43,7 @@ class ChatCommandHandlersProvider(Provider):
         transaction_manager: ITransactionManager,
     ) -> SubmitUserMessageCommandHandler:
         return SubmitUserMessageCommandHandler(
+            ai_answer_delay_seconds=config.chat.ai_assistant.answer_delay_sec,
             transaction_manager=transaction_manager,
             user_repository=user_repository,
             chat_repository=chat_repository,
@@ -90,6 +95,7 @@ class ChatCommandHandlersProvider(Provider):
         chat_message_repository: IChatMessageRepository,
         transaction_manager: ITransactionManager,
         chat_responder: IChatResponder,
+        location_context_provider: ILocationContextProvider,
         config: AppConfig,
     ) -> AnswerWithAIInChatCommandHandler:
         return AnswerWithAIInChatCommandHandler(
@@ -98,4 +104,5 @@ class ChatCommandHandlersProvider(Provider):
             chat_message_repository=chat_message_repository,
             chat_responder=chat_responder,
             confidence_score_threshold=config.chat.ai_assistant.confidence_score_threshold,
+            location_context_provider=location_context_provider,
         )

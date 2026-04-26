@@ -15,6 +15,9 @@ from app.modules.places.application.queries.places.shared.models.place_details i
     AdminPlaceDetailsReadModel,
     PlaceDetailsReadModel,
 )
+from app.modules.places.application.queries.places.shared.models.place_llm_context import (
+    NearbyPlaceLLMContextReadModel,
+)
 from app.modules.places.application.queries.places.shared.models.place_map_poi import (
     AdminPlaceMapPOIReadModel,
     PlaceMapPOIReadModel,
@@ -65,6 +68,17 @@ class IPlaceReader(ABC):
         place_ids: list[UUID],
         translation_language: LanguageEnum,
     ) -> list[PlaceCardReadModel]: ...
+
+    @abstractmethod
+    async def get_nearby_places_llm_context(
+        self,
+        *,
+        latitude: float,
+        longitude: float,
+        radius_meters: int,
+        translation_language: LanguageEnum,
+        limit: int,
+    ) -> list[NearbyPlaceLLMContextReadModel]: ...
 
     @abstractmethod
     async def get_all(

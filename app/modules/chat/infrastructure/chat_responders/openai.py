@@ -9,6 +9,9 @@ from app.modules.chat.application.interfaces.chat_responder import (
     ChatResponderResult,
     IChatResponder,
 )
+from app.modules.chat.application.interfaces.location_context_provider import (
+    LocationContext,
+)
 from app.modules.chat.domain.models.chat import Chat
 from app.modules.chat.domain.models.chat_message import ChatMessage
 from app.modules.chat.shared.enums import AuthorTypeEnum
@@ -33,8 +36,11 @@ class OpenAIChatResponder(IChatResponder):
         self,
         chat: Chat,
         messages: list[ChatMessage],
+        location_context: LocationContext | None = None,
     ) -> ChatResponderResult:
-        llm_messages = self._build_messages(chat=chat, messages=messages)
+        llm_messages = self._build_messages(
+            chat=chat, messages=messages, location_context=location_context
+        )
         raw_content = await self._generate_completion(messages=llm_messages)
         return self._parse_response(raw_content)
 
@@ -42,8 +48,11 @@ class OpenAIChatResponder(IChatResponder):
         self,
         chat: Chat,
         messages: list[ChatMessage],
+        location_context: LocationContext | None = None,
     ) -> list[dict[str, str]]:
-        system_prompt = self._build_system_prompt(chat=chat)
+        system_prompt = self._build_system_prompt(
+            chat=chat, location_context=location_context
+        )
 
         llm_messages: list[dict[str, str]] = [
             {"role": "system", "content": system_prompt},
@@ -59,7 +68,9 @@ class OpenAIChatResponder(IChatResponder):
 
         return llm_messages
 
-    def _build_system_prompt(self, chat: Chat) -> str:
+    def _build_system_prompt(
+        self, chat: Chat, location_context: LocationContext
+    ) -> str:
         prompt_parts: list[str] = [
             self._system_prompt.strip(),
             f"User language: {chat.language.value}",
@@ -67,10 +78,28 @@ class OpenAIChatResponder(IChatResponder):
 
         if chat.last_location is not None:
             prompt_parts.append(
-                "Last known user location: "
-                f"lat={chat.last_location.latitude}, "
+                "Current user location has changed or may have changed. "
+                "Always treat the last known user location below as the source of truth. "
+                "Do not use locations from previous messages unless the user explicitly asks about them.\n"
+                f"Current location: lat={chat.last_location.latitude}, "
                 f"lon={chat.last_location.longitude}"
             )
+
+        if location_context is not None:
+            prompt_parts.append(
+                "Nearby places are based on the current user location. "
+                "Use only these places when recommending nearby places. "
+                "Do not invent places. "
+                "If none of these places fit the user's request, ask a clarification question.\n"
+                "Nearby places:\n"
+                + json.dumps(
+                    location_context.nearby_places,
+                    ensure_ascii=False,
+                    separators=(",", ":"),
+                    default=str,
+                )
+            )
+
         return "\n\n".join(prompt_parts)
 
     @staticmethod

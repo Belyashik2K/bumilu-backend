@@ -11,6 +11,9 @@ from app.modules.chat.application.commands.answer_with_ai.command import (
     AnswerWithAIInChatCommand,
 )
 from app.modules.chat.application.interfaces.chat_responder import IChatResponder
+from app.modules.chat.application.interfaces.location_context_provider import (
+    ILocationContextProvider,
+)
 from app.modules.chat.application.interfaces.repositories.chat import IChatRepository
 from app.modules.chat.application.interfaces.repositories.chat_message import (
     IChatMessageRepository,
@@ -27,9 +30,11 @@ class AnswerWithAIInChatCommandHandler(ICommandHandler[AnswerWithAIInChatCommand
         chat_message_repository: IChatMessageRepository,
         chat_responder: IChatResponder,
         transaction_manager: ITransactionManager,
+        location_context_provider: ILocationContextProvider,
         confidence_score_threshold: float,
     ) -> None:
         super().__init__(transaction_manager)
+        self._location_context_provider = location_context_provider
         self._chat_repository = chat_repository
         self._chat_message_repository = chat_message_repository
         self._chat_responder = chat_responder
@@ -53,8 +58,18 @@ class AnswerWithAIInChatCommandHandler(ICommandHandler[AnswerWithAIInChatCommand
 
         chat_messages = await self._chat_message_repository.get_chat_messages(chat_id)
 
+        location_context = None
+        if chat.last_location is not None:
+            location_context = await self._location_context_provider.get_context(
+                location=chat.last_location,
+                radius_meters=1000,
+                translation_language=chat.language,
+            )
+
         try:
-            result = await self._chat_responder.generate_reply(chat, chat_messages)
+            result = await self._chat_responder.generate_reply(
+                chat, chat_messages, location_context
+            )
 
             if result.confidence_score < self._confidence_score_threshold:
                 chat.escalate_to_admin(now=now)

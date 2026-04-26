@@ -37,6 +37,9 @@ from app.modules.places.application.queries.places.shared.models.place_details i
     AdminPlaceDetailsReadModel,
     PlaceDetailsReadModel,
 )
+from app.modules.places.application.queries.places.shared.models.place_llm_context import (
+    NearbyPlaceLLMContextReadModel,
+)
 from app.modules.places.application.queries.places.shared.models.place_map_poi import (
     AdminPlaceMapPOIReadModel,
     PlaceMapPOIReadModel,
@@ -261,8 +264,8 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                 with_loader_criteria(
                     PlaceModel.photos,
                     PlacePhotoModel.status == PlacePhotoStatusEnum.UPLOADED,
-                    include_aliases=True
-                )
+                    include_aliases=True,
+                ),
             )
         )
 
@@ -333,6 +336,79 @@ class SQLAlchemyPlaceReader(IPlaceReader):
 
         return [
             cards_by_id[place_id] for place_id in place_ids if place_id in cards_by_id
+        ]
+
+    async def get_nearby_places_llm_context(
+        self,
+        *,
+        latitude: float,
+        longitude: float,
+        radius_meters: int,
+        translation_language: LanguageEnum,
+        limit: int,
+    ) -> list[NearbyPlaceLLMContextReadModel]:
+        point = func.ST_SetSRID(
+            func.ST_MakePoint(longitude, latitude),
+            4326,
+        )
+
+        distance_expr = func.ST_Distance(
+            PlaceModel.location,
+            point,
+        ).label("distance_meters")
+
+        reviews_subquery = self._build_reviews_subquery()
+
+        stmt = (
+            select(
+                PlaceModel,
+                reviews_subquery.c.rating_average,
+                reviews_subquery.c.reviews_count,
+                distance_expr,
+            )
+            .outerjoin(
+                reviews_subquery,
+                reviews_subquery.c.place_id == PlaceModel.id,
+            )
+            .join(PlaceModel.translations)
+            .join(PlaceModel.category)
+            .join(PlaceCategoryModel.translations)
+            .where(
+                PlaceTranslationModel.language_code == translation_language,
+                PlaceCategoryTranslationModel.language_code == translation_language,
+                PlaceModel.status == PlaceStatusEnum.PUBLISHED,
+                func.ST_DWithin(
+                    PlaceModel.location,
+                    point,
+                    radius_meters,
+                ),
+            )
+            .options(
+                selectinload(PlaceModel.working_days).selectinload(
+                    PlaceWorkingDayModel.working_hours
+                ),
+                contains_eager(PlaceModel.translations),
+                contains_eager(PlaceModel.category).contains_eager(
+                    PlaceCategoryModel.translations
+                ),
+            )
+            .order_by(distance_expr)
+            .limit(limit)
+        )
+
+        result = await self._session.execute(stmt)
+        rows = result.unique().all()
+
+        return [
+            PlaceReadModelMapper.map_to_llm_context(
+                place=place,
+                rating_average=rating_average,
+                reviews_count=reviews_count,
+                distance_meters=int(distance_meters)
+                if distance_meters is not None
+                else None,
+            )
+            for place, rating_average, reviews_count, distance_meters in rows
         ]
 
     async def get_all(
