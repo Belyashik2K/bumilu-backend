@@ -1,5 +1,6 @@
 chat:
   ai_assistant:
+    answer_delay_sec: 1
     openai:
       api_base_url: "https://openrouter.ai/api/v1"
       model: "openai/gpt-oss-120b:free"

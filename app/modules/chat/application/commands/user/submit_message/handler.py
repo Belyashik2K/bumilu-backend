@@ -31,12 +31,14 @@ class SubmitUserMessageCommandHandler(
         user_repository: IUserRepository,
         chat_reply_dispatcher: IChatReplyDispatcher,
         transaction_manager: ITransactionManager,
+        ai_answer_delay_seconds: int = 1,
     ) -> None:
         super().__init__(transaction_manager)
         self._chat_repository = chat_repository
         self._chat_message_repository = chat_message_repository
         self._user_repository = user_repository
         self._chat_reply_dispatcher = chat_reply_dispatcher
+        self._ai_answer_delay_seconds = ai_answer_delay_seconds
 
     async def handle(
         self, command: SubmitUserMessageCommand
@@ -77,7 +79,7 @@ class SubmitUserMessageCommandHandler(
         await self._chat_reply_dispatcher.dispatch(
             chat_id=chat.id.value,
             expected_last_activity_at=now,
-            delay_seconds=5,
+            delay_seconds=self._delay_seconds,
         )
 
         return SubmitUserMessageCommandResult(
