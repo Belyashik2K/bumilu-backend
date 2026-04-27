@@ -89,7 +89,7 @@ class ChatMessageSchema(BaseModel):
         description="The text content of the chat message.",
         examples=[MESSAGE_TEXT_EXAMPLE],
         min_length=1,
-        max_length=1000,
+        max_length=4096,
     )
     location: LocationSchema | None = Field(
         None,
