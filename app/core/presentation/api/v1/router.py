@@ -10,6 +10,7 @@ from app.modules.routes.presentation.api.v1 import (
 )
 from app.modules.routing.presentation.api.v1 import routing_router
 from app.modules.staff.presentation.api.v1 import staff_router
+from app.modules.stats.presentation.api.v1.router import stats_router
 from app.modules.users.presentation.api.v1 import users_router
 
 v1_router = APIRouter(prefix="/v1")
@@ -22,3 +23,4 @@ v1_router.include_router(routing_router)
 v1_router.include_router(reviews_router)
 v1_router.include_router(favourites_router)
 v1_router.include_router(chat_router)
+v1_router.include_router(stats_router)
