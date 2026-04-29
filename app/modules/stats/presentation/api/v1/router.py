@@ -32,7 +32,7 @@ async def get_dashboard_stats(
         places=PlacesStatsSchema(
             published=51,
             hidden=4,
-            total=0,
+            total=55,
         ),
         routes=RoutesStatsSchema(
             total=7,
