@@ -43,6 +43,11 @@ class StaffMemberInfoSchema(BaseModel):
         description="Unique identifier for the staff member.",
         examples=[STAFF_MEMBER_ID_EXAMPLE],
     )
+    name: str = Field(
+        ...,
+        description="Full name of the staff member.",
+        examples=[STAFF_MEMBER_NAME_EXAMPLE],
+    )
     email: EmailStr = Field(
         ...,
         description="Email address of the staff member.",
@@ -57,11 +62,6 @@ class AuthenticatedStaffMemberInfoSchema(StaffMemberInfoSchema): ...
 
 
 class FullStaffMemberInfoSchema(AuthenticatedStaffMemberInfoSchema):
-    name: str = Field(
-        ...,
-        description="Full name of the staff member.",
-        examples=[STAFF_MEMBER_NAME_EXAMPLE],
-    )
     created_at: datetime = Field(
         ...,
         description="Timestamp when the staff member was created.",

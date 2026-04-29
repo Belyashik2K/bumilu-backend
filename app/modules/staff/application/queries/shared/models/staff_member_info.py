@@ -10,9 +10,9 @@ class StaffMemberInfoReadModel:
     id: UUID
     email: str
     role: StaffRoleEnum
+    name: str
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class StaffMemberFullInfoReadModel(StaffMemberInfoReadModel):
-    name: str
     created_at: datetime

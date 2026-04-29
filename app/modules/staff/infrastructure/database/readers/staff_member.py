@@ -31,6 +31,7 @@ class SQLAlchemyStaffMemberReader(IStaffMemberReader):
             id=data.id,
             email=data.email,
             role=data.role,
+            name=data.name,
         )
 
     async def get_full_info_by_id(
