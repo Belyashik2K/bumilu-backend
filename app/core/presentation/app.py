@@ -59,6 +59,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, Any]:
         await container.close()
 
 
+def add_prometheus_metrics(app: FastAPI) -> None:
+    from prometheus_fastapi_instrumentator import Instrumentator
+
+    Instrumentator().instrument(app).expose(app, include_in_schema=False)
+
+
 def create_app() -> FastAPI:
     config = AppConfig()  # type: ignore[call-arg]
 
@@ -96,6 +102,7 @@ def create_app() -> FastAPI:
     app.include_router(api_router)
 
     set_exception_handlers(app)
+    add_prometheus_metrics(app)
 
     container = make_async_container(
         *CORE_PROVIDERS,
