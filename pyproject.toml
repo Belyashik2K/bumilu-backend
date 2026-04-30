@@ -20,6 +20,7 @@ dependencies = [
     "httpx>=0.28.1",
     "openai>=2.26.0",
     "polyline>=2.0.4",
+    "prometheus-fastapi-instrumentator>=7.1.0",
     "pwdlib[argon2]>=0.3.0",
     "pydantic-settings[yaml]>=2.13.0",
     "pyjwt>=2.11.0",
