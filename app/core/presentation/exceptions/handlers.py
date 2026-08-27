@@ -6,6 +6,7 @@ from typing import (
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
+from pydantic import ValidationError as PydanticValidationError
 from starlette import status
 from starlette.requests import Request
 from starlette.responses import (
@@ -30,7 +31,9 @@ def _safe_details(details: Mapping[str, Any] | None) -> Mapping[str, Any]:
     return details or {}
 
 
-def _pydantic_422_details(exc: RequestValidationError) -> Mapping[str, Any]:
+def _pydantic_422_details(
+    exc: RequestValidationError | PydanticValidationError,
+) -> Mapping[str, Any]:
     errors = []
     for e in exc.errors():
         loc = e.get("loc", ())
@@ -66,6 +69,16 @@ def set_exception_handlers(app: FastAPI):
     @app.exception_handler(RequestValidationError)
     async def request_validation_exception_handler(
         request: Request, exc: RequestValidationError
+    ) -> JSONResponse:
+        return _prepare_response(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            message="Validation error",
+            details=_pydantic_422_details(exc),
+        )
+
+    @app.exception_handler(PydanticValidationError)
+    async def pydantic_validation_exception_handler(
+        request: Request, exc: PydanticValidationError
     ) -> JSONResponse:
         return _prepare_response(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
