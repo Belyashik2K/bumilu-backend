@@ -20,5 +20,5 @@ class CustomRequest(Request):
             self.scope.setdefault("state", {})
             # Create a state instance with a reference to the dict in which it should
             # store info
-            self._state = CustomState(self.scope["state"])
+            self._state: CustomState = CustomState(self.scope["state"])
         return self._state

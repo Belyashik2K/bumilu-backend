@@ -118,7 +118,7 @@ def make_data_list_response_schema(
     serialization_alias: str | None = None,
     validation_alias: str | None = None,
 ) -> type[BaseDataListResponseSchema[T]]:
-    model_name = f"{item_type.__name__.rstrip("Schema")}ListResponseSchema"
+    model_name = f"{item_type.__name__.rstrip('Schema')}ListResponseSchema"
 
     class ConcreteDataListResponseSchema(BaseDataListResponseSchema[item_type]):  # type: ignore
         model_config = ConfigDict(
@@ -149,7 +149,7 @@ def make_paginated_response_schema(
     serialization_alias: str | None = None,
     validation_alias: str | None = None,
 ) -> type[BasePaginatedResponseSchema[T]]:
-    model_name = f"Paginated{item_type.__name__.rstrip("Schema")}ResponseSchema"
+    model_name = f"Paginated{item_type.__name__.rstrip('Schema')}ResponseSchema"
 
     class ConcretePaginatedResponseSchema(BasePaginatedResponseSchema[item_type]):  # type: ignore
         model_config = ConfigDict(

@@ -1,3 +1,6 @@
+from typing import TypeIs
+
+
 class UnsetType:
     __slots__ = ()
 
@@ -8,5 +11,5 @@ class UnsetType:
 UNSET = UnsetType()
 
 
-def is_unset(value: object) -> bool:
+def is_unset(value: object) -> TypeIs[UnsetType]:
     return value is UNSET

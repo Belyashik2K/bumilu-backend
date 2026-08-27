@@ -29,7 +29,10 @@ class CustomBaseHTTPMiddleware(BaseHTTPMiddleware):
         ]
         | None = None,
     ) -> None:
-        super().__init__(app, dispatch=dispatch)
+        # Starlette's BaseHTTPMiddleware is typed against the generic
+        # Request[State], but this app always uses CustomRequest as its
+        # request class, so the narrower type here is correct at runtime.
+        super().__init__(app, dispatch=dispatch)  # type: ignore[arg-type]
 
     @staticmethod
     async def get_dependency(request: CustomRequest, dependency_type: type[T]) -> T:
@@ -60,7 +63,7 @@ class CustomBaseHTTPMiddleware(BaseHTTPMiddleware):
                 "No dishka container found. Make sure dishka is properly set up with the app."
             )
 
-    async def dispatch(
+    async def dispatch(  # type: ignore[override]  # app always uses CustomRequest
         self,
         request: CustomRequest,
         call_next: Callable[[Request], Awaitable[Response]],
