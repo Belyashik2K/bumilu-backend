@@ -18,4 +18,4 @@ def get_user_principal(request: CustomRequest) -> Principal:
         raise ApplicationForbiddenException(
             message="You're too cool for that, brother."
         )
-    return request.state.principal
+    return principal

@@ -25,14 +25,19 @@ class AuthMiddleware(CustomBaseHTTPMiddleware):
             return None
         return parts[1]
 
-    async def dispatch(
+    async def dispatch(  # type: ignore[override]  # app always uses CustomRequest
         self,
         request: CustomRequest,
         call_next: Callable[[Request], Awaitable[Response]],
     ) -> Response:
         request.state.principal = None
 
-        token_manager = await self.get_dependency(request, IAccessTokenManager)
+        # IAccessTokenManager is an ABC used only as a DI lookup key here (never
+        # instantiated directly), so the type-abstract check is a false positive.
+        token_manager = await self.get_dependency(
+            request,
+            IAccessTokenManager,  # type: ignore[type-abstract]
+        )
         token = self._get_token_from_header(request)
 
         if not token:

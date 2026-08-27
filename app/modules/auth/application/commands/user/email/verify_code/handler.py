@@ -100,10 +100,11 @@ class VerifyEmailCodeAtLoginCommandHandler(
                 ),
             )
         else:
-            principal = await self._principal_repository.get_by_id(user.id)
-            if principal is None:
+            fetched_principal = await self._principal_repository.get_by_id(user.id)
+            if fetched_principal is None:
                 # TODO: More friendly error
                 raise RuntimeError("Guest principal not found for device")
+            principal = fetched_principal
 
         current_device_id = DeviceIdVO(command.device_id)
 

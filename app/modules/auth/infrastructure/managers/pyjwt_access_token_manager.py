@@ -39,7 +39,7 @@ class PyJWTAccessTokenManager(IAccessTokenManager):
         principal_id: PrincipalIdVO,
         principal_type: PrincipalTypeEnum,
         session_id: SessionIdVO,
-        role: UserRoleEnum,
+        role: UserRoleEnum | StaffRoleEnum,
         ttl: int,
     ) -> str:
         payload = {
@@ -76,16 +76,17 @@ class PyJWTAccessTokenManager(IAccessTokenManager):
         principal_type = PrincipalTypeEnum(payload["principal_type"])
         role = payload["role"]
 
-        mapped_role = {
-            PrincipalTypeEnum.USER: lambda: UserRoleEnum(role),
-            PrincipalTypeEnum.STAFF: lambda: StaffRoleEnum(role),
-        }
+        mapped_role: UserRoleEnum | StaffRoleEnum
+        if principal_type == PrincipalTypeEnum.USER:
+            mapped_role = UserRoleEnum(role)
+        else:
+            mapped_role = StaffRoleEnum(role)
 
         return TokenInfoDTO(
             principal_type=principal_type,
             principal_id=PrincipalIdVO.from_str(payload["sub"]),
             session_id=SessionIdVO.from_str(payload["session_id"]),
-            role=mapped_role[principal_type](),
+            role=mapped_role,
             issued_at=payload["iat"],
             expires_at=payload["exp"],
         )

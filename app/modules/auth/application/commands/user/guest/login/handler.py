@@ -95,10 +95,16 @@ class LoginAsGuestCommandHandler(
                 ),
             )
         else:
-            principal = await self._principal_repository.get_by_id(device.guest_user_id)
-            if principal is None:
+            assert (
+                device.guest_user_id is not None
+            ), "device.guest_user_id must be set when device.has_guest_user() is True"
+            fetched_principal = await self._principal_repository.get_by_id(
+                device.guest_user_id
+            )
+            if fetched_principal is None:
                 # TODO: More friendly error
                 raise RuntimeError("Guest principal not found for device")
+            principal = fetched_principal
 
         await self._auth_session_repository.revoke_active_for_device(
             device_id=device.id

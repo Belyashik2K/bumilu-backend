@@ -75,9 +75,10 @@ class LoginAsStaffMemberCommandHandler(
         ):
             raise InvalidCredentials()
 
-        principal = await self._principal_repository.get_by_id(staff_member.id)
-        if principal is None:
+        fetched_principal = await self._principal_repository.get_by_id(staff_member.id)
+        if fetched_principal is None:
             raise PrincipalNotFound()
+        principal = fetched_principal
 
         tokens = await self._auth_session_service.issue(
             principal=principal,
