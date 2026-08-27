@@ -1,9 +1,7 @@
 name: Backend CI/CD
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 env:
   IMAGE_NAME: ghcr.io/bumiludev/backend
