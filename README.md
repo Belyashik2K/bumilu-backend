@@ -5,7 +5,7 @@
 <h1 align="center">BumiLu Backend</h1>
 
 <p align="center">
-  Backend for a multilingual travel companion app for Chinese tourists exploring Saint Petersburg — place discovery, route building, and AI-powered recommendations, with no reliance on Russian or English.
+  Backend for an MVP of multilingual travel companion app for Chinese tourists exploring Saint Petersburg — place discovery, route building, and AI-powered recommendations, with no reliance on Russian or English.
 </p>
 
 <p align="center">
@@ -129,7 +129,7 @@ pytest -m "not integration"   # unit tests only, no external services required
 pytest                        # full suite; spins up a Redis container via testcontainers (needs Docker)
 ```
 
-## Known Limitations / Roadmap
+## Known MVP Limitations
 
 - **No per-role authorization for staff.** Staff roles (`OWNER` / `ADMIN` / `SUPPORT`) exist in the domain model, but admin endpoints only check "is this a staff principal", not the specific role.
 - **First-staff-login bootstrap has no safeguard.** Whoever calls `POST /v1/auth/staff/login` first becomes `OWNER` — fine for a controlled first deploy, but it's a race if the admin panel is ever exposed before that first login happens.
