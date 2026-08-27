@@ -1,8 +1,22 @@
-# BumiLu Backend
+<p align="center">
+  <img src="assets/banner.png" alt="BumiLu banner" width="100%">
+</p>
 
-Backend for BumiLu (不迷路) — a mobile & web app for discovering places and building routes.
+<h1 align="center">BumiLu Backend</h1>
 
-Originally built as a university project ("Basics of Subject-Oriented Development"), where it reached the finals among 256 teams. This repository covers the backend: API, business logic, and the infrastructure/CI-CD setup.
+<p align="center">
+  Backend for a multilingual travel companion app for Chinese tourists exploring Saint Petersburg — place discovery, route building, and AI-powered recommendations, with no reliance on Russian or English.
+</p>
+
+## About BumiLu
+
+Chinese tourists account for up to 50% of foreign hotel bookings in Saint Petersburg, and most of them travel independently, with no Russian or English. Existing map services (Yandex Maps, Google Maps, AMap) each cover part of the problem, but none combine multilingual content, a tourist-oriented scenario, and AI-driven recommendations in one product. BumiLu was built to fill that gap: an interactive map with multilingual place data, route building, and a geolocation-aware AI assistant, backed by an admin panel for content management.
+
+Originally built as a university project ("Basics of Subject-Oriented Development"), where it reached the finals among 256 teams; the MVP was beta-tested with ~50 users.
+
+## About This Repository
+
+This repository is the **backend** for BumiLu: the API, business logic, and the infrastructure/CI-CD setup. The mobile app, admin panel frontend, and landing page were built separately by other team members and aren't part of this repository.
 
 ## Tech Stack
 
@@ -14,6 +28,7 @@ Originally built as a university project ("Basics of Subject-Oriented Developmen
 - **Observability**: structured logging, Prometheus (`prometheus-fastapi-instrumentator`)
 - **Infra**: Docker / Docker Compose, GitHub Actions
 - **Testing**: pytest, testcontainers
+- **Code quality**: ruff, mypy, pre-commit
 
 ## Architecture
 
@@ -39,7 +54,7 @@ Two principal types: **User** (mobile/web app end users) and **Staff** (internal
 - **User login** — two methods:
   - **Guest** — anonymous, device-bound session, no credentials required.
   - **Email OTP** — passwordless: request a one-time code by email, then verify it to get a session.
-- **Staff login** — email + password.
+- **Staff login** — email + password. If no staff member exists yet, the first successful `POST /v1/auth/staff/login` call bootstraps that account as `OWNER` — there's no separate registration step or seed script.
 
 Both flows issue a short-lived JWT access token plus a server-side, revocable refresh session (rotated on every refresh). Delivery differs by client: user refresh tokens are returned in the response body (mobile app), staff refresh tokens are set as an `httpOnly` cookie (web admin panel) — a deliberate split, not an inconsistency.
 
@@ -70,19 +85,30 @@ Prerequisites: Docker and Docker Compose.
    docker network create bumilu
    ```
 
-4. **(Optional) Routing** — the `routing` module talks to a separate map service ([spb-map-service](https://github.com/BumiLuDev/spb-map-service)) for building routes via Valhalla. Skip this if you don't need routing endpoints.
-
-5. **Run**
+4. **Run**
 
    ```bash
-   docker-compose -f docker-compose.dev.yml -f docker-compose.yml up --build
+   docker-compose --env-file .env -f deploy/docker-compose.dev.yml -f deploy/docker-compose.yml up --build
    ```
 
-   The `migrations` service applies Alembic migrations automatically before the API starts.
+   The `migrations` service applies Alembic migrations automatically before the API starts. The `valhalla` (routing) service is **not** started by default — see [Routing](#routing-optional) — so the rest of the API works out of the box without it; routing endpoints will just respond with a 503 until it's enabled.
 
-6. **API docs**: `http://localhost:8000/docs/swagger` (Swagger) or `http://localhost:8000/docs/redoc` (ReDoc).
+5. **API docs**: `http://localhost:8000/docs/swagger` (Swagger) or `http://localhost:8000/docs/redoc` (ReDoc).
 
-7. **(Optional) Seed data** — `stubs/temp_places_and_routes_data.sql` has sample places/categories/routes for local exploration. Copy it into the running Postgres container and apply it with `psql`.
+6. **(Optional) Seed data** — `stubs/temp_places_and_routes_data.sql` has sample places/categories/routes for local exploration. Copy it into the running Postgres container and apply it with `psql`.
+
+### Routing (optional)
+
+Routing is powered by a self-hosted [Valhalla](https://github.com/valhalla/valhalla) instance, which needs pre-built map tiles — too large to commit to the repo. To enable it:
+
+1. Download the prebuilt tiles from [Yandex Disk](https://disk.yandex.ru/d/hie896H1tC0wlA) and extract the contents into `valhalla_data/` at the repo root.
+2. Start the stack with the `routing` profile and the routing override enabled:
+
+   ```bash
+   docker-compose --env-file .env -f deploy/docker-compose.dev.yml -f deploy/docker-compose.yml -f deploy/docker-compose.routing.yml --profile routing up --build
+   ```
+
+Without this, everything else (auth, places, favourites, reviews, chat, etc.) works normally — only the `routing` module's endpoints are unavailable.
 
 ## Testing
 
@@ -94,6 +120,15 @@ pytest                        # full suite; spins up a Redis container via testc
 ## Known Limitations / Roadmap
 
 - **No per-role authorization for staff.** Staff roles (`OWNER` / `ADMIN` / `SUPPORT`) exist in the domain model, but admin endpoints only check "is this a staff principal", not the specific role.
+- **First-staff-login bootstrap has no safeguard.** Whoever calls `POST /v1/auth/staff/login` first becomes `OWNER` — fine for a controlled first deploy, but it's a race if the admin panel is ever exposed before that first login happens.
 - **No retry/backoff on external calls** (SMTP, S3, routing service). A transient failure of an external dependency currently fails the request instead of being retried.
 - **No application-level caching.** Caching for map/place lookups was handled at the gateway layer (`Traefik → Kong`), not in application code.
 - **Test coverage** is currently limited to the domain and part of the application layer (`tests/unit`), plus one infrastructure integration test against a real Redis instance (`tests/integration`). E2E flows were covered manually during development, not by automated tests.
+
+## Project Status
+
+This project is archived and no longer under active development. Published as-is for reference; issues and PRs may not be reviewed.
+
+## License
+
+[MIT License](LICENSE)
