@@ -105,8 +105,13 @@ indent-style = "space"
 line-ending = "auto"
 
 [tool.mypy]
+exclude = ["migrations"]
 disable_error_code = ["prop-decorator"]
 
 [[tool.mypy.overrides]]
 module = "apscheduler.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["aiobotocore.*", "botocore.*", "shapely.*"]
 ignore_missing_imports = true
