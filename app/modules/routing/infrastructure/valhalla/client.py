@@ -32,7 +32,7 @@ class ValhallaClient:
     async def route(
         self,
         *,
-        locations: Sequence[dict[str, float]],
+        locations: Sequence[dict[str, float | str]],
         costing: str,
         language: str = "ru-RU",
         units: str = "kilometers",

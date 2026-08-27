@@ -35,7 +35,7 @@ class RouteCardSchema(BaseRouteCardSchema):
         examples=[TITLE_EXAMPLE],
     )
     short_description: str = Field(
-        None,
+        ...,
         description="Short description of the route",
         examples=[SHORT_DESCRIPTION_EXAMPLE],
     )

@@ -94,7 +94,7 @@ class SQLAlchemyRouteReader(IRouteReader):
                     PlaceWorkingDayModel.working_hours
                 ),
                 with_loader_criteria(
-                    PlaceModel.photos,
+                    PlacePhotoModel,
                     PlacePhotoModel.status == PlacePhotoStatusEnum.UPLOADED,
                     include_aliases=True,
                 ),
@@ -254,14 +254,22 @@ class SQLAlchemyRouteReader(IRouteReader):
             for place, translation, rating_average, reviews_count in rows
         }
 
-        return [
-            AdminRoutePointReadModel(
-                id=point.id,
-                index=point.point_index,
-                preview=place_cards.get(point.place_id),
+        result_points = []
+        for point in route_points:
+            preview = place_cards.get(point.place_id)
+            assert preview is not None, (
+                "place preview must be present: route_point.place_id has a "
+                "RESTRICT foreign key to places.id"
             )
-            for point in route_points
-        ]
+            result_points.append(
+                AdminRoutePointReadModel(
+                    id=point.id,
+                    index=point.point_index,
+                    preview=preview,
+                )
+            )
+
+        return result_points
 
     async def get_all(
         self,

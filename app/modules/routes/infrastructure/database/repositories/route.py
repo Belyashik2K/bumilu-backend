@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy import (
     delete,
     select,
@@ -103,7 +105,9 @@ class RouteDataMapper:
             orm_item for orm_item in model.translations if orm_item.id in domain_ids
         ]
 
-        orm_by_id = {item.id: item for item in model.translations}
+        orm_by_id: dict[UUID, RouteTranslationModel] = {
+            item.id: item for item in model.translations
+        }
 
         for domain_item in domain_items:
             orm_item = orm_by_id.get(domain_item.id.value)
@@ -120,6 +124,14 @@ class RouteDataMapper:
                     )
                 )
                 continue
+
+            assert domain_item.title.value is not None, "RouteTitleVO.value must be set"
+            assert (
+                domain_item.short_description.value is not None
+            ), "RouteShortDescriptionVO.value must be set"
+            assert (
+                domain_item.description.value is not None
+            ), "RouteDescriptionVO.value must be set"
 
             orm_item.language_code = domain_item.language_code
             orm_item.title = domain_item.title.value

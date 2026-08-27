@@ -70,7 +70,7 @@ class SQLAlchemyRouteTranslationReader(IRouteTranslationReader):
         rows = result.unique().all()
 
         if not rows:
-            total = await self._session.scalar(count_stmt)
+            total = await self._session.scalar(count_stmt) or 0
             return PageReadModel(total=total)
 
         translations: list[RouteTranslationModel] = [

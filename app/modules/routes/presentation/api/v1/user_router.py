@@ -53,7 +53,7 @@ async def get_routes(
     location: LocationDep,
     filters: RouteSortFiltersDep,
     pagination: OffsetPaginationDep,
-) -> PaginatedRouteCardsResponseSchema:
+) -> PaginatedRouteCardsResponseSchema:  # type: ignore[valid-type]  # dynamically generated pydantic model class; mypy cannot statically verify it
     result = await handler(
         GetAllRoutesQuery(
             language=accept_language.language,

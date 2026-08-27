@@ -142,7 +142,7 @@ async def get_routes(
     principal: Annotated[Principal, Depends(get_staff_principal)],
     accept_language: AcceptLanguageDep,
     pagination: OffsetPaginationDep,
-) -> PaginatedAdminRouteCardsResponseSchema:
+) -> PaginatedAdminRouteCardsResponseSchema:  # type: ignore[valid-type]  # dynamically generated pydantic model class; mypy cannot statically verify it
     result = await handler(
         query=GetAdminRoutesListQuery(
             language=accept_language.language,
@@ -250,7 +250,7 @@ async def get_route_translations(
     handler: FromDishka[GetAdminRouteTranslationsQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
     pagination: OffsetPaginationDep,
-) -> PaginatedRouteTranslationSchema:
+) -> PaginatedRouteTranslationSchema:  # type: ignore[valid-type]  # dynamically generated pydantic model class; mypy cannot statically verify it
     result = await handler(
         query=GetAdminRouteTranslationsQuery(
             route_id=route_id,
@@ -358,7 +358,7 @@ async def get_route_points(
     handler: FromDishka[GetAdminRoutePointsQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
     accept_language: AcceptLanguageDep,
-) -> AdminRoutePointListSchema:
+) -> AdminRoutePointListSchema:  # type: ignore[valid-type]  # dynamically generated pydantic model class; mypy cannot statically verify it
     result = await handler(
         query=GetAdminRoutePointsQuery(
             route_id=route_id, language=accept_language.language
