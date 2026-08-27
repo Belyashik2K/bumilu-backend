@@ -126,12 +126,12 @@ class RouteDataMapper:
                 continue
 
             assert domain_item.title.value is not None, "RouteTitleVO.value must be set"
-            assert (
-                domain_item.short_description.value is not None
-            ), "RouteShortDescriptionVO.value must be set"
-            assert (
-                domain_item.description.value is not None
-            ), "RouteDescriptionVO.value must be set"
+            assert domain_item.short_description.value is not None, (
+                "RouteShortDescriptionVO.value must be set"
+            )
+            assert domain_item.description.value is not None, (
+                "RouteDescriptionVO.value must be set"
+            )
 
             orm_item.language_code = domain_item.language_code
             orm_item.title = domain_item.title.value

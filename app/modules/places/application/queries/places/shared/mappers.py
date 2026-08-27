@@ -183,12 +183,12 @@ class PlaceReadModelMapper:
     ) -> NearbyPlaceLLMContextReadModel:
         translation = place.translations[0]
 
-        assert (
-            translation.short_description is not None
-        ), "translation.short_description must be set"
-        assert (
-            translation.address_display is not None
-        ), "translation.address_display must be set"
+        assert translation.short_description is not None, (
+            "translation.short_description must be set"
+        )
+        assert translation.address_display is not None, (
+            "translation.address_display must be set"
+        )
         assert place.address_taxi is not None, "place.address_taxi must be set"
 
         return NearbyPlaceLLMContextReadModel(
@@ -287,9 +287,9 @@ class PlaceReadModelMapper:
     ) -> PlaceDetailsReadModel:
         translation = place.translations[0]
 
-        assert (
-            translation.address_display is not None
-        ), "translation.address_display must be set"
+        assert translation.address_display is not None, (
+            "translation.address_display must be set"
+        )
         assert place.address_taxi is not None, "place.address_taxi must be set"
 
         return PlaceDetailsReadModel(

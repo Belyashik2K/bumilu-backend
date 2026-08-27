@@ -81,15 +81,15 @@ class SQLAlchemyPlaceTranslationReader(IPlaceTranslationReader):
     def _to_read_model(
         translation: PlaceTranslationModel,
     ) -> PlaceTranslationReadModel:
-        assert (
-            translation.description is not None
-        ), "translation.description must be set"
-        assert (
-            translation.short_description is not None
-        ), "translation.short_description must be set"
-        assert (
-            translation.address_display is not None
-        ), "translation.address_display must be set"
+        assert translation.description is not None, (
+            "translation.description must be set"
+        )
+        assert translation.short_description is not None, (
+            "translation.short_description must be set"
+        )
+        assert translation.address_display is not None, (
+            "translation.address_display must be set"
+        )
 
         return PlaceTranslationReadModel(
             language_code=translation.language_code,

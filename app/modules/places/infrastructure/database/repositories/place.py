@@ -266,9 +266,9 @@ class SQLAlchemyPlaceRepository(IPlaceRepository):
                 )
                 continue
 
-            assert (
-                entity_phone.number.value is not None
-            ), "PlacePhoneNumberVO.value must be set"
+            assert entity_phone.number.value is not None, (
+                "PlacePhoneNumberVO.value must be set"
+            )
             existing_model_phone.number = entity_phone.number.value
             existing_model_phone.type = entity_phone.type
             existing_model_phone.is_primary = entity_phone.is_primary

@@ -95,9 +95,9 @@ class LoginAsGuestCommandHandler(
                 ),
             )
         else:
-            assert (
-                device.guest_user_id is not None
-            ), "device.guest_user_id must be set when device.has_guest_user() is True"
+            assert device.guest_user_id is not None, (
+                "device.guest_user_id must be set when device.has_guest_user() is True"
+            )
             fetched_principal = await self._principal_repository.get_by_id(
                 device.guest_user_id
             )
