@@ -14,7 +14,7 @@
 
 ## About BumiLu
 
-Chinese tourists account for up to 50% of foreign hotel bookings in Saint Petersburg, and most of them travel independently, with no Russian or English. Existing map services (Yandex Maps, Google Maps, AMap) each cover part of the problem, but none combine multilingual content, a tourist-oriented scenario, and AI-driven recommendations in one product. BumiLu was built to fill that gap: an interactive map with multilingual place data, route building, and a geolocation-aware AI assistant, backed by an admin panel for content management.
+Chinese tourists account for up to 50% of a foreign hotel bookings in Saint Petersburg, and most of them travel independently, with no Russian or English. Existing map services (Yandex Maps, Google Maps, AMap) each cover part of the problem, but none combine multilingual content, a tourist-oriented scenario, and AI-driven recommendations in one product. BumiLu was built to fill that gap: an interactive map with multilingual place data, route building, and a geolocation-aware AI assistant, backed by an admin panel for content management.
 
 Finalist of the ["Basics of Project Activity" SPbPU 2026](https://opd.spbstu.ru/) competition, IT Projects category. The MVP was beta-tested with ~50 users.
 
