@@ -57,7 +57,7 @@ async def staff_login(
         key="bumilu",  # TODO: make cookie name configurable
         value=result.refresh.token,
         httponly=True,
-        secure=False,
+        secure=True,
         samesite="strict",
         max_age=result.refresh.expires_in,
     )
@@ -83,7 +83,7 @@ async def staff_refresh(
         key="bumilu",  # TODO: make cookie name configurable
         value=result.refresh.token,
         httponly=True,
-        secure=False,
+        secure=True,
         samesite="strict",
         max_age=result.refresh.expires_in,
     )
