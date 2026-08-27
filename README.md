@@ -12,21 +12,22 @@
 
 Chinese tourists account for up to 50% of foreign hotel bookings in Saint Petersburg, and most of them travel independently, with no Russian or English. Existing map services (Yandex Maps, Google Maps, AMap) each cover part of the problem, but none combine multilingual content, a tourist-oriented scenario, and AI-driven recommendations in one product. BumiLu was built to fill that gap: an interactive map with multilingual place data, route building, and a geolocation-aware AI assistant, backed by an admin panel for content management.
 
-Originally built as a university project ("Basics of Subject-Oriented Development"), where it reached the finals among 256 teams; the MVP was beta-tested with ~50 users.
+Finalist of the ["Basics of Project Activity" SPbPU 2026](https://opd.spbstu.ru/) competition, IT Projects category. The MVP was beta-tested with ~50 users.
 
 ## About This Repository
 
-This repository is the **backend** for BumiLu: the API, business logic, and the infrastructure/CI-CD setup. The mobile app, admin panel frontend, and landing page were built separately by other team members and aren't part of this repository.
+This repository is the **backend** for BumiLu: the API, business logic, and the CI/CD setup for building and deploying it. The mobile app, admin panel frontend, and landing page were built separately by other team members and aren't part of this repository.
 
 ## Tech Stack
 
 - **API**: FastAPI, Python 3.14
 - **Persistence**: PostgreSQL + PostGIS, SQLAlchemy 2.0 (async), Alembic migrations
 - **Cache / sessions / queues**: Redis, Taskiq (background jobs & scheduler)
-- **Routing**: [Valhalla](https://github.com/valhalla/valhalla)
+- **Maps infra**: [Valhalla](https://github.com/valhalla/valhalla) (routing, in this repo), [TileServer GL](https://github.com/maptiler/tileserver-gl) (separate repository, not included here)
 - **DI**: Dishka
 - **Observability**: structured logging, Prometheus (`prometheus-fastapi-instrumentator`)
-- **Infra**: Docker / Docker Compose, GitHub Actions
+- **Containerization & CI**: Docker / Docker Compose, GitHub Actions
+- **API gateway**: Traefik, Kong (separate repository, not included here)
 - **Testing**: pytest, testcontainers
 - **Code quality**: ruff, mypy, pre-commit
 
