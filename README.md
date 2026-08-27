@@ -8,11 +8,22 @@
   Backend for a multilingual travel companion app for Chinese tourists exploring Saint Petersburg — place discovery, route building, and AI-powered recommendations, with no reliance on Russian or English.
 </p>
 
+<p align="center">
+  🔗 <a href="https://bumilu.ru">bumilu.ru</a>
+</p>
+
 ## About BumiLu
 
 Chinese tourists account for up to 50% of foreign hotel bookings in Saint Petersburg, and most of them travel independently, with no Russian or English. Existing map services (Yandex Maps, Google Maps, AMap) each cover part of the problem, but none combine multilingual content, a tourist-oriented scenario, and AI-driven recommendations in one product. BumiLu was built to fill that gap: an interactive map with multilingual place data, route building, and a geolocation-aware AI assistant, backed by an admin panel for content management.
 
 Finalist of the ["Basics of Project Activity" SPbPU 2026](https://opd.spbstu.ru/) competition, IT Projects category. The MVP was beta-tested with ~50 users.
+
+<p align="center">
+  <img src="assets/screenshots/map.png" width="200" alt="Interactive map with place markers">
+  <img src="assets/screenshots/place_info.png" width="200" alt="Place details screen">
+  <img src="assets/screenshots/routing.png" width="200" alt="Walking route to a place">
+  <img src="assets/screenshots/ai_assistant.png" width="200" alt="AI travel assistant chat">
+</p>
 
 ## About This Repository
 
