@@ -223,7 +223,11 @@ class StorageConfig(BaseModel):
 
 class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(
-        yaml_file=("config.yaml", "config.dev.yaml", "ai-assistant-config.yaml"),
+        yaml_file=(
+            "config/config.yaml",
+            "config/config.dev.yaml",
+            "config/ai-assistant-config.yaml",
+        ),
         env_file=(".env", ".env.dev"),
         env_nested_delimiter="__",
         extra="ignore",

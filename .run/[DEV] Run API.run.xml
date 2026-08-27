@@ -2,10 +2,10 @@
   <configuration default="false" name="[DEV] Run API" type="docker-deploy" factoryName="docker-compose.yml" server-name="Docker">
     <deployment type="docker-compose.yml">
       <settings>
-        <option name="envFilePath" value="" />
+        <option name="envFilePath" value="$PROJECT_DIR$/.env" />
         <option name="secondarySourceFiles">
           <list>
-            <option value="docker-compose.yml" />
+            <option value="deploy/docker-compose.yml" />
           </list>
         </option>
         <option name="services">
@@ -13,7 +13,7 @@
             <option value="api" />
           </list>
         </option>
-        <option name="sourceFilePath" value="docker-compose.dev.yml" />
+        <option name="sourceFilePath" value="deploy/docker-compose.dev.yml" />
       </settings>
     </deployment>
     <method v="2" />

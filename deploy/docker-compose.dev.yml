@@ -7,7 +7,7 @@ services:
       - "${REDIS__PORT}:6379"
   api:
     volumes:
-      - .:/app
+      - ..:/app
     command: >
       uvicorn app.core.presentation.app:app
       --host ${SERVER__HOST}

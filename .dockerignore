@@ -35,7 +35,7 @@ Thumbs.db
 # Docs / misc
 README.md
 
-config.dev.yaml
+config/config.dev.yaml
 
 .mypy_cache/
 .ruff_cache/

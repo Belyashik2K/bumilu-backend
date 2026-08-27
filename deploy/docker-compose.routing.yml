@@ -1,0 +1,5 @@
+services:
+  api:
+    depends_on:
+      valhalla:
+        condition: service_healthy
