@@ -1,5 +1,8 @@
 from app.core.application.queries import IQueryHandler
-from app.modules.places.application.exceptions.place import PlaceNotFound
+from app.modules.places.application.exceptions.place import (
+    PlaceNotFound,
+    PlaceWorkingDayNotFound,
+)
 from app.modules.places.application.interfaces.readers.place import IPlaceReader
 from app.modules.places.application.queries.places.admin.get_working_day_by_weekday.query import (
     GetAdminPlaceWorkingDayByWeekdayQuery,
@@ -25,6 +28,12 @@ class GetAdminPlaceWorkingDayByWeekdayQueryHandler(
         if not exists:
             raise PlaceNotFound(place_id=query.place_id)
 
-        return await self._place_reader.get_working_day_by_weekday(
+        working_day = await self._place_reader.get_working_day_by_weekday(
             place_id=query.place_id, weekday=query.weekday
         )
+        if working_day is None:
+            raise PlaceWorkingDayNotFound(
+                place_id=query.place_id, weekday=query.weekday
+            )
+
+        return working_day

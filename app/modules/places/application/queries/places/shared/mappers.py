@@ -1,4 +1,4 @@
-from time import time
+from datetime import time
 from zoneinfo import ZoneInfo
 
 from app.core.utils import get_current_dt
@@ -137,7 +137,7 @@ class PlaceAddressMapper:
 
     @staticmethod
     def map_admin(
-        taxi: str,
+        taxi: str | None,
         taxi_comment: str | None,
     ) -> AdminPlaceAddressReadModel:
         return AdminPlaceAddressReadModel(
@@ -182,6 +182,14 @@ class PlaceReadModelMapper:
         distance_meters: float | None = None,
     ) -> NearbyPlaceLLMContextReadModel:
         translation = place.translations[0]
+
+        assert (
+            translation.short_description is not None
+        ), "translation.short_description must be set"
+        assert (
+            translation.address_display is not None
+        ), "translation.address_display must be set"
+        assert place.address_taxi is not None, "place.address_taxi must be set"
 
         return NearbyPlaceLLMContextReadModel(
             id=place.id,
@@ -278,6 +286,11 @@ class PlaceReadModelMapper:
         is_favorite: bool,
     ) -> PlaceDetailsReadModel:
         translation = place.translations[0]
+
+        assert (
+            translation.address_display is not None
+        ), "translation.address_display must be set"
+        assert place.address_taxi is not None, "place.address_taxi must be set"
 
         return PlaceDetailsReadModel(
             id=place.id,

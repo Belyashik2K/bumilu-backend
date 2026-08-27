@@ -4,7 +4,7 @@ from app.core.exceptions.domain.base import DomainValidationException
 class InvalidTimezone(DomainValidationException):
     def __init__(
         self,
-        timezone: str,
+        timezone: str | None,
         message: str = "Invalid timezone value",
     ) -> None:
         super().__init__(

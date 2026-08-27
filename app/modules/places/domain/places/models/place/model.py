@@ -190,6 +190,8 @@ class Place:
                 phone_number=number,
             )
 
+        assert self.phones is not None, "Place.phones must be loaded"
+
         if not self.phones:
             is_primary = True
 
@@ -242,6 +244,8 @@ class Place:
 
         target_phone = self._get_phone(phone_id)
 
+        assert self.phones is not None, "Place.phones must be loaded"
+
         for phone in self.phones:
             phone.make_non_primary()
 
@@ -258,12 +262,16 @@ class Place:
         phone = self._get_phone(phone_id)
         was_primary = phone.is_primary
 
+        assert self.phones is not None, "Place.phones must be loaded"
+
         self.phones.remove(phone)
 
         if was_primary and self.phones:
             self.phones[0].make_primary()
 
     def _get_phone(self, phone_id: PlacePhoneIdVO) -> PlacePhone:
+        assert self.phones is not None, "Place.phones must be loaded"
+
         for phone in self.phones:
             if phone.id == phone_id:
                 return phone
@@ -279,12 +287,16 @@ class Place:
         *,
         exclude_phone_id: PlacePhoneIdVO | None = None,
     ) -> bool:
+        assert self.phones is not None, "Place.phones must be loaded"
+
         return any(
             phone.number == number and phone.id != exclude_phone_id
             for phone in self.phones
         )
 
     def _drop_primary_phone(self) -> None:
+        assert self.phones is not None, "Place.phones must be loaded"
+
         for phone in self.phones:
             phone.make_non_primary()
 
@@ -316,6 +328,8 @@ class Place:
         self,
         weekday: WeekdayVO,
     ) -> PlaceWorkingDay:
+        assert self.working_days is not None, "Place.working_days must be loaded"
+
         for day in self.working_days:
             if day.weekday == weekday:
                 return day
@@ -330,6 +344,8 @@ class Place:
             raise PlaceIsNotEditable(place_id=self.id)
 
         photo = PlacePhoto.create_pending(photo_id=photo_id, file_key=file_key)
+
+        assert self.photos is not None, "Place.photos must be loaded"
 
         self.photos.append(photo)
         return photo
@@ -359,12 +375,16 @@ class Place:
 
         photo = self._get_photo(photo_id)
 
+        assert self.photos is not None, "Place.photos must be loaded"
+
         self.photos.remove(photo)
 
     def get_photo(self, photo_id: PlacePhotoIdVO) -> PlacePhoto:
         return self._get_photo(photo_id)
 
     def _get_photo(self, photo_id: PlacePhotoIdVO) -> PlacePhoto:
+        assert self.photos is not None, "Place.photos must be loaded"
+
         for photo in self.photos:
             if photo.id == photo_id:
                 return photo

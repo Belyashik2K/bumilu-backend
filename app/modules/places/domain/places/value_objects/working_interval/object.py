@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from time import time
+from datetime import time
 
 from app.modules.places.domain.places.value_objects.working_interval.exceptions import (
     InvalidWorkingInterval,

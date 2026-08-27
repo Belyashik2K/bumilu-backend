@@ -31,7 +31,14 @@ class TimezoneVO:
 
     @classmethod
     def from_coordinates(cls, latitude: float, longitude: float) -> Self:
-        return cls(get_timezone_by_coordinates(latitude=latitude, longitude=longitude))
+        timezone = get_timezone_by_coordinates(latitude=latitude, longitude=longitude)
+        if timezone is None:
+            raise InvalidTimezone(
+                message="Could not determine timezone for coordinates",
+                timezone=None,
+            )
+
+        return cls(timezone)
 
     @classmethod
     def from_location(cls, location: LocationVO) -> Self:

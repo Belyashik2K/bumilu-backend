@@ -115,7 +115,7 @@ async def get_place_categories(
     principal: Annotated[Principal, Depends(get_staff_principal)],
     accept_language: AcceptLanguageDep,
     pagination: OffsetPaginationDep,
-) -> AdminPlaceCategoriesListResponseSchema:
+) -> AdminPlaceCategoriesListResponseSchema:  # type: ignore[valid-type]  # dynamically generated pydantic model class; mypy cannot statically verify it
     result = await handler(
         GetAdminPlaceCategoriesListQuery(
             actor_id=principal.id.value,
@@ -247,7 +247,7 @@ async def get_place_category_translations(
     handler: FromDishka[GetAdminPlaceCategoryTranslationsListQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
     pagination: OffsetPaginationDep,
-) -> PaginatedAdminPlaceCategoryTranslationsResponseSchema:
+) -> PaginatedAdminPlaceCategoryTranslationsResponseSchema:  # type: ignore[valid-type]  # dynamically generated pydantic model class; mypy cannot statically verify it
     result = await handler(
         GetAdminPlaceCategoryTranslationsListQuery(
             category_id=category_id,

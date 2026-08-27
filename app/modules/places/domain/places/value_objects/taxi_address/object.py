@@ -14,7 +14,7 @@ class PlaceTaxiAddressVO(BaseStringVO):
     max_length = 255
 
     @classmethod
-    def additional_validate(cls, value: str) -> None:
+    def additional_validate(cls, value: str) -> str:
         if not value.startswith(SPB_PREFIX):
             raise InvalidAddress(
                 message=f"Address must start with '{SPB_PREFIX}'", address=value

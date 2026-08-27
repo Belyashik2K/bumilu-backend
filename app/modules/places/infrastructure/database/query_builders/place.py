@@ -136,7 +136,7 @@ class SQLAlchemyPlaceQueryBuilder:
                 ),
                 selectinload(PlaceModel.photos),
                 with_loader_criteria(
-                    PlaceModel.photos,
+                    PlacePhotoModel,
                     PlacePhotoModel.status == PlacePhotoStatusEnum.UPLOADED,
                     include_aliases=True,
                 ),

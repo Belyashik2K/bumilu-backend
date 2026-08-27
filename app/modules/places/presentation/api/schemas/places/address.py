@@ -11,7 +11,7 @@ from app.modules.places.presentation.api.schemas.places.examples import (
 
 
 class BasePlaceAddressSchema(BaseModel):
-    taxi: str = Field(
+    taxi: str | None = Field(
         None,
         description="Address formatted for taxi services.",
         examples=[TAXI_ADDRESS_EXAMPLE],

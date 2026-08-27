@@ -40,7 +40,7 @@ async def get_place_categories(
     principal: Annotated[Principal, Depends(get_user_principal)],
     pagination: OffsetPaginationDep,
     accept_language: AcceptLanguageDep,
-) -> PlaceCategoriesListResponseSchema:
+) -> PlaceCategoriesListResponseSchema:  # type: ignore[valid-type]  # dynamically generated pydantic model class; mypy cannot statically verify it
     result = await handler(
         GetAllPlaceCategoriesQuery(
             language=accept_language.language,

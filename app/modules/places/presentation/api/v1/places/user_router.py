@@ -62,7 +62,7 @@ async def get_places(
     accept_language: AcceptLanguageDep,
     title_like: str | None = None,
     category_slug: str | None = None,
-) -> PaginatedPlaceCardsResponseSchema:
+) -> PaginatedPlaceCardsResponseSchema:  # type: ignore[valid-type]  # dynamically generated pydantic model class; mypy cannot statically verify it
     result = await handler(
         GetAllPlacesQuery(
             title_like=title_like,
@@ -87,7 +87,7 @@ async def get_place_map_pois(
     principal: Annotated[Principal, Depends(get_user_principal)],
     accept_language: AcceptLanguageDep,
     bbox: BBoxDep,
-) -> PlaceMapPOIListResponseSchema:
+) -> PlaceMapPOIListResponseSchema:  # type: ignore[valid-type]  # dynamically generated pydantic model class; mypy cannot statically verify it
     result = await handler(
         GetPlacesMapPOIQuery(
             bounds=BBox(

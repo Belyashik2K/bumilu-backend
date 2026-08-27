@@ -1,3 +1,5 @@
+from collections.abc import Collection
+
 from app.core.domain.value_objects.id import (
     PlaceIdVO,
     PlacePhoneIdVO,
@@ -68,7 +70,7 @@ class CannotPublishPlaceMissingTranslations(DomainInvariantViolationException):
     def __init__(
         self,
         place_id: PlaceIdVO,
-        missing_languages: list[LanguageEnum],
+        missing_languages: Collection[LanguageEnum],
     ) -> None:
         super().__init__(
             message=f"Cannot publish place with id {place_id} because it has missing translations for languages: "

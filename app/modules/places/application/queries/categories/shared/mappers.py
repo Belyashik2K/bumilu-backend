@@ -39,7 +39,7 @@ class PlaceCategoryMapper:
         category: PlaceCategoryModel,
         translation: PlaceCategoryTranslation | None = None,
     ) -> AdminPlaceCategoryReadModel:
-        name = translation.name if translation else None
+        name = translation.name.value if translation else None
         return AdminPlaceCategoryReadModel(
             id=category.id,
             slug=category.slug,

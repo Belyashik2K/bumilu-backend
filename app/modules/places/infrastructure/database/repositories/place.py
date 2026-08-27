@@ -1,4 +1,4 @@
-from time import time
+from datetime import time
 from uuid import UUID
 
 from geoalchemy2.elements import WKBElement
@@ -245,6 +245,8 @@ class SQLAlchemyPlaceRepository(IPlaceRepository):
         return entity
 
     def _sync_phones(self, model: PlaceModel, entity: Place) -> None:
+        assert entity.phones is not None, "entity.phones must be loaded"
+
         existing_by_id: dict[UUID, PlacePhoneModel] = {
             phone.id: phone for phone in model.phones
         }
@@ -257,18 +259,23 @@ class SQLAlchemyPlaceRepository(IPlaceRepository):
                 model.phones.remove(model_phone)
 
         for entity_phone in entity.phones:
-            model_phone = existing_by_id.get(entity_phone.id.value)
-            if model_phone is None:
+            existing_model_phone = existing_by_id.get(entity_phone.id.value)
+            if existing_model_phone is None:
                 model.phones.append(
                     self._phone_to_model(entity_phone, place_id=entity.id)
                 )
                 continue
 
-            model_phone.number = entity_phone.number.value
-            model_phone.type = entity_phone.type
-            model_phone.is_primary = entity_phone.is_primary
+            assert (
+                entity_phone.number.value is not None
+            ), "PlacePhoneNumberVO.value must be set"
+            existing_model_phone.number = entity_phone.number.value
+            existing_model_phone.type = entity_phone.type
+            existing_model_phone.is_primary = entity_phone.is_primary
 
     def _sync_photos(self, model: PlaceModel, entity: Place) -> None:
+        assert entity.photos is not None, "entity.photos must be loaded"
+
         existing_by_id: dict[UUID, PlacePhotoModel] = {
             photo.id: photo for photo in model.photos
         }
@@ -281,16 +288,16 @@ class SQLAlchemyPlaceRepository(IPlaceRepository):
                 model.photos.remove(model_photo)
 
         for entity_photo in entity.photos:
-            model_photo = existing_by_id.get(entity_photo.id.value)
-            if model_photo is None:
+            existing_model_photo = existing_by_id.get(entity_photo.id.value)
+            if existing_model_photo is None:
                 model.photos.append(
                     self._photo_to_model(entity_photo, place_id=entity.id)
                 )
                 continue
 
-            model_photo.file_key = entity_photo.file_key
-            model_photo.thumbnail_file_key = entity_photo.thumbnail_file_key
-            model_photo.status = entity_photo.status
+            existing_model_photo.file_key = entity_photo.file_key
+            existing_model_photo.thumbnail_file_key = entity_photo.thumbnail_file_key
+            existing_model_photo.status = entity_photo.status
 
     def _sync_working_hours(
         self,
@@ -317,6 +324,8 @@ class SQLAlchemyPlaceRepository(IPlaceRepository):
                 model_day.working_hours.append(self._working_hour_to_model(interval))
 
     def _sync_working_days(self, model: PlaceModel, entity: Place) -> None:
+        assert entity.working_days is not None, "entity.working_days must be loaded"
+
         existing_by_id: dict[UUID, PlaceWorkingDayModel] = {
             day.id: day for day in model.working_days
         }
@@ -329,20 +338,20 @@ class SQLAlchemyPlaceRepository(IPlaceRepository):
                 model.working_days.remove(model_day)
 
         for entity_day in entity.working_days:
-            model_day = existing_by_id.get(entity_day.id.value)
-            if model_day is None:
+            existing_model_day = existing_by_id.get(entity_day.id.value)
+            if existing_model_day is None:
                 model.working_days.append(
                     self._working_day_to_model(entity_day, place_id=entity.id)
                 )
                 continue
 
-            model_day.weekday = entity_day.weekday.value
-            model_day.status = entity_day.status
+            existing_model_day.weekday = entity_day.weekday.value
+            existing_model_day.status = entity_day.status
 
             if entity_day.status == PlaceWorkingDayStatusEnum.OPEN:
-                self._sync_working_hours(model_day, entity_day)
+                self._sync_working_hours(existing_model_day, entity_day)
             else:
-                model_day.working_hours.clear()
+                existing_model_day.working_hours.clear()
 
     @sqlalchemy_exception_catcher
     async def get_by_id(

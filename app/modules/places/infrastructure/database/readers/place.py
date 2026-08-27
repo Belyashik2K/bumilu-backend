@@ -2,6 +2,7 @@ from typing import Any
 from uuid import UUID
 
 from sqlalchemy import (
+    ColumnElement,
     and_,
     func,
     literal,
@@ -180,7 +181,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
             return [], total or 0
 
         total = rows[0].total_count or 0
-        return rows, total
+        return list(rows), total
 
     async def exists(self, place_id: UUID) -> bool:
         stmt = (
@@ -225,6 +226,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
         place_id: UUID,
         translation_language: LanguageEnum,
     ) -> PlaceDetailsReadModel | None:
+        is_favorite_expr: ColumnElement[bool]
         if actor_id is None:
             is_favorite_expr = literal(False)
         else:
@@ -262,7 +264,7 @@ class SQLAlchemyPlaceReader(IPlaceReader):
                     PlaceCategoryModel.translations
                 ),
                 with_loader_criteria(
-                    PlaceModel.photos,
+                    PlacePhotoModel,
                     PlacePhotoModel.status == PlacePhotoStatusEnum.UPLOADED,
                     include_aliases=True,
                 ),

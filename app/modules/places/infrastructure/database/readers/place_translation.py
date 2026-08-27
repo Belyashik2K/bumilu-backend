@@ -34,13 +34,7 @@ class SQLAlchemyPlaceTranslationReader(IPlaceTranslationReader):
         translation = result.scalar_one_or_none()
         if translation is None:
             return None
-        return PlaceTranslationReadModel(
-            language_code=translation.language_code,
-            title=translation.title,
-            description=translation.description,
-            short_description=translation.short_description,
-            display_address=translation.address_display,
-        )
+        return self._to_read_model(translation)
 
     async def list_by_place_id(
         self,
@@ -70,7 +64,7 @@ class SQLAlchemyPlaceTranslationReader(IPlaceTranslationReader):
         rows = result.unique().all()
 
         if not rows:
-            total = await self._session.scalar(count_stmt)
+            total = await self._session.scalar(count_stmt) or 0
             return PageReadModel(total=total)
 
         translations: list[PlaceTranslationModel] = [
@@ -79,15 +73,28 @@ class SQLAlchemyPlaceTranslationReader(IPlaceTranslationReader):
         total = rows[0].total_count
 
         return PageReadModel(
-            items=[
-                PlaceTranslationReadModel(
-                    language_code=translation.language_code,
-                    title=translation.title,
-                    description=translation.description,
-                    short_description=translation.short_description,
-                    display_address=translation.address_display,
-                )
-                for translation in translations
-            ],
+            items=[self._to_read_model(translation) for translation in translations],
             total=total,
+        )
+
+    @staticmethod
+    def _to_read_model(
+        translation: PlaceTranslationModel,
+    ) -> PlaceTranslationReadModel:
+        assert (
+            translation.description is not None
+        ), "translation.description must be set"
+        assert (
+            translation.short_description is not None
+        ), "translation.short_description must be set"
+        assert (
+            translation.address_display is not None
+        ), "translation.address_display must be set"
+
+        return PlaceTranslationReadModel(
+            language_code=translation.language_code,
+            title=translation.title,
+            description=translation.description,
+            short_description=translation.short_description,
+            display_address=translation.address_display,
         )

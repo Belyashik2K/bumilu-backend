@@ -48,8 +48,11 @@ class PlacePhotoView:
         read_model: PlacePhotoReadModel,
         storage_url_builder: IFileStorageURLBuilder,
     ) -> Self:
+        url = storage_url_builder.build_file_url(file_key=read_model.file_key)
+        assert url is not None, "url must not be None for a non-None file_key"
+
         return cls(
-            url=storage_url_builder.build_file_url(file_key=read_model.file_key),
+            url=url,
             thumbnail_url=storage_url_builder.build_file_url(
                 file_key=read_model.thumbnail_file_key
             ),
@@ -93,7 +96,7 @@ class PlaceCardView:
     ) -> Self:
         # TODO: configurable number of photos
 
-        return PlaceCardView(
+        return cls(
             id=read_model.id,
             title=read_model.title,
             short_description=read_model.short_description,

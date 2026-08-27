@@ -224,7 +224,7 @@ async def list_places(
     pagination: OffsetPaginationDep,
     title_like: str | None = None,
     category_slug: str | None = None,
-) -> PaginatedAdminPlaceCardsResponseSchema:
+) -> PaginatedAdminPlaceCardsResponseSchema:  # type: ignore[valid-type]  # dynamically generated pydantic model class; mypy cannot statically verify it
     result = await handler(
         GetAdminPlacesListQuery(
             title_like=title_like,
@@ -249,7 +249,7 @@ async def list_places_map_pois(
     principal: Annotated[Principal, Depends(get_staff_principal)],
     bound: BBoxDep,
     accept_language: AcceptLanguageDep,
-) -> AdminPlaceMapPOIListResponseSchema:
+) -> AdminPlaceMapPOIListResponseSchema:  # type: ignore[valid-type]  # dynamically generated pydantic model class; mypy cannot statically verify it
     result = await handler(
         GetAdminPlacesMapPOIQuery(
             bounds=BBox(
@@ -394,7 +394,7 @@ async def list_place_translations(
     handler: FromDishka[GetAdminPlaceTranslationsQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
     pagination: OffsetPaginationDep,
-) -> PaginatedPlaceTranslationListResponseSchema:
+) -> PaginatedPlaceTranslationListResponseSchema:  # type: ignore[valid-type]  # dynamically generated pydantic model class; mypy cannot statically verify it
     result = await handler(
         GetAdminPlaceTranslationsQuery(
             place_id=place_id,
@@ -523,7 +523,7 @@ async def list_place_phones(
     place_id: UUID7,
     handler: FromDishka[GetAdminPlacePhonesQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> AdminPlacePhoneListResponseSchema:
+) -> AdminPlacePhoneListResponseSchema:  # type: ignore[valid-type]  # dynamically generated pydantic model class; mypy cannot statically verify it
     result = await handler(
         GetAdminPlacePhonesQuery(
             place_id=place_id,
@@ -643,7 +643,7 @@ async def get_place_working_days(
     place_id: UUID7,
     handler: FromDishka[GetAdminPlaceWorkingDaysQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> PlaceWorkingDayListResponseSchema:
+) -> PlaceWorkingDayListResponseSchema:  # type: ignore[valid-type]  # dynamically generated pydantic model class; mypy cannot statically verify it
     result = await handler(
         GetAdminPlaceWorkingDaysQuery(
             place_id=place_id,
@@ -716,7 +716,7 @@ async def list_place_photos(
     place_id: UUID7,
     handler: FromDishka[GetAdminPlacePhotosQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
-) -> AdminPlacePhotoListResponseSchema:
+) -> AdminPlacePhotoListResponseSchema:  # type: ignore[valid-type]  # dynamically generated pydantic model class; mypy cannot statically verify it
     result = await handler(
         GetAdminPlacePhotosQuery(
             place_id=place_id,

@@ -36,6 +36,16 @@ class PlaceTranslationNotFound(ApplicationNotFoundException):
         )
 
 
+class PlaceWorkingDayNotFound(ApplicationNotFoundException):
+    def __init__(self, place_id: UUID, weekday: int) -> None:
+        super().__init__(
+            message=(
+                f"Working day for place with id '{place_id}' and weekday "
+                f"'{weekday}' not found."
+            )
+        )
+
+
 class PlacePhotoFileNotUploaded(ApplicationNotFoundException):
     def __init__(
         self,

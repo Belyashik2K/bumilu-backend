@@ -60,7 +60,7 @@ class PlaceCategory:
         icon_key: PlaceCategoryIconKeyVO,
         marker_color: PlaceCategoryMarkerColorVO,
     ) -> Self:
-        return PlaceCategory(
+        return cls(
             id=PlaceCategoryIdVO.new(),
             slug=slug,
             icon_key=icon_key,

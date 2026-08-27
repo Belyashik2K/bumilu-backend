@@ -71,7 +71,7 @@ class PlaceCardSchema(BasePlaceCardSchema):
         description="Short description of the place",
         examples=[SHORT_DESCRIPTION_EXAMPLE],
     )
-    category: PlaceCardCategorySchema = Field(
+    category: PlaceCardCategorySchema = Field(  # type: ignore[assignment]  # intentionally narrower schema for the card view
         ...,
         description="Category of the place",
     )
