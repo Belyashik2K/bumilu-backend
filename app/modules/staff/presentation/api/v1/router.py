@@ -66,7 +66,7 @@ async def get_all_staff_members(
     handler: FromDishka[GetStaffMembersListQueryHandler],
     principal: Annotated[Principal, Depends(get_staff_principal)],
     pagination: OffsetPaginationDep,
-) -> PaginatedFullStaffMemberInfoSchema:
+) -> PaginatedFullStaffMemberInfoSchema:  # type: ignore[valid-type]  # dynamically generated pydantic model class; mypy cannot statically verify it
     result = await handler(
         GetStaffMembersListQuery(
             actor_id=principal.id.value,

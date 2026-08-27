@@ -27,7 +27,7 @@ class StaffMemberWithGivenEmailAlreadyExists(ApplicationConflictException):
 class ActorRoleNotAllowedToPerformAction(ApplicationForbiddenException):
     def __init__(self, actor_role: StaffRoleEnum | None, action: str) -> None:
         super().__init__(
-            message=f"Actor with role {actor_role or "UNKNOWN"} is not allowed to perform action '{action}'.",
+            message=f"Actor with role {actor_role or 'UNKNOWN'} is not allowed to perform action '{action}'.",
             details={"actor_role": actor_role, "action": action},
         )
 

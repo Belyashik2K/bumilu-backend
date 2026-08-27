@@ -20,7 +20,9 @@ class TaskiqChatReplyDispatcher(IChatReplyDispatcher):
         expected_last_activity_at: datetime,
         delay_seconds: int,
     ) -> None:
-        await answer_with_ai_task.schedule_by_time(
+        # `handler` is injected by dishka's `@inject` decorator at runtime and
+        # must not be passed here; mypy doesn't understand that rewiring.
+        await answer_with_ai_task.schedule_by_time(  # type: ignore[call-arg]
             source=redis_source,
             time=get_current_dt() + timedelta(seconds=delay_seconds),
             chat_id=chat_id,

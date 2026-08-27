@@ -60,6 +60,8 @@ class CreateStaffMemberCommandHandler(ICommandHandler[CreateStaffMemberCommand])
 
         principal = Principal.create(type=PrincipalTypeEnum.STAFF)
 
+        assert password.value is not None, "StaffMemberPasswordVO.value must be set"
+
         member = StaffMember.create(
             id=principal.id,
             name=command.name,

@@ -69,7 +69,7 @@ class OpenAIChatResponder(IChatResponder):
         return llm_messages
 
     def _build_system_prompt(
-        self, chat: Chat, location_context: LocationContext
+        self, chat: Chat, location_context: LocationContext | None
     ) -> str:
         prompt_parts: list[str] = [
             self._system_prompt.strip(),

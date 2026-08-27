@@ -1,3 +1,5 @@
+from collections.abc import Mapping
+from typing import cast
 from uuid import UUID
 
 from app.core.enums import LanguageEnum
@@ -15,6 +17,7 @@ from app.modules.favourites.application.queries.shared.models.favourite_record i
     RawFavouriteRecordReadModel,
 )
 from app.modules.favourites.shared.enums import FavouriteEntityTypeEnum
+from app.modules.places.application.queries.places.shared.views import PlaceCardView
 
 
 class FavouritePreviewEnricher(IFavouritePreviewEnricher):
@@ -36,7 +39,7 @@ class FavouritePreviewEnricher(IFavouritePreviewEnricher):
         for item in items:
             ids_by_type.setdefault(item.entity.type, []).append(item.entity.id)
 
-        previews_by_type: dict[FavouriteEntityTypeEnum, dict[UUID, object]] = {}
+        previews_by_type: dict[FavouriteEntityTypeEnum, Mapping[UUID, object]] = {}
 
         for entity_type, ids in ids_by_type.items():
             provider = self._providers_by_type.get(entity_type)
@@ -55,8 +58,11 @@ class FavouritePreviewEnricher(IFavouritePreviewEnricher):
                 entity=FavouriteEntityReadModel(
                     id=item.entity.id,
                     type=item.entity.type,
-                    preview=previews_by_type.get(item.entity.type, {}).get(
-                        item.entity.id
+                    # TODO: preview is generic (object) at the provider interface level;
+                    # only Place is currently favouritable, so this cast is safe for now.
+                    preview=cast(
+                        PlaceCardView,
+                        previews_by_type.get(item.entity.type, {}).get(item.entity.id),
                     ),
                 ),
                 created_at=item.created_at,

@@ -2,6 +2,7 @@ from abc import (
     ABC,
     abstractmethod,
 )
+from collections.abc import Mapping
 from uuid import UUID
 
 from app.core.enums import LanguageEnum
@@ -18,4 +19,4 @@ class IFavouritePreviewProvider(ABC):
     @abstractmethod
     async def load_many(
         self, ids: list[UUID], translation_language: LanguageEnum
-    ) -> dict[UUID, object]: ...
+    ) -> Mapping[UUID, object]: ...

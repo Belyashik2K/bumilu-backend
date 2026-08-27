@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import (
     TYPE_CHECKING,
 )
-from uuid import UUID
 
 from sqlalchemy import (
     UUID as _UUID,
@@ -17,10 +16,12 @@ from sqlalchemy.orm import (
     mapped_column,
     relationship,
 )
+from uuid6 import UUID
 
 from app.core.enums import UserRoleEnum
 from app.core.infrastructure.database import BaseModel
 from app.core.infrastructure.database.mixins import (
+    PKUUIDMixin,
     TimestampMixin,
 )
 
@@ -39,9 +40,11 @@ if TYPE_CHECKING:
     )
 
 
-class UserModel(TimestampMixin, BaseModel):
+class UserModel(PKUUIDMixin, TimestampMixin, BaseModel):
     __tablename__ = "users"
 
+    # Overrides PKUUIDMixin.id: this id is a FK to principals.id, not a
+    # self-generated primary key, so it has no default.
     id: Mapped[UUID] = mapped_column(
         _UUID(),
         ForeignKey("principals.id", ondelete="CASCADE", onupdate="CASCADE"),

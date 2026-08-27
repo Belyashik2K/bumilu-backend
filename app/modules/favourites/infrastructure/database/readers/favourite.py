@@ -7,6 +7,7 @@ from sqlalchemy import (
     union_all,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.selectable import Subquery
 
 from app.core.application.queries.pagination import PageReadModel
 from app.modules.favourites.application.queries.shared.models.favourite_entity import (
@@ -30,7 +31,7 @@ class SQLAlchemyFavouriteReader(IFavouriteReader):
     def _build_favourites_union(
         user_id: UUID,
         entity_type: FavouriteEntityTypeEnum | None = None,
-    ) -> select:
+    ) -> Subquery:
         place_stmt = select(
             PlaceFavouriteModel.place_id.label("entity_id"),
             literal(FavouriteEntityTypeEnum.PLACE.value).label("entity_type"),
