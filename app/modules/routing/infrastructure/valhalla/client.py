@@ -46,10 +46,13 @@ class ValhallaClient:
             "units": units,
         }
 
-        response = await self._client.post(
-            "/route",
-            json=payload,
-        )
+        try:
+            response = await self._client.post(
+                "/route",
+                json=payload,
+            )
+        except httpx.HTTPError as e:
+            raise ValhallaError(f"Valhalla is unreachable: {e}") from e
 
         if response.status_code != 200:
             raise ValhallaError(
