@@ -57,7 +57,20 @@ Modules: `auth`, `chat`, `favourites`, `places`, `reviews`, `routes`, `routing`,
 
 ## API
 
-~90 endpoints across the modules listed above, split per module into user-facing and admin-facing routers (`user_router.py` / `admin_router.py`). Full interactive reference: `/docs/swagger` or `/docs/redoc` once the app is running.
+~90 endpoints across 10 modules, each split into a user-facing and an admin-facing router. Full interactive reference: `/docs/swagger` or `/docs/redoc` once the app is running.
+
+| Module | What it covers |
+|---|---|
+| `auth` | Guest login, passwordless email OTP login, staff email+password login, session refresh/logout (see [Authentication & Access Control](#authentication--access-control)) |
+| `places` | User: browse/search places, categories, map POIs, place details. Admin: full CRUD on places, categories, translations, phone numbers, photos, working hours, publish/unpublish status |
+| `routes` | User: browse curated routes, get walking directions for one. Admin: full CRUD on routes, route points, translations, publish status |
+| `routing` | On-demand walking/driving directions between arbitrary points, backed by Valhalla |
+| `chat` | User: conversation with the AI travel assistant. Admin: view conversations and reply to ones the AI couldn't handle |
+| `reviews` | Leave, view, edit, and delete reviews on a place or a route |
+| `favourites` | Save, remove, and list favourite places and routes |
+| `users` | Current user's profile, favourites, and reviews |
+| `staff` | List/create staff members, current staff profile |
+| `stats` | Admin dashboard aggregate stats |
 
 ### Authentication & Access Control
 
