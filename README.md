@@ -31,7 +31,7 @@ This repository is the **backend** for BumiLu: the API, business logic, and the 
 
 ## Tech Stack
 
-- **API**: FastAPI, Python 3.14
+- **API**: FastAPI (REST), Python 3.14
 - **Persistence**: PostgreSQL + PostGIS, SQLAlchemy 2.0 (async), Alembic migrations
 - **Cache / sessions / queues**: Redis, Taskiq (background jobs & scheduler)
 - **Maps infra**: [Valhalla](https://github.com/valhalla/valhalla) (routing, in this repo), [TileServer GL](https://github.com/maptiler/tileserver-gl) (separate repository, not included here)
