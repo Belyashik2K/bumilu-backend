@@ -66,8 +66,8 @@ Modules: `auth`, `chat`, `favourites`, `places`, `reviews`, `routes`, `routing`,
 | `routes` | User: browse curated routes, get walking directions for one. Admin: full CRUD on routes, route points, translations, publish status |
 | `routing` | On-demand walking/driving directions between arbitrary points, backed by Valhalla |
 | `chat` | User: conversation with the AI travel assistant. Admin: view conversations and reply to ones the AI couldn't handle |
-| `reviews` | Leave, view, edit, and delete reviews on a place or a route |
-| `favourites` | Save, remove, and list favourite places and routes |
+| `reviews` | Leave, view, edit, and delete reviews on a place |
+| `favourites` | Save, remove, and list favourite places |
 | `users` | Current user's profile, favourites, and reviews |
 | `staff` | List/create staff members, current staff profile |
 | `stats` | Admin dashboard aggregate stats |
