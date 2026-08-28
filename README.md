@@ -157,4 +157,6 @@ reference; issues and PRs may not be reviewed.
 
 ## License
 
-[MIT License](LICENSE)
+The source code is licensed under the [MIT License](LICENSE).
+
+The BumiLu name, logo, and the app screenshots in [`assets/`](assets/) are **not** covered by that license — they're not licensed for reuse, commercial or otherwise, without permission.
