@@ -139,7 +139,8 @@ pytest                        # full suite; spins up a Redis container via testc
 
 ## Project Status
 
-This project is archived and no longer under active development. Published as-is for reference; issues and PRs may not be reviewed.
+This project is **archived and no longer under active development**. Published as-is for
+reference; issues and PRs may not be reviewed.
 
 ## License
 
